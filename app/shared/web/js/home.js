@@ -409,7 +409,6 @@ async function homeOpen() {
   const SHOWS = ['showClock', 'showDate', 'showNet', 'showGear', 'showAdd', 'showSuggest', 'showWatch'];
   const shows = Object.fromEntries(SHOWS.map((k) => [k, el('input', { type: 'checkbox', onchange: () => send({ [k]: shows[k].checked }) })]));
   const showHead = el('h3', { className: 'secthead', textContent: T('home.g_sec_shown') });
-  const watchSortHead = el('h3', { textContent: T('home.watch_sort') }), watchSort = el('div', { className: 'fchips' });   // the Play Next order (HomeConfig "watchSort")
   const watchAtHead = el('h3', { textContent: T('home.watch_at') }), watchAt = el('div', { className: 'fchips' });   // where the Play Next items go (HomeConfig "watchAt"); only a TV Home that reports it
   const anim = el('input', { type: 'checkbox', onchange: () => send({ anim: anim.checked }) });
   const infold = el('input', { type: 'checkbox', onchange: () => send({ infold: infold.checked }) });   // HomeConfig "infold", default off
@@ -617,9 +616,6 @@ async function homeOpen() {
     for (const k of SHOWS) { shows[k].checked = c[k] !== false; shows[k].closest('label').hidden = c[k] === undefined; }
     showHead.hidden = c.showClock === undefined;
     watchAtHead.hidden = watchAt.hidden = c.watchAt === undefined;
-    watchSortHead.hidden = watchSort.hidden = c.watchSort === undefined;
-    watchSort.replaceChildren(...[['default', 'home.watch_sort_default'], ['latest', 'home.watch_sort_latest']].map(([k, id]) =>
-      el('button', { type: 'button', className: c.watchSort === k ? 'on' : '', 'aria-pressed': String(c.watchSort === k), onclick: () => send({ watchSort: k }) }, T(id))));
     watchAt.replaceChildren(...[['bottom', 'home.watch_at_bottom'], ['top', 'home.watch_at_top'], ['under1', 'home.watch_at_under1'], ['tiles', 'home.watch_at_tiles']].map(([k, id]) =>
       el('button', { type: 'button', className: c.watchAt === k ? 'on' : '', 'aria-pressed': String(c.watchAt === k), onclick: () => send({ watchAt: k }) }, T(id))));
     clock.checked = c.clock24; greet.checked = c.greet; anim.checked = c.anim !== false;
@@ -1004,7 +1000,7 @@ async function homeOpen() {
     ['look', 'sparkle', 180, 'home.g_look', [sect('home.sec_show', focusHead, focus, motionHead, motion, check(anim, 'home.anim'), check(clock, 'home.clock24')),
       sect('home.sec_head', check(greet, 'home.greet'), gstyleHead, gstyle, gnameLine, gtextLine, gtokens, gtype, hsplit, dstyleHead, dstyle, dtextLine, dtokens, dtype),
       sect(showHead, check(shows.showClock, 'home.show_clock'), check(shows.showDate, 'home.show_date'), check(shows.showNet, 'home.show_net'), check(shows.showGear, 'home.show_gear'),
-        check(shows.showAdd, 'home.show_add'), check(shows.showSuggest, 'home.show_suggest'), check(shows.showWatch, 'home.show_watch'), check(infold, 'home.show_infold'), check(shift, 'home.show_shift'), watchAtHead, watchAt, watchSortHead, watchSort),
+        check(shows.showAdd, 'home.show_add'), check(shows.showSuggest, 'home.show_suggest'), check(shows.showWatch, 'home.show_watch'), check(infold, 'home.show_infold'), check(shift, 'home.show_shift'), watchAtHead, watchAt),
       sect('home.sec_grid', colsHead, cols, rowsHead, rowsLine, rowsNote, orderHead, orderBox, foldHead, foldNote, foldBox),
       sect(null, tilesHead, tilesNote, addHome, tilesList),
       sect(null, el('div', { className: 'card-head' }, el('h3', { textContent: T('home.hidden') }), addHidden), hidden),

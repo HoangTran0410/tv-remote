@@ -1,4 +1,4 @@
-# Folders on the grid and the Play Next order
+# Folders on the grid
 
 Put several apps in one folder tile (4 small icons and its name). Edit it on the TV or in the TV tab → Customize → Folders.
 
@@ -7,4 +7,3 @@ Put several apps in one folder tile (4 small icons and its name). Edit it on the
 3. Hold OK on the folder tile to rename, move it on the grid or delete it (its apps return to the grid). An empty folder disappears.
 
 - An app's PIN lock and time limit still apply inside a folder.
-- Play Next row: hold OK on an item → **Row order** → **Latest first** (default: as each app gives it).

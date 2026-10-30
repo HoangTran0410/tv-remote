@@ -1,4 +1,4 @@
-# Thư mục trên lưới và thứ tự hàng Xem tiếp
+# Thư mục trên lưới
 
 Gom vài app vào một ô thư mục (hiện 4 biểu tượng nhỏ và tên). Sửa được ngay trên TV hoặc ở tab TV → Tùy chỉnh → Thư mục.
 
@@ -7,4 +7,3 @@ Gom vài app vào một ô thư mục (hiện 4 biểu tượng nhỏ và tên).
 3. Giữ OK trên ô thư mục để đổi tên, di chuyển trên lưới hoặc xóa (app trong đó về lại lưới). Thư mục trống tự biến mất.
 
 - Khóa PIN và giới hạn giờ của app vẫn áp dụng bên trong thư mục.
-- Hàng Xem tiếp: giữ OK trên một mục → **Thứ tự hàng** → **Mới xem nhất trước** (mặc định: theo từng app).

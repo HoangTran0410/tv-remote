@@ -405,7 +405,7 @@ class HomeActivity : Activity() {
     private fun watchRead() {
         val cap = watchCap(); val w = tileW()
         watchBg.execute {
-            val got = (if (conf.optBoolean("showWatch", true)) Watch.read(this, cap, Store.rowsOff(this), conf.optString("watchSort", "default")) else emptyList()).map { it to Watch.art(this, it, w, TvUi.CARD) }
+            val got = (if (conf.optBoolean("showWatch", true)) Watch.read(this, cap, Store.rowsOff(this)) else emptyList()).map { it to Watch.art(this, it, w, TvUi.CARD) }
             runOnUiThread {
                 if (isDestroyed || got.map { it.first.key + it.first.title + it.first.done + (it.second != null) } == watch.map { it.first.key + it.first.title + it.first.done + (it.second != null) }) return@runOnUiThread
                 watch = got; show()
@@ -422,7 +422,6 @@ class HomeActivity : Activity() {
     private fun watchAt() = conf.optString("watchAt").takeIf { it in HomeConfig.WATCH_AT } ?: HomeConfig.WATCH_AT[0]
     /** How many items are read: a row of their own scrolls sideways, so it holds more; among the tiles they are one grid row's worth, or the grid would grow without end. */
     private fun watchCap() = if (watchAt() == "tiles") conf.optInt("cols", HomeConfig.COLS_DEFAULT) else WATCH_ROW
-    private fun watchSort() = conf.optString("watchSort").takeIf { it in HomeConfig.WATCH_SORT } ?: HomeConfig.WATCH_SORT[0]
     private fun watchAtName(k: String) = getString(when (k) { "top" -> R.string.watch_at_top; "under1" -> R.string.watch_at_under1; "tiles" -> R.string.watch_at_tiles; else -> R.string.watch_at_bottom })
 
     private fun watchMenu(it: Watch.Item) {
@@ -431,9 +430,6 @@ class HomeActivity : Activity() {
             gi(R.drawable.ic_updown, getString(R.string.watch_at), live = { watchAtName(watchAt()) }) {      // one press, the next place: the home screen changes behind the menu
                 val n = HomeConfig.WATCH_AT[(HomeConfig.WATCH_AT.indexOf(watchAt()) + 1) % HomeConfig.WATCH_AT.size]
                 Store.change(this, JSONObject().put("watchAt", n))
-            },
-            gi(R.drawable.ic_updown, getString(R.string.watch_sort), live = { getString(if (watchSort() == "latest") R.string.watch_sort_latest else R.string.watch_sort_default) }) {   // one press, the other order: the row is read again behind the menu
-                Store.change(this, JSONObject().put("watchSort", if (watchSort() == "latest") "default" else "latest"))
             },
             gi(R.drawable.ic_star, getString(R.string.watch_pin)) { watchPin(it, pic) },
             gi(R.drawable.ic_eye_off, getString(R.string.watch_hide, it.app)) { Store.rowsOff(this, it.pkg); watchRead() },

@@ -67,7 +67,7 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
     class Facts(val ram: Pair<Long, Long>, val disk: Pair<Long, Long>, val ip: String, val eth: Boolean, val rssi: Int?, val up: Long,
                 val adb: Boolean, val usage: JSONObject?, val icons: Map<String, Drawable>, val timer: JSONObject?, val moon: Moon?, val cpu: Float?, val cores: Int, val cal: Cal? = null, val wx: Weather.Forecast? = null,
                 val link: Int? = null, val dns: String? = null, val adbPort: Int = 0, val cpuWhy: Int = 0, val air: Weather.Air? = null,
-                val market: Market.Snap? = null, val news: List<News.Item> = emptyList(), val recent: JSONObject? = null, val pray: PrayerDay? = null)
+                val market: Market.Snap? = null, val news: List<News.Item> = emptyList(), val recent: JSONObject? = null, var pray: PrayerDay? = null)   // pray: worked out again as its settings change (WidgetSettings)
 
     /** Today in the lunar calendar and the days until the next full moon (15th), new month (1st) and Tết. */
     class Moon(val day: Lunar.Day, val full: Int, val new: Int, val tet: Int, val hol: Holidays.Next? = null)

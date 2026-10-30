@@ -37,18 +37,38 @@ object Prayer {
     )
     val IDS = METHODS.keys.toList()
 
-    /** The method most people in this time zone / country follow; MWL where nothing is known. [tz] a zone id ("Asia/Jakarta"), [country] ISO 3166 ("ID"). */
-    fun defaultMethod(tz: String, country: String): String = when {
-        tz in setOf("Asia/Riyadh", "Asia/Mecca", "Asia/Kuwait", "Asia/Qatar", "Asia/Bahrain", "Asia/Dubai", "Asia/Muscat", "Asia/Aden") || country in setOf("SA", "KW", "QA", "BH", "AE", "OM", "YE") -> "ummalqura"
-        tz in setOf("Africa/Cairo", "Africa/Tripoli", "Africa/Khartoum", "Asia/Damascus", "Asia/Beirut", "Asia/Baghdad", "Asia/Amman") || country in setOf("EG", "LY", "SD", "SY", "LB", "IQ", "JO") -> "egypt"
-        tz == "Asia/Kuala_Lumpur" || tz == "Asia/Kuching" || tz == "Asia/Brunei" || country in setOf("MY", "BN") -> "jakim"
-        tz in setOf("Asia/Jakarta", "Asia/Pontianak", "Asia/Makassar", "Asia/Jayapura") || country == "ID" -> "kemenag"
-        tz == "Asia/Singapore" || country == "SG" -> "singapore"
-        tz == "Europe/Istanbul" || tz == "Asia/Istanbul" || country == "TR" -> "turkey"
-        tz == "Asia/Tehran" || country == "IR" -> "tehran"
-        tz in setOf("Asia/Karachi", "Asia/Dhaka", "Asia/Kabul", "Asia/Kolkata", "Asia/Calcutta", "Asia/Colombo") || country in setOf("PK", "BD", "AF", "IN", "LK") -> "karachi"
-        tz.startsWith("America/") || country in setOf("US", "CA") -> "isna"
-        else -> "mwl"
+    /**
+     * The method most people in this time zone / country follow; MWL where nothing is known. [tz] a zone id ("Asia/Jakarta"), [country] ISO 3166 ("ID").
+     * The zone decides first: most TV boxes say "US" whatever the country (a box in Hanoi on en_US got ISNA, its Fajr 15 min late); the country
+     * only where the zone says nothing (UTC, a zone not listed).
+     */
+    fun defaultMethod(tz: String, country: String): String = byZone(tz) ?: byCountry(country) ?: "mwl"
+
+    private fun byZone(tz: String): String? = when {
+        tz in setOf("Asia/Riyadh", "Asia/Mecca", "Asia/Kuwait", "Asia/Qatar", "Asia/Bahrain", "Asia/Dubai", "Asia/Muscat", "Asia/Aden") -> "ummalqura"
+        tz in setOf("Africa/Cairo", "Africa/Tripoli", "Africa/Khartoum", "Asia/Damascus", "Asia/Beirut", "Asia/Baghdad", "Asia/Amman") -> "egypt"
+        tz == "Asia/Kuala_Lumpur" || tz == "Asia/Kuching" || tz == "Asia/Brunei" -> "jakim"
+        tz in setOf("Asia/Jakarta", "Asia/Pontianak", "Asia/Makassar", "Asia/Jayapura") -> "kemenag"
+        tz == "Asia/Singapore" -> "singapore"
+        tz == "Europe/Istanbul" || tz == "Asia/Istanbul" -> "turkey"
+        tz == "Asia/Tehran" -> "tehran"
+        tz in setOf("Asia/Karachi", "Asia/Dhaka", "Asia/Kabul", "Asia/Kolkata", "Asia/Calcutta", "Asia/Colombo") -> "karachi"
+        tz.startsWith("America/") -> "isna"
+        tz.contains('/') && !tz.startsWith("Etc/") -> "mwl"                // a real place we have no rule for: not the country's guess
+        else -> null
+    }
+
+    private fun byCountry(c: String): String? = when (c) {
+        "SA", "KW", "QA", "BH", "AE", "OM", "YE" -> "ummalqura"
+        "EG", "LY", "SD", "SY", "LB", "IQ", "JO" -> "egypt"
+        "MY", "BN" -> "jakim"
+        "ID" -> "kemenag"
+        "SG" -> "singapore"
+        "TR" -> "turkey"
+        "IR" -> "tehran"
+        "PK", "BD", "AF", "IN", "LK" -> "karachi"
+        "US", "CA" -> "isna"
+        else -> null
     }
 
     /** One day's times as hours of the local clock (0 until 24, may pass 24 for an Isha after midnight); NaN where the sun does not do it. */

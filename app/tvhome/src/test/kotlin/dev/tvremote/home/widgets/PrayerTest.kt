@@ -110,6 +110,10 @@ class PrayerTest {
         assertEquals("isna", Prayer.defaultMethod("America/Chicago", ""))
         assertEquals("mwl", Prayer.defaultMethod("Europe/London", "GB"))
         assertEquals("mwl", Prayer.defaultMethod("", ""))
+        assertEquals("mwl", Prayer.defaultMethod("Asia/Ho_Chi_Minh", "US"))   // a box in Hanoi on en_US: the zone wins (it was ISNA)
+        assertEquals("kemenag", Prayer.defaultMethod("Asia/Jakarta", "US"))
+        assertEquals("isna", Prayer.defaultMethod("Etc/UTC", "US"))           // no place in the zone: the country
+        assertEquals("ummalqura", Prayer.defaultMethod("UTC", "SA"))
     }
 
     @Test fun methodsMatchTheSettings() {                              // the options the page and Customize offer are the methods worked out here

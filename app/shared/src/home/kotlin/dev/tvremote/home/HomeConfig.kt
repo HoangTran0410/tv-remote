@@ -50,8 +50,6 @@ import org.json.JSONObject
  *   watchAt where the Play Next items go ([WATCH_AT], default "bottom"): "top" a row of their own above the apps, "under1" under
  *           the first row of apps, "bottom" after the last row of apps, "tiles" no row: they follow the grid's last tile in its columns.
  *           A TV Home older than this does not report it, so a page offers the choice only to one that does
- *   watchSort the Play Next items' order ([WATCH_SORT], default "default"): "default" as the apps and TvProvider give them, "latest" the
- *           most recently watched first, by the programme's last engagement time (those that give none keep their place after the others)
  *   folders  folders on the app grid: {"<id>": {"name": "...", "apps": [package, ...]}}, at most [FOLDERS_MAX] of [FOLDER_APPS_MAX] apps. A folder is
  *           a grid tile like a live widget: its key "folder:<id>" ([isFolder]) sits in "tiles" and in "order", so it is placed, moved and removed
  *           as any tile; it lives while that key is in "tiles" and it holds an app. An app in a folder is off the grid (and out of
@@ -457,7 +455,6 @@ object HomeConfig {
     fun isFolder(k: String) = FOLDER.matches(k)
     fun folderKey(id: String) = "folder:$id"
     fun folderId(k: String) = k.removePrefix("folder:")
-    val WATCH_SORT = listOf("default", "latest")
     fun liveKey(provider: String, id: String) = "tile:$provider/$id"
     /** The provider's package of a live widget's key, and its id there. */
     fun liveProvider(k: String) = k.removePrefix("tile:").substringBefore('/')
@@ -680,7 +677,6 @@ object HomeConfig {
             .also { n -> for (k in SHOWS) n.put(k, o.optBoolean(k, true)) }
             .put("infold", o.optBoolean("infold", false))
             .put("watchAt", o.optString("watchAt").takeIf { it in WATCH_AT } ?: WATCH_AT[0])
-            .put("watchSort", o.optString("watchSort").takeIf { it in WATCH_SORT } ?: WATCH_SORT[0])
             .put("anim", o.optBoolean("anim", true))
             .put("shift", o.optBoolean("shift", false))               // burn-in care: Home moves a few px every minute (ui/PixelShift)
             .put("motion", o.optString("motion").takeIf { it in MOTIONS } ?: "")

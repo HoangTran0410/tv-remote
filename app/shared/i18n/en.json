@@ -4250,8 +4250,5 @@
  "home.folder_move_to": "Move to another folder",
  "home.folder_move": "Move",
  "home.folder_out": "Take out of the folder",
- "home.folder_empty": "No apps",
- "home.watch_sort": "Play Next order",
- "home.watch_sort_default": "As the apps give it",
- "home.watch_sort_latest": "Latest first"
+ "home.folder_empty": "No apps"
 }

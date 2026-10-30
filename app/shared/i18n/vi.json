@@ -4106,8 +4106,5 @@
  "home.folder_move_to": "Chuyển sang thư mục khác",
  "home.folder_move": "Chuyển",
  "home.folder_out": "Đưa ra khỏi thư mục",
- "home.folder_empty": "Chưa có app",
- "home.watch_sort": "Thứ tự hàng Xem tiếp",
- "home.watch_sort_default": "Theo từng app",
- "home.watch_sort_latest": "Mới xem nhất trước"
+ "home.folder_empty": "Chưa có app"
 }

@@ -16,6 +16,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import dev.tvremote.home.widgets.Widgets
+import dev.tvremote.home.widgets.prayerFacts
 import org.json.JSONObject
 
 /**
@@ -61,6 +62,7 @@ object WidgetSettings {
             val f = facts ?: return
             val big = cur["size"] == "big"
             widget.options = JSONObject().put("wopt", JSONObject().put(k, JSONObject().also { e -> for ((i, v) in cur) e.put(i, v) }))
+            if (k == "prayer") f.pray = widget.prayerFacts()          // the method, Asr and Hijri change the numbers, not only the look (offline, quick)
             val sizes = JSONObject().put(k, cur["size"] ?: "small")
             // a lone widget is a column of its weight in a row of at least FLOOR: the stage is as wide as that row so the column is the widget's own width
             val widgetW = dp(if (big) 330 else 230)
@@ -159,9 +161,18 @@ object WidgetSettings {
             addView(rows, LinearLayout.LayoutParams(-1, -2))
             addView(close, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(10) })
         }
+        // the options scroll when they are taller than the screen leaves them (the prayer widget's methods: its Hijri row and OK were cut off);
+        // a ScrollView brings the focused row into view by itself
+        val room = a.resources.displayMetrics.heightPixels - dp(16 + 16 + 32 + 26 + 72 + 22 + 16)   // the window's gap, the panel's padding, title, strip
+        val scroll = object : android.widget.ScrollView(a) {
+            override fun onMeasure(w: Int, h: Int) {                 // what the panel leaves it, never more than the screen does
+                val most = if (View.MeasureSpec.getMode(h) == View.MeasureSpec.UNSPECIFIED) room else minOf(room, View.MeasureSpec.getSize(h))
+                super.onMeasure(w, View.MeasureSpec.makeMeasureSpec(most, View.MeasureSpec.AT_MOST))
+            }
+        }.apply { isVerticalScrollBarEnabled = false; isFillViewport = false; addView(left) }
         val body = LinearLayout(a).apply {
             gravity = Gravity.CENTER_VERTICAL; clipChildren = false
-            addView(left, LinearLayout.LayoutParams(dp(330), -2))
+            addView(FrameLayout(a).apply { addView(scroll) }, LinearLayout.LayoutParams(dp(330), -2))   // a clipping frame: body draws its children unclipped (the stage), a ScrollView then drew over the title
             addView(stage, LinearLayout.LayoutParams(dp(330), dp(Widgets.BIG_H)).apply { leftMargin = dp(28) })
         }
         val root = LinearLayout(a).apply {
