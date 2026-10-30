@@ -9,6 +9,7 @@ TV Home has two more widgets that read their data straight from the source, with
 | Weather | OK opens Windy's map full screen at your city (rain, wind, temperature, satellite, PM2.5), a button per layer, **Play the forecast**; Back closes |
 | Recently opened | The last 4-6 apps; Left / Right pick, OK opens |
 | Ad blocking | OK turns an ad-blocking DNS on / off (AdGuard...). Not the ads inside YouTube videos. If the DNS fails, it goes back in ~10 s |
+| Prayer times | Today's five prayers and sunrise at the weather's place, the next with a countdown, and the Hijri date. Worked out on the TV, no internet. Pick the method, Asr school, Hijri ±1 day |
 
 ### Each widget's settings
 

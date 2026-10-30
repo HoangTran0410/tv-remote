@@ -109,6 +109,12 @@ object Weather {
 
     private fun prefs(c: Context) = c.getSharedPreferences("weather", Context.MODE_PRIVATE)
 
+    /** The place the weather found (the typed city, the device's location or the internet address's), kept with the forecast; null before the first answer. */
+    fun place(c: Context): Place? = prefs(c).getString("place", null)?.let { s -> runCatching { JSONObject(s).let { Place(it.optString("name"), it.getDouble("lat"), it.getDouble("lon")) } }.getOrNull() }
+
+    /** True when [place] is missing or is for another typed city than [typed]: the prayer widget alone asks the weather's resolver again. */
+    fun placeStale(c: Context, typed: String) = place(c) == null || prefs(c).getString("typed", "") != typed.trim()
+
     fun cached(c: Context): Forecast? = prefs(c).getString("fc", null)?.let { fromJson(it) }
 
     fun cachedAir(c: Context): Air? = prefs(c).getString("aq", null)?.let { airFromJson(it) }

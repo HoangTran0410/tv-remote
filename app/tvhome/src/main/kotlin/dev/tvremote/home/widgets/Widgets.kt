@@ -56,6 +56,7 @@ import dev.tvremote.home.R
  *   clock   an analog clock: a face (classic, minimal, roman) in a theme (dark, light) (HomeConfig "wopt"); a face in a stack, standing, or big with the time beside it
  *   lunar   the lunar date, the next full moon or new month, the days to Tết ([Lunar], worked out here)
  *   timer   the sleep timer or bedtime and the time left (TV Setup's rules, through the same provider); none while neither is set
+ *   prayer  the five prayers and the sunrise of today at the weather's place, the next one with its countdown, the Hijri date ([Prayer], offline)
  *   note    the family's note (HomeConfig "note"), while there is one
  *   qr1..4  QR widgets (HomeConfig "qrs", [QrView]): big by default, the glass widget with only the code on white
  */
@@ -66,7 +67,7 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
     class Facts(val ram: Pair<Long, Long>, val disk: Pair<Long, Long>, val ip: String, val eth: Boolean, val rssi: Int?, val up: Long,
                 val adb: Boolean, val usage: JSONObject?, val icons: Map<String, Drawable>, val timer: JSONObject?, val moon: Moon?, val cpu: Float?, val cores: Int, val cal: Cal? = null, val wx: Weather.Forecast? = null,
                 val link: Int? = null, val dns: String? = null, val adbPort: Int = 0, val cpuWhy: Int = 0, val air: Weather.Air? = null,
-                val market: Market.Snap? = null, val news: List<News.Item> = emptyList(), val recent: JSONObject? = null)
+                val market: Market.Snap? = null, val news: List<News.Item> = emptyList(), val recent: JSONObject? = null, val pray: PrayerDay? = null)
 
     /** Today in the lunar calendar and the days until the next full moon (15th), new month (1st) and Tết. */
     class Moon(val day: Lunar.Day, val full: Int, val new: Int, val tet: Int, val hol: Holidays.Next? = null)
@@ -93,7 +94,7 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
         internal const val ACCENT = 0xFFFF453A.toInt()                  // the calendar's red: the month's name and today
         internal val MEDIUM get() = Font.medium
         internal val BOLD get() = Font.bold
-        private val BIG = setOf("system", "usage", "calendar", "weather", "air", "market", "news", "recent", "adblock")
+        private val BIG = setOf("system", "usage", "calendar", "weather", "air", "market", "news", "recent", "adblock", "prayer")
         const val BIG_H = 180                                          // dp: the widgets' height, fixed: the favourites stay on screen
         private const val FULL_MIN = 180                              // dp: a big widget in a column narrower than this shows its small form (the row of three big widgets gives 190 to 260)
 
@@ -259,7 +260,8 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
         val cpuWhy = if (cpuMiss == 0) 0 else if (ask("badges") == null) R.string.w_cpu_need_setup else if (cpuMiss >= 2) R.string.w_cpu_need_adb else 0
         val typed = Store.get(a).optString("place")
         val air = "air" in want
-        if (("weather" in want || air) && Weather.due(a, typed, air = air)) Weather.refresh(a, typed, resources.locale0().language, air) { onWeather?.invoke() }
+        val prayer = "prayer" in want && Weather.placeStale(a, typed)      // the prayer times need the weather's place, nothing else of it
+        if (("weather" in want || air || prayer) && Weather.due(a, typed, air = air)) Weather.refresh(a, typed, resources.locale0().language, air) { onWeather?.invoke() }
         val wx = if ("weather" in want) Weather.cached(a) else null
         val btc = opt("market", "btc") == "on"
         if ("market" in want && Market.due(a, btc)) Market.refresh(a, btc) { onWeather?.invoke() }
@@ -267,7 +269,8 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
         if (feeds.isNotEmpty() && News.due(a, feeds)) News.refresh(a, feeds) { onWeather?.invoke() }
         return Facts(mem, disk, ip, eth, rssi, SystemClock.elapsedRealtime(), adb, usage, icons, timer, moon,
             cpu?.optDouble("busy", -1.0)?.takeIf { it >= 0 }?.toFloat(), cpu?.optInt("cores") ?: 0, cal, wx, link, dns, adbPort, cpuWhy, if (air) Weather.cachedAir(a) else null,
-            if ("market" in want) Market.cached(a) else null, if ("news" in want) News.cached(a) else emptyList(), recent)
+            if ("market" in want) Market.cached(a) else null, if ("news" in want) News.cached(a) else emptyList(), recent,
+            pray = if ("prayer" in want) prayerFacts() else null)
     }
 
     /**
@@ -315,6 +318,7 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
                         "news" -> newsFull(c, f, w)
                         "recent" -> recentGlass(c, f, label, w, true)
                         "adblock" -> adblockGlass(c, f, true)
+                        "prayer" -> prayerGlass(c, f, true)
                         else -> usage(c, f, label, w < dp(340))
                     } else {                                       // the small form: half the height, or a narrow column
                         c.setPadding(dp(16), dp(8), dp(16), dp(8))
@@ -327,6 +331,7 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
                             "news" -> newsHalf(c, f)
                             "recent" -> recentGlass(c, f, label, w, false)
                             "adblock" -> adblockGlass(c, f, false)
+                            "prayer" -> prayerGlass(c, f, false)
                             else -> usageHalf(c, f, label)
                         }
                     }
