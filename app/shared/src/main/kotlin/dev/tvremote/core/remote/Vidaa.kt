@@ -126,6 +126,9 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
             BROADCAST + "platform_service/actions/tvsleep")
         for (a in listOf("gettvstate", "sourcelist", "applist")) m.publish(ui(a))
         for (a in listOf("getvolume", "getdeviceinfo", "gettvinfo")) m.publish(platform(a))
+        runCatching {
+            expect(1500, { it.endsWith("/platform_service/data/getdeviceinfo") || it.endsWith("/platform_service/data/gettvinfo") }) {}
+        }
     }
 
     /** A logged-in MQTT link (our own topics subscribed), over the TLS the TV takes: with the certificate, without, or plain. */
