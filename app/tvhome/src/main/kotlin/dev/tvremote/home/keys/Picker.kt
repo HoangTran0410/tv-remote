@@ -150,6 +150,8 @@ object Picker {
             addView(search, LinearLayout.LayoutParams(dp(300), dp(46)))
         }
         val note = Font.on(TextView(a)).apply { textSize = 13f; setTextColor(PK_DIM); setPadding(dp(34), 0, dp(34), dp(4)); text = a.getString(when (mode) { Mode.GRID -> R.string.pk_grid_hint; Mode.CHOOSE -> if (pick != null) R.string.folder_choose_hint else R.string.pk_choose_hint; else -> R.string.pk_target_hint }) }
+        val linkOnly = only == "link"                                    // "+ Add > Add a link": the QR is the page; a search box and the grid's hint said nothing there
+        if (linkOnly) { search.visibility = View.GONE; note.visibility = View.GONE }
         val chosen = LinkedHashSet<String>()                             // CHOOSE: the apps ticked now (not saved until Done)
         var allKeys = emptyList<String>()
         val doneBtn = TvUi.button(a, "", {}); val allBtn = TvUi.button(a, "", {})
@@ -285,7 +287,7 @@ object Picker {
                         background = GradientDrawable().apply { cornerRadius = dp(18).toFloat(); setColor(TvGlass.ROW_FILL); setStroke(dp(1), TvGlass.ROW_EDGE) }
                         if (s != null) addView(ImageView(a).apply {      // drawn without smoothing: a blurred edge scans worse
                             setImageDrawable(android.graphics.drawable.BitmapDrawable(a.resources, dev.tvremote.core.web.Qr.bitmap(s.url + ManageServer.PASTE_HASH, 8)).apply { isFilterBitmap = false })
-                        }, LinearLayout.LayoutParams(dp(150), dp(150)))
+                        }, LinearLayout.LayoutParams(dp(if (linkOnly) 260 else 150), dp(if (linkOnly) 260 else 150)))   // alone on its page: big enough to scan from the sofa
                         addView(words, LinearLayout.LayoutParams(0, -2, 1f).apply { if (s != null) leftMargin = dp(22) })
                     }
                     mine = object : ManageServer.Listener {
@@ -338,7 +340,7 @@ object Picker {
                 search.isFocusable = true
                 val inOrder = (0 until list.childCount).mapNotNull { (list.getChildAt(it) as? LinearLayout)?.getChildAt(0) as? PickTile }.firstOrNull { it.isFocusable }   // the first on the screen, not a map's first
                 val first = (if (mode == Mode.TARGET) tiles[now]?.takeIf { it.isFocusable && it.parent != null } else null) ?: inOrder
-                (first ?: search).requestFocus()
+                (first ?: search.takeIf { !linkOnly })?.requestFocus()
             }
             // the rest made here too, then put on in one go: made on the main thread a frame later, TV360's 159 channels held it ~1.5 s
             for (it in got.drop(cols * 3)) { if (!dialog.isShowing) break; tileFor(it) }
