@@ -1310,7 +1310,7 @@ class HomeActivity : Activity() {
         val scroll = ScrollView(this).apply { addView(body); clipChildren = false; clipToPadding = false; isVerticalScrollBarEnabled = false }
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL; setPadding(dp(32), dp(24), dp(32), dp(20)); clipChildren = false
-            background = TvUi.round(TvUi.SHEET_FILL, dp(24).toFloat(), 1, TvUi.SHEET_EDGE)
+            background = TvUi.round(TvUi.SHEET_FILL, dp(TvUi.R_SHEET.toInt()).toFloat(), 1, TvUi.SHEET_EDGE)
             addView(title); addView(scroll, LinearLayout.LayoutParams(-2, -2))
         }
         fun build(mem: List<App>, focusPkg: String?, focusAt: Int) {
