@@ -1281,6 +1281,19 @@ class HomeActivity : Activity() {
         open = TvGlass.menu(this, R.style.Menu, getString(R.string.folder_put), items, checkIcon = R.drawable.ic_check, font = glassFont)
     }
 
+    /** "+ Add" → New folder: its name, then its apps ticked in the picker; one write makes it (it takes the first app's place). */
+    private fun newFolder() = nameDialog(R.string.folder_name, getString(R.string.folder_default)) { n ->
+        val name = n.ifEmpty { getString(R.string.folder_default) }
+        ui.post { open = Picker.show(this, Picker.Mode.CHOOSE, name, pick = { chosen ->
+            val id = Folders.newId(conf); var c = JSONObject(conf.toString()); var change: JSONObject? = null
+            for ((i, p) in chosen.withIndex()) {                       // create with the first, add the rest, each on the settings the last one left
+                val step = (if (i == 0) Folders.create(c, id, name, p) else Folders.add(c, id, p)) ?: continue
+                for (k in step.keys()) c.put(k, step.get(k)); change = step
+            }
+            folderDo(change)
+        }, max = HomeConfig.FOLDER_APPS_MAX) }
+    }
+
     /** A name asked for with the TV's keyboard (a new folder, a rename); an empty one is passed on as "" (the caller picks the default). */
     private fun nameDialog(title: Int, initial: String, done: (String) -> Unit) {
         val box = dev.tvremote.tvui.TvField(this).apply {
@@ -2397,6 +2410,7 @@ class HomeActivity : Activity() {
         fun top(at: Int) {
             val rows = ArrayList<TvGlass.Item>()
             rows.add(TvGlass.Item(R.drawable.ic_apps, getString(R.string.add_choose), getString(R.string.add_choose_hint, hidden.count { h -> apps.any { it.pkg == h } }), false, false) { open?.dismiss(); open = Picker.show(this, Picker.Mode.CHOOSE, getString(R.string.pk_choose_title)) })
+            if (Folders.canCreate(conf)) rows.add(TvGlass.Item(R.drawable.ic_folder_plus, getString(R.string.folder_new), getString(R.string.folder_new_hint), false, false) { open?.dismiss(); newFolder() })
             if (Pins.can(this)) rows.add(TvGlass.Item(R.drawable.ic_link, getString(R.string.add_link), getString(R.string.add_link_hint), false, false) {   // any link: the QR to the paste page (a page, an app's deep link, YouTube)
                 open?.dismiss(); open = Picker.show(this, Picker.Mode.GRID, getString(R.string.add_link), only = "link", paste = true)
             })

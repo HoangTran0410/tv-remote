@@ -741,6 +741,8 @@
   "folder_put": "Cho vào thư mục",
   "folder_other": "Chuyển sang thư mục khác",
   "folder_new": "Thư mục mới",
+  "folder_new_hint": "Gom nhiều app vào một ô",
+  "folder_choose_hint": "Đánh dấu các app muốn cho vào, rồi bấm Xong.",
   "folder_name": "Tên thư mục",
   "folder_out": "Đưa ra khỏi thư mục",
   "folder_earlier": "Lên trước trong thư mục",

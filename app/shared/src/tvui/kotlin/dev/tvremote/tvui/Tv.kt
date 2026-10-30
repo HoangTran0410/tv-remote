@@ -140,6 +140,7 @@ object TvUi {
     /** A button that does something: a verb, bold, on a card with the ring. Not for a choice (that is [pill]). */
     fun button(c: Context, label: CharSequence, go: () -> Unit) = text(c, label, SP_BUTTON, bold = true).apply {
         setPadding(dp(c, 24).toInt(), dp(c, 10).toInt(), dp(c, 24).toInt(), dp(c, 10).toInt()); isFocusable = true; isClickable = true
+        gravity = Gravity.CENTER                                      // a caller that sets the height (the picker's 46 dp Done) left the words at the top
         background = states(c, CARD, dp(c, R_BUTTON))
         setOnClickListener { go() }
     }

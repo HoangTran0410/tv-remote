@@ -126,8 +126,9 @@ object Picker {
 
     private fun fold(t: String) = java.text.Normalizer.normalize(t, java.text.Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").replace('đ', 'd').replace('Đ', 'D').lowercase()
 
+    /** [pick]: CHOOSE for a new folder: nothing ticked at first, at most [max], Done hands the apps over instead of changing the grid. */
     /** [only]: an app's ([Links.Item.group]) channels alone, from "+ Add"'s "Pin a VTVgo channel". [paste]: a card on top with a QR to TV Home's own page, where a link is pasted from a phone ([ManageServer.PASTE_HASH]). */
-    fun show(a: Activity, mode: Mode, title: String, now: String = "", only: String? = null, paste: Boolean = false, actions: Boolean = false, onPick: (String) -> Unit = {}): Dialog {
+    fun show(a: Activity, mode: Mode, title: String, now: String = "", only: String? = null, paste: Boolean = false, actions: Boolean = false, pick: ((List<String>) -> Unit)? = null, max: Int = Int.MAX_VALUE, onPick: (String) -> Unit = {}): Dialog {
         val d = a.resources.displayMetrics.density
         fun dp(v: Number) = (v.toFloat() * d).toInt()
         val dm = a.resources.displayMetrics
@@ -148,7 +149,7 @@ object Picker {
             addView(Font.on(TextView(a)).apply { text = title; textSize = 26f; setTextColor(Color.WHITE); typeface = Font.bold; maxLines = 1 }, LinearLayout.LayoutParams(0, -2, 1f))
             addView(search, LinearLayout.LayoutParams(dp(300), dp(46)))
         }
-        val note = Font.on(TextView(a)).apply { textSize = 13f; setTextColor(PK_DIM); setPadding(dp(34), 0, dp(34), dp(4)); text = a.getString(when (mode) { Mode.GRID -> R.string.pk_grid_hint; Mode.CHOOSE -> R.string.pk_choose_hint; else -> R.string.pk_target_hint }) }
+        val note = Font.on(TextView(a)).apply { textSize = 13f; setTextColor(PK_DIM); setPadding(dp(34), 0, dp(34), dp(4)); text = a.getString(when (mode) { Mode.GRID -> R.string.pk_grid_hint; Mode.CHOOSE -> if (pick != null) R.string.folder_choose_hint else R.string.pk_choose_hint; else -> R.string.pk_target_hint }) }
         val chosen = LinkedHashSet<String>()                             // CHOOSE: the apps ticked now (not saved until Done)
         var allKeys = emptyList<String>()
         val doneBtn = TvUi.button(a, "", {}); val allBtn = TvUi.button(a, "", {})
@@ -158,7 +159,7 @@ object Picker {
         }
         val bar = LinearLayout(a).apply {                                 // buttons that look like buttons, above the tiles
             orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(dp(34), dp(4), dp(34), dp(8))
-            if (mode == Mode.CHOOSE) { addView(doneBtn, LinearLayout.LayoutParams(-2, dp(46))); addView(allBtn, LinearLayout.LayoutParams(-2, dp(46)).apply { leftMargin = dp(14) }) }
+            if (mode == Mode.CHOOSE) { addView(doneBtn, LinearLayout.LayoutParams(-2, dp(46))); if (pick == null) addView(allBtn, LinearLayout.LayoutParams(-2, dp(46)).apply { leftMargin = dp(14) }) }
             else visibility = View.GONE
         }
         val panel = LinearLayout(a).apply {
@@ -189,7 +190,7 @@ object Picker {
         }
         fun press(it: Item) {
             if (mode == Mode.TARGET) { dialog.dismiss(); onPick(it.key); return }
-            if (mode == Mode.CHOOSE) { if (!chosen.remove(it.key)) chosen.add(it.key); tiles[it.key]?.mark(it.key in chosen); labels(); return }
+            if (mode == Mode.CHOOSE) { if (!chosen.remove(it.key)) { if (chosen.size >= max) return; chosen.add(it.key) }; tiles[it.key]?.mark(it.key in chosen); labels(); return }
             val link = it.link
             if (link != null && it.key !in pinnedNow) {                // another app's channel: TV Home's own pin of its link, the logo as its picture
                 bg.execute {
@@ -311,7 +312,7 @@ object Picker {
             if (mode == Mode.TARGET) got.add(Item("", a.getString(R.string.pk_none), null, "", 0))
             if (mode == Mode.TARGET && actions) got.add(Item(Target.CONTROL, a.getString(R.string.cc_title), null, a.getString(R.string.pk_over_apps), 0, R.drawable.ic_settings))   // a key's action: the Control Center over any app
             for (p in apps) got.add(Item(p.pkg, p.label, p, if (p.pkg in hidden && mode == Mode.GRID) a.getString(R.string.pk_hidden) else "", 0))
-            if (mode == Mode.CHOOSE) { allKeys = apps.map { it.pkg }; chosen.clear(); chosen.addAll(apps.map { it.pkg }.filter { it !in hidden }); a.runOnUiThread { labels() } }
+            if (mode == Mode.CHOOSE) { allKeys = apps.map { it.pkg }; chosen.clear(); if (pick == null) chosen.addAll(apps.map { it.pkg }.filter { it !in hidden }); a.runOnUiThread { labels() } }
             else {
             Pins.refresh(a, apps)
             val avail = try { JSONArray(a.getSharedPreferences("pins", Context.MODE_PRIVATE).getString("avail", "[]")) } catch (e: Exception) { JSONArray() }
@@ -348,7 +349,8 @@ object Picker {
         }
         if (mode == Mode.CHOOSE) {
             allBtn.setOnClickListener { if (chosen.containsAll(allKeys)) chosen.clear() else chosen.addAll(allKeys); allKeys.forEach { k -> tiles[k]?.mark(k in chosen) }; labels() }
-            doneBtn.setOnClickListener {                                  // what is not ticked leaves the grid (hidden: in + Add, nothing lost); a ticked favourite keeps its dock place
+            if (pick != null) doneBtn.setOnClickListener { dialog.dismiss(); if (chosen.isNotEmpty()) pick(chosen.toList()) }
+            else doneBtn.setOnClickListener {                             // what is not ticked leaves the grid (hidden: in + Add, nothing lost); a ticked favourite keeps its dock place
                 val off = allKeys.filter { it !in chosen }
                 val dock = Store.list(a, "dock").filter { it in chosen || it !in allKeys }
                 Store.change(a, JSONObject().put("hidden", JSONArray(off)).put("dock", JSONArray(dock)))

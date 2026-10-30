@@ -741,6 +741,8 @@
   "folder_put": "Put in a folder",
   "folder_other": "Move to another folder",
   "folder_new": "New folder",
+  "folder_new_hint": "Group apps under one tile",
+  "folder_choose_hint": "Tick the apps to put in it, then Done.",
   "folder_name": "Folder name",
   "folder_out": "Take out of the folder",
   "folder_earlier": "Earlier in the folder",
