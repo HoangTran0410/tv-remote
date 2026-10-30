@@ -28,11 +28,11 @@ class TargetTest {
 
     /** An older config holds plain package names in keyapps / autoapp; they read as apps, unchanged. */
     @Test fun oldConfigsStillWork() {
-        val c = HomeConfig.clean(JSONObject().put("keyon", true).put("autoapp", "com.netflix.ninja")
+        val c = HomeConfig.clean(JSONObject().put("keyon", true).put("autoon", true).put("autoapp", "com.netflix.ninja")
             .put("keyapps", JSONObject().put("183", "com.netflix.ninja").put("184", "pin:dev.tvremote.channels/keep").put("185", "tile:dev.tvremote.setup/ram").put("186", "pin:bad")))
         assertEquals("com.netflix.ninja", c.getString("autoapp"))
         assertEquals(mapOf(183 to "com.netflix.ninja", 184 to "pin:dev.tvremote.channels/keep", 185 to "tile:dev.tvremote.setup/ram"), HomeConfig.keyApps(c.getJSONObject("keyapps")))
-        assertEquals("pin:dev.tvremote.games/library", HomeConfig.clean(JSONObject().put("autoapp", "pin:dev.tvremote.games/library")).getString("autoapp"))
+        assertEquals("pin:dev.tvremote.games/library", HomeConfig.clean(JSONObject().put("autoon", true).put("autoapp", "pin:dev.tvremote.games/library")).getString("autoapp"))
     }
 
     @Test fun gridHoldsShortcutsAndTiles() {
