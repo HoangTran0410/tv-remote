@@ -1,8 +1,8 @@
 package dev.tvremote.home.widgets
 
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.LinearLayout.HORIZONTAL
 import android.widget.LinearLayout.LayoutParams
@@ -18,10 +18,9 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
 
-private const val NEXT_VEIL = 0x33FFFFFF                  // the pill under the next prayer on the glass
 
 /** Today's prayers at the weather's place, the next one, and the Hijri date: worked out here ([Prayer]), once a minute with the other widgets, no network. */
-class PrayerDay(val t: Prayer.Times, val next: Prayer.Next?, val hijri: Prayer.Hijri)
+class PrayerDay(val t: Prayer.Times, val tomorrow: Prayer.Times, val next: Prayer.Next?, val hijri: Prayer.Hijri)
 
 /** The facts of the prayer widget, or null while the weather has not found the place yet (the widget says so). */
 internal fun Widgets.prayerFacts(): PrayerDay? {
@@ -35,10 +34,10 @@ internal fun Widgets.prayerFacts(): PrayerDay? {
         return Prayer.times(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DAY_OF_MONTH), place.lat, place.lon, tz, method, hanafi)
     }
     val today = day(now)
-    val tomorrow = (now.clone() as Calendar).also { it.add(Calendar.DAY_OF_MONTH, 1) }
+    val next = day((now.clone() as Calendar).also { it.add(Calendar.DAY_OF_MONTH, 1) })
     val hours = now.get(Calendar.HOUR_OF_DAY) + now.get(Calendar.MINUTE) / 60.0
     val adjust = when (opt("prayer", "hijri")) { "hijri_m1" -> -1; "hijri_p1" -> 1; else -> 0 }
-    return PrayerDay(today, Prayer.next(today, day(tomorrow), hours), Prayer.hijri(now.get(Calendar.DAY_OF_MONTH), now.get(Calendar.MONTH) + 1, now.get(Calendar.YEAR), adjust))
+    return PrayerDay(today, next, Prayer.next(today, next, hours), Prayer.hijri(now.get(Calendar.DAY_OF_MONTH), now.get(Calendar.MONTH) + 1, now.get(Calendar.YEAR), adjust))
 }
 
 private fun Widgets.prayerName(i: Int) = a.resources.getStringArray(R.array.p_names)[i]
@@ -74,37 +73,45 @@ internal fun Widgets.prayerGlass(widget: LinearLayout, f: Facts, full: Boolean) 
 }
 
 /**
- * The full size, both looks: the next prayer and the time left on top, the six times in two columns (the next one on a pale pill),
- * the Hijri date under them. [tonal]: the dark ink on the warm card, else white on the glass.
+ * The full size, both looks, laid out as the weather beside it: the Hijri date as the title, the next prayer's time big with its
+ * name and the time left, and the three after it in columns (the six times in a grid with two lines of words read as a wall of
+ * numbers). [tonal]: the dark ink on the warm card, else white on the glass.
  */
 private fun Widgets.prayerList(widget: LinearLayout, p: PrayerDay, tonal: Boolean) {
     val main = if (tonal) Tonal.INK else Color.WHITE; val sub = if (tonal) Tonal.SUB else DIM
     fun label(t: String, size: Float, color: Int): TextView = if (tonal) ink(t, size, color) else text(t, size, color)
+    fun night(i: Int) = i == 0 || i >= 4                                  // Fajr before the sun, Maghrib and Isha after it: the moon
     val n = p.next
-    widget.addView(label(if (n == null) a.getString(R.string.w_prayer) else a.getString(R.string.p_next, prayerName(n.index)) + " · " + left(n), 14f, sub), LayoutParams(-1, -2))
-    val grid = LinearLayout(a).apply { orientation = VERTICAL }
-    val times = p.t.all(); val h24 = clock24()
-    for (r in 0 until 3) {
-        val line = LinearLayout(a).apply { orientation = HORIZONTAL }
-        for (c in 0 until 2) {
-            val i = r * 2 + c
-            val hot = n != null && n.index == i
-            val cell = LinearLayout(a).apply {
-                orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(dp(8), 0, dp(8), 0)
-                if (hot) background = GradientDrawable().apply { setColor(if (tonal) Tonal.PALE else NEXT_VEIL); cornerRadius = dp(10).toFloat() }
-            }
-            val name = label(prayerName(i), 14f, if (hot) main else sub).apply { if (hot) typeface = Font.medium }
-            // a long name shrinks to its column before it is cut ("Mặt trời mọc" came out as "Mặt tr…" beside its time), down to 10 sp
-            name.addOnLayoutChangeListener { v, l, _, r, _, _, _, _, _ ->
-                val t = v as TextView; val room = r - l - t.paddingLeft - t.paddingRight; val sd = a.resources.displayMetrics.scaledDensity
-                if (room > 0 && t.paint.measureText(t.text.toString()) > room && t.textSize > 10 * sd) t.post { t.textSize = t.textSize / sd - 1 }
-            }
-            cell.addView(name, LayoutParams(0, -2, 1f).apply { rightMargin = dp(6) })
-            cell.addView(label(Prayer.clock(times[i], h24), 15f, main).apply { typeface = Font.medium }, LayoutParams(-2, -2))
-            line.addView(cell, LayoutParams(0, -1, 1f).apply { if (c > 0) leftMargin = dp(8) })
+    widget.addView(head(hijriText(p.hijri), "").also { h -> if (tonal) (h.getChildAt(0) as TextView).run { setTextColor(sub); setShadowLayer(0f, 0f, 0f, 0) } })
+    val h24 = clock24()
+    val now = LinearLayout(a).apply { orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+    val sky = Sky(a, Weather.Kind.CLEAR, n == null || night(n.index))
+    now.addView(sky, LayoutParams(dp(44), dp(44)))
+    now.addView(label(if (n == null) "—" else Prayer.clock((if (n.tomorrow) p.tomorrow else p.t).all()[n.index], h24), 30f, main).apply { typeface = Font.medium }, LayoutParams(-2, -2).apply { leftMargin = dp(10) })
+    val words = LinearLayout(a).apply { orientation = VERTICAL }
+    words.addView(label(if (n == null) a.getString(R.string.w_prayer) else prayerName(n.index), 13f, main))
+    if (n != null) words.addView(label(left(n), 12f, sub).apply {
+        // "còn 4 giờ 53 p…" in a narrow widget: the moon gives its room to the words
+        addOnLayoutChangeListener { v, _, _, _, _, _, _, _, _ -> if (sky.visibility == View.VISIBLE && ((v as TextView).layout?.getEllipsisCount(0) ?: 0) > 0) v.post { sky.visibility = View.GONE } }
+    })
+    now.addView(words, LayoutParams(0, -2, 1f).apply { leftMargin = dp(10) })
+    val body = LinearLayout(a).apply { orientation = VERTICAL; gravity = Gravity.CENTER_VERTICAL }
+    body.addView(now, LayoutParams(-1, -2))
+    if (n != null) {
+        // the three after the next one, in the day's order (the sunrise too), into tomorrow past the Isha
+        val after = LinearLayout(a).apply { orientation = HORIZONTAL }
+        var i = n.index; var day = if (n.tomorrow) 1 else 0; var shown = 0
+        while (shown < 3 && day < 3) {
+            i++; if (i == 6) { i = 0; day++ }
+            val t = (if (day == 0) p.t else p.tomorrow).all()[i]; if (t.isNaN()) continue
+            val col = LinearLayout(a).apply { orientation = VERTICAL; gravity = Gravity.CENTER_HORIZONTAL }
+            col.addView(label(prayerName(i), 12f, sub).apply { gravity = Gravity.CENTER })
+            col.addView(Sky(a, Weather.Kind.CLEAR, night(i)), LayoutParams(dp(22), dp(22)).apply { topMargin = dp(2) })
+            col.addView(label(Prayer.clock(t, h24), 13f, main).apply { gravity = Gravity.CENTER })
+            after.addView(col, LayoutParams(0, -2, 1f))
+            shown++
         }
-        grid.addView(line, LayoutParams(-1, 0, 1f))
+        body.addView(after, LayoutParams(-1, -2).apply { topMargin = dp(8) })
     }
-    widget.addView(grid, LayoutParams(-1, 0, 1f).apply { topMargin = dp(4); bottomMargin = dp(2) })
-    widget.addView(label(hijriText(p.hijri), 13f, sub), LayoutParams(-1, -2))
+    widget.addView(body, LayoutParams(-1, 0, 1f).apply { topMargin = dp(6) })
 }

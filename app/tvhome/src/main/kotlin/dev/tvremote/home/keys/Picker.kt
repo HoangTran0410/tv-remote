@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -50,6 +51,7 @@ internal fun solidPage(w: android.view.Window) {
     w.setLayout(-1, -1); w.setGravity(Gravity.CENTER); w.setWindowAnimations(0)
 }
 internal const val PK_EMPTY = 0xFF232838.toInt()                     // a quick key with nothing on it
+private const val PK_BAD = 0xFFFF8A80.toInt()                         // a link that could not be pinned
 private const val PK_OK = 0xFF7BE0A1.toInt()                          // "connected", "pinned" under the QR card
 private const val PK_CHECK = 0xFF2F7DF6.toInt()
 private const val PK_TAG = 0xCC101420.toInt()
@@ -151,7 +153,27 @@ object Picker {
         }
         val note = Font.on(TextView(a)).apply { textSize = 13f; setTextColor(PK_DIM); setPadding(dp(34), 0, dp(34), dp(4)); text = a.getString(when (mode) { Mode.GRID -> R.string.pk_grid_hint; Mode.CHOOSE -> if (pick != null) R.string.folder_choose_hint else R.string.pk_choose_hint; else -> R.string.pk_target_hint }) }
         val linkOnly = only == "link"                                    // "+ Add > Add a link": the QR is the page; a search box and the grid's hint said nothing there
-        if (linkOnly) { search.visibility = View.GONE; note.visibility = View.GONE }
+        if (linkOnly) { search.visibility = View.GONE; note.visibility = View.INVISIBLE }   // the note keeps its room for the link's answer: the page jumped when it came
+        // a link typed here, or pasted: the TV's keyboard, or a phone's (the TV Remote app types into the field in focus); same pin as the phone's page
+        val linkBox = TvUi.field(a, a.getString(R.string.link_type_hint), 16f, EditorInfo.IME_ACTION_DONE, TvUi.FIELD_REST, TvUi.R_BUTTON, 18, 10, R.drawable.ic_link)
+        fun pinTyped() {
+            val raw = linkBox.text.toString().trim(); if (raw.isEmpty()) { linkBox.raise(); return }
+            val url = if (Regex("^[a-zA-Z][a-zA-Z0-9+.-]*:").containsMatchIn(raw)) raw else "https://$raw"   // "youtube.com/watch?v=…" typed without its scheme
+            if (!url.contains(':') || (url.startsWith("http", true) && Uri.parse(url).host?.contains('.') != true)) {   // "abc" became https://abc and was pinned
+                note.visibility = View.VISIBLE; note.setTextColor(PK_BAD); note.text = a.getString(R.string.pq_web_bad); return
+            }
+            note.visibility = View.VISIBLE; note.setTextColor(PK_SOFT); note.text = a.getString(R.string.pk_loading)
+            bg.execute {
+                val code = dev.tvremote.home.manage.HomeApi.pin(a, JSONObject().put("url", url))
+                a.runOnUiThread {
+                    if (!dialog.isShowing) return@runOnUiThread
+                    note.setTextColor(if (code == "ok") PK_OK else PK_BAD)
+                    note.text = a.getString(when (code) { "ok" -> R.string.link_added; dev.tvremote.home.apps.YouTube.NO_LINK -> R.string.pq_web_bad; dev.tvremote.home.apps.YouTube.NO_APP -> R.string.link_no_app; else -> R.string.watch_pin_fail })
+                    if (code == "ok") { linkBox.setText(""); (a as? HomeActivity)?.let { h -> h.window.decorView.postDelayed({ if (!h.isDestroyed) h.pinsRead() }, 600) } }
+                }
+            }
+        }
+        linkBox.done = { if (linkBox.text.isNotBlank()) pinTyped() }
         val chosen = LinkedHashSet<String>()                             // CHOOSE: the apps ticked now (not saved until Done)
         var allKeys = emptyList<String>()
         val doneBtn = TvUi.button(a, "", {}); val allBtn = TvUi.button(a, "", {})
@@ -162,6 +184,7 @@ object Picker {
         val bar = LinearLayout(a).apply {                                 // buttons that look like buttons, above the tiles
             orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(dp(34), dp(4), dp(34), dp(8))
             if (mode == Mode.CHOOSE) { addView(doneBtn, LinearLayout.LayoutParams(-2, dp(46))); if (pick == null) addView(allBtn, LinearLayout.LayoutParams(-2, dp(46)).apply { leftMargin = dp(14) }) }
+            else if (linkOnly) { addView(linkBox, LinearLayout.LayoutParams(0, dp(46), 1f)); addView(TvUi.button(a, a.getString(R.string.link_add)) { pinTyped() }, LinearLayout.LayoutParams(-2, dp(46)).apply { leftMargin = dp(14) }) }
             else visibility = View.GONE
         }
         val panel = LinearLayout(a).apply {
@@ -340,7 +363,7 @@ object Picker {
                 search.isFocusable = true
                 val inOrder = (0 until list.childCount).mapNotNull { (list.getChildAt(it) as? LinearLayout)?.getChildAt(0) as? PickTile }.firstOrNull { it.isFocusable }   // the first on the screen, not a map's first
                 val first = (if (mode == Mode.TARGET) tiles[now]?.takeIf { it.isFocusable && it.parent != null } else null) ?: inOrder
-                (first ?: search.takeIf { !linkOnly })?.requestFocus()
+                (first ?: if (linkOnly) linkBox else search).requestFocus()
             }
             // the rest made here too, then put on in one go: made on the main thread a frame later, TV360's 159 channels held it ~1.5 s
             for (it in got.drop(cols * 3)) { if (!dialog.isShowing) break; tileFor(it) }

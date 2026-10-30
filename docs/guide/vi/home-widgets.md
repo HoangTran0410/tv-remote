@@ -9,7 +9,7 @@ TV Home có thêm hai widget lấy số liệu thẳng từ nguồn, không qua 
 | Thời tiết | Bấm OK: bản đồ Windy toàn màn hình tại thành phố của bạn (mưa, gió, nhiệt độ, vệ tinh, PM2.5), mỗi lớp một nút, **Xem diễn biến** chạy dự báo; Back để đóng |
 | Mở gần đây | 4-6 app vừa mở; Trái / Phải chọn, OK mở |
 | Chặn quảng cáo | OK bật / tắt DNS chặn quảng cáo (AdGuard…). Không chặn quảng cáo trong video YouTube. DNS không chạy thì ~10 giây sau tự trả về |
-| Giờ cầu nguyện | 5 buổi và giờ mặt trời mọc hôm nay tại nơi widget Thời tiết dùng, buổi sắp tới kèm đếm ngược, ngày Hijri. Tính ngay trên TV, không cần mạng. Chọn cách tính, giờ Asr, chỉnh ngày Hijri ±1 |
+| Giờ cầu nguyện | Buổi sắp tới kèm đếm ngược, 3 buổi kế tiếp, ngày Hijri. Theo nơi của widget Thời tiết. Tính ngay trên TV, không cần mạng. Chọn cách tính, giờ Asr, chỉnh ngày Hijri ±1 |
 
 ### Cài đặt từng widget
 
