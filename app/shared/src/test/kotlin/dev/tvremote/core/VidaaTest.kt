@@ -134,6 +134,15 @@ class VidaaTest {
         assertEquals("his$6239759786369374312" to "E4B16BE39DA56468522CACF7411FB50F", Vidaa.credentials(mac, 1700000000, "modern"))
         assertEquals("his$6239759786369374312" to "30CC23251954D2B965504DC81E944805", Vidaa.credentials(mac, 1700000000, "middle"))
         assertEquals("his$1700000000" to "30CC23251954D2B965504DC81E944805", Vidaa.credentials(mac, 1700000000, "remotenow"))
+
+        // Lowercase MAC address preserves caller case in clientId (hisense_vidaa test_crypto.py)
+        assertEquals("9f:b3:a4:e0:4a:d7\$his\$EB5B6E_vidaacommon_001", Vidaa.clientId("9f:b3:a4:e0:4a:d7"))
+
+        // Multi-timestamp credential derivation across auth profiles
+        val realMac = "E8:51:77:EC:98:1C"
+        assertEquals("his$6239759786156310126" to "D179F19057C34BAD44B3CD8C69C47A0F", Vidaa.credentials(realMac, 1788778246, "modern"))
+        assertEquals("his$6239759786156310126" to "BCCE07C3F0E29F81D15A0C10354CA1C7", Vidaa.credentials(realMac, 1788778246, "middle"))
+        assertEquals("his$1788778246" to "BCCE07C3F0E29F81D15A0C10354CA1C7", Vidaa.credentials(realMac, 1788778246, "remotenow"))
     }
 
     @Test fun pairsWithTheCodeThenLogsInWithTheTokenAndControlsTheTv() {
@@ -310,5 +319,67 @@ class VidaaTest {
         assertEquals(listOf(36669), Remote.Kind.ports(Remote.Kind.VIDAA))
         assertEquals("Hisense VIDAA", Remote.Kind.name(Remote.Kind.VIDAA))
         assertTrue(Remote.of(Remote.Kind.VIDAA, dir, "127.0.0.1") is Vidaa)
+    }
+
+    @Test fun aTvWithOnlyModelNameUsesItWhenNameFieldsAreMissing() {
+        deviceInfo = """{"model_name":"58A53FXVT","brand":"Hisense","wifi_mac":"e8-51-77-ec-98-1c"}"""
+        legacy = true
+        val v = Vidaa(dir, "127.0.0.1", start())
+        v.connect {}
+        waitFor { v.model.isNotEmpty() && v.mac.isNotEmpty() }
+        assertEquals("58A53FXVT", v.model)
+        assertEquals("E8:51:77:EC:98:1C", v.mac)
+        assertEquals("Hisense", v.vendor)
+        v.close()
+    }
+
+    @Test fun aTvDeviceNameWithWhitespaceIsTrimmed() {
+        deviceInfo = """{"device_name":"  Bedroom TV  ","model_name":"58A53FXVT","wifi_mac":"e8-51-77-ec-98-1c"}"""
+        legacy = true
+        val v = Vidaa(dir, "127.0.0.1", start())
+        v.connect {}
+        waitFor { v.model.isNotEmpty() }
+        assertEquals("Bedroom TV", v.model)
+        v.close()
+    }
+
+    @Test fun remoteKeysMapStandardNumericAndNavigationButtons() {
+        assertEquals("KEY_UP", Vidaa.KEYS[19])
+        assertEquals("KEY_DOWN", Vidaa.KEYS[20])
+        assertEquals("KEY_LEFT", Vidaa.KEYS[21])
+        assertEquals("KEY_RIGHT", Vidaa.KEYS[22])
+        assertEquals("KEY_OK", Vidaa.KEYS[23])
+        assertEquals("KEY_OK", Vidaa.KEYS[66])
+        assertEquals("KEY_RETURNS", Vidaa.KEYS[4])
+        assertEquals("KEY_HOME", Vidaa.KEYS[3])
+        assertEquals("KEY_MENU", Vidaa.KEYS[82])
+        assertEquals("KEY_POWER", Vidaa.KEYS[26])
+
+        for (i in 0..9) {
+            assertEquals("KEY_$i", Vidaa.KEYS[7 + i])
+        }
+
+        assertEquals("KEY_NETFLIX", Vidaa.KEYS[191])
+        assertEquals("KEY_YOUTUBE", Vidaa.KEYS[190])
+        assertEquals("KEY_PRIME", Vidaa.KEYS[195])
+    }
+
+    @Test fun subscribesToEssentialUiAndPlatformTopics() {
+        val mine = Vidaa.MINE
+        assertTrue(mine.contains("ui_service/data/authentication"))
+        assertTrue(mine.contains("ui_service/data/authenticationcode"))
+        assertTrue(mine.contains("ui_service/data/applist"))
+        assertTrue(mine.contains("ui_service/data/sourcelist"))
+        assertTrue(mine.contains("platform_service/data/getdeviceinfo"))
+        assertTrue(mine.contains("platform_service/data/gettvinfo"))
+        assertTrue(mine.contains("platform_service/data/tokenissuance"))
+    }
+
+    @Test fun connectPopulatesModelBeforeReturning() {
+        legacy = true
+        val v = Vidaa(dir, "127.0.0.1", start())
+        v.connect {}
+        assertEquals("Living room", v.model)
+        v.close()
     }
 }

@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Phone and Computer apps, VIDAA: a TV added by its address keeps its name in Saved TVs (the name is asked for before the link is ready); more VIDAA tests from the hisense_vidaa project (thanks @stevene1919, #11).
 - Hisense (VIDAA): "Screen off" works without ADB (the backlight goes off, the sound plays; any key brings the picture back).
 - Watch: when the picture stays all black while nothing plays, the page offers the software encoder (some boxes' hardware encoders send black frames, a ZTE B860H).
 - Hisense (VIDAA): the TV's MAC is now learned from `eth0` / `wlan0` and from plain 12-digit values (VIDAA U6.1 TVs such as the 58A53FXVT), both interfaces are kept and woken with Wake-on-LAN; apps launch by name whatever the punctuation or case ("Stan.", "Spotify : Music & Podcasts").

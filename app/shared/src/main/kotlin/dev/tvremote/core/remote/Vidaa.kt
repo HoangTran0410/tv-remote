@@ -130,7 +130,11 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
         m.subscribe(BROADCAST + "ui_service/state", BROADCAST + "platform_service/actions/volumechange", BROADCAST + "ui_service/volume",
             BROADCAST + "platform_service/actions/tvsleep")
         for (a in listOf("gettvstate", "sourcelist", "applist")) m.publish(ui(a))
-        for (a in listOf("getvolume", "getdeviceinfo", "gettvinfo")) m.publish(platform(a))
+        m.publish(platform("getvolume"))
+        // the name before connect() returns: the phone saves it with the TV right after (#8: a TV added by address kept no name)
+        expect(1500, { it.endsWith("/platform_service/data/getdeviceinfo") || it.endsWith("/platform_service/data/gettvinfo") }) {
+            for (a in listOf("getdeviceinfo", "gettvinfo")) m.publish(platform(a))
+        }
     }
 
     /** A logged-in MQTT link (our own topics subscribed), over the TLS the TV takes: with the certificate, without, or plain. */
@@ -300,7 +304,6 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
 
     private fun message(topic: String, payload: ByteArray) {
         val text = String(payload, Charsets.UTF_8)
-        for (w in waits) if (w.first(topic)) w.second.offer(topic to text)
         val o = json(text)
         when {
             topic.endsWith("/ui_service/state") || topic.endsWith("/ui_service/data/gettvstate") || topic.endsWith("/ui_service/data/state") -> o?.let { state(it) }
@@ -310,6 +313,7 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
             topic.endsWith("/ui_service/data/applist") -> apps = list(text, "applist")
             topic.endsWith("/platform_service/data/getdeviceinfo") || topic.endsWith("/platform_service/data/gettvinfo") -> o?.let { device(it) }
         }
+        for (w in waits) if (w.first(topic)) w.second.offer(topic to text)   // after the facts above are set: a wait that returns sees them (the name)
     }
 
     private fun state(o: JSONObject) {
