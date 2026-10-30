@@ -143,6 +143,8 @@ function build() {
     files[lang + '/all.md'] = '# ' + HEAD[lang].title + '\n\n' + all.join('\n') ;
   }
   for (const f of Object.keys(files)) if (!f.endsWith('/all.md')) files[f.replace(/\.md$/, '.html')] = page(files[f], f.slice(0, 2));
+  files['README.md'] = '# Generated: do not edit\n\nEvery file here is written by `node dev/gen/guide_md.js` from `docs/guide.html`, the one source.\n' +
+    'Edit guide.html, then run the script (it wipes this folder first); `app/shared/tests/guide.test.js` fails when these files are stale.\n';
   return files;
 }
 

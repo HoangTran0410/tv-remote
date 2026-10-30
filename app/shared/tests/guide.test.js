@@ -40,7 +40,7 @@ test('docs/guide/*.md match guide.html', () => {
   const { build } = require('../../../dev/gen/guide_md.js');
   const dir = path.join(__dirname, '../../../docs/guide');
   const want = build();
-  const have = fs.readdirSync(dir).flatMap((l) => fs.readdirSync(path.join(dir, l)).map((f) => l + '/' + f));
+  const have = fs.readdirSync(dir, { recursive: true }).filter((f) => fs.statSync(path.join(dir, f)).isFile());
   assert.deepStrictEqual(have.sort(), Object.keys(want).sort(), 'run: node dev/gen/guide_md.js');
   for (const [f, s] of Object.entries(want)) assert.strictEqual(fs.readFileSync(path.join(dir, f), 'utf8'), s, f + ' is stale: run node dev/gen/guide_md.js');
 });
