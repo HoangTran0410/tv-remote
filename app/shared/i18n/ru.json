@@ -239,7 +239,7 @@
  "about.on": "Вкл.",
  "about.link_for_shortcuts": "Ссылка для Shortcuts",
  "common.copy": "📋 Копировать",
- "about.paste_it_into_get": "Вставьте в «Get contents of URL» в Shortcuts. Вместо «key=» можно scene=, app=, volume=, power=, text=.",
+ "about.paste_it_into_get": "Вставьте в «Get contents of URL» в Shortcuts. Вместо «key=» можно scene=, app=, volume=, power=, text=, notify= (карточка).",
  "about.yaml_for_home_assistant": "📋 YAML для Home Assistant",
  "about.new_token": "🔄 Новый токен",
  "about.anyone_with_this_link": "По этой ссылке можно нажимать кнопки телевизора. Новый токен отключает старую ссылку.",

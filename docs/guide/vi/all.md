@@ -1065,6 +1065,7 @@ http://192.168.1.20:8765/api/hook?k=3f9a1c7e5b2d4a60b8c1d9e7f2a4b6c8&key=HOME
 | `app=com.netflix.ninja` | Mở app theo tên gói. |
 | `scene=Xem phim` | Chạy một cảnh. |
 | `text=xin chào` | Gõ chữ. |
+| `notify=Có khách&title=Chuông cửa` | Hiện thẻ tin nhắn trên màn hình TV (title= và seconds= 1 đến 60 là tuỳ chọn). Cần TV Setup. |
 | `volume=20` / `up` / `down` / `mute` | Đặt âm lượng (0 đến 100) hoặc tăng, giảm, tắt tiếng. |
 | `power=on` / `off` / `toggle` | Bật, tắt hay đổi trạng thái. |
 | `/api/hook/state` | Chỉ đọc: TV đang bật không, đang chạy gì. |

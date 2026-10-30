@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Home Assistant / Shortcuts: `/api/hook` has a `notify` action (`notify=Someone at the door&title=Doorbell&seconds=10`) that puts a message card on the TV screen, the same as the page's "Send a message". Needs TV Setup on the TV.
 - TV Home: a remote key (a colour key or a dead Settings / Apps key) can open Quick settings (the Control Center) over any app; pick "Quick settings" in Quick keys or on the page. Needs TV Setup and TV Home; Back closes it and the app beneath keeps running.
 - A Hisense VIDAA TV's Settings key on the remote now reads "Menu" with the menu icon, on the web remote and the Phone app; it already sent the TV's Menu key (#8).
 - TV Setup: a TV whose clock jumps ahead with no network time no longer forgets paired browsers, and never stamps them with the wrong year.

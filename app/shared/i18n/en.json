@@ -248,7 +248,7 @@
  "about.on": "On",
  "about.link_for_shortcuts": "Link for Shortcuts",
  "common.copy": "📋 Copy",
- "about.paste_it_into_get": "Paste it into “Get contents of URL” in Shortcuts. Instead of “key=” you can use scene=, app=, volume=, power=, text=.",
+ "about.paste_it_into_get": "Paste it into “Get contents of URL” in Shortcuts. Instead of “key=” you can use scene=, app=, volume=, power=, text=, notify= (message card).",
  "about.yaml_for_home_assistant": "📋 YAML for Home Assistant",
  "about.new_token": "🔄 New link",
  "about.anyone_with_this_link": "Anyone with this link can press the TV’s keys. A new link replaces the old one.",

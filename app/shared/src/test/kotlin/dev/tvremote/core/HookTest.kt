@@ -79,6 +79,16 @@ class HookTest {
         assertEquals(404, get("/api/hook", "k" to "t0ken", "scene" to "none")!!.status)
     }
 
+    @Test fun notifyBecomesThePagesMessage() {
+        assertEquals(200, get("/api/hook", "k" to "t0ken", "notify" to "Someone at the door", "title" to "Doorbell", "seconds" to "10")!!.status)
+        assertEquals(200, get("/api/hook", "k" to "t0ken", "notify" to "Only text")!!.status)
+        assertEquals("/api/notify", sent[0].first)
+        JSONObject(sent[0].second).let { assertEquals("Someone at the door", it.getString("text")); assertEquals("Doorbell", it.getString("title")); assertEquals("10", it.getString("seconds")) }
+        JSONObject(sent[1].second).let { assertEquals("Only text", it.getString("text")); assertTrue(!it.has("title") && !it.has("seconds")) }
+        assertEquals(400, get("/api/hook", "k" to "t0ken", "title" to "alone")!!.status)       // a title is no action
+        assertEquals(2, sent.size)
+    }
+
     @Test fun stateSaysLittle() {
         val o = JSONObject(String(get("/api/hook/state", "k" to "t0ken")!!.body))
         assertEquals(true, o.getBoolean("on")); assertEquals(7, o.getJSONObject("volume").getInt("level")); assertEquals("com.netflix.ninja", o.getString("app"))
