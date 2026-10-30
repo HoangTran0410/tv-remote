@@ -243,11 +243,11 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
         val usage = if ("usage" in want) ask("usage") else null
         val icons = HashMap<String, Drawable>()
         usage?.let { u -> for (k in listOf("week", "limits")) u.optJSONArray(k)?.let { l -> for (i in 0 until l.length()) l.optJSONObject(i)?.optString("pkg")?.let { p ->
-            if (p !in icons) try { icons[p] = a.packageManager.getApplicationIcon(p) } catch (e: Exception) { }
+            if (p !in icons) try { icons[p] = dev.tvremote.home.apps.shrink(a, a.packageManager.getApplicationIcon(p), 256)!! } catch (e: Exception) { }
         } } }
         val recent = if ("recent" in want) ask("recent") else null          // null: no TV Setup, or one older than this widget
         recent?.optJSONArray("apps")?.let { l -> for (i in 0 until l.length()) l.optString(i).let { p ->
-            if (p.isNotEmpty() && p !in icons) try { icons[p] = a.packageManager.getApplicationIcon(p) } catch (e: Exception) { }
+            if (p.isNotEmpty() && p !in icons) try { icons[p] = dev.tvremote.home.apps.shrink(a, a.packageManager.getApplicationIcon(p), 256)!! } catch (e: Exception) { }
         } }
         val timer = if ("timer" in want) ask("timer") else null
         val moon = if ("lunar" in want) moon(Calendar.getInstance()) else null

@@ -74,7 +74,7 @@ object Pins {
         val d = sharp?.let { android.graphics.drawable.BitmapDrawable(c.resources, it) }
             ?: sys
             ?: try { c.packageManager.getApplicationIcon(s.`package`) } catch (e: Exception) { null }   // the system lost its bitmap ("Icon file not found"): the app's own icon, not the hidden apps' eye
-        if (d != null && wide(d.intrinsicWidth, d.intrinsicHeight) && d.intrinsicWidth > 0) a.banner = badged(c, d, if (s.`package` != c.packageName) s.`package` else if (marked(c, s.id)) null else sourceOf(c, s.id)) else a.icon = if (d != null && sys != null) squareBadged(c, d, badgeApp(c, s)) else d
+        if (d != null && wide(d.intrinsicWidth, d.intrinsicHeight) && d.intrinsicWidth > 0) a.banner = badged(c, d, if (s.`package` != c.packageName) s.`package` else if (marked(c, s.id)) null else sourceOf(c, s.id)) else a.icon = shrink(c, if (d != null && sys != null) squareBadged(c, d, badgeApp(c, s)) else d, 512)
     }
 
     /** The app whose logo a square pin carries: the shortcut's app; for TV Home's own pins (Play Next) the app they came from, none when the picture has it. */

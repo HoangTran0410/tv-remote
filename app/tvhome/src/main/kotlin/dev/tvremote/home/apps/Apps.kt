@@ -31,9 +31,9 @@ class App(val pkg: String, val orig: String, val info: ActivityInfo?, val pin: A
         if (pin != null) { Pins.picture(c, this); return }
         val info = info ?: return
         val pm = c.packageManager
-        banner = sharp(c, info) ?: try { info.loadBanner(pm) ?: info.applicationInfo.loadBanner(pm) } catch (e: Exception) { null }
+        banner = shrink(c, sharp(c, info) ?: try { info.loadBanner(pm) ?: info.applicationInfo.loadBanner(pm) } catch (e: Exception) { null }, BANNER_MAX)
         banner?.let { if (!wide(it.intrinsicWidth, it.intrinsicHeight)) banner = null }   // a square "banner" (Rockchip's Media Center, 64x64) cropped to 16:9 is a blur: the icon and name instead
-        if (banner == null) icon = try { info.loadIcon(pm) } catch (e: Exception) { null }
+        if (banner == null) icon = shrink(c, try { info.loadIcon(pm) } catch (e: Exception) { null }, ICON_MAX)
     }
 }
 
@@ -46,6 +46,22 @@ private fun sharp(c: Context, info: ActivityInfo): Drawable? = try {
     if (id == 0) null else c.packageManager.getResourcesForApplication(info.applicationInfo)
         .getDrawableForDensity(id, maxOf(android.util.DisplayMetrics.DENSITY_XHIGH, c.resources.displayMetrics.densityDpi), null)
 } catch (e: Exception) { null }
+
+private const val BANNER_MAX = 1280                                   // px, the long side: a tile is ~440 px wide at 1080p, x1.12 focused
+private const val ICON_MAX = 512
+
+/**
+ * [d] no bigger than [max] px on its long side. An app's picture is drawn as it comes, and a huge one (4096x7280, an image put
+ * in a low-density folder and scaled up for the screen) is over what the screen may draw at once: Home crashed on every frame
+ * ("Canvas: trying to draw too large bitmap", a globe_ATV box on Android 8). Small pictures and vectors come back as they are.
+ */
+fun shrink(c: Context, d: Drawable?, max: Int): Drawable? {
+    if (d !is android.graphics.drawable.BitmapDrawable) return d
+    val b = d.bitmap ?: return d
+    val long = maxOf(b.width, b.height); if (long <= max) return d
+    val k = max.toFloat() / long
+    return android.graphics.drawable.BitmapDrawable(c.resources, android.graphics.Bitmap.createScaledBitmap(b, maxOf(1, (b.width * k).toInt()), maxOf(1, (b.height * k).toInt()), true))
+}
 
 /** Wide enough to fill a 16:9 tile; no size of its own (a colour, a shape) fills any tile. cleanyourtv #324. */
 fun wide(w: Int, h: Int) = w <= 0 || h <= 0 || w >= h * 1.4f
