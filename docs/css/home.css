@@ -34,7 +34,6 @@
 
 .sc{padding:64px 0}
 .sc .wrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:center}
-.sc.hflip .wrap{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}.sc.hflip .sc-t{order:2}
 .sc-t{min-width:0}
 .sc-name{display:flex;align-items:center;gap:16px;margin-bottom:14px}
 .sc-name img{width:56px;height:56px;border-radius:14px;flex:none;box-shadow:0 8px 24px -8px #000}
@@ -80,7 +79,7 @@
 .h-note{text-align:center;color:var(--dim);font-size:14px;margin-top:10px}
 
 @media (max-width:980px){
-  .sc .wrap,.sc.hflip .wrap{grid-template-columns:1fr;gap:28px}.sc.hflip .sc-t{order:0}
+  .sc .wrap{grid-template-columns:1fr;gap:28px}
   .sc-t p{max-width:none}
 }
 @media (max-width:700px){

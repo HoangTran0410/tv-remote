@@ -51,3 +51,19 @@ test('every topic has data-v, data-src and an entry in docs/data/since.json (rel
     .filter(([, id, attrs]) => !(id in since) || !/ data-v="[^"]+"/.test(attrs) || !/ data-src="/.test(attrs)).map(([, id]) => id);
   assert.deepStrictEqual(bad, []);
 });
+
+// A card of the home page's "And more" row and the guide topic it opens show the same picture: one shot per feature, so
+// the two never drift apart (the guide had its own, older shots while the home page had new ones).
+test('each "And more" card\'s picture is in the guide topic it links', () => {
+  const index = fs.readFileSync(path.join(__dirname, '../../../docs/index.html'), 'utf8');
+  const row = index.slice(index.indexOf('id="car"'), index.indexOf('</section>', index.indexOf('id="car"')));
+  const cards = [...row.matchAll(/<a class="fc[^"]*" href="guide#([a-z0-9-]+)"[^>]*>\s*<img data-lang-src="img\/([a-z0-9-]+)-LANG\.webp/g)];
+  assert.ok(cards.length > 20, cards.length);
+  const missing = [];
+  for (const [, id, img] of cards) {
+    const t = topics.find((x) => x.id === id);
+    if (!t) { missing.push(`${img}: no topic #${id}`); continue; }
+    for (const lang of ['vi', 'en']) if (!t.body.includes(`src="img/${img}-${lang}.webp`)) missing.push(`#${id} lacks img/${img}-${lang}.webp`);
+  }
+  assert.deepStrictEqual(missing, [], 'put the card\'s picture in its topic (<figure class="gshot">)');
+});
