@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Hisense (VIDAA): the TV's MAC is now learned from `eth0` / `wlan0` and from plain 12-digit values (VIDAA U6.1 TVs such as the 58A53FXVT), both interfaces are kept and woken with Wake-on-LAN; apps launch by name whatever the punctuation or case ("Stan.", "Spotify : Music & Podcasts").
 - TV Home: a "Sun sky" background that goes from night to dawn, day and dusk with the sun where the Weather widget's place is (else the time zone), worked out on the TV with no network and repainted every 5 minutes; nothing runs unless it is the background.
 - TV Home: burn-in care for OLED TVs: the "Black" background is true #000, and a new option (off by default) moves the home screen 1 dp every minute inside a 6 dp square.
 - TV Home: a Prayer times widget: the five prayers and the sunrise for today at the weather's place, the next one highlighted with a countdown, and the Hijri date, all worked out on the TV with no internet. Choose the method (MWL, ISNA, Egypt, Makkah, Karachi, JAKIM, Kemenag, Singapore, Turkey, Tehran; by default from the TV's time zone), the Asr school and a Hijri day adjust.

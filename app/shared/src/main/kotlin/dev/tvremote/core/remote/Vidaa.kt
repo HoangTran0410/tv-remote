@@ -56,6 +56,7 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
         private set
     @Volatile override var mac = ""
         private set
+    @Volatile private var macs: List<String> = emptyList()           // every interface the TV named; [mac] is the first
     override val keys: Set<Int> get() = KEYS.keys
 
     @Volatile private var mqtt: MqttLite? = null
@@ -100,11 +101,15 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
 
     /** A TV in standby refuses the port: with its MAC kept from an earlier visit, wake it and wait (up to [wakeWaitMs]) for the port; else go on, and the caller gets the usual error. */
     private fun wakeUp() {
-        val m = (remembered("mac") as? String)?.takeIf { MAC.matches(it) } ?: return
-        if (mac.isEmpty()) mac = m
+        val kept = LinkedHashSet<String>()                            // "mac" is what old versions wrote: still read
+        (remembered("mac") as? String)?.let { normMac(it) }?.let { kept.add(it) }
+        (remembered("macs") as? JSONArray)?.let { for (i in 0 until it.length()) normMac(it.optString(i))?.let { m -> kept.add(m) } }
+        if (kept.isEmpty()) return
+        macs = kept.toList()
+        if (mac.isEmpty()) mac = macs.first()
         if (portOpen()) return
-        WireLog.all.add("→", "VIDAA $host refuses port $port: Wake-on-LAN to $m")
-        try { wol(m, host) } catch (e: Exception) { return }
+        WireLog.all.add("→", "VIDAA $host refuses port $port: Wake-on-LAN to " + macs.joinToString(" "))
+        try { for (m in macs) wol(m, host) } catch (e: Exception) { return }
         val until = System.currentTimeMillis() + wakeWaitMs
         while (System.currentTimeMillis() < until) {
             try { Thread.sleep(wakePollMs) } catch (e: InterruptedException) { Thread.currentThread().interrupt(); return }
@@ -333,11 +338,15 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
             .firstOrNull { it.isNotBlank() }?.let { model = it.trim() }
         o.optString("brand").ifEmpty { o.optString("manufacturer") }.takeIf { it.isNotBlank() }?.let { vendor = it.trim() }
         o.optString("firmware_version").ifEmpty { o.optString("sw_version") }.takeIf { it.isNotBlank() }?.let { version = it.trim() }
-        if (mac.isEmpty()) for (k in o.keys()) {                      // the field's name changes between firmwares
-            val v = o.optString(k)
-            if ("mac" in k.lowercase() && MAC.matches(v)) { mac = v.uppercase().replace('-', ':'); break }
-        }
-        if (mac.isNotEmpty()) remember("mac", mac)                    // standby refuses the port: connect needs it to wake the TV
+        val found = LinkedHashSet<String>()                           // the field's name changes between firmwares: *mac*, or eth0 / wlan0 (VIDAA U6)
+        val keys = o.keys().asSequence().sortedBy { it.lowercase().let { l -> if (l == "eth0") 0 else if (l == "wlan0") 1 else 2 } }.toList()   // the cable first: JSON keys come in no order
+        for (k in keys) if ("mac" in k.lowercase() || k.lowercase() in IFACES) normMac(o.optString(k))?.let { found.add(it) }
+        if (found.isEmpty()) return
+        val all = LinkedHashSet<String>(); all.addAll(macs); all.addAll(found)
+        macs = all.toList()
+        if (mac.isEmpty()) mac = macs.first()
+        remember("mac", mac)                                          // standby refuses the port: connect needs them to wake the TV
+        remember("macs", JSONArray(macs))                             // both interfaces: the TV may sleep on Wi-Fi or on the cable
     }
 
     /** Waits up to [ms] for a message whose topic [match]es, after [trigger]; (topic, payload) or null. */
@@ -382,7 +391,7 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
 
     /** An app by its id or name from [apps]. */
     override fun launch(link: String) {
-        val a = (apps.ifEmpty { fetch("applist", "applist") }).firstOrNull { it.optString("appId") == link || it.optString("name").equals(link, true) } ?: return
+        val a = pickApp(apps.ifEmpty { fetch("applist", "applist") }, link) ?: return
         send(ui("launchapp"), JSONObject().put("appId", a.optString("appId")).put("name", a.optString("name")).put("url", a.optString("url"))
             .put("urlType", a.opt("urlType") ?: 37).put("storeType", a.opt("storeType") ?: 0).put("appName", a.optString("name")).put("appUrl", a.optString("url")).toString())
     }
@@ -439,7 +448,7 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
 
     private fun save(o: JSONObject) {
         val old = try { if (tokenFile.isFile) JSONObject(tokenFile.readText()) else JSONObject() } catch (e: Exception) { JSONObject() }
-        for (k in listOf("tls", "static", "mac")) if (!o.has(k) && old.has(k)) o.put(k, old.get(k))
+        for (k in listOf("tls", "static", "mac", "macs")) if (!o.has(k) && old.has(k)) o.put(k, old.get(k))
         dir.mkdirs(); tokenFile.writeText(o.toString())
     }
 
@@ -472,6 +481,23 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
         private val P12_PASSWORDS = listOf("186e990688070325a1c4b0ce275d2388", "", "remote", "hisense", "123456")
         /** Where firmwares put the TV's own name (upstream hisense_vidaa reads the same four). */
         private val NAME_FIELDS = listOf("devicename", "device_name", "friendly_name", "tv_name")
+        private val IFACES = setOf("eth0", "wlan0")
+        private val RAW_MAC = Regex("(?i)^[0-9a-f]{12}$")
+        /** AA:BB:CC:DD:EE:FF (upper case, as already stored) from "e43bc957f14f", "E4-3B-..." or "e4:3b:..."; null for anything else and for all-zero / all-ff. */
+        internal fun normMac(v: String): String? {
+            val t = v.trim()
+            val hex = when { RAW_MAC.matches(t) -> t; MAC.matches(t) -> t.replace(Regex("[:-]"), ""); else -> return null }.uppercase()
+            if (hex == "000000000000" || hex == "FFFFFFFFFFFF") return null
+            return hex.chunked(2).joinToString(":")
+        }
+        /** Letters and digits only, lowercase: "Spotify : Music & Podcasts" and "Stan." compare as the words a person types. */
+        internal fun norm(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
+        /** By id, then by exact name, then by normalised name, then by a name that starts with it. */
+        internal fun pickApp(list: List<JSONObject>, link: String): JSONObject? {
+            list.firstOrNull { it.optString("appId") == link || it.optString("name").equals(link, true) }?.let { return it }
+            val n = norm(link).ifEmpty { return null }
+            return list.firstOrNull { norm(it.optString("name")) == n } ?: list.firstOrNull { norm(it.optString("name")).startsWith(n) }
+        }
         private val MAC = Regex("(?i)^[0-9a-f]{2}([:-][0-9a-f]{2}){5}$")
 
         /** Android key codes to VIDAA's key names; what is missing is greyed. */

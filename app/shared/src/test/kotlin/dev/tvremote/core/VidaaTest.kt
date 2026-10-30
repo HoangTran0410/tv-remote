@@ -30,7 +30,8 @@ class VidaaTest {
     private val logins: MutableList<String> = Collections.synchronizedList(ArrayList())
     private var legacy = false                                        // an old TV: the fixed login, no code
     private var hangUps = 0                                           // logins hung up on (no CONNACK), as some firmwares refuse
-    private var silent = 0                                            // logins taken that never show a code
+    @Volatile private var deviceInfo = """{"model_name":"65U8K","brand":"Hisense","device_name":" Living room ","friendly_name":"x","wifi_mac":"aa-bb-cc-00-11-22"}"""
+    private var silent = 0                                           // logins taken that never show a code
     private var tokenEarly = false                                    // the token comes as soon as the code is taken, unasked
     private var noWildcard = false                                    // a firmware that refuses "#" subscriptions: only exact topics get answers
     private var server: ServerSocket? = null
@@ -94,7 +95,7 @@ class VidaaTest {
                 "applist" -> say("/ui_service/data/applist", """[{"appId":"3","name":"Netflix","url":"netflix","storeType":0},{"appId":"7","name":"YouTube","url":"youtube"}]""")
                 "sourcelist" -> say("/ui_service/data/sourcelist", """[{"sourceid":"4","sourcename":"HDMI 2","displayname2":"PlayStation","is_signal":"1"},{"sourceid":"0","sourcename":"TV"}]""")
                 "getvolume" -> say("/platform_service/data/getvolume", """{"volume_type":0,"volume_value":17}""")
-                "getdeviceinfo" -> say("/platform_service/data/getdeviceinfo", """{"model_name":"65U8K","brand":"Hisense","device_name":" Living room ","friendly_name":"x","wifi_mac":"aa-bb-cc-00-11-22"}""")
+                "getdeviceinfo" -> say("/platform_service/data/getdeviceinfo", deviceInfo)
             }
         }
     }
@@ -182,6 +183,44 @@ class VidaaTest {
         assertFalse(v.ready())
         val none = Vidaa(Files.createTempDirectory("vidaa").toFile().also { it.deleteOnExit() }, "127.0.0.1", port, { _, _ -> fail("woke a TV with no saved MAC") }, 400, 50)
         try { none.connect {}; fail("connected") } catch (e: IOException) { }
+    }
+
+    @Test fun macsAreReadFromRawHexInterfacesAndKeptAllForWakeOnLan() {
+        assertEquals("E4:3B:C9:57:F1:4F", Vidaa.normMac("e43bc957f14f"))
+        assertEquals("E4:3B:C9:57:F1:4F", Vidaa.normMac("e4-3b-c9-57-f1-4f"))
+        assertEquals(null, Vidaa.normMac("000000000000")); assertEquals(null, Vidaa.normMac("FF:FF:FF:FF:FF:FF")); assertEquals(null, Vidaa.normMac("nope"))
+        deviceInfo = """{"tv_name":"Hisense TV","model_name":"58A53FXVT","tv_version":"V0000.06.30T.N0921","eth0":"e43bc957f14f","wlan0":"e85177ec981c","country":"AUS","language":"eng"}"""
+        val v = Vidaa(dir, "127.0.0.1", start())
+        v.startPairing(); v.finishPairing("1234"); v.connect {}
+        waitFor { v.mac.isNotEmpty() && v.model.isNotEmpty() }
+        assertEquals("Hisense TV", v.model); assertEquals("E4:3B:C9:57:F1:4F", v.mac)
+        val file = File(dir, "vidaa-127.0.0.1.json")
+        waitFor { file.readText().contains("E8:51:77:EC:98:1C") }
+        assertTrue(file.readText().contains("\"mac\":\"E4:3B:C9:57:F1:4F\""))   // the single value old versions read stays
+        v.close()
+        val port = ServerSocket(0).use { it.localPort }               // standby: a packet to each interface
+        val woken = Collections.synchronizedList(ArrayList<String>())
+        Vidaa(dir, "127.0.0.1", port, { mac, _ -> woken.add(mac) }, 200, 50).let { try { it.connect {}; fail("connected") } catch (e: IOException) { } }
+        assertEquals(listOf("E4:3B:C9:57:F1:4F", "E8:51:77:EC:98:1C"), woken.toList())
+    }
+
+    @Test fun modelFallsBackToModelNameWhenTheTvHasNoName() {
+        deviceInfo = """{"model_name":"58A53FXVT","eth0":"e43bc957f14f"}"""
+        val v = Vidaa(dir, "127.0.0.1", start())
+        v.startPairing(); v.finishPairing("1234"); v.connect {}
+        waitFor { v.model.isNotEmpty() }
+        assertEquals("58A53FXVT", v.model)
+        v.close()
+    }
+
+    @Test fun anAppIsFoundByItsNameWhateverThePunctuation() {
+        val list = listOf("Netflix", "Spotify : Music & Podcasts", "Stan.", "VIDAA   Kids", "Stan Sport").mapIndexed { i, n -> org.json.JSONObject().put("appId", "$i").put("name", n) }
+        fun pick(l: String) = Vidaa.pickApp(list, l)?.optString("name")
+        assertEquals("Spotify : Music & Podcasts", pick("spotify"))
+        assertEquals("Stan.", pick("stan"))                           // exact before prefix ("Stan Sport")
+        assertEquals("VIDAA   Kids", pick("vidaa kids"))
+        assertEquals("Netflix", pick("0"))               // the id still wins
+        assertEquals(null, pick("hulu"))
     }
 
     // issue #8: a firmware that takes one kind of login but shows no code, hangs up instead of refusing, or sends the token unasked
