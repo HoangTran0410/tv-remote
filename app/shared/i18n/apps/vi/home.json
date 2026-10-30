@@ -730,7 +730,7 @@
   "home_ov_hijri_m1": "-1 ngày",
   "home_ov_hijri_0": "Giữ nguyên",
   "home_ov_hijri_p1": "+1 ngày",
-  "p_names": ["Fajr", "Mặt trời mọc", "Dhuhr", "Asr", "Maghrib", "Isha"],
+  "p_names": ["Fajr", "Bình minh", "Dhuhr", "Asr", "Maghrib", "Isha"],
   "p_months": ["Muharram", "Safar", "Rabi' al-awwal", "Rabi' al-thani", "Jumada al-awwal", "Jumada al-thani", "Rajab", "Sha'ban", "Ramadan", "Shawwal", "Dhu al-Qi'dah", "Dhu al-Hijjah"],
   "p_next": "Sắp tới: %1$s",
   "p_left_hm": "còn %1$d giờ %2$d phút",

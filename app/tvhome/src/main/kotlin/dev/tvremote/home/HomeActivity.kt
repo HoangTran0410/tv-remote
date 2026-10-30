@@ -202,7 +202,7 @@ class HomeActivity : Activity() {
         backdrop = Backdrop(window.decorView)
 
         Motion.read(this, conf)
-        scroll = Scroller(this) { Frost.moved() }.apply { isVerticalScrollBarEnabled = false; isFillViewport = true; clipChildren = false }
+        scroll = Scroller(this) { Frost.moved(); slideCap?.translationY = -scroll.scrollY.toFloat() }.apply { isVerticalScrollBarEnabled = false; isFillViewport = true; clipChildren = false }   // the caption leaves with the top bar (it stayed and wrote over the widgets)
         val col = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false
             setPadding(dp(48), dp(34), dp(48), dp(48))
@@ -1327,6 +1327,10 @@ class HomeActivity : Activity() {
                 }
                 row!!.addView(t, LinearLayout.LayoutParams(-2, -2).apply { if (i % cols > 0) leftMargin = gap })
             }
+            // as wide as the columns in use: the TV dialog theme keeps a window of 880 px whatever its content (a folder of 2 apps was half empty)
+            val used = minOf(cols, mem.size); val tiles = used * w + (used - 1) * gap + body.paddingLeft + body.paddingRight
+            val head = title.paint.measureText(title.text.toString()).toInt()
+            dlg.window?.setLayout(maxOf(tiles, head) + card.paddingLeft + card.paddingRight, -2)
             val all = (0 until body.childCount).flatMap { r -> (body.getChildAt(r) as ViewGroup).let { g -> (0 until g.childCount).map { g.getChildAt(it) } } }
             (all.firstOrNull { (it as? Tile)?.app?.pkg == focusPkg } ?: all.getOrNull(minOf(focusAt, all.size - 1).coerceAtLeast(0)))?.requestFocus()
         }
@@ -1638,6 +1642,7 @@ class HomeActivity : Activity() {
                 gravity = Gravity.END; maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END })
         }
         root.addView(box, FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.END).apply { setMargins(dp(CAP_X * 2), dp(CAP_Y), dp(CAP_X), 0) })
+        box.translationY = -scroll.scrollY.toFloat()
         box.animate().alpha(1f).setDuration(800).start()
         slideCap = box
     }

@@ -93,7 +93,13 @@ private fun Widgets.prayerList(widget: LinearLayout, p: PrayerDay, tonal: Boolea
                 orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(dp(8), 0, dp(8), 0)
                 if (hot) background = GradientDrawable().apply { setColor(if (tonal) Tonal.PALE else NEXT_VEIL); cornerRadius = dp(10).toFloat() }
             }
-            cell.addView(label(prayerName(i), 14f, if (hot) main else sub).apply { if (hot) typeface = Font.medium }, LayoutParams(0, -2, 1f))
+            val name = label(prayerName(i), 14f, if (hot) main else sub).apply { if (hot) typeface = Font.medium }
+            // a long name shrinks to its column before it is cut ("Mặt trời mọc" came out as "Mặt tr…" beside its time), down to 10 sp
+            name.addOnLayoutChangeListener { v, l, _, r, _, _, _, _, _ ->
+                val t = v as TextView; val room = r - l - t.paddingLeft - t.paddingRight; val sd = a.resources.displayMetrics.scaledDensity
+                if (room > 0 && t.paint.measureText(t.text.toString()) > room && t.textSize > 10 * sd) t.post { t.textSize = t.textSize / sd - 1 }
+            }
+            cell.addView(name, LayoutParams(0, -2, 1f).apply { rightMargin = dp(6) })
             cell.addView(label(Prayer.clock(times[i], h24), 15f, main).apply { typeface = Font.medium }, LayoutParams(-2, -2))
             line.addView(cell, LayoutParams(0, -1, 1f).apply { if (c > 0) leftMargin = dp(8) })
         }
