@@ -1,5 +1,6 @@
 // minSdk is 21: APIs newer than that crash on old boxes at run time, and only :shared:lintDebug (NewApi) sees them. This is the cheap
-// guard in the pre-push path for the one that slipped in once: ConcurrentHashMap.newKeySet() is API 24 (use Collections.newSetFromMap).
+// guard in the pre-push path for the calls that slipped in: ConcurrentHashMap.newKeySet() (use Collections.newSetFromMap) and
+// AtomicInteger.updateAndGet { } (use @Synchronized or a compareAndSet loop), both API 24, and their API-24 kin.
 const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
@@ -13,13 +14,15 @@ function* kt(dir) {
   }
 }
 
-test('no API-24 newKeySet in the Android-shared Kotlin core', () => {
+const API24 = /\.(newKeySet|updateAndGet|getAndUpdate|accumulateAndGet|getAndAccumulate|computeIfAbsent|computeIfPresent|removeIf|getOrDefault)\s*[({]/;
+
+test('no API-24 calls in the Android-shared Kotlin core', () => {
   const root = path.join(__dirname, '..', 'src', 'main');
   const bad = [];
   for (const f of kt(root)) {
     fs.readFileSync(f, 'utf8').split('\n').forEach((l, i) => {
-      if (/\bnewKeySet\s*\(/.test(l) && !l.trim().startsWith('//')) bad.push(`${path.relative(root, f)}:${i + 1}`);
+      if (API24.test(l) && !l.trim().startsWith('//')) bad.push(`${path.relative(root, f)}:${i + 1}`);
     });
   }
-  assert.deepStrictEqual(bad, [], 'ConcurrentHashMap.newKeySet() is API 24 (minSdk 21): use Collections.newSetFromMap(ConcurrentHashMap<T, Boolean>())');
+  assert.deepStrictEqual(bad, [], 'API 24 calls (minSdk 21): newKeySet -> Collections.newSetFromMap(ConcurrentHashMap<T, Boolean>()), updateAndGet & co -> @Synchronized, getOrDefault -> get() ?: x');
 });

@@ -49,9 +49,11 @@ object PrivateListen {
 
     /** Puts the volume back (when still at 0) and removes the mark. [held]: this session called [engage] with true. */
     fun release(sh: (String) -> String, held: Boolean = true) {
-        if (held) holders.updateAndGet { if (it > 0) it - 1 else 0 }
+        if (held) drop()
         putBack(sh, left(sh("cat $MARK 2>/dev/null")))
     }
+
+    @Synchronized private fun drop() { if (holders.get() > 0) holders.decrementAndGet() }   // no updateAndGet: API 24, minSdk 21
 
     /** At a new connection: undoes a mute left behind by a run that never got to [release], unless a listener of this process holds it. */
     fun recover(sh: (String) -> String, mark: Int?) {
