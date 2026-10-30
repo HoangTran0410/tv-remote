@@ -382,6 +382,13 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
         if (code == 26 && isOn != null) isOn = !isOn!!
     }
 
+    /** The backlight off, the sound on: KEY_AUDIO; the same key or any other brings the picture back. False when not connected. */
+    override fun screenOff(): Boolean {
+        if (!ready()) return false
+        send("/remoteapp/tv/remote_service/$cid/actions/sendkey", "KEY_AUDIO")
+        return true
+    }
+
     /** Into the text field on screen (and the browser's address bar, which listens elsewhere). */
     override fun text(t: String) {
         val p = JSONObject().put("text", t).put("action", "insert").toString()
