@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: a tile opened by a remote key shows which key on its corner (a colour dot, the number, or the key's icon), beside the lock.
 - TV Home: an app with a huge picture (thousands of pixels) no longer crashes the home screen: banners and icons are scaled down before they are drawn.
 - Phone and Computer apps, VIDAA: a TV added by its address keeps its name in Saved TVs (the name is asked for before the link is ready); more VIDAA tests from the hisense_vidaa project (thanks @stevene1919, #11).
 - Hisense (VIDAA): "Screen off" works without ADB (the backlight goes off, the sound plays; any key brings the picture back).

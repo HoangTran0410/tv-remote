@@ -781,6 +781,11 @@ class HomeActivity : Activity() {
         val conf = Store.get(this)
         val power = if (conf.optBoolean("autoon")) conf.optString("autoapp") else ""
         for (t in tileCache.values) t.app?.let { a -> t.mark(badges.of(a.pkg) ?: Badges.POWER.takeIf { a.pkg == power }) { Badges.label(it, m, h) } }
+        // which keys open each tile: a key's target is the tile's own key (a package, "pin:…", "tile:…"), only while keys are on
+        val byTile = HashMap<String, MutableList<Int>>()
+        val map = if (conf.optBoolean("keyon")) conf.optJSONObject("keyapps") else null
+        map?.keys()?.forEach { code -> map.optString(code).takeIf { it.isNotEmpty() }?.let { t -> code.toIntOrNull()?.let { byTile.getOrPut(t) { mutableListOf() }.add(it) } } }
+        for (t in tileCache.values) t.app?.let { a -> t.keys(byTile[a.pkg]?.sorted() ?: emptyList()) { dev.tvremote.home.keys.Keys.name(this, it) } }
     }
 
     // ---- the one-time tip: "Hold OK on an app for more options", under the first row while focus is in it; gone once ✕ or a menu was used ----
@@ -2494,6 +2499,8 @@ open class Tile(c: Context, val app: App?, w: Int, label: String, dp: (Number) -
     private val k = (w / dp(150).toFloat()).coerceIn(0.6f, 1f)        // the tile's size against 5 columns: the badge, the names and the pill shrink with the picture (many columns: they covered it, the user 2026-10-26)
     private val badge = BadgeView(c, dp, k)
     private var shownMark: Badges.Mark? = null
+    private val keyBadge = BadgeView(c, dp, k)
+    private var shownKeys: List<Int> = emptyList()
 
     init {
         Font.on(name); name.textSize = 13f * k
@@ -2525,7 +2532,9 @@ open class Tile(c: Context, val app: App?, w: Int, label: String, dp: (Number) -
             fill(inner)
             content = inner
         }
-        face.addView(badge, FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.END).apply { setMargins(0, (dp(6) * k).toInt(), (dp(6) * k).toInt(), 0) })
+        face.addView(LinearLayout(c).apply {                          // one corner for the marks: the other one held the banner's words (a key's mark on the left covered "TV Games")
+            addView(keyBadge, LayoutParams(-2, -2)); addView(badge, LayoutParams(-2, -2).apply { leftMargin = (dp(4) * k).toInt() })
+        }, FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.END).apply { setMargins(0, (dp(6) * k).toInt(), (dp(6) * k).toInt(), 0) })
         if (corner != null && banner != null) face.addView(Font.on(TextView(c)).apply {    // a suggestion, not an app on this TV: says so on its face
             text = corner; textSize = 12f * k; setTextColor(Color.WHITE); setPadding((dp(10) * k).toInt(), (dp(3) * k).toInt(), (dp(10) * k).toInt(), (dp(4) * k).toInt())
             background = android.graphics.drawable.GradientDrawable().apply { cornerRadius = dp(12).toFloat(); setColor(PILL_BG); setStroke(dp(1), PILL_EDGE) }
@@ -2545,6 +2554,13 @@ open class Tile(c: Context, val app: App?, w: Int, label: String, dp: (Number) -
         if (m == shownMark) return
         shownMark = m
         badge.set(m, m?.let { if (it.locked || it.power) "" else label(it.minutes) } ?: "")
+    }
+
+    /** The remote keys that open this tile (Settings > Remote keys), beside the lock; none: hidden. Set only when they differ. */
+    fun keys(codes: List<Int>, name: (Int) -> String) {
+        if (codes == shownKeys) return
+        shownKeys = codes
+        keyBadge.keys(codes, name)
     }
 
     /** A dark colour of its own per app, for those without a TV banner. */
@@ -2576,45 +2592,77 @@ private const val HEAD_RULE = 0x40FFFFFF                             // the line
 private const val POWER_INK = 0xFF7EE0A1.toInt()                    // the power mark: the green of "on", apart from the lock's red and the limit's amber
 
 /**
- * A pill on a tile's corner: a lock, an hourglass and the time left, or the power mark of the app opened at power-on. Drawn by hand with the paints and icons made once, and
- * measured only when the mark changes: nothing is allocated while it is drawn (or while the tile grows).
+ * A pill on a tile's corner: a lock, an hourglass and the time left, the power mark of the app opened at power-on ([set]), or the
+ * remote keys that open the tile ([keys]). Drawn by hand with the paints made once, and measured only when it changes: nothing is
+ * allocated while it is drawn (or while the tile grows). An icon alone is a circle.
  */
 class BadgeView(c: Context, dp0: (Number) -> Int, k: Float = 1f) : View(c) {
     private val dp: (Number) -> Int = { n -> (dp0(n) * k).toInt() }        // a smaller tile, a smaller badge
     private val bgPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { color = PILL_BG }
+    private val dot = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
     private val text = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE; textSize = dp(13).toFloat(); typeface = Font.medium
     }
-    private val lock = c.getDrawable(R.drawable.ic_lock)!!.mutate().also { it.setTint(0xFFFF8A80.toInt()) }
-    private val glass = c.getDrawable(R.drawable.ic_hourglass)!!.mutate().also { it.setTint(0xFFFFD27A.toInt()) }
-    private val power = c.getDrawable(R.drawable.ic_power)!!.mutate().also { it.setTint(POWER_INK) }
+    private fun icon(id: Int, tint: Int = Color.WHITE): Drawable = context.getDrawable(id)!!.mutate().also { it.setTint(tint) }
+    private val lock by lazy { icon(R.drawable.ic_lock, 0xFFFF8A80.toInt()) }
+    private val glass by lazy { icon(R.drawable.ic_hourglass, 0xFFFFD27A.toInt()) }
+    private val power by lazy { icon(R.drawable.ic_power, POWER_INK) }
+    private val remote by lazy { icon(R.drawable.ic_remote) }
     private val box = android.graphics.RectF()
-    private var icon: Drawable = lock
-    private var label = ""
-    private var textW = 0f
+    private class Part(val text: String = "", val colour: Int? = null, val icon: Drawable? = null)
+    private var parts: List<Part> = emptyList()
 
     init { visibility = GONE }
 
     fun set(m: Badges.Mark?, label: String) {
-        if (m == null) { visibility = GONE; return }
-        icon = if (m.locked) lock else if (m.power) power else glass
-        this.label = label
-        textW = if (label.isEmpty()) 0f else text.measureText(label)
-        visibility = VISIBLE
-        contentDescription = if (m.locked) context.getString(R.string.b_locked) else if (m.power) context.getString(R.string.b_power) else label
+        if (m == null) { show(emptyList(), ""); return }
+        val i = if (m.locked) lock else if (m.power) power else glass
+        show(listOfNotNull(Part(icon = i), label.takeIf { it.isNotEmpty() }?.let { Part(it) }),
+            if (m.locked) context.getString(R.string.b_locked) else if (m.power) context.getString(R.string.b_power) else label)
+    }
+
+    /**
+     * The keys of the remote that open the tile, as on the remote: a colour key its coloured dot, the TV / Input / Settings / All apps
+     * keys their line icon, a maker's button its name ("Netflix"), a number itself; after a small remote; up to three. Short on purpose:
+     * "TV key" in words ran over the banner's own words ("TV Games"); the full names are the content description.
+     */
+    fun keys(codes: List<Int>, name: (Int) -> String) =
+        show(if (codes.isEmpty()) emptyList() else listOf(Part(icon = remote)) + codes.take(3).map { key(it) }, codes.joinToString(", ") { name(it) })
+
+    private fun key(code: Int): Part = dev.tvremote.home.keys.QuickKeys.COLOUR[code]?.let { Part(colour = it) } ?: when (code) {
+        170 -> Part(icon = icon(R.drawable.ic_tv)); 178 -> Part(icon = icon(R.drawable.ic_input))
+        176 -> Part(icon = icon(R.drawable.ic_settings)); 284 -> Part(icon = icon(R.drawable.ic_apps))
+        190 -> Part("YouTube"); 191 -> Part("Netflix"); 195 -> Part("Prime"); 192 -> Part("PatchWall")      // the makers' names, the same in every language
+        else -> Part((code - KeyEvent.KEYCODE_0).toString())
+    }
+
+    private fun show(p: List<Part>, desc: String) {
+        parts = p
+        visibility = if (p.isEmpty()) GONE else VISIBLE
+        contentDescription = desc
         requestLayout(); invalidate()
     }
 
+    private fun partW(p: Part) = if (p.colour != null) dp(12).toFloat() else if (p.icon != null) dp(15).toFloat() else text.measureText(p.text)
+    private val alone get() = parts.size == 1 && parts[0].icon != null
+
     override fun onMeasure(w: Int, h: Int) {
-        setMeasuredDimension(if (label.isEmpty()) dp(24) else (dp(8) + dp(15) + dp(4) + textW + dp(8)).toInt(), dp(24))   // an icon alone: a circle
+        val inner = parts.fold(0f) { a, p -> a + partW(p) } + dp(5) * (parts.size - 1).coerceAtLeast(0)
+        setMeasuredDimension(if (alone) dp(24) else (dp(8) + inner + dp(8)).toInt(), dp(24))   // an icon alone: a circle
     }
 
     override fun onDraw(canvas: android.graphics.Canvas) {
         box.set(0f, 0f, width.toFloat(), height.toFloat())
         canvas.drawRoundRect(box, height / 2f, height / 2f, bgPaint)
-        val s = dp(15); val x = if (label.isEmpty()) (width - s) / 2 else dp(8); val y = (height - s) / 2
-        icon.setBounds(x, y, x + s, y + s); icon.draw(canvas)
-        if (label.isNotEmpty()) canvas.drawText(label, (x + s + dp(4)).toFloat(), height / 2f - (text.ascent() + text.descent()) / 2f, text)
+        val s = dp(15); val y = (height - s) / 2
+        var x = if (alone) ((width - s) / 2).toFloat() else dp(8).toFloat()
+        for (p in parts) {
+            val col = p.colour; val ic = p.icon
+            if (col != null) { dot.color = col; canvas.drawCircle(x + dp(6), height / 2f, dp(6).toFloat(), dot) }
+            else if (ic != null) { ic.setBounds(x.toInt(), y, x.toInt() + s, y + s); ic.draw(canvas) }
+            else canvas.drawText(p.text, x, height / 2f - (text.ascent() + text.descent()) / 2f, text)
+            x += partW(p) + dp(5)
+        }
     }
 }
 
