@@ -83,7 +83,7 @@ Pexels videos, a live page; `dev/gen/wallpapers.py LINKS_ONLY=1`, small pictures
 **Custom** (`wall: own`): `wcol` 1-4 colours (one = plain), `wdir` one of `HomeConfig.WDIRS` (`radial` from the middle), drawn by
 `wallGradient` (Backdrop, the screensaver, the tiles); a change of either is part of `wall()`'s key.
 
-**Sky and burn-in care:** `wall: sky` (in `HomeConfig.PLAIN`) is a three-colour top-to-bottom gradient from `Sun.sky` (`app/shared/src/home/.../Sun.kt`, NOAA maths, unit-tested) at the Weather widget's saved place (`wall/Sky.kt`, prefs `weather`/`place`), else the time zone's longitude; `HomeActivity.skyTimer` repaints every `Sun.REPAINT_MS`, only while it is the wall. `shift` (default off) moves the whole content view 1 dp a minute round a 6 dp square (`ui/PixelShift.kt`, `shiftTimer`); "Pure black (OLED)" is the existing `black` wall.
+**Sky and burn-in care:** `wall: sky` (in `HomeConfig.PLAIN`) is a three-colour top-to-bottom gradient from `Sun.sky` (`app/shared/src/home/kotlin/dev/tvremote/home/Sun.kt`, NOAA maths, unit-tested) at the Weather widget's saved place (`wall/Sky.kt`, prefs `weather`/`place`), else the time zone's longitude; `HomeActivity.skyTimer` repaints every `Sun.REPAINT_MS`, only while it is the wall. `shift` (default off) moves the whole content view 1 dp a minute round a 6 dp square (`ui/PixelShift.kt`, `shiftTimer`); "Pure black (OLED)" is the existing `black` wall.
 
 ## Off = nothing runs
 
