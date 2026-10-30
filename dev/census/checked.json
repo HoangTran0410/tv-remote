@@ -309,6 +309,11 @@
   "n": 2,
   "note": "fixed: GameServer.serve: TLS handshake in Conn() inside the try (Android 11 conscrypt handshakes in getOutputStream)"
  },
+ "28126a90d382b19bee86236d|0.21.1": {
+  "at": "2026-10-31T06:07:29+07:00",
+  "n": 1,
+  "note": "ours: a test of the link edit on the FPT box, Store.change off the main thread; fixed before commit"
+ },
  "295939b8f46236dcdb43011b|0.29.0": {
   "at": "2026-10-27T09:37:03+07:00",
   "n": 1,

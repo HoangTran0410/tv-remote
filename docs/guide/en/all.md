@@ -589,6 +589,7 @@ Paste a web, YouTube or app link: see which app the TV opens it with, then pin i
 2. Press **Pin to TV** or **Try on the TV**.
 
 - On the TV: **＋ Add → Add a link**.
+- Change a link: hold OK on its tile → the link row. It keeps its spot, key and name.
 - In YouTube, Share → TV Remote asks Pin or Open.
 - Remote → Open on the TV → Open a link: any link asks Pin or Try too.
 - A TV with a modded YouTube (SmartTube, TizenTube…) opens the right app.

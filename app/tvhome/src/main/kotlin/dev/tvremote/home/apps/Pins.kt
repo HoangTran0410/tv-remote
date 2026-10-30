@@ -164,6 +164,43 @@ object Pins {
     /** The id [pinIntent] gives [intent]: the same intent is the same pin, so the picker knows it is pinned before it asks. */
     fun ownId(intent: android.content.Intent) = "pn" + java.security.MessageDigest.getInstance("SHA-1").digest(intent.toUri(0).toByteArray()).joinToString("") { "%02x".format(it) }.take(14)
 
+    /**
+     * Where one of TV Home's own pins goes: the link it opens (a pasted link, a YouTube video, a channel of [Links]), or null for one
+     * whose intent holds no link the person could type ([LinkUrl]: a Play Next item's content:// or intent extras). The link is noted when
+     * pinned ([LinkApps.noteGroup]); older pins are read off the shortcut itself (only its own app gets the intent back).
+     */
+    @TargetApi(26)
+    fun linkOf(c: Context, id: String): String? = (LinkApps.urlOf(c, id) ?: try {
+        c.getSystemService(android.content.pm.ShortcutManager::class.java)?.pinnedShortcuts?.firstOrNull { it.id == id }?.intent?.dataString
+    } catch (e: Exception) { null })?.let { dev.tvremote.home.LinkUrl.clean(it) }
+
+    /**
+     * Puts the pin [now] where [old] was and takes [old] away: its place in the grid, the dock, the hidden list, its own name, the remote
+     * keys and the power-on app that named it. Editing a link makes a new shortcut (the id is the intent's: [ownId]), and deleting and
+     * adding again lost all of that. Waits up to 3 s for [now] to be pinned (the system confirms it through [PinActivity]); off the main
+     * thread. Returns the config change for the caller to make on the main thread ([Store.change] tells the screen at once), null: not pinned.
+     */
+    @TargetApi(26)
+    fun replace(c: Context, old: String, now: String): JSONObject? {
+        if (old == now) return JSONObject()
+        for (i in 0 until 15) { if (list(c).any { it.pkg == now }) break; Thread.sleep(200) }
+        if (list(c).none { it.pkg == now }) return null
+        val o = order(c).filter { it != now }
+        order(c, if (old in o) o.map { if (it == old) now else it } else o + now)
+        val conf = Store.get(c)
+        fun swap(k: String) = JSONArray(Store.list(c, k).filter { it != now }.map { if (it == old) now else it })
+        val ch = JSONObject().put("tiles", swap("tiles")).put("dock", swap("dock")).put("order", swap("order")).put("hidden", swap("hidden"))
+        conf.optJSONObject("names")?.let { n -> if (n.has(old)) ch.put("names", JSONObject(n.toString()).also { it.put(now, it.opt(old)); it.remove(old) }) }
+        conf.optJSONObject("keyapps")?.let { k -> if (k.keys().asSequence().any { k.optString(it) == old }) ch.put("keyapps", JSONObject(k.toString()).also { m -> for (x in k.keys()) if (k.optString(x) == old) m.put(x, now) }) }
+        if (conf.optString("autoapp") == old) ch.put("autoapp", now)
+        val s = find(c, old)
+        if (s != null) {
+            val keep = list(c).mapNotNull { it.pin as? ShortcutInfo }.filter { it.`package` == s.`package` && it.id != s.id }.map { it.id }
+            try { la(c)!!.pinShortcuts(s.`package`, keep, Process.myUserHandle()) } catch (e: Exception) {}
+        }
+        return ch
+    }
+
     private const val SRC = "pin_src"
     /** The app a Play Next item pinned by [pinIntent] came from (its menu named TV Home); null for any other shortcut. */
     fun sourceOf(c: Context, id: String): String? = c.getSharedPreferences(SRC, Context.MODE_PRIVATE).getString(id, null)

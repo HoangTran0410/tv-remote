@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: a pinned link's menu shows where it goes; pressing it lets you change the link in place (same spot, remote key and your own name), no more delete and add again.
 - TV Home: a tile opened by a remote key shows which key on its corner (a colour dot, the number, or the key's icon), beside the lock.
 - TV Home: an app with a huge picture (thousands of pixels) no longer crashes the home screen: banners and icons are scaled down before they are drawn.
 - Phone and Computer apps, VIDAA: a TV added by its address keeps its name in Saved TVs (the name is asked for before the link is ready); more VIDAA tests from the hisense_vidaa project (thanks @stevene1919, #11).

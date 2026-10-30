@@ -72,6 +72,8 @@ import dev.tvremote.home.apps.Nav
 import dev.tvremote.home.wall.Online
 import dev.tvremote.home.manage.PhotoScreen
 import dev.tvremote.home.apps.Pins
+import dev.tvremote.home.apps.YouTube
+import dev.tvremote.home.manage.HomeApi
 import dev.tvremote.home.widgets.sample
 import dev.tvremote.home.widgets.adblockToggle
 import dev.tvremote.home.apps.SetupHand
@@ -783,8 +785,7 @@ class HomeActivity : Activity() {
         for (t in tileCache.values) t.app?.let { a -> t.mark(badges.of(a.pkg) ?: Badges.POWER.takeIf { a.pkg == power }) { Badges.label(it, m, h) } }
         // which keys open each tile: a key's target is the tile's own key (a package, "pin:…", "tile:…"), only while keys are on
         val byTile = HashMap<String, MutableList<Int>>()
-        val map = if (conf.optBoolean("keyon")) conf.optJSONObject("keyapps") else null
-        map?.keys()?.forEach { code -> map.optString(code).takeIf { it.isNotEmpty() }?.let { t -> code.toIntOrNull()?.let { byTile.getOrPut(t) { mutableListOf() }.add(it) } } }
+        if (conf.optBoolean("keyon")) for ((code, t) in HomeConfig.keyApps(conf.optJSONObject("keyapps"))) byTile.getOrPut(t) { mutableListOf() }.add(code)
         for (t in tileCache.values) t.app?.let { a -> t.keys(byTile[a.pkg]?.sorted() ?: emptyList()) { dev.tvremote.home.keys.Keys.name(this, it) } }
     }
 
@@ -1937,6 +1938,11 @@ class HomeActivity : Activity() {
                 if (hs.any { it.pkg == now }) hs.first { it.pkg == now }.label else getString(R.string.yt_auto, hs.first().label)
             } })
         }
+        val link = Pins.ownIdOf(this, a)?.let { Pins.linkOf(this, it) }
+        if (link != null) rows.add(TvGlass.Item(R.drawable.ic_link, link.removePrefix("https://").removePrefix("http://").removeSuffix("/"), "", false, false) { ui.post { linkEdit(a, link) } }.also { r ->
+            // where it goes, and a press changes it (only delete + add again did); the app that opens it is the row above
+            r.live = { if (LinkApps.preview(this, link).apps.isEmpty()) getString(R.string.link_none) else getString(R.string.link_edit) }
+        })
         subs(a, st).forEachIndexed { i, s -> rows.add(TvGlass.Item(s.icon, getString(s.title), s.hint, true, true) { sub(a, st, i) }) }
         rows.add(TvGlass.Item(R.drawable.ic_sliders, getString(R.string.customize)) { customize() })
         p.page(a.label, rows, at)
@@ -2364,6 +2370,42 @@ class HomeActivity : Activity() {
         if (a.renamed) b.setNeutralButton(R.string.rename_orig) { _, _ -> save("") }
         val dlg = b.create()
         box.setOnEditorActionListener { _, _, _ -> save(box.text.toString().trim()); dlg.dismiss(); true }
+        open = dlg
+        dlg.show()
+    }
+
+    /**
+     * Changes a pinned link in place: the new link is pinned (YouTube or any other, as from the phone: [HomeApi.pin]) and takes the old
+     * tile's place, name and keys ([Pins.replace]). A link nothing opens, or not a link, is said and the old one stays.
+     */
+    private fun linkEdit(a: App, link: String) {
+        val box = dev.tvremote.tvui.TvField(this).apply {
+            Font.on(this); textSize = 16f; isSingleLine = true; maxLines = 1
+            inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_URI
+            imeOptions = android.view.inputmethod.EditorInfo.IME_ACTION_DONE or android.view.inputmethod.EditorInfo.IME_FLAG_NO_EXTRACT_UI
+            setText(link); setSelection(text.length)
+        }
+        fun save(raw: String) {
+            val u = dev.tvremote.home.LinkUrl.clean(raw)
+            if (u == null) { toast(R.string.pq_web_bad); return }
+            if (u == link) return
+            bg.execute {
+                val r = HomeApi.pin(this, JSONObject().put("url", u))       // named by the new link (its page's title); a name the person gave moves with "names"
+                val now = Target.pin(packageName, Pins.ownId(LinkApps.intent(this, YouTube.parse(u)?.url ?: u)))
+                val ch = if (r == "ok") Pins.replace(this, a.pkg, now) else null
+                val ok = ch != null
+                runOnUiThread {
+                    if (isDestroyed) return@runOnUiThread
+                    if (ch != null && ch.length() > 0) Store.change(this, ch)
+                    toast(if (ok) R.string.link_changed else if (r == YouTube.NO_APP) R.string.link_no_app else if (r == YouTube.NO_LINK) R.string.pq_web_bad else R.string.watch_pin_fail)
+                    conf = Store.get(this); pinsRead()
+                }
+            }
+        }
+        val dlg = android.app.AlertDialog.Builder(this, R.style.Menu).setTitle(R.string.link_change_q)
+            .setView(FrameLayout(this).apply { setPadding(dp(24), dp(4), dp(24), 0); addView(box) })
+            .setPositiveButton(R.string.ok) { _, _ -> save(box.text.toString()) }.setNegativeButton(android.R.string.cancel, null).create()
+        box.setOnEditorActionListener { _, _, _ -> save(box.text.toString()); dlg.dismiss(); true }
         open = dlg
         dlg.show()
     }
