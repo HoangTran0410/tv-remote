@@ -735,5 +735,21 @@
   "p_left_hm": "còn %1$d giờ %2$d phút",
   "p_left_m": "còn %1$d phút",
   "p_date": "%1$d %2$s %3$d",
-  "p_none": "Chưa có vị trí: đang chờ vị trí của thời tiết"
+  "p_none": "Chưa có vị trí: đang chờ vị trí của thời tiết",
+  "watch_sort": "Thứ tự hàng",
+  "watch_sort_default": "Theo từng app",
+  "watch_sort_latest": "Mới xem nhất trước",
+  "folder_default": "Thư mục",
+  "folder_put": "Cho vào thư mục",
+  "folder_other": "Chuyển sang thư mục khác",
+  "folder_new": "Thư mục mới",
+  "folder_name": "Tên thư mục",
+  "folder_out": "Đưa ra khỏi thư mục",
+  "folder_earlier": "Lên trước trong thư mục",
+  "folder_later": "Xuống sau trong thư mục",
+  "folder_open": "Mở",
+  "folder_delete": "Xóa thư mục",
+  "folder_note": "Xóa thư mục thì các app trong đó về lại màn hình chính.",
+  "folder_full": "Không thêm được thư mục nữa",
+  "folder_apps": {"one": "%d app", "other": "%d app"}
 }

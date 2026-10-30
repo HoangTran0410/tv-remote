@@ -70,6 +70,7 @@ object Store {
             .put("headOk", true)                                  // the header's two lines: what each says and its type (HomeConfig "dstyle", HEAD_TYPE)
             .put("ownOk", true)                                   // the own wall: its colours and direction (HomeConfig "wcol", "wdir")
             .put("qrOk", true)                                    // QR widgets (an older one would clean them away)
+            .put("foldersOk", true)                               // folders on the grid (HomeConfig "folders", "folder:<id>" in tiles and order)
             .put("infoOk", true)                                  // the market and news widgets, own RSS links ("feeds"), the weather map
             .put("themesOk", true)                                // themes (HomeConfig "theme"): the ready-made ones ([get] has which look is on now)
             .put("themesBuiltin", org.json.JSONArray(HomeConfig.ready.map { r -> JSONObject().put("id", r.id).put("names", JSONObject(r.names)).put("conf", r.conf).put("look", r.look).put("tiles", org.json.JSONArray(r.live)).also { o -> if (r.community) o.put("community", true).put("by", r.by) } }))

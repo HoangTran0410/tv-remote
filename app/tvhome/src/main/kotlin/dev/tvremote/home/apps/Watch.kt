@@ -28,20 +28,30 @@ object Watch {
     private const val PER_APP = 6                                     // one app's channel must not fill the row
 
     /** [done]: how far it was watched, 0..1, or -1 when the app does not say (Play Next with a position and a length). */
-    class Item(val key: String, val pkg: String, val title: String, val art: String, val intent: String, val app: String, val done: Float = -1f)
+    class Item(val key: String, val pkg: String, val title: String, val art: String, val intent: String, val app: String, val done: Float = -1f,
+               val at: Long = 0L)                                    // [at]: the programme's last engagement time (ms), 0 when the app gives none
+
+    /**
+     * [items] (Play Next, as the provider gave them) for the row's order: "latest" puts the most recently watched first by [Item.at]; one
+     * with no time keeps its place after those that have one (a stable sort, so the provider's order is the fallback). Anything else: as given.
+     */
+    fun sorted(items: List<Item>, sort: String): List<Item> =
+        if (sort == "latest") items.sortedByDescending { it.at } else items
 
     fun allowed(c: Context) = Build.VERSION.SDK_INT >= 26 && c.packageManager.checkPermission(PERM, c.packageName) == PackageManager.PERMISSION_GRANTED
 
     /** Up to [max] items: Play Next, newest first, then the channels' programmes, one app after another; [hidden] apps left out. */
     @android.annotation.TargetApi(26)   // allowed() is false below 26
-    fun read(c: Context, max: Int, hidden: Set<String>): List<Item> {
+    fun read(c: Context, max: Int, hidden: Set<String>, sort: String = "default"): List<Item> {
         if (!allowed(c) || max <= 0) return emptyList()
         val labels = HashMap<String, String?>()
         fun label(pkg: String) = labels.getOrPut(pkg) {
             try { c.packageManager.getApplicationLabel(c.packageManager.getApplicationInfo(pkg, 0)).toString() } catch (e: Exception) { null }   // gone, or not visible: its rows are stale
         }
-        fun rows(uri: Uri, order: String, prefix: String): List<Item> = try {
-            c.contentResolver.query(uri, arrayOf("_id", "package_name", "title", "poster_art_uri", "thumbnail_uri", "intent_uri", "last_playback_position_millis", "duration_millis"), null, null, order)?.use { k ->
+        fun rows(uri: Uri, order: String, prefix: String, engaged: Boolean = false): List<Item> = try {
+            val cols = arrayOf("_id", "package_name", "title", "poster_art_uri", "thumbnail_uri", "intent_uri", "last_playback_position_millis", "duration_millis")
+            // only Watch Next has the engagement column (a preview programme asked for it would fail the whole query); asked only for "latest"
+            c.contentResolver.query(uri, if (engaged) cols + "last_engagement_time_utc_millis" else cols, null, null, order)?.use { k ->
                 val out = ArrayList<Item>()
                 while (k.moveToNext() && out.size < 200) {
                     val pkg = k.getString(1) ?: continue
@@ -51,13 +61,13 @@ object Watch {
                     val art = k.getString(3)?.ifEmpty { null } ?: k.getString(4) ?: ""
                     val at = k.getLong(6); val len = k.getLong(7)
                     out.add(Item(prefix + k.getLong(0), pkg, k.getString(2)?.trim().orEmpty().ifEmpty { app }, art, intent, app,
-                        if (len > 0 && at > 0) (at.toFloat() / len).coerceIn(0f, 1f) else -1f))
+                        if (len > 0 && at > 0) (at.toFloat() / len).coerceIn(0f, 1f) else -1f, if (engaged) k.getLong(8) else 0L))
                 }
                 out
             } ?: emptyList()
         } catch (e: Exception) { emptyList() }                        // SecurityException (taken back), a TV without TvProvider
 
-        val next = rows(TvContract.WatchNextPrograms.CONTENT_URI, "last_engagement_time_utc_millis DESC", "n")
+        val next = sorted(rows(TvContract.WatchNextPrograms.CONTENT_URI, "last_engagement_time_utc_millis DESC", "n", sort == "latest"), sort)
         // TV Channels' favourites are left out: they repeat the shortcuts people pin from TV Channels (its Play Next, the last watched, stays)
         val shows = rows(TvContract.PreviewPrograms.CONTENT_URI, "channel_id, weight DESC", "p").filter { it.pkg != "dev.tvremote.channels" }.groupBy { it.pkg }.mapValues { it.value.take(PER_APP) }
         val out = ArrayList(next.distinctBy { it.intent }.take(max))

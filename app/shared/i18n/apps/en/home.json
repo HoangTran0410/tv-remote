@@ -735,5 +735,21 @@
   "p_left_hm": "in %1$d h %2$d min",
   "p_left_m": "in %1$d min",
   "p_date": "%1$d %2$s %3$d",
-  "p_none": "No place yet: waiting for the weather's location"
+  "p_none": "No place yet: waiting for the weather's location",
+  "watch_sort": "Row order",
+  "watch_sort_default": "As the apps give it",
+  "watch_sort_latest": "Latest first",
+  "folder_default": "Folder",
+  "folder_put": "Put in a folder",
+  "folder_other": "Move to another folder",
+  "folder_new": "New folder",
+  "folder_name": "Folder name",
+  "folder_out": "Take out of the folder",
+  "folder_earlier": "Earlier in the folder",
+  "folder_later": "Later in the folder",
+  "folder_open": "Open",
+  "folder_delete": "Remove folder",
+  "folder_note": "Removing a folder puts its apps back on the home screen.",
+  "folder_full": "No room for another folder",
+  "folder_apps": {"one": "%d app", "other": "%d apps"}
 }
