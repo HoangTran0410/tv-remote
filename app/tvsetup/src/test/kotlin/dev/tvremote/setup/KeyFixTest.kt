@@ -135,6 +135,10 @@ class KeyFixTest {
         assertEquals(KeyFix.CONTROL, p[183]?.act); assertTrue(p[183]!!.mine)
         val none = KeyFix.plan(emptyMap(), { true }, { false }, mapOf(183 to dev.tvremote.home.Target.CONTROL))   // TV Home not installed: the key keeps its way
         assertTrue(none.isEmpty())
+        val withSettings = mapped + (176 to "com.android.tv.settings/.Main")                  // Settings works here, the person still may take it
+        val s = KeyFix.plan(withSettings, { true }, { it == dev.tvremote.home.Target.CONTROL }, mapOf(176 to dev.tvremote.home.Target.CONTROL))
+        assertEquals(KeyFix.CONTROL, s[176]?.act)
+        assertTrue(KeyFix.plan(withSettings, { true }, { true }).isEmpty())                    // nothing given: Settings keeps its way
     }
 
     @Test fun aWorkingKeyIsNeverTakenForAnApp() {

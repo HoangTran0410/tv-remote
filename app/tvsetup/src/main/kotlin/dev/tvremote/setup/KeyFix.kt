@@ -126,8 +126,11 @@ object KeyFix {
      */
     val APP_KEYS = setOf(190, 191, 195)
 
-    /** The keys of [RULES] TV Home may offer: the dead ones and the app buttons this TV knows (a global key here). */
-    fun offered(mapped: Map<Int, String>, alive: (String) -> Boolean): Set<Int> = free(mapped, alive) + APP_KEYS.filter { it in mapped }
+    /** Settings: the person may give it TV Home's Control Center (or an app) while it works too; the Control Center keeps a way to the TV's settings. */
+    const val SETTINGS_KEY = 176
+
+    /** The keys of [RULES] TV Home may offer: the dead ones, the app buttons and Settings where this TV knows them (a global key here). */
+    fun offered(mapped: Map<Int, String>, alive: (String) -> Boolean): Set<Int> = free(mapped, alive) + (APP_KEYS + SETTINGS_KEY).filter { it in mapped }
 
     /** What a person may give an app through TV Setup: the colour keys, the dead ones and the app buttons; every other key keeps its own way. */
     fun allowed(mapped: Map<Int, String>, alive: (String) -> Boolean): Set<Int> = COLOUR + offered(mapped, alive)
