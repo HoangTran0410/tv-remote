@@ -71,7 +71,8 @@ import org.json.JSONObject
  *           a TV Home older than it drops the key), "recent" (the last apps opened, as icons that open them on OK: TV Setup's HomeInfo
  *           "recent", in the order Android's usage events came, never by the clock), "adblock" (whether Private DNS names an ad-blocking
  *           resolver, [ADBLOCK_DNS]; OK turns it on / off, which needs [WRITE_SECURE] granted over ADB; Android 9+: before it TV Home
- *           leaves it out of "wschema")
+ *           leaves it out of "wschema"), "prayer" (the five prayers and the sunrise of today at the weather's place, worked out on the TV
+ *           with no network: the next one with a countdown, and the Hijri date; options: method, Asr school, Hijri adjust)
  *           Their order in the list is the order on the screen (the page and the TV's panel move them).
  *   qrs     QR widgets: {"qr1": {tpl, f, cap, show}, ...} up to [HomeQr.QR_MAX], each a template's fields (Wi-Fi, link, text, phone, SMS,
  *           e-mail, contact: [HomeQr]) and a caption; a widget is on the screen when its key is also in "widgets" (the order, the size).
@@ -240,7 +241,7 @@ object HomeConfig {
         }
         return null
     }
-    val WIDGETS = listOf("system", "usage", "calendar", "lunar", "timer", "weather", "air", "recent", "adblock", "clock", "market", "news") + HomeQr.KEYS
+    val WIDGETS = listOf("system", "usage", "calendar", "lunar", "timer", "weather", "air", "recent", "adblock", "clock", "market", "news", "prayer") + HomeQr.KEYS
     /**
      * One option of a widget, the single source of what the settings dialog offers (TV Home's Customize and the page render it, nobody
      * hardcodes a widget's options): [type] "choice" (one of [values]) or "toggle" ("off" / "on", drawn as a switch). [default] is what a
@@ -250,7 +251,7 @@ object HomeConfig {
      */
     class Opt(val id: String, val type: String, val values: List<String>, val default: String, val store: String = "wopt")
     private val SIZES = listOf("big", "small")
-    val TONAL = setOf("system", "weather", "lunar", "air", "calendar", "usage", "timer", "market", "news", "recent", "adblock") + HomeQr.KEYS   // every widget but the clock has the "tonal" look (opaque warm card, app/DESIGN-TV.md "Tonal cards")
+    val TONAL = setOf("system", "weather", "lunar", "air", "calendar", "usage", "timer", "market", "news", "recent", "adblock", "prayer") + HomeQr.KEYS   // every widget but the clock has the "tonal" look (opaque warm card, app/DESIGN-TV.md "Tonal cards")
     // "solid": an opaque dark widget, the photo hidden under it; "none": no widget at all, the words on the wallpaper with a shadow
     // (a person whose own photo is the point). The clock has no tonal form (its face and theme are its look)
     val LOOKS = listOf("glass", "tonal", "solid", "none")
@@ -263,11 +264,15 @@ object HomeConfig {
             k == "market" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("layout", "choice", listOf("card", "ticker"), "card"), Opt("show", "choice", listOf("all", "gold", "rates"), "all"), Opt("btc", "toggle", emptyList(), "off"))
             k == "calendar" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("layout", "choice", listOf("month", "date"), "month"))
             k == "news" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("src", "choice", listOf("auto", "mine", "both"), "auto"))
+            k == "prayer" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("method", "choice", listOf("auto") + PRAYER_METHODS, "auto"),
+                Opt("asr", "choice", listOf("standard", "hanafi"), "standard"), Opt("hijri", "choice", listOf("hijri_m1", "hijri_0", "hijri_p1"), "hijri_0"))
             k in TONAL -> listOf(size, Opt("look", "choice", LOOKS, "glass"))
             k in WIDGETS -> listOf(size)
             else -> emptyList()
         }
     }
+    /** The prayer widget's calculation methods ("auto": by the TV's time zone), the same ids as `Prayer.METHODS` in app/tvhome (a test holds them equal). */
+    val PRAYER_METHODS = listOf("mwl", "isna", "egypt", "ummalqura", "karachi", "jakim", "kemenag", "singapore", "turkey", "tehran")
     private fun optValues(o: Opt) = if (o.type == "toggle") listOf("off", "on") else o.values
     /** The schema as the clients get it ("wschema" in what TV Home reports): {widget: [{id, type, store, default, label, values: [{id, w}]}]}. */
     fun schema(sdk: Int = ADBLOCK_MIN_SDK): JSONObject = JSONObject().also { out ->
@@ -323,7 +328,7 @@ object HomeConfig {
     }
     /** A widget's size when nobody chose: the four large widgets are big, the small pills (lunar, timer, clock, and the note) small. */
     fun defaultSize(k: String) = if (k in BIG_KINDS) "big" else "small"
-    private val BIG_KINDS = setOf("system", "usage", "calendar", "weather", "air", "market", "news") + HomeQr.KEYS     // a code is read from the sofa: big until chosen otherwise
+    private val BIG_KINDS = setOf("system", "usage", "calendar", "weather", "air", "market", "news", "prayer") + HomeQr.KEYS     // a code is read from the sofa: big until chosen otherwise
     /**
      * Widths as weights (a column's share of the row): a big widget, the calendar (seven day columns) a little more, a small column
      * (stacked pills, or one standing) a little less. The row holds [BUDGET] at most: three big widgets and a small column fit; a

@@ -80,13 +80,13 @@ class HomeConfigTest {
         val none = HomeConfig.clean(JSONObject())
         assertEquals(0, none.getJSONObject("wsize").length())                    // nothing chosen: the defaults apply
         assertFalse(none.has("wlayout"))
-        assertEquals(setOf("system", "usage", "calendar", "weather", "air", "market", "news") + HomeQr.KEYS, HomeConfig.bigs(none))   // QR cards are big by default
+        assertEquals(setOf("system", "usage", "calendar", "weather", "air", "market", "news", "prayer") + HomeQr.KEYS, HomeConfig.bigs(none))   // QR cards are big by default
         val c = HomeConfig.clean(JSONObject().put("wsize", JSONObject().put("system", "small").put("lunar", "big").put("timer", "huge").put("bogus", "big")))
         assertEquals("small", c.getJSONObject("wsize").getString("system"))
         assertEquals("big", c.getJSONObject("wsize").getString("lunar"))
         assertFalse(c.getJSONObject("wsize").has("timer"))                       // an unknown size: dropped
         assertFalse(c.getJSONObject("wsize").has("bogus"))
-        assertEquals(setOf("usage", "calendar", "weather", "air", "market", "news", "lunar") + HomeQr.KEYS, HomeConfig.bigs(c))
+        assertEquals(setOf("usage", "calendar", "weather", "air", "market", "news", "lunar", "prayer") + HomeQr.KEYS, HomeConfig.bigs(c))
         val m = HomeConfig.merge(JSONObject().put("widgets", JSONArray(listOf("weather", "calendar"))), JSONObject().put("wsize", JSONObject().put("weather", "small")))
         assertEquals("small", m.getJSONObject("wsize").getString("weather"))
         assertEquals("weather", m.getJSONArray("widgets").getString(0))          // moving never sorts them back
@@ -600,5 +600,16 @@ class HomeConfigTest {
         assertEquals(62, r.size)                                                // more than the old cap of 40
         assertTrue(r.first { it.id == "c1" }.community); assertEquals("Lan Anh", r.first { it.id == "c1" }.by)
         assertFalse(r.first { it.id == "c2" }.community); assertFalse(r.first { it.id == "p1" }.community)
+    }
+
+    @Test fun prayerWidgetOptions() {
+        assertEquals(listOf("size", "look", "method", "asr", "hijri"), HomeConfig.options("prayer").map { it.id })
+        assertEquals("auto", HomeConfig.optValue(JSONObject(), "prayer", "method"))
+        assertEquals("big", HomeConfig.defaultSize("prayer"))
+        assertTrue("prayer" in HomeConfig.TONAL && "prayer" in HomeConfig.schema().keys().asSequence().toList())
+        val c = HomeConfig.clean(JSONObject().put("wopt", JSONObject().put("prayer", JSONObject().put("method", "jakim").put("asr", "hanafi").put("hijri", "hijri_p1").put("hijri2", "x"))))
+        assertEquals("jakim", HomeConfig.optValue(c, "prayer", "method")); assertEquals("hanafi", HomeConfig.optValue(c, "prayer", "asr")); assertEquals("hijri_p1", HomeConfig.optValue(c, "prayer", "hijri"))
+        val bad = HomeConfig.clean(JSONObject().put("wopt", JSONObject().put("prayer", JSONObject().put("method", "nope"))))
+        assertEquals("auto", HomeConfig.optValue(bad, "prayer", "method"))
     }
 }

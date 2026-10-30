@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: a Prayer times widget: the five prayers and the sunrise for today at the weather's place, the next one highlighted with a countdown, and the Hijri date, all worked out on the TV with no internet. Choose the method (MWL, ISNA, Egypt, Makkah, Karachi, JAKIM, Kemenag, Singapore, Turkey, Tehran; by default from the TV's time zone), the Asr school and a Hijri day adjust.
 - A Hisense VIDAA TV's Settings key on the remote now reads "Menu" with the menu icon, on the web remote and the Phone app; it already sent the TV's Menu key (#8).
 - TV Setup: a TV whose clock jumps ahead with no network time no longer forgets paired browsers, and never stamps them with the wrong year.
 - TV Channels: one long OK on a channel opens one menu, not two stacked; a stream check saved while the clock was ahead no longer sticks for a year.

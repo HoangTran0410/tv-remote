@@ -38,9 +38,9 @@ const HOME_PHOTO_MAX = 10;                                            // HomeCon
 let homeShots = { mine: {}, ready: {}, now: null };                  // the theme previews' backgrounds (TV Home's themeshots), by theme id; now: {key, jpg} the wall in use
 const homeFaces = new Map();                                         // a theme's drawn preview, by what it is made of: drawn once, put back on every redraw
 const homeThumbs = {};                                                // a photo's small picture by id + its stamp: asked of the TV once
-const HOME_WIDGETS = ['system', 'usage', 'calendar', 'lunar', 'timer', 'weather', 'air', 'recent', 'adblock', 'clock', 'market', 'news'];          // HomeConfig.WIDGETS, in the order drawn
+const HOME_WIDGETS = ['system', 'usage', 'calendar', 'lunar', 'timer', 'weather', 'air', 'recent', 'adblock', 'clock', 'market', 'news', 'prayer'];          // HomeConfig.WIDGETS, in the order drawn
 // A TV Home with "wsizes" sizes each widget (big / small) and packs them (homePack); one older than that has only the preset layouts below
-const HOME_BIG_KINDS = ['system', 'usage', 'calendar', 'weather', 'air', 'market', 'news', 'qr1', 'qr2', 'qr3', 'qr4'];     // HomeConfig.defaultSize: these are big until chosen otherwise
+const HOME_BIG_KINDS = ['system', 'usage', 'calendar', 'weather', 'air', 'market', 'news', 'prayer', 'qr1', 'qr2', 'qr3', 'qr4'];     // HomeConfig.defaultSize: these are big until chosen otherwise
 const HOME_W = { big: 100, cal: 120, small: 90, budget: 415, floor: 190 };   // HomeConfig.W_BIG / W_CAL / W_SMALL / BUDGET / FLOOR
 const homeSize = (c, k) => (c.wsize && (c.wsize[k] === 'big' || c.wsize[k] === 'small')) ? c.wsize[k] : (HOME_BIG_KINDS.includes(k) ? 'big' : 'small');
 // HomeConfig.pack, the same rule (tests/home_pack_cases.json holds the cases both are tested with): walk the widgets in order, a big
@@ -71,7 +71,7 @@ const HOME_COLS = { row: [[33, 1], [33, 1], [34, 2]], big: [[58, 1], [42, 2]], b
 const HOME_OLD_LAYOUTS = ['row', 'big'];                              // a TV Home without "wlayouts" has only these
 const HOME_ROW_CARDS = 3, HOME_LARGE = ['system', 'usage', 'calendar', 'weather'];   // HomeConfig.ROW_CARDS, Widgets.BIG: what "row" shows
 const homeSlots = (k) => k === 'row' || !HOME_COLS[k] ? 0 : HOME_COLS[k].reduce((n, c) => n + c[1], 0);   // HomeConfig.slots: what a fixed layout shows (a pinned note takes one)
-const HOME_WIDGET_WORDS = { system: 'home.w_system', usage: 'home.w_usage', calendar: 'home.w_calendar', lunar: 'home.w_lunar', timer: 'home.w_timer', weather: 'home.w_weather', air: 'home.w_air', recent: 'home.w_recent', adblock: 'home.w_adblock', clock: 'home.w_clock', market: 'home.w_market', news: 'home.w_news' };
+const HOME_WIDGET_WORDS = { system: 'home.w_system', usage: 'home.w_usage', calendar: 'home.w_calendar', lunar: 'home.w_lunar', timer: 'home.w_timer', weather: 'home.w_weather', air: 'home.w_air', recent: 'home.w_recent', adblock: 'home.w_adblock', clock: 'home.w_clock', market: 'home.w_market', news: 'home.w_news', prayer: 'home.w_prayer' };
 const HOME_STYLE_WORDS = { classic: 'home.style_classic', light: 'home.style_light', minimal: 'home.style_minimal', roman: 'home.style_roman', glass: 'home.style_glass', tonal: 'home.style_tonal' };   // HomeConfig.STYLES
 
 // The packed layout drawn small: a column per weight, its widgets stacked, big ones filled (sizes in css/remote.css)
@@ -101,7 +101,9 @@ function layGlyph(k) {
 // The words the schema names by id (HomeConfig.options: label `home.o_<option>`, value `home.ov_<value>`), listed so the id check sees them used
 const HOME_OPT_WORDS = ['home.o_size', 'home.o_face', 'home.o_theme', 'home.o_look', 'home.ov_big', 'home.ov_small', 'home.ov_classic', 'home.ov_minimal', 'home.ov_roman', 'home.ov_modern', 'home.ov_digital', 'home.ov_month', 'home.ov_date',
   'home.ov_dark', 'home.ov_light', 'home.ov_glass', 'home.ov_tonal', 'home.ov_solid', 'home.ov_none', 'home.ov_off', 'home.ov_on',
-  'home.o_layout', 'home.o_show', 'home.o_btc', 'home.o_src', 'home.ov_card', 'home.ov_ticker', 'home.ov_all', 'home.ov_gold', 'home.ov_rates', 'home.ov_auto', 'home.ov_mine', 'home.ov_both'];
+  'home.o_layout', 'home.o_show', 'home.o_btc', 'home.o_src', 'home.ov_card', 'home.ov_ticker', 'home.ov_all', 'home.ov_gold', 'home.ov_rates', 'home.ov_auto', 'home.ov_mine', 'home.ov_both',
+  'home.o_method', 'home.o_asr', 'home.o_hijri', 'home.ov_mwl', 'home.ov_isna', 'home.ov_egypt', 'home.ov_ummalqura', 'home.ov_karachi', 'home.ov_jakim', 'home.ov_kemenag', 'home.ov_singapore',
+  'home.ov_turkey', 'home.ov_tehran', 'home.ov_standard', 'home.ov_hanafi', 'home.ov_hijri_m1', 'home.ov_hijri_0', 'home.ov_hijri_p1'];
 // A widget's options, from the schema its TV Home reports ("wschema": HomeConfig.options): what was chosen, else the default
 const homeOpt = (c, k, id) => {
   const o = ((c.wschema || {})[k] || []).find((x) => x.id === id);
@@ -606,7 +608,7 @@ async function homeOpen() {
     const w = c.widgets;                                              // absent: a TV Home older than the widgets
     const qrs = c.qrs || {};                                          // the QR widgets' fields, by key (absent: a TV Home older than them)
     const has = (k) => !!w && w.includes(k);
-    wLines.forEach((l, i) => { l.hidden = !w || has(HOME_WIDGETS[i]) || (HOME_WIDGETS[i] === 'weather' && c.place === undefined) || ((HOME_WIDGETS[i] === 'market' || HOME_WIDGETS[i] === 'news') && !c.infoOk) || (HOME_WIDGETS[i] === 'air' && !((c.wschema && c.wschema.air) || (c.wstyles && c.wstyles.air))) || ((HOME_WIDGETS[i] === 'recent' || HOME_WIDGETS[i] === 'adblock') && !(c.wschema && c.wschema[HOME_WIDGETS[i]])); });   // weather, air: a TV Home older than them has no card
+    wLines.forEach((l, i) => { l.hidden = !w || has(HOME_WIDGETS[i]) || (HOME_WIDGETS[i] === 'weather' && c.place === undefined) || ((HOME_WIDGETS[i] === 'market' || HOME_WIDGETS[i] === 'news') && !c.infoOk) || (HOME_WIDGETS[i] === 'air' && !((c.wschema && c.wschema.air) || (c.wstyles && c.wstyles.air))) || ((HOME_WIDGETS[i] === 'recent' || HOME_WIDGETS[i] === 'adblock' || HOME_WIDGETS[i] === 'prayer') && !(c.wschema && c.wschema[HOME_WIDGETS[i]])); });   // weather, air: a TV Home older than them has no card
     wHead.hidden = !w;
     const sized = !!c.wsizes;                                         // this TV Home sizes the widgets; an older one has the preset layouts
     const bigs = sized && w ? w.filter((k) => homeSize(c, k) === 'big') : [];

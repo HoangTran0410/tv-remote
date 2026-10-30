@@ -218,6 +218,7 @@ internal fun Widgets.tonalFill(k: String, widget: LinearLayout, f: Facts, w: Int
         "news" -> newsTonal(widget, f, w, compact)
         "recent" -> recentTonal(widget, f, label, w, compact)
         "adblock" -> adblockTonal(widget, f, w, compact)
+        "prayer" -> prayerTonal(widget, f, w, compact)
         else -> if (k in HomeQr.KEYS) qrTonal(widget, qrs.optJSONObject(k), compact)
     }
 }
