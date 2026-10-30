@@ -18,6 +18,7 @@ internal fun MainActivity.toggleListen() {
     if (listen) { stopListen(null); return }
     listen = true
     listenShare = prefs.getBoolean("listenShare", false)
+    listenTvLoud = false
     soundTries = 0
     restartForSound()
     listenService(true)
@@ -107,7 +108,9 @@ private fun MainActivity.soundStatus(key: String, detail: String) {
     when (key) {
         "live" -> soundTries = 0
         "arate" -> if (!video || bgListen) status.text = title(entry ?: h) + " · 🎧 " + detail + " KB/s"
-        "audio" -> if (detail == "noshare") { listenShare = false; Toast.makeText(this, T("listen.private_only"), Toast.LENGTH_LONG).show() }
+        "audio" -> if (detail == "tvloud") { listenTvLoud = true; Toast.makeText(this, T("listen.tv_still_loud"), Toast.LENGTH_LONG).show(); layoutRemote() }
+            else if (detail == "tvsilent") listenTvLoud = false
+            else if (detail == "noshare") { listenShare = false; Toast.makeText(this, T("listen.private_only"), Toast.LENGTH_LONG).show() }
             else stopListen(T("listen.this_tv_cannot_send"))
         "closed", "error" -> {                                        // the network dropped (4G, a tunnel): dialled again, a few times
             sound = null

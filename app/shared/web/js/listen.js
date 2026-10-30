@@ -11,6 +11,7 @@
 // Stream framing, as the picture's: 1 byte kind (0 format, 1 codec header, 2 sound, 3 notice word, 4 nothing new, 5 error word),
 // 4 bytes length, data.
 let listenShared = false;
+let listenTvLoud = false;                                              // the private way could not silence the TV (Android 13+: its volume is fixed, or the app blocks capture)
 const listenHq = () => { try { return localStorage.getItem('listenHq') === '1'; } catch { return false; } };
 const listenEven = () => { try { return localStorage.getItem('listenEven') === '1'; } catch { return false; } };
 // What playPcm learnt about each TV (seconds kept ahead), so a TV that sends in bursts starts with enough, not after 3 stalls
@@ -83,7 +84,7 @@ async function startListen(share) {
     await actx.resume();                                              // inside the tap: browsers start sound only then
   } catch { stopListen(T('listen.no_browser_sound')); return; }
   const opus = await opusHere(); if (gen !== listenGen) return;
-  listenCtl = new AbortController(); anext = 0; abytes = 0; aquiet = false; alead = Math.min(0.6, Math.max(leadBase(), leadOf()));
+  listenTvLoud = false; listenCtl = new AbortController(); anext = 0; abytes = 0; aquiet = false; alead = Math.min(0.6, Math.max(leadBase(), leadOf()));
   let fmt = { codec: 2, rate: 24000, ch: 1 }, ts = 0, why = T('listen.tv_stopped_sending');
   try {
     const r = await fetch('/api/audio?codec=' + (opus ? 'opus' : 'pcm') + (listenShared ? '&share=1' : '') + (listenHq() ? '&hq=1' : ''), { signal: listenCtl.signal });
@@ -98,6 +99,8 @@ async function startListen(share) {
         const len = new DataView(buf.buffer, buf.byteOffset + 1, 4).getUint32(0); if (buf.length < 5 + len) break;
         const kind = buf[0], data = buf.slice(5, 5 + len); buf = buf.slice(5 + len);
         if (kind === 3 && new TextDecoder().decode(data) === 'noshare') { listenShared = false; toast(T('listen.private_only')); }
+        else if (kind === 3 && new TextDecoder().decode(data) === 'tvloud') { listenTvLoud = true; toast(T('listen.tv_still_loud')); }
+        else if (kind === 3 && new TextDecoder().decode(data) === 'tvsilent') listenTvLoud = false;
         else if (kind === 0) { const d = new DataView(data.buffer); fmt = { codec: data[0], rate: d.getUint32(1), ch: data[5] }; }
         else if (kind === 1 && fmt.codec === 1) {
           adec = new AudioDecoder({ output: (a) => {
@@ -131,7 +134,7 @@ function stopListen(msg) {
 }
 
 setInterval(() => {                                                    // what it costs, next to the button
-  if (listenOn && (abytes || aquiet)) setListenUi(true, T('listen.listening_here') + ' · ' + (listenShared ? T('listen.tv_has_sound') : T('listen.tv_quiet')) + (listenHq() ? ' · ✨ ' + T('listen.high_quality') : '') + ' · ' + Math.round(abytes / 1024) + ' KB/s');
+  if (listenOn && (abytes || aquiet)) setListenUi(true, T('listen.listening_here') + ' · ' + (listenShared || listenTvLoud ? T('listen.tv_has_sound') : T('listen.tv_quiet')) + (listenHq() ? ' · ✨ ' + T('listen.high_quality') : '') + ' · ' + Math.round(abytes / 1024) + ' KB/s');
   abytes = 0;
 }, 1000);
 // 🎧: on or off at once, the way used last (picked with the chip under the header, once it plays); the session restarts either way

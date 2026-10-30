@@ -1080,6 +1080,7 @@
  "listen.listening_here": "🎧 Đang nghe trên máy này",
  "listen.tv_has_sound": "TV vẫn có tiếng",
  "listen.tv_quiet": "loa TV tạm im",
+ "listen.tv_still_loud": "Không tắt tiếng TV được (âm lượng cố định, hoặc app chặn thu âm): TV vẫn phát.",
  "listen.high_quality": "chất lượng cao",
  "listen.only_this_device": "Chỉ máy này",
  "listen.only_this_note": "Loa TV tạm im. Hợp khi đeo tai nghe, cả nhà ngủ.",

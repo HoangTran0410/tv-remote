@@ -1149,6 +1149,7 @@
  "listen.listening_here": "🎧 Listening on this device",
  "listen.tv_has_sound": "TV still playing",
  "listen.tv_quiet": "TV speakers quiet",
+ "listen.tv_still_loud": "The TV could not be silenced (fixed volume, or the app blocks capture): it keeps playing.",
  "listen.high_quality": "high quality",
  "listen.only_this_device": "Only this device",
  "listen.only_this_note": "The TV’s speakers go quiet. For headphones while the house sleeps.",

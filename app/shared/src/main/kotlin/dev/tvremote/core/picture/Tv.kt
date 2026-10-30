@@ -134,6 +134,7 @@ class Tv(
         }
         private const val POLL_MS = 25L
         private const val SEP = "#tvr-sep#"
+        private const val QUIET_WINDOWS = 3                          // 3 windows of 3 s of nothing but silence from a captured TV that is playing: the app refuses capture
         /** Waits for the capture's virtual output to go, then starts Google's remote service: see endCapture */
         private const val REVIVE_REMOTE = "for i in 1 2 3 4 5 6 7 8 9 10; do dumpsys audio | grep -qi remote_submix || break; sleep 0.5; done; " +
             "pm path com.google.android.tv.remote.service >/dev/null 2>&1 && am startservice -n com.google.android.tv.remote.service/.RemoteService >/dev/null 2>&1; true"
@@ -193,6 +194,32 @@ class Tv(
     @Volatile private var stopped = false
     @Volatile private var stalled = false                             // the encoder sent no picture: once more with the software one
     @Volatile private var framed = false
+    private val quietLock = Any()
+    @Volatile private var quieted = false                             // this session turned the TV's volume to 0 (PrivateListen)
+    @Volatile private var quietChecking = false
+
+    /** The TV's volume as it was: at the end of the session, or at once when capture gives only silence (an app that refuses capture). Never throws. */
+    private fun giveBackSound() {
+        synchronized(quietLock) {
+            if (!quieted) return
+            quieted = false
+            val a = adb ?: return
+            try { PrivateListen.release({ c -> a.shell(c, 8000) }) } catch (ignored: Exception) { }   // a dead link: the mark stays, the next connection undoes it
+        }
+    }
+
+    /** Capture has been silent for a while with the TV quiet: if something is playing there, the app refuses capture, so the TV gets its sound back. */
+    private fun checkBlocked() {
+        if (!quieted || quietChecking) return
+        quietChecking = true
+        Thread({
+            try {
+                val a = adb
+                if (a != null && quieted && PrivateListen.playing { c -> a.shell(c, 8000) }) { giveBackSound(); status("audio", "tvloud") }
+            } catch (ignored: Exception) { } finally { quietChecking = false }
+        }, "tv-quiet-check").apply { isDaemon = true }.start()
+    }
+
     @Volatile private var capture: List<Adb.Stream>? = null           // the sockets while the TV's sound is captured
     @Volatile private var adb: Adb? = null
     @Volatile private var control: Adb.Stream? = null
@@ -241,6 +268,8 @@ class Tv(
             val facts = startFacts(a, jar())
             if (Trace.on) Trace.log("s.facts")
             status("starting", facts.model)
+            val tvShell = { c: String -> a.shell(c, 8000) }
+            try { PrivateListen.recover(tvShell, facts.quietMark) } catch (ignored: Exception) { }   // a mute left by a crash or a dropped link
             if (!hand && wantVideo && lowRam(facts.memKb)) { capped = true; video = videoOpts(quality, maxSide, bitRate, true); status("lowram", "${facts.memKb!! / 1024} MB") }
             if (listener.wantsNetwork()) reportNetwork(facts.ipAddr)
             if (listener.wantsPass()) try { AdbPrompt.token(a, "phone")?.let { listener.onPass(it) } } catch (ignored: IOException) { }
@@ -299,6 +328,14 @@ class Tv(
                 return got
             }
             socks.addAll(startServer())
+            // "only this device" from Android 13: playback capture leaves the TV playing, so its music volume goes to 0 while we listen
+            if (hearing != null && !share && sdk >= 33) Thread({
+                synchronized(quietLock) {
+                    if (stopped) return@Thread
+                    quieted = try { PrivateListen.engage(tvShell) } catch (e: Exception) { false }
+                }
+                status("audio", if (quieted) "tvsilent" else "tvloud")
+            }, "tv-quiet").apply { isDaemon = true }.start()
             var next = 0
             val pictureIn = if (wantVideo) socks[next++] else null
             val soundIn = if (hearing != null) socks[next++] else null
@@ -334,6 +371,7 @@ class Tv(
             screen?.release()
             if (capture != null) endCapture(socks)
             capture = null
+            giveBackSound()
             adb?.close()                                              // the heartbeat stops, the loop on the TV kills scrcpy-server
             io.shutdownNow()
         }
@@ -378,7 +416,7 @@ class Tv(
     }
 
     /** What the first shell call brings back. [jarOk]: the jar on the TV is the one we hold. */
-    private class Facts(val model: String, val sdk: Int, val ipAddr: String, val jarOk: Boolean, val memKb: Long? = null)
+    private class Facts(val model: String, val sdk: Int, val ipAddr: String, val jarOk: Boolean, val memKb: Long? = null, val quietMark: Int? = null)
 
     /**
      * One shell round trip for everything the start needs to know (each costs ~40 ms over Wi-Fi): wake, the model, the Android
@@ -388,13 +426,13 @@ class Tv(
     private fun startFacts(a: Adb, jar: ByteArray): Facts {
         val cmd = (if (wake) "input keyevent KEYCODE_WAKEUP; " else "") +
             "getprop ro.product.model; echo '$SEP'; getprop ro.build.version.sdk; echo '$SEP'; " +
-            "if [ -f $REMOTE ]; then wc -c < $REMOTE; md5sum $REMOTE 2>/dev/null; else echo 0; fi; echo '$SEP'; grep MemTotal /proc/meminfo; echo '$SEP'" +
+            "if [ -f $REMOTE ]; then wc -c < $REMOTE; md5sum $REMOTE 2>/dev/null; else echo 0; fi; echo '$SEP'; grep MemTotal /proc/meminfo; echo '$SEP'; cat ${PrivateListen.MARK} 2>/dev/null; echo '$SEP'" +   // the mark: a mute a run before us left behind
             (if (listener.wantsNetwork()) "; ip addr show" else "")
-        val parts = a.shell(cmd).split(SEP, limit = 5).map { it.trim() }
+        val parts = a.shell(cmd).split(SEP, limit = 6).map { it.trim() }
         val jarLines = parts.getOrElse(2) { "" }.lines()
         val md5 = jarLines.getOrNull(1)?.trim()?.substringBefore(' ')?.takeIf { it.length == 32 }
         val ok = if (md5 != null) md5.equals(md5Of(jar), true) else jarLines.firstOrNull()?.trim() == jar.size.toString()
-        return Facts(parts.getOrElse(0) { "" }, parts.getOrElse(1) { "" }.toIntOrNull() ?: 0, parts.getOrElse(4) { "" }, ok, Meminfo.kb(parts.getOrElse(3) { "" }, "MemTotal"))
+        return Facts(parts.getOrElse(0) { "" }, parts.getOrElse(1) { "" }.toIntOrNull() ?: 0, parts.getOrElse(5) { "" }, ok, Meminfo.kb(parts.getOrElse(3) { "" }, "MemTotal"), PrivateListen.left(parts.getOrElse(4) { "" }))
     }
 
     private fun md5Of(b: ByteArray) = java.security.MessageDigest.getInstance("MD5").digest(b).joinToString("") { "%02x".format(it) }
@@ -485,6 +523,8 @@ class Tv(
         if (id == 0 || id == 1) { status("audio", "unsupported"); return }   // e.g. the TV refused the capture
         var bytes = 0L
         var heard = false
+        var voiced = false                                            // something but silence in this window (raw: a non-zero sample; Opus: judged by the rate)
+        var hushed = 0                                                // windows of silence in a row while the TV is quiet
         var since = System.currentTimeMillis()
         try {
             while (!stopped) {
@@ -498,10 +538,18 @@ class Tv(
                 val config = (flags and (1L shl 62)) != 0L
                 if (Trace.on) Trace.log("a.in", "pts=${(flags and ((1L shl 62) - 1)) / 1000} cfg=${if (config) 1 else 0} n=$size")
                 audioSink?.audio(config, data)
+                if (!config && !voiced && codec == "raw") voiced = data.any { it.toInt() != 0 }
                 if (Trace.on && !config && !heard) { heard = true; Trace.log("a.first") }
                 bytes += size + 12
                 val now = System.currentTimeMillis()
-                if (now - since >= 3000) { listener.onStatus("arate", (bytes * 1000.0 / (now - since) / 1024).let { if (it < 10) String.format(java.util.Locale.US, "%.1f", it) else it.toInt().toString() }); bytes = 0; since = now }   // Opus: under 1 KB/s while the TV is quiet
+                if (now - since >= 3000) {
+                    if (quieted) {
+                        val loud = if (codec == "raw") voiced else bytes * 1000.0 / (now - since) / 1024 >= 1.0
+                        hushed = if (loud) 0 else hushed + 1
+                        if (hushed >= QUIET_WINDOWS) { hushed = 0; checkBlocked() }
+                    }
+                    voiced = false
+                    listener.onStatus("arate", (bytes * 1000.0 / (now - since) / 1024).let { if (it < 10) String.format(java.util.Locale.US, "%.1f", it) else it.toInt().toString() }); bytes = 0; since = now }   // Opus: under 1 KB/s while the TV is quiet
             }
         } finally {
             audioSink?.end()

@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Listening on the phone or the web page ("Only this device"): on Android 13+ TVs the TV's speakers now go quiet too, like Roku's Private Listening. The TV's music volume goes to 0 while you listen and comes back exactly as it was when you stop; a crash or a dropped link is undone at the next connection. If the TV keeps its volume, or the playing app refuses capture, the TV keeps playing and the app says so.
 - Home Assistant / Shortcuts: `/api/hook` has a `notify` action (`notify=Someone at the door&title=Doorbell&seconds=10`) that puts a message card on the TV screen, the same as the page's "Send a message". Needs TV Setup on the TV.
 - TV Home: a remote key (a colour key or a dead Settings / Apps key) can open Quick settings (the Control Center) over any app; pick "Quick settings" in Quick keys or on the page. Needs TV Setup and TV Home; Back closes it and the app beneath keeps running.
 - A Hisense VIDAA TV's Settings key on the remote now reads "Menu" with the menu icon, on the web remote and the Phone app; it already sent the TV's Menu key (#8).
