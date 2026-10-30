@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.ColorFilter
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.PixelFormat
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
@@ -16,6 +17,7 @@ import android.graphics.drawable.Drawable
 class FolderArt(private val icons: List<Drawable>) : Drawable() {
     private val panel = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = PANEL }
     private val box = RectF()
+    private val cut = Path(); private val one = RectF()
 
     override fun draw(c: Canvas) {
         val b = bounds
@@ -27,7 +29,11 @@ class FolderArt(private val icons: List<Drawable>) : Drawable() {
         icons.take(SHOWN).forEachIndexed { i, d ->
             val x = box.left + gap + (i % 2) * (cell + gap); val y = box.top + gap + (i / 2) * (cell + gap)
             val keep = d.copyBounds()
+            // every icon rounded alike: some apps ship a square one (VTV Go), others already round (TV360), side by side they clashed
+            one.set(x, y, x + cell, y + cell); cut.reset(); cut.addRoundRect(one, cell * .22f, cell * .22f, Path.Direction.CW)
+            val n = c.save(); c.clipPath(cut)
             d.setBounds(x.toInt(), y.toInt(), (x + cell).toInt(), (y + cell).toInt()); d.draw(c); d.bounds = keep
+            c.restoreToCount(n)
         }
     }
 
