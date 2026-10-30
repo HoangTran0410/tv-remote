@@ -1211,6 +1211,8 @@
  "screen.no_picture_hw": "Chưa thấy hình sau 10 giây. TV này có thể không chạy được bộ mã hóa Phần cứng. Chuyển về Tự chọn?",
  "screen.no_picture_sw": "Chưa thấy hình sau 10 giây. TV này có thể không chạy được bộ mã hóa Phần mềm. Chuyển về Tự chọn?",
  "screen.back_to_auto": "Về Tự chọn",
+ "screen.black_try_sw": "Chỉ thấy màn hình đen? Bộ mã hoá của TV có thể đang gửi hình đen.",
+ "screen.use_software": "Dùng Phần mềm",
  "screen.live_fps": "Trực tiếp · {n} khung/giây",
  "screen.live_still": "Trực tiếp · hình đứng yên",
  "screen.live_waiting": "Trực tiếp · đang chờ hình",

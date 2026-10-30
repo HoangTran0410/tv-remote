@@ -346,7 +346,7 @@ setInterval(() => {
 // are never captured: the picture is black but for subtitles and logos. Said once the TV has a film open (playing or paused) and the picture has stayed
 // nearly all black for a few seconds, so nobody takes it for a fault; a dark scene rarely lasts that long that black.
 const blackCv = document.createElement('canvas'); blackCv.width = 32; blackCv.height = 18;
-let blackFor = 0;
+let blackFor = 0, blackIdle = 0;
 function blackPicture() {
   const src = screenEl();
   if (!src || !picSize(src)[0]) return false;
@@ -361,7 +361,17 @@ setInterval(() => {
   const black = screenOn && typeof PL !== 'undefined' && (PL.o.state || 'none') !== 'none' && blackPicture();
   blackFor = black ? blackFor + 1 : 0;
   put($('#screenblack'), 'hidden', blackFor < 4);
+  // nothing playing and still all black: some boxes' hardware encoders send black frames (ZTE B860H, an Amlogic chip), the software
+  // one shows the screen. Offered, not done: a dark home screen (TV Home's black background) looks the same.
+  const dark = screenOn && (typeof PL === 'undefined' || (PL.o.state || 'none') === 'none') && picTune().enc !== 'sw' && blackPicture();
+  blackIdle = dark ? blackIdle + 1 : 0;
+  put($('#screenblackenc'), 'hidden', blackIdle < 6);
 }, 1000);
+$('#screenblacksw').addEventListener('click', () => {
+  const t = picTune(); t.enc = 'sw'; try { localStorage.setItem('picTune', JSON.stringify(t)); } catch {}
+  blackIdle = 0; put($('#screenblackenc'), 'hidden', true);
+  if (screenOn) startScreen();
+});
 $('#screennow').addEventListener('click', snapNow);
 $('#screenbtn').addEventListener('click', () => { if (screenOn) stopScreen(); else startScreen(); });
 try { const q = localStorage.getItem('quality'); if (q && [...$('#screenmode').options].some((o) => o.value === q)) $('#screenmode').value = q; } catch {}   // the level picked last time

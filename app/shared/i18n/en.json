@@ -1280,6 +1280,8 @@
  "screen.no_picture_hw": "No picture after 10 seconds. This TV may not run the hardware encoder. Back to Auto?",
  "screen.no_picture_sw": "No picture after 10 seconds. This TV may not run the software encoder. Back to Auto?",
  "screen.back_to_auto": "Back to Auto",
+ "screen.black_try_sw": "Only a black screen? The TV's encoder may be sending black frames.",
+ "screen.use_software": "Use Software",
  "screen.live_fps": "Live · {n} fps",
  "screen.live_still": "Live · picture unchanged",
  "screen.live_waiting": "Live · waiting for a picture",

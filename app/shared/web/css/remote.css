@@ -108,6 +108,8 @@
 .screenbox .blackhint { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); max-width:80%; z-index:3; pointer-events:none; padding:8px 12px; border-radius:10px; background:rgba(30,33,40,.85); color:#e5e7eb; font-size:13px; line-height:1.4; text-align:center; }
 .screenbox .blackhint small { display:block; color:#9aa3af; font-size:12px; }
 .screenbox .blackhint[hidden] { display:none; }
+.screenbox .blackhint.enc { pointer-events:auto; display:flex; flex-direction:column; align-items:center; gap:8px; }   /* its button is pressed */
+.screenbox .blackhint.enc[hidden] { display:none; }
 .screenbox:fullscreen { border-radius:0; aspect-ratio:auto; }
 /* mini player: the TV picture floats in the corner while another tab is open */
 #pipslot { position:fixed; right:16px; bottom:16px; width:min(440px, calc(100vw - 32px)); z-index:15; }
