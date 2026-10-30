@@ -238,7 +238,7 @@ async function homeOpen() {
     return el('div', { className: 'item' }, icon, el('div', { className: 'name' }, name), el('div', { className: 'acts' }, ...acts));
   };
   const isTile = (p) => /^tile:[^/]+\/[a-z][a-z0-9_]{0,15}$/.test(p);
-  const appLabel = (pkg) => { const own = (r.config.names || {})[pkg]; if (own) return own; if (Target.kind(pkg) === 'pin') return qkLabel(r.config, r.apps, pkg); if (isTile(pkg)) { const t = (r.config.tilesAvail || []).find((x) => x.key === pkg); return (t && t.title) || pkg.split('/').pop(); } const a = r.apps.find((x) => x.pkg === pkg); return appName(pkg) !== pkg ? appName(pkg) : (a && a.label) || pkg; };
+  const appLabel = (pkg) => { const own = (r.config.names || {})[pkg]; if (own) return own; if (homeIsFolder(pkg)) return ((r.config.folders || {})[pkg.slice(7)] || {}).name || T('home.folder_default'); if (Target.kind(pkg) === 'pin') return qkLabel(r.config, r.apps, pkg); if (isTile(pkg)) { const t = (r.config.tilesAvail || []).find((x) => x.key === pkg); return (t && t.title) || pkg.split('/').pop(); } const a = r.apps.find((x) => x.pkg === pkg); return appName(pkg) !== pkg ? appName(pkg) : (a && a.label) || pkg; };
   const tool = (text, title, fn, off) => el('button', { type: 'button', className: 'small iconbtn', textContent: text, title, 'aria-label': title, disabled: !!off, onclick: fn });
 
   // live widgets (HomeConfig "tiles"): what TV Setup offers, each on or off the app grid; only a TV Home that reports "tilesOk"
@@ -299,7 +299,7 @@ async function homeOpen() {
         rows.length ? el('div', { className: 'list' }, ...rows) : el('p', { className: 'empty', textContent: T('home.folder_empty') }));
     }));
   }
-  const orderFace = (k) => { if (homeIsFolder(k)) return el('div', { className: 'appicon placeholder', textContent: '▣' }); if (Target.kind(k) !== 'app') return qkLogo(r.config, k); const i = appIcon(k); onMeta(k, (m) => i.fill(m)); return i; };
+  const orderFace = (k) => { if (homeIsFolder(k)) return el('div', { className: 'appicon placeholder' }, UI.icon('folder')); if (Target.kind(k) !== 'app') return qkLogo(r.config, k); const i = appIcon(k); onMeta(k, (m) => i.fill(m)); return i; };
   const orderDraw = homeOrderBox(orderBox, orderFace, (k) => appLabel(k), (change) => send(change));
   const addHidden = el('button', { type: 'button', className: 'small', textContent: T('home.hide'), onclick: async () => {
     const p = await chooseApp(T('home.pick_hide'), apps().filter((x) => !r.config.hidden.includes(x)));

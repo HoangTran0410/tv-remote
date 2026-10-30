@@ -987,7 +987,7 @@ class HomeActivity : Activity() {
         val hidden = Store.list(this, "hidden").toSet()
         val shownPins = pins.filter { it.pkg !in byPkg && it.pkg !in dockPkgs }   // a shortcut put on the grid by the picker shows as that tile, not twice
         val inFolder = if (conf.optJSONObject("folders")?.length() ?: 0 == 0) emptySet() else Folders.members(conf)   // none: no work at all
-        val key = (dockPkgs + shownPins.map { it.pkg }).joinToString(",") + "|" + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden && it.pkg !in inFolder }.joinToString(",") { it.pkg } + "|" + apps.filter { it.folder }.joinToString(",") { it.pkg + it.members.size } + "|" + apps.count { it.pkg in hidden } + "|" + conf.optInt("cols") + "|" + conf.optJSONArray("order") + "|" + conf.optJSONObject("names") + "|" + suggestSetup() + "|" + conf.optBoolean("showAdd", true)
+        val key = (dockPkgs + shownPins.map { it.pkg }).joinToString(",") + "|" + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden && it.pkg !in inFolder }.joinToString(",") { it.pkg } + "|" + apps.filter { it.folder }.joinToString(",") { it.pkg + it.members } + "|" + apps.count { it.pkg in hidden } + "|" + conf.optInt("cols") + "|" + conf.optJSONArray("order") + "|" + conf.optJSONObject("names") + "|" + suggestSetup() + "|" + conf.optBoolean("showAdd", true)
         val all = key + "|" + watchAt() + "|" + watch.joinToString(",") { it.first.key + it.first.title + (it.second != null) }
         if (all == shownKey) { badgeTiles(); return }                 // nothing that decides the tiles changed: not one view is rebuilt (the power mark may have)
         shownKey = all
@@ -1310,7 +1310,7 @@ class HomeActivity : Activity() {
         val cols = 4; val gap = dp(24)
         val w = ((resources.displayMetrics.widthPixels * 0.6f).toInt() - (cols - 1) * gap) / cols
         val title = Font.on(TvUi.text(this, "", 22f, bold = true))
-        val body = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false; setPadding(dp(16), dp(16), dp(16), dp(16)) }   // room for a focused tile's growth
+        val body = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false; setPadding(dp(16), dp(16), dp(16), dp(16 + GRID_GAP)) }   // room for a focused tile's growth and the name under it
         val scroll = ScrollView(this).apply { addView(body); clipChildren = false; clipToPadding = false; isVerticalScrollBarEnabled = false }
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL; setPadding(dp(32), dp(24), dp(32), dp(20)); clipChildren = false
@@ -1322,7 +1322,7 @@ class HomeActivity : Activity() {
             body.removeAllViews()
             var row: LinearLayout? = null
             mem.forEachIndexed { i, m ->
-                if (i % cols == 0) { row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; clipChildren = false }; body.addView(row, LinearLayout.LayoutParams(-2, -2).apply { if (i > 0) topMargin = gap }) }
+                if (i % cols == 0) { row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; clipChildren = false }; body.addView(row, LinearLayout.LayoutParams(-2, -2).apply { if (i > 0) topMargin = dp(GRID_GAP) }) }
                 val t = PanelTile(this, m, w, m.label, ::dp).apply {
                     setOnClickListener { dlg.dismiss(); ui.post { launch(m) } }
                     setOnLongClickListener { menu(m); true }
