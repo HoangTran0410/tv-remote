@@ -377,6 +377,7 @@
   "pk_hidden": "Hidden",
   "pk_live": "Widget",
   "pk_none": "None",
+  "pk_over_apps": "Over any app",
   "pk_none_found": "Nothing found",
   "pk_grid_hint": "Add or remove tiles on the home screen.",
   "pk_target_hint": "Pick what this opens: an app, one of its shortcuts or a live widget.",

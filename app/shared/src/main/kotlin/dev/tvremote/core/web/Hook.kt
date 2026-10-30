@@ -99,8 +99,8 @@ class Hook(
     private fun act(r: HttpServer.Request): HttpServer.Response {
         val p = params(r)
         val named = ACTIONS.filter { p.optString(it).isNotEmpty() }
-        if (named.size != 1) throw IllegalArgumentException(if (named.isEmpty()) "say what to do: key, scene, app, text, volume or power" else "one thing per call: " + named.joinToString(", "))
-        val out = perform(named[0], p.optString(named[0]), run)
+        if (named.size != 1) throw IllegalArgumentException(if (named.isEmpty()) "say what to do: key, scene, app, text, notify, volume or power" else "one thing per call: " + named.joinToString(", "))
+        val out = perform(named[0], p.optString(named[0]), p, run)
         return if (out.status in 200..299) HttpServer.Response.json(JSONObject().put("ok", true)) else out
     }
 
@@ -109,7 +109,7 @@ class Hook(
      * [via] is the router that runs the request it builds, so a caller with less right than the owner passes one that checks
      * its scope (RemoteService). An IllegalArgumentException is a bad value; a 404 for a scene carries the names that exist.
      */
-    fun perform(what: String, value: String, via: (HttpServer.Request) -> HttpServer.Response): HttpServer.Response {
+    fun perform(what: String, value: String, extra: JSONObject? = null, via: (HttpServer.Request) -> HttpServer.Response): HttpServer.Response {
         val v = value.trim()
         return when (what) {
             "key" -> {
@@ -128,6 +128,13 @@ class Hook(
                 send(via, "/api/app", JSONObject().put("link", v))
             }
             "text" -> send(via, routes.text, JSONObject().put("text", v.take(500)))
+            "notify" -> {                                          // a card on the TV's screen (the page's "Send a message"); title and seconds are clamped by Notify.clean on the way
+                if (v.isEmpty()) throw IllegalArgumentException("notify: the message")
+                val m = JSONObject().put("text", v)
+                extra?.optString("title")?.takeIf { it.isNotBlank() }?.let { m.put("title", it) }
+                extra?.optString("seconds")?.takeIf { it.isNotBlank() }?.let { m.put("seconds", it) }
+                send(via, "/api/notify", m)
+            }
             "volume" -> volume(via, v)
             else -> power(via, v)
         }
@@ -164,8 +171,8 @@ class Hook(
     /** Query first, then a JSON body: Home Assistant's rest_command sends either. */
     private fun params(r: HttpServer.Request): JSONObject {
         val o = JSONObject()
-        if (r.method == "POST" && r.length in 1..4096) r.jsonOrNull(4096)?.let { b -> for (k in ACTIONS) if (b.has(k)) o.put(k, b.get(k).toString()) }
-        for (k in ACTIONS) r.query[k]?.let { o.put(k, it) }
+        if (r.method == "POST" && r.length in 1..4096) r.jsonOrNull(4096)?.let { b -> for (k in ACTIONS + EXTRA) if (b.has(k)) o.put(k, b.get(k).toString()) }
+        for (k in ACTIONS + EXTRA) r.query[k]?.let { o.put(k, it) }
         return o
     }
 
@@ -187,7 +194,8 @@ class Hook(
     }
 
     companion object {
-        private val ACTIONS = listOf("key", "scene", "app", "text", "volume", "power")
+        private val ACTIONS = listOf("key", "scene", "app", "text", "notify", "volume", "power")
+        private val EXTRA = listOf("title", "seconds")                // options of notify, not actions of their own
         private val PKG = Regex("[A-Za-z0-9_.]{1,200}")
         private const val MAX_FAILS = 5                               // wrong tokens from one address in a minute: then a minute of 429
         private const val WINDOW = 60_000L

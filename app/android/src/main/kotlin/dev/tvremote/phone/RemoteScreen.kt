@@ -58,7 +58,7 @@ internal fun MainActivity.layoutRemote() {
     pipBtn.alpha = if (picLive() || floating) 1f else 0.4f             // only a live picture can float
     listenChip.visibility = if (listen) View.VISIBLE else View.GONE  // the sound's own settings, only while it plays
     val share = prefs.getBoolean("listenShare", false)
-    listenChip.text = (if (share) T("listen.both") else T("remote_screen.phone")) + " ▾"
+    listenChip.text = (if (share || listenTvLoud) T("listen.both") else T("remote_screen.phone")) + " ▾"   // "phone" says the TV is quiet: not when the TV could not be silenced
     listenChip.setCompoundDrawables(listenArt(share), null, null, null)
     val hq = prefs.getBoolean("listenHq", false)
     hqBtn.visibility = listenChip.visibility

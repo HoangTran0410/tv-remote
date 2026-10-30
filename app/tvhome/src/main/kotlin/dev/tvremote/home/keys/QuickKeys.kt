@@ -86,7 +86,7 @@ object QuickKeys {
         fun targetOf(code: Int, c: JSONObject = Store.get(a)): String = if (code == POWER) c.optString("autoapp") else HomeConfig.keyApps(c.optJSONObject("keyapps"))[code].orEmpty()
         fun words(code: Int) = if (code == POWER) a.getString(R.string.qk_power) else Keys.name(a, code)
         fun choose(code: Int) {
-            Picker.show(a, Picker.Mode.TARGET, words(code), targetOf(code)) { t ->
+            Picker.show(a, Picker.Mode.TARGET, words(code), targetOf(code), actions = code != POWER) { t ->   // the power-on slot opens an app: an action needs a key press
                 if (code == POWER) Store.change(a, JSONObject().put("autoapp", t).put("autoon", t.isNotEmpty()))   // the slot alone decides
                 else {
                     val m = JSONObject(); for ((k, v) in HomeConfig.keyApps(Store.get(a).optJSONObject("keyapps"))) if (k != code) m.put(k.toString(), v)

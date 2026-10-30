@@ -130,6 +130,13 @@ class KeyFixTest {
         assertEquals(setOf(183), p.keys); assertEquals(listOf("a.b"), p[183]?.pkgs)   // 184's app is not installed: the key keeps its way
     }
 
+    @Test fun theControlCenterOnAKeyIsAnActionNotAnApp() {
+        val p = KeyFix.plan(emptyMap(), { true }, { it == dev.tvremote.home.Target.CONTROL }, mapOf(183 to dev.tvremote.home.Target.CONTROL))
+        assertEquals(KeyFix.CONTROL, p[183]?.act); assertTrue(p[183]!!.mine)
+        val none = KeyFix.plan(emptyMap(), { true }, { false }, mapOf(183 to dev.tvremote.home.Target.CONTROL))   // TV Home not installed: the key keeps its way
+        assertTrue(none.isEmpty())
+    }
+
     @Test fun aWorkingKeyIsNeverTakenForAnApp() {
         // 170 still has its handler, 7 is a number: both named by the person, neither taken
         val p = KeyFix.plan(mapped, { true }, { true }, mapOf(170 to "a.b", 7 to "a.b", 999 to "a.b"))

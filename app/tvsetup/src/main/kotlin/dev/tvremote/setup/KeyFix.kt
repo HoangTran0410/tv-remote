@@ -12,6 +12,7 @@ import android.os.Looper
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.provider.Settings
+import dev.tvremote.home.Target
 import dev.tvremote.setup.keys.KeysProtocol
 import org.xmlpull.v1.XmlPullParser
 
@@ -31,6 +32,10 @@ object KeyFix {
 
     /** [LAUNCHER]: the home screen of pkgs[0] ([HomeKey]: Home where the swap is not possible). */
     const val INPUT = "input"; const val APP = "app"; const val HOME = "home"; const val SETTINGS = "settings"; const val LAUNCHER = "launcher"
+    /** [CONTROL]: TV Home's Control Center over the app in front (the person gave the key [Target.CONTROL]). */
+    const val CONTROL = "controlcenter"
+    /** A key the person gave [target] (TV Home's map): an app, or TV Home's action. */
+    fun userRule(target: String) = if (target == Target.CONTROL) Rule(CONTROL, listOf(target), true) else Rule(APP, listOf(target), true)
 
     /** By key code, as the stock launcher would answer them (cleanyourtv's list, checked on Google TV and Xiaomi remotes). */
     val RULES: Map<Int, Rule> = mapOf(
@@ -79,7 +84,7 @@ object KeyFix {
         }
         // the person's own key → app (TV Home's "keyapps"): over a dead key's old job or an app button's, never over another key that works
         val free = offered(mapped, alive)
-        for ((code, pkg) in user) if (code in COLOUR || code in free) if (launchable(pkg)) out[code] = Rule(APP, listOf(pkg), mine = true)
+        for ((code, pkg) in user) if (code in COLOUR || code in free) if (launchable(pkg)) out[code] = userRule(pkg)
         return out
     }
 
@@ -96,6 +101,7 @@ object KeyFix {
                 HOME -> start(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME))
                 SETTINGS -> start(Intent(Settings.ACTION_SETTINGS))
                 LAUNCHER -> start(HomeKey.intent(c, r.pkgs[0]))
+                CONTROL -> start(Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.ControlCenterActivity"))
             }
         } catch (e: Exception) { }
     }
@@ -176,13 +182,16 @@ object KeyFix {
         } catch (e: PackageManager.NameNotFoundException) { false } catch (e: Exception) { true }
     }
 
-    fun launchable(c: Context, pkg: String): Boolean = c.packageManager.getLeanbackLaunchIntentForPackage(pkg) != null
+    fun launchable(c: Context, pkg: String): Boolean = if (pkg == Target.CONTROL) homeThere(c) else c.packageManager.getLeanbackLaunchIntentForPackage(pkg) != null
         || c.packageManager.getLaunchIntentForPackage(pkg) != null
+
+    /** The Control Center is TV Home's: no key is taken for it where TV Home is not installed. */
+    private fun homeThere(c: Context) = try { c.packageManager.getPackageInfo("dev.tvremote.home", 0); true } catch (e: Exception) { false }
 
     fun current(c: Context): Map<Int, Rule> = plan(keyMap(c), { alive(c, it) }, { launchable(c, it) }, HomeKeys.keys(c), forDevice(Build.MODEL, Build.DEVICE), HomeKey.pkg(c))
 
     /** The numbers the person gave an app (TV Home's map): outside TV Home a hold opens it ([HomeKey.DIGITS]). */
-    fun digits(c: Context): Map<Int, String> = HomeKeys.keys(c).filter { (k, p) -> k in HomeKey.DIGITS && launchable(c, p) }
+    fun digits(c: Context): Map<Int, String> = HomeKeys.keys(c).filter { (k, p) -> k in HomeKey.DIGITS && p != Target.CONTROL && launchable(c, p) }
 
     // ---- on or off -------------------------------------------------------------------------------------------------
 
@@ -240,7 +249,7 @@ object KeyFix {
             val has = has(was)
             val old = hasStale(was)                                   // updated from a TV Setup that had the services inside: move the entry
             val map = keyMap(c)
-            val now0 = plan(map, { alive(c, it) }, { launchable(c, it) }, HomeKeys.keys(c), forDevice(Build.MODEL, Build.DEVICE), HomeKey.pkg(c)) + digits(c).mapValues { Rule(APP, listOf(it.value), true) }
+            val now0 = plan(map, { alive(c, it) }, { launchable(c, it) }, HomeKeys.keys(c), forDevice(Build.MODEL, Build.DEVICE), HomeKey.pkg(c)) + digits(c).mapValues { userRule(it.value) }
             android.util.Log.i("KeyFix", "global keys ${map.size}, to bring back ${now0.keys}, service on=$has")   // adb logcat -s KeyFix
             val need = (wanted(c) && now0.isNotEmpty()) || HoldKeys.on(c) || MicVoice.on(c)   // a dead key to bring back, "hold to use Input" (HoldKeys), or the mic button (MicVoice)
                 || KeyTest.live()                                     // the key tester is open: Home and the app buttons are shown through the filter

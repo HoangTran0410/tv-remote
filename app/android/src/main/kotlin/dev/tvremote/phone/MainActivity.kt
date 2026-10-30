@@ -76,6 +76,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
     internal var video = false                                         // video: show the TV picture (off = buttons only, no load on the TV)
     internal var surfaceReady = false
     internal var listen = false                                        // the TV's sound plays here (Listen.kt)
+    internal var listenTvLoud = false                                  // the private way could not silence the TV (Android 13+)
     internal var listenShare = false                                   // ...and on the TV's speakers too
     internal var bgListen = false                                      // listening with the app in the background: the session runs without its picture
     internal val talk by lazy { Talk(this) }                          // Quick talk: hold to talk (Talk.kt)

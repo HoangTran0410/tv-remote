@@ -96,7 +96,7 @@ class Feeds {
 
     /**
      * Kinds: 0 the format (codec 1 Opus or 2 PCM, then the rate and the channels), 1 Opus's header, 2 a piece of sound, 3 a
-     * notice ("noshare": the TV's speakers go silent meanwhile), 4 nothing new, 5 an error word, 6 the TV went silent
+     * notice ("noshare": the TV's speakers go silent meanwhile; "tvsilent" / "tvloud": the private way did / did not turn the TV's volume to 0, Android 13+), 4 nothing new, 5 an error word, 6 the TV went silent
      * (raw only: nothing is sent until it is not, [Hush]). With [opus] the session is
      * asked for "opus" (a browser on a secure page decodes it: the computer's 127.0.0.1); otherwise for "raw" and the TV
      * encodes nothing: scrcpy hands over PCM, made 24 kHz mono here for each browser ([Downmix], 48 KB/s) unless [hq] (as
@@ -130,7 +130,7 @@ class Feeds {
         val h = make(object : Tv.Listener {
             override fun onStatus(key: String, detail: String) {
                 if (!mine()) return
-                if (key == "audio") { val p = if (detail == "noshare") packet(3, detail.toByteArray()) else packet(5, "unsupported".toByteArray()); notice = p; listeners.forEach { it.q.add(p) } }
+                if (key == "audio") { val p = if (detail == "noshare" || detail == "tvsilent" || detail == "tvloud") packet(3, detail.toByteArray()) else packet(5, "unsupported".toByteArray()); notice = p; listeners.forEach { it.q.add(p) } }
                 if (key == "closed" || key == "error") listeners.forEach { if (key == "error") it.q.add(packet(5, detail.toByteArray())); it.q.add(endPacket) }
             }
             override fun onVideoSize(w: Int, h: Int) { }

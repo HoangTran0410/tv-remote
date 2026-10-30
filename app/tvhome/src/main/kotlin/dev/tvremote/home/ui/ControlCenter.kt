@@ -244,9 +244,9 @@ object ControlCenter {
     }
 
     /** Opens the panel over [anchor] (the top bar's capsule), its right edge on the anchor's. [open] starts a settings action, [inputs] is the list of sources, [customize] TV Home's own settings. */
-    fun show(a: Activity, anchor: View, open: (String) -> Unit, inputs: () -> Unit, customize: () -> Unit): Dialog = Panel(a, anchor, open, inputs, customize).dialog
+    fun show(a: Activity, anchor: View?, open: (String) -> Unit, inputs: () -> Unit, customize: () -> Unit, closed: () -> Unit = {}): Dialog = Panel(a, anchor, open, inputs, customize, closed).dialog
 
-    private class Panel(val a: Activity, val anchor: View, val open: (String) -> Unit, val inputs: () -> Unit, val customize: () -> Unit) {
+    private class Panel(val a: Activity, val anchor: View?, val open: (String) -> Unit, val inputs: () -> Unit, val customize: () -> Unit, val closed: () -> Unit) {
         private val d = a.resources.displayMetrics.density
         private fun dp(v: Number) = (v.toFloat() * d).toInt()
         private val dm = a.resources.displayMetrics
@@ -524,7 +524,7 @@ object ControlCenter {
             grid.addView(dimRow, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })   // full width under the tiles: a bar wants room, a 7th tile would leave half a row
             // the bar keeps Left / Right, so the colour button is reached from the tile above it (and Left from the button is the bar)
             tiles.last().id = View.generateViewId(); tiles.last().nextFocusDownId = tint.id; tint.nextFocusUpId = tiles.last().id
-            val at = IntArray(2).also { anchor.getLocationOnScreen(it) }
+            val at = IntArray(2).also { if (anchor != null) anchor.getLocationOnScreen(it) else { it[0] = dm.widthPixels - dp(48); it[1] = dp(48) } }   // no anchor (over another app, ControlCenterActivity): where the top bar's would be
             val maxH = dm.heightPixels - at[1] - dp(12) - dp(170)     // the title, the round row and the footer stay on the screen
             col.addView(object : ScrollView(a) {
                 override fun onMeasure(w: Int, h: Int) = super.onMeasure(w, MeasureSpec.makeMeasureSpec(maxH.coerceAtLeast(dp(140)), MeasureSpec.AT_MOST))
@@ -544,13 +544,13 @@ object ControlCenter {
                 setGravity(Gravity.TOP or Gravity.END)
                 setDimAmount(Drop.MENU_DIM)
                 attributes = attributes.apply {
-                    x = (sw - (at[0] + anchor.width)).coerceAtLeast(dp(16)); y = at[1]   // its right edge on the capsule's, its top on the bar's
+                    x = (sw - (at[0] + (anchor?.width ?: 0))).coerceAtLeast(dp(16)); y = at[1]   // its right edge on the capsule's, its top on the bar's
                     width = w; height = WindowManager.LayoutParams.WRAP_CONTENT
                 }
             }
-            val bar = anchor.parent as? TopBar
+            val bar = anchor?.parent as? TopBar
             bar?.holdWord(true)                                       // the button's word would show through the dim
-            dialog.setOnDismissListener { val owed = dimOwed; ui.removeCallbacksAndMessages(null); if (owed) dimSend.run(); bar?.holdWord(false) }   // a step made just before Back still reaches the TV
+            dialog.setOnDismissListener { val owed = dimOwed; ui.removeCallbacksAndMessages(null); if (owed) dimSend.run(); bar?.holdWord(false); closed() }   // a step made just before Back still reaches the TV
             dialog.setOnShowListener { tiles.first().requestFocus(); refresh(); ui.postDelayed(tick, TICK_MS) }   // the first tile focused; the clock ticks only while open
             dialog.show()
         }
