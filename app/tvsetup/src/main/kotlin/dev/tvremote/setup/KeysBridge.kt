@@ -62,7 +62,7 @@ class KeysBridge : Service() {
     private val homeHeld = Runnable { if (homeDown != 0L) { homeLong = true; HomeKey.longPress() } }
     @Volatile private var digit = -1                                  // the number held now, and the app on screen when it went down
     @Volatile private var digitFront = ""
-    private val digitHeld = Runnable { val d = digit; val p = digits.get(d); if (p != null && digitFront != HomeKey.TV_HOME) { digit = -1; act(KeyFix.Rule(KeyFix.APP, listOf(p), true), d, digitFront) } }
+    private val digitHeld = Runnable { val d = digit; val p = digits.get(d); if (p != null && digitFront != HomeKey.TV_HOME) { digit = -1; act(KeyFix.userRule(p), d, digitFront) } }
 
     private val packages = object : BroadcastReceiver() {
         override fun onReceive(c: Context, i: Intent) { refresh() }

@@ -9,6 +9,7 @@ const QK_POWER = 0;                                                // the power-
 // What a target is called: the app's name, the shortcut's or the live widget's title (from what TV Home lists), else its id
 function qkLabel(c, apps, t) {
   const k = Target.kind(t);
+  if (k === 'action') return T('home.qk_cc');
   if (k === 'tile') { const x = (c.tilesAvail || []).find((y) => y.key === t); return (x && x.title) || Target.id(t); }
   if (k === 'pin') { const x = (c.pinsAvail || []).find((y) => y.key === t); return (x && x.title) || Target.id(t); }
   const a = (apps || []).find((y) => y.pkg === t);
@@ -18,8 +19,8 @@ function qkLabel(c, apps, t) {
 // The logo of a target: the app's own picture (a shortcut wears its app's), a live widget a letter on a colour of its own
 function qkLogo(c, t) {
   const k = Target.kind(t);
-  if (k === 'tile') {
-    const x = (c.tilesAvail || []).find((y) => y.key === t), word = (x && x.title) || Target.id(t);
+  if (k === 'tile' || k === 'action') {
+    const x = (c.tilesAvail || []).find((y) => y.key === t), word = k === 'action' ? T('home.qk_cc') : (x && x.title) || Target.id(t);
     return el('div', { className: 'appicon placeholder qklive', textContent: (word.match(/\p{L}|\p{N}/u) || ['?'])[0].toUpperCase() });
   }
   const pkg = Target.pkg(t), icon = appIcon(pkg);
@@ -27,6 +28,7 @@ function qkLogo(c, t) {
   return icon;
 }
 
+// [opts.actions]: also TV Home's own actions (a key only).
 // A modal list of what can be opened: the apps, each one's shortcuts, the live widgets, with a search (no accents needed). It gives the
 // target chosen, '' for "none" (only when [opts.none]) or null when closed. With [opts.toggle] a press calls it and the list stays
 // open (the "add to home screen" use): [opts.has](target) says what is on, redrawn by the returned `refresh()` on the dialog.
@@ -39,6 +41,7 @@ function pickTarget(title, now, c, apps, opts = {}) {
     const items = [];
     const add = (t, label, owner, section) => items.push({ t, label, owner, section });
     for (const a of apps) add(a.pkg, a.label || appName(a.pkg), '', 'apps');
+    if (opts.actions) add('do:controlcenter', T('home.qk_cc'), T('home.qk_over'), 'apps');   // a key's action (TV Home's Quick settings over any app), not for the power-on slot
     for (const p of c.pinsAvail || []) add(p.key, p.title, p.app ? appName(p.app) : '', 'pins');
     for (const x of c.tilesAvail || []) add(x.key, x.title, T('home.qk_live'), 'tiles');
     items.sort((a, b) => a.label.localeCompare(b.label));
@@ -86,7 +89,7 @@ function quickKeysDraw(host, c, apps, send) {
   const target = (code) => code === QK_POWER ? (c.autoapp || '') : (ka[code] || '');
   const dead = (code) => !!have && code !== QK_POWER && !have.includes(code) && !target(code);
   const choose = async (code, words) => {
-    const p = await pickTarget(words, target(code), c, apps, { none: true });
+    const p = await pickTarget(words, target(code), c, apps, { none: true, actions: code !== QK_POWER });
     if (p === null) return;
     if (code === QK_POWER) { send({ autoapp: p, autoon: !!p }); return; }   // the slot alone decides: a target switches it on, none switches it off
     const n = { ...ka }; if (p) n[code] = p; else delete n[code];

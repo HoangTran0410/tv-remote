@@ -127,7 +127,7 @@ object Picker {
     private fun fold(t: String) = java.text.Normalizer.normalize(t, java.text.Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").replace('đ', 'd').replace('Đ', 'D').lowercase()
 
     /** [only]: an app's ([Links.Item.group]) channels alone, from "+ Add"'s "Pin a VTVgo channel". [paste]: a card on top with a QR to TV Home's own page, where a link is pasted from a phone ([ManageServer.PASTE_HASH]). */
-    fun show(a: Activity, mode: Mode, title: String, now: String = "", only: String? = null, paste: Boolean = false, onPick: (String) -> Unit = {}): Dialog {
+    fun show(a: Activity, mode: Mode, title: String, now: String = "", only: String? = null, paste: Boolean = false, actions: Boolean = false, onPick: (String) -> Unit = {}): Dialog {
         val d = a.resources.displayMetrics.density
         fun dp(v: Number) = (v.toFloat() * d).toInt()
         val dm = a.resources.displayMetrics
@@ -309,6 +309,7 @@ object Picker {
             val got = ArrayList<Item>()
             if (only == null) {                                         // one app's channels alone: no apps, shortcuts, widgets
             if (mode == Mode.TARGET) got.add(Item("", a.getString(R.string.pk_none), null, "", 0))
+            if (mode == Mode.TARGET && actions) got.add(Item(Target.CONTROL, a.getString(R.string.cc_title), null, a.getString(R.string.pk_over_apps), 0, R.drawable.ic_settings))   // a key's action: the Control Center over any app
             for (p in apps) got.add(Item(p.pkg, p.label, p, if (p.pkg in hidden && mode == Mode.GRID) a.getString(R.string.pk_hidden) else "", 0))
             if (mode == Mode.CHOOSE) { allKeys = apps.map { it.pkg }; chosen.clear(); chosen.addAll(apps.map { it.pkg }.filter { it !in hidden }); a.runOnUiThread { labels() } }
             else {

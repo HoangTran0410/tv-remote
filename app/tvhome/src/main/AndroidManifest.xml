@@ -90,6 +90,9 @@
         <!-- a pinned link (YouTube...): the shortcut's own target, not exported; it finds the app that takes the link now (apps/LinkApps.kt) -->
         <activity android:name=".LinkActivity" android:exported="false" android:theme="@style/Ghost" android:excludeFromRecents="true"
             android:noHistory="true" android:taskAffinity="" />
+        <!-- the Control Center over whatever app is in front (a remote key set to it in TV Setup's key filter); Back closes it, the app beneath keeps running -->
+        <activity android:name=".ControlCenterActivity" android:exported="true" android:theme="@style/Ghost" android:excludeFromRecents="true"
+            android:taskAffinity="" android:launchMode="singleTask" />
         <activity android:name=".OpenActivity" android:exported="true" android:theme="@style/Ghost" android:excludeFromRecents="true"
             android:noHistory="true" android:taskAffinity="" />
         <!-- its settings, from a phone or computer that has ADB here (core/ontv/Home.kt); DUMP is held by the shell only, so no app can -->

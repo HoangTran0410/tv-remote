@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: a remote key (a colour key or a dead Settings / Apps key) can open Quick settings (the Control Center) over any app; pick "Quick settings" in Quick keys or on the page. Needs TV Setup and TV Home; Back closes it and the app beneath keeps running.
 - A Hisense VIDAA TV's Settings key on the remote now reads "Menu" with the menu icon, on the web remote and the Phone app; it already sent the TV's Menu key (#8).
 - TV Setup: a TV whose clock jumps ahead with no network time no longer forgets paired browsers, and never stamps them with the wrong year.
 - TV Channels: one long OK on a channel opens one menu, not two stacked; a stream check saved while the clock was ahead no longer sticks for a year.

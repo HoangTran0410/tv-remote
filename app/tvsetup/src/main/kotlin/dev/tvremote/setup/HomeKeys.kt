@@ -34,7 +34,7 @@ internal object HomeKeys {
     } catch (e: Exception) { JSONObject() }
 
     /** The key → app map the person wants; empty while the switch is off. */
-    fun keys(c: Context): Map<Int, String> = all(c).filterValues { Target.kind(it) == Target.Kind.APP }   // apps only: the key filter's rule can start nothing else (KeyFix); see [open] for the others
+    fun keys(c: Context): Map<Int, String> = all(c).filterValues { Target.kind(it).let { k -> k == Target.Kind.APP || k == Target.Kind.ACTION } }   // apps and TV Home's actions: the key filter's rule can start nothing else (KeyFix); see [open] for the others
 
     /** Every target the person gave a key, shortcuts and live widgets too. */
     fun all(c: Context): Map<Int, String> = load(c).let { if (it.optBoolean("keyon")) HomeConfig.keyApps(it.optJSONObject("keyapps")) else emptyMap() }
@@ -49,6 +49,7 @@ internal object HomeKeys {
             Target.Kind.APP -> pm.getLeanbackLaunchIntentForPackage(t) ?: pm.getLaunchIntentForPackage(t)
             Target.Kind.PIN, Target.Kind.TILE ->
                 Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.OpenActivity").putExtra("t", t).takeIf { launchable(c, "dev.tvremote.home") }
+            Target.Kind.ACTION -> Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.ControlCenterActivity").takeIf { launchable(c, "dev.tvremote.home") }
             null -> null
         } ?: return false
         return try { c.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); true } catch (e: Exception) { false }
