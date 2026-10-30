@@ -691,7 +691,7 @@ object HomeConfig {
             .put("keyon", o.optBoolean("keyon", false))
             .put("keyapps", JSONObject().also { m -> keyApps(o.optJSONObject("keyapps")).toSortedMap().forEach { (k, v) -> m.put(k.toString(), v) } })
             .put("autoon", o.optBoolean("autoon", false))
-            .put("autoapp", Target.clean(o.optString("autoapp")))
+            .put("autoapp", if (o.optBoolean("autoon", false)) Target.clean(o.optString("autoapp")) else "")   // one meaning: an app here opens at power-on; "autoon" stays for TV Setups that read it
             .put("autoall", o.optBoolean("autoall", false))
             .put("tiles", JSONArray(tiles))
             .put("folders", folders)

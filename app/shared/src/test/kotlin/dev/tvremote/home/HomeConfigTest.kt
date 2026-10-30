@@ -424,7 +424,8 @@ class HomeConfigTest {
             .put("keyapps", JSONObject().put("183", "x.y").put("7", "x.z").put("170", "p.q").put("24", "no.vol").put("183x", "bad.one").put("184", "not a pkg")))
         assertEquals(mapOf(183 to "x.y", 7 to "x.z", 170 to "p.q"), HomeConfig.keyApps(m.getJSONObject("keyapps")))   // volume up (24), a bad name, a bad package: dropped
         assertEquals("a.b", m.getString("autoapp"))
-        assertEquals("", HomeConfig.clean(JSONObject().put("autoapp", "x; rm -rf /")).getString("autoapp"))
+        assertEquals("", HomeConfig.clean(JSONObject().put("autoon", true).put("autoapp", "x; rm -rf /")).getString("autoapp"))
+        assertEquals("", HomeConfig.clean(JSONObject().put("autoon", false).put("autoall", true).put("autoapp", "a.b")).getString("autoapp"))   // switched off: no app left behind that "always" would still open
     }
 
     @Test fun keysSurviveTheForwardAndTheMerge() {

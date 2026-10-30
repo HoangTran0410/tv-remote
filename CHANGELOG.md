@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: switching off the power-on app forgets the app too, so "Open even over another app" can no longer open an app that was switched off.
 - TV Home: a pinned link's menu shows where it goes; pressing it lets you change the link in place (same spot, remote key and your own name), no more delete and add again.
 - TV Home: a tile opened by a remote key shows which key on its corner (a colour dot, the number, or the key's icon), beside the lock.
 - TV Home: an app with a huge picture (thousands of pixels) no longer crashes the home screen: banners and icons are scaled down before they are drawn.
