@@ -19,4 +19,5 @@ Color keys, number keys and buttons that no longer do anything can open the app 
 
 ### Tips
 
+- An app's tile shows its key in the top corner (a colour dot, a number or an icon); hidden when quick keys are off.
 - Quick keys use the same keypad: see [Quick keys](home-quickkeys.md).

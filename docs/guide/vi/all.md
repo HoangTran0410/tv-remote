@@ -559,12 +559,22 @@ Live widget là một ô trong lưới app có số liệu thật, bấm là là
 
 ## Thêm và gỡ ô trên màn hình chính
 
-Một bảng để thêm, chia nhóm: app chưa có trên lưới, ghim kênh / video, live widget, lối tắt, hàng Xem tiếp. App không chọn ở lần chạy đầu nằm ở đây.
+Một bảng cho mọi thứ ghim được lên lưới, kể cả hàng Xem tiếp và app bỏ qua ở lần chạy đầu.
+
+| Dòng trong ＋ Thêm | Ghim gì |
+| --- | --- |
+| Chọn app… | App chưa có trên lưới |
+| Thư mục mới | Một ô gom nhiều app ([Thư mục](#home-folders)) |
+| Thêm link | Link web, YouTube hoặc deeplink của app (`app://…`), dán từ điện thoại ([Ghim link](#home-pin)) |
+| Ghim kênh, video | Kênh, video, playlist YouTube |
+| Live widget | Ô có số liệu thật: Dọn RAM, Hẹn giờ tắt, Xem tiếp kênh ([Live widget](#home-tiles)) |
+| Cảnh & lối tắt | Lối tắt của app (kênh VTV1…) và [cảnh](#scenes) của bạn |
 
 1. Trên lưới, bấm ô **＋ Thêm** (hoặc tab TV → Tùy chỉnh → **Thêm vào màn hình chính**).
-2. Lối tắt đã ghim (VTV1...) hiện trong danh sách có dấu tích: bấm để gỡ hoặc ghim lại. Mục vừa thêm nằm cuối lưới, đang chọn sẵn để di chuyển ngay.
+2. Lối tắt đã ghim (VTV1...) hiện trong danh sách có dấu tích: bấm để gỡ hoặc ghim lại. Mục vừa thêm nằm cuối lưới, chọn sẵn để di chuyển.
 3. Gỡ: giữ OK trên ô → **Trên màn hình chính** → **Bỏ khỏi màn hình chính**. Lối tắt gỡ là gỡ hẳn, kể cả ghim của hệ thống.
 
+- Góc ô: 🔒 khóa, ⏳ giới hạn giờ, ⏻ tự mở khi bật TV, phím remote đang gán.
 - Gỡ cài đặt một app (như TV Channels) thì lối tắt và live widget của nó tự rời lưới, dock, thứ tự và bảng chọn, cả khi gỡ lúc TV Home không chạy.
 - Hàng **Xem tiếp** là phim xem dở ở app khác, cuộn ngang. Giữ OK trên một ô: **Vị trí hàng**, **Ghim vào lưới**, hoặc **Không hiện mục của** app đó.
 - Hiện lại mục của app: giữ OK trên app > **Trên màn hình chính**, hoặc **＋ Thêm**.
@@ -581,15 +591,15 @@ Gom vài app vào một ô thư mục (hiện 4 biểu tượng nhỏ và tên).
 
 - Khóa PIN và giới hạn giờ của app vẫn áp dụng bên trong thư mục.
 
-## Ghim link lên TV Home
+## Ghim link, deeplink lên TV Home
 
-Dán link web, YouTube hoặc link app: xem TV mở bằng app nào, rồi ghim thành ô trên lưới hoặc thử mở ngay.
+Dán link web, YouTube hoặc deeplink của app (`app://…`): xem TV mở bằng app nào, rồi ghim thành ô trên lưới hoặc thử mở ngay.
 
 1. Tab TV → thẻ Màn hình chính → **📌 Ghim link**, dán link, xem thẻ xem trước.
 2. Bấm **Ghim lên TV** hoặc **Thử trên TV**.
 
 - Trên TV: **＋ Thêm → Thêm link**.
-- Sửa link: giữ OK trên ô → bấm dòng link. Ô giữ chỗ, phím và tên.
+- Xem và sửa link: giữ OK trên ô, dòng 🔗 hiện link đang trỏ tới; bấm vào để sửa. Ô giữ chỗ, phím và tên bạn đặt.
 - Trong YouTube, bấm Chia sẻ → TV Remote để chọn Ghim hay Mở.
 - Remote → Mở trên TV → Mở link: link nào cũng hỏi Ghim hay Thử.
 - TV dùng bản YouTube chỉnh sửa (SmartTube, TizenTube…) vẫn mở đúng app.
@@ -684,6 +694,7 @@ Phím màu, phím số và nút đã hết tác dụng có thể mở app bạn 
 
 ### Mẹo
 
+- Ô của app đã gán hiện phím ở góc trên (chấm màu, số hoặc biểu tượng), tắt phím nhanh thì ẩn.
 - Phím nhanh dùng chung bàn phím này: xem [Phím nhanh](#home-quickkeys).
 
 ## Phím nhanh của TV Home

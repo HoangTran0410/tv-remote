@@ -559,12 +559,22 @@ A live widget is a tile in the app grid with live numbers; press it and it does 
 
 ## Add and remove tiles on the home screen
 
-One panel to add, in groups: apps not on the grid, pinned channels / videos, live widgets, shortcuts, the Play Next row. Apps left out at the first run wait here.
+One panel for all you can pin to the grid, the Play Next row and apps left out at the first run too.
+
+| Row in ＋ Add | What it pins |
+| --- | --- |
+| Choose apps… | Apps not on the grid yet |
+| New folder | One tile holding several apps ([Folders](#home-folders)) |
+| Add a link | A web or YouTube link, or an app's deep link (`app://…`), pasted from your phone ([Pin a link](#home-pin)) |
+| Pin channels, videos | YouTube channels, videos, playlists |
+| Live widgets | Tiles with live numbers: Free RAM, Sleep timer, Keep watching ([Live widgets](#home-tiles)) |
+| Scenes & shortcuts | Apps' shortcuts (a VTV1 channel…) and your [scenes](#scenes) |
 
 1. On the grid press the **＋ Add** tile (or TV tab → Customize → **Add to home screen**).
-2. Pinned shortcuts (VTV1...) show with a check mark: press to unpin or pin again. A new item lands at the end of the grid, already picked so you can move it.
+2. Pinned shortcuts (VTV1...) show with a check mark: press to unpin or pin again. A new item lands at the end of the grid, picked, ready to move.
 3. Remove: hold OK on a tile → **On the home screen** → **Remove from the grid**. A shortcut stays gone, its system pin too.
 
+- Tile corner: 🔒 locked, ⏳ limit, ⏻ power-on app, its remote key.
 - Uninstall an app (such as TV Channels) and its shortcuts and live widgets leave the grid, dock, order and picker by themselves, even if it was removed while TV Home was not running.
 - The **Play Next** row is what you left half-watched in other apps, scrolling sideways. Hold OK on one: **Row position**, **Pin to the grid**, or **Don't show** that app's items.
 - To show an app's items again: hold OK on the app > **On the home screen**, or **＋ Add**.
@@ -581,15 +591,15 @@ Put several apps in one folder tile (4 small icons and its name). Edit it on the
 
 - An app's PIN lock and time limit still apply inside a folder.
 
-## Pin a link to TV Home
+## Pin a link or deep link to TV Home
 
-Paste a web, YouTube or app link: see which app the TV opens it with, then pin it as a tile or try it on the TV.
+Paste a web or YouTube link, or an app's deep link (`app://…`): see which app the TV opens it with, then pin it as a tile or try it on the TV.
 
 1. TV tab → Home screen card → **📌 Pin a link**, paste the link, check the preview.
 2. Press **Pin to TV** or **Try on the TV**.
 
 - On the TV: **＋ Add → Add a link**.
-- Change a link: hold OK on its tile → the link row. It keeps its spot, key and name.
+- See and change a link: hold OK on its tile, the 🔗 row shows where it goes; press it to change it. The tile keeps its spot, key and the name you gave it.
 - In YouTube, Share → TV Remote asks Pin or Open.
 - Remote → Open on the TV → Open a link: any link asks Pin or Try too.
 - A TV with a modded YouTube (SmartTube, TizenTube…) opens the right app.
@@ -684,6 +694,7 @@ Color keys, number keys and buttons that no longer do anything can open the app 
 
 ### Tips
 
+- An app's tile shows its key in the top corner (a colour dot, a number or an icon); hidden when quick keys are off.
 - Quick keys use the same keypad: see [Quick keys](#home-quickkeys).
 
 ## TV Home Quick keys

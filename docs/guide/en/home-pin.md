@@ -1,12 +1,12 @@
-# Pin a link to TV Home
+# Pin a link or deep link to TV Home
 
-Paste a web, YouTube or app link: see which app the TV opens it with, then pin it as a tile or try it on the TV.
+Paste a web or YouTube link, or an app's deep link (`app://…`): see which app the TV opens it with, then pin it as a tile or try it on the TV.
 
 1. TV tab → Home screen card → **📌 Pin a link**, paste the link, check the preview.
 2. Press **Pin to TV** or **Try on the TV**.
 
 - On the TV: **＋ Add → Add a link**.
-- Change a link: hold OK on its tile → the link row. It keeps its spot, key and name.
+- See and change a link: hold OK on its tile, the 🔗 row shows where it goes; press it to change it. The tile keeps its spot, key and the name you gave it.
 - In YouTube, Share → TV Remote asks Pin or Open.
 - Remote → Open on the TV → Open a link: any link asks Pin or Try too.
 - A TV with a modded YouTube (SmartTube, TizenTube…) opens the right app.

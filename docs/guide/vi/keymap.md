@@ -19,4 +19,5 @@ Phím màu, phím số và nút đã hết tác dụng có thể mở app bạn 
 
 ### Mẹo
 
+- Ô của app đã gán hiện phím ở góc trên (chấm màu, số hoặc biểu tượng), tắt phím nhanh thì ẩn.
 - Phím nhanh dùng chung bàn phím này: xem [Phím nhanh](home-quickkeys.md).
