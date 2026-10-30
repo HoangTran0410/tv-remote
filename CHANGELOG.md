@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: a "Sky by the sun" background that goes from night to dawn, day and dusk with the sun where the Weather widget's place is (else the time zone), worked out on the TV with no network and repainted every 5 minutes; nothing runs unless it is the background.
+- TV Home: burn-in care for OLED TVs: "Pure black (OLED)" is the true #000 background, and a new option (off by default) moves the home screen 1 dp every minute inside a 6 dp square.
 - A Hisense VIDAA TV's Settings key on the remote now reads "Menu" with the menu icon, on the web remote and the Phone app; it already sent the TV's Menu key (#8).
 - TV Setup: a TV whose clock jumps ahead with no network time no longer forgets paired browsers, and never stamps them with the wrong year.
 - TV Channels: one long OK on a channel opens one menu, not two stacked; a stream check saved while the clock was ahead no longer sticks for a year.

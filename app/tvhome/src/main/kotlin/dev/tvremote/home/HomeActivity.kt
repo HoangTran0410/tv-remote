@@ -59,6 +59,7 @@ import dev.tvremote.home.wall.Backdrop
 import dev.tvremote.home.apps.Badges
 import dev.tvremote.home.ui.Drop
 import dev.tvremote.home.ui.Frost
+import dev.tvremote.home.ui.PixelShift
 import dev.tvremote.home.apps.InputOpen
 import dev.tvremote.home.apps.Inputs
 import dev.tvremote.home.apps.LinkApps
@@ -89,6 +90,7 @@ import dev.tvremote.home.wall.WebSnapper
 import dev.tvremote.home.wall.WebVideo
 import dev.tvremote.home.wall.NetPicture
 import dev.tvremote.home.wall.Slideshow
+import dev.tvremote.home.wall.Sky
 import dev.tvremote.home.widgets.Widgets
 import dev.tvremote.home.ui.Zoom
 
@@ -319,7 +321,7 @@ class HomeActivity : Activity() {
         if (locked) { try { unregisterReceiver(unlocked) } catch (e: Exception) { }; super.onDestroy(); return }
         Store.onChange = null; ThemeShots.live = null
         open?.dismiss()
-        ui.removeCallbacks(widgetTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick); ui.removeCallbacks(slideTick); ui.removeCallbacks(webRetry); ui.removeCallbacks(liveTick)
+        ui.removeCallbacks(widgetTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick); ui.removeCallbacks(slideTick); ui.removeCallbacks(webRetry); ui.removeCallbacks(liveTick); ui.removeCallbacks(skyTick); ui.removeCallbacks(shiftTick)
         detachWeb(); detachVideo()
         try { unregisterReceiver(changed); unregisterReceiver(tick) } catch (e: Exception) { }
         bg.shutdownNow()
@@ -624,7 +626,7 @@ class HomeActivity : Activity() {
         }
     }
 
-    override fun onPause() { if (moving != null) endMove(false); zoom.paused(); ui.removeCallbacks(widgetTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick); ui.removeCallbacks(slideTick); ui.removeCallbacks(liveTick); super.onPause() }
+    override fun onPause() { if (moving != null) endMove(false); zoom.paused(); ui.removeCallbacks(widgetTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick); ui.removeCallbacks(slideTick); ui.removeCallbacks(liveTick); ui.removeCallbacks(skyTick); ui.removeCallbacks(shiftTick); super.onPause() }
 
     private var cpuAgain = false
 
@@ -1348,7 +1350,7 @@ class HomeActivity : Activity() {
     /** The background of [conf], when it is not the one on screen: a new choice, the rotation, a new photo, a new Bing picture. */
     private fun wall() {
         val id = conf.optString("wall")
-        val key = id + (Walls.file(this, id)?.let { it.name + it.lastModified() } ?: "") + conf.optLong("photo") + conf.optString("wfit") + (if (id == HomeConfig.WEB) conf.optString("wurl") + conf.optString("wmode") + conf.optInt("wsnap") + conf.optBoolean("wkeep") else "") + (if (id == HomeConfig.OWN) conf.optString("wcol") + conf.optString("wdir") else "")   // a photo put over the old file, another day's Bing picture: a new one
+        val key = id + (Walls.file(this, id)?.let { it.name + it.lastModified() } ?: "") + conf.optLong("photo") + conf.optString("wfit") + (if (id == HomeConfig.WEB) conf.optString("wurl") + conf.optString("wmode") + conf.optInt("wsnap") + conf.optBoolean("wkeep") else "") + (if (id == HomeConfig.OWN) conf.optString("wcol") + conf.optString("wdir") else "") + (if (id == HomeConfig.SKY) Sky.load(this).let { Sky.stamp() } else "")   // a photo put over the old file, another day's Bing picture: a new one
         val shade = conf.optInt("shade")
         if (key == wallShown && shade == wallShade) return
         // the veil alone moved (the stepper): the picture kept is painted again; read and decoded again, each step took ~0.4 s of the
@@ -1651,8 +1653,29 @@ class HomeActivity : Activity() {
 
     private val wallTick = Runnable { Store.advance(this, false); wallTimer() }
 
+    // The sky background repaints every few minutes and burn-in care steps once a minute: each timer exists only while its option is on
+    // and Home is in front (onPause removes it); with both off nothing here runs.
+    private val skyTick = Runnable { wall(); skyTimer() }
+    private fun skyTimer() {
+        ui.removeCallbacks(skyTick)
+        if (conf.optString("wall") == HomeConfig.SKY) ui.postDelayed(skyTick, Sun.REPAINT_MS)
+    }
+
+    private val shiftTick = Runnable { shiftStep(); shiftTimer() }
+    private fun shiftTimer() {
+        ui.removeCallbacks(shiftTick)
+        if (conf.optBoolean("shift", false)) { shiftStep(); ui.postDelayed(shiftTick, PixelShift.untilNext()) }
+        else (scroll.parent as? View)?.let { it.translationX = 0f; it.translationY = 0f }
+    }
+    /** Everything drawn on the wallpaper moves together (the glass pane rides inside it); the wallpaper itself stays. */
+    private fun shiftStep() {
+        val (x, y) = PixelShift.at(System.currentTimeMillis())
+        (scroll.parent as? View)?.let { it.translationX = dp(x).toFloat(); it.translationY = dp(y).toFloat() }
+    }
+
     /** The one timer of the rotation, set while Home is on screen only (nothing runs when it is not); a change sets it again. */
     private fun wallTimer() {
+        skyTimer(); shiftTimer()
         ui.removeCallbacks(wallTick)
         val every = conf.optString("wevery")
         val walls = conf.optJSONArray("walls")?.let { a -> List(a.length()) { a.optString(it) } } ?: return
@@ -2472,6 +2495,7 @@ fun wallColors(wall: String, conf: JSONObject? = null): IntArray = when (wall) {
     "forest" -> intArrayOf(0xFF06140F.toInt(), 0xFF133B2D.toInt(), 0xFF0A1F18.toInt())
     "aurora" -> intArrayOf(0xFF071A1F.toInt(), 0xFF0F4C4A.toInt(), 0xFF2B2A6B.toInt())
     "black" -> intArrayOf(Color.BLACK, Color.BLACK)
+    HomeConfig.SKY -> Sky.colors()
     "sunset" -> intArrayOf(0xFF1F0D1C.toInt(), 0xFF6B2D4A.toInt(), 0xFFA14A4A.toInt())
     "ember" -> intArrayOf(0xFF190B08.toInt(), 0xFF4A1E10.toInt(), 0xFF7A2E12.toInt())
     "plum" -> intArrayOf(0xFF150B22.toInt(), 0xFF3A1F56.toInt(), 0xFF5A2F7A.toInt())
@@ -2486,7 +2510,7 @@ fun wallColors(wall: String, conf: JSONObject? = null): IntArray = when (wall) {
 }
 
 /** Which way a wall's gradient runs ([HomeConfig.WDIRS]): the person's own wall's "wdir"; every built-in one top-left to bottom-right. */
-fun wallDir(wall: String, conf: JSONObject?) = if (wall == HomeConfig.OWN) conf?.optString("wdir")?.takeIf { it in HomeConfig.WDIRS } ?: "tl_br" else "tl_br"
+fun wallDir(wall: String, conf: JSONObject?) = if (wall == HomeConfig.OWN) conf?.optString("wdir")?.takeIf { it in HomeConfig.WDIRS } ?: "tl_br" else if (wall == HomeConfig.SKY) "tb" else "tl_br"
 
 private val ORIENT = mapOf("tl_br" to GradientDrawable.Orientation.TL_BR, "tb" to GradientDrawable.Orientation.TOP_BOTTOM, "lr" to GradientDrawable.Orientation.LEFT_RIGHT,
     "bl_tr" to GradientDrawable.Orientation.BL_TR, "br_tl" to GradientDrawable.Orientation.BR_TL, "bt" to GradientDrawable.Orientation.BOTTOM_TOP,

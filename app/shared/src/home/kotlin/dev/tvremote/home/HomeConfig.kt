@@ -53,6 +53,9 @@ import org.json.JSONObject
  *   lang    TV Home's words: "" the TV's own language, or one of [LANGS] whatever the TV is set to
  *   anim    motion effects (a focused app lifts, rows glide, the screen fades in); off = instant, with a ring. TV Home also
  *           treats the system's "animator duration scale 0" as off
+ *   shift   burn-in care for OLED: every minute Home moves one step round a square of at most 6 dp (clock, widgets, top bar; the wallpaper
+ *           stays), default false, nothing runs while off. A TV Home that has this reports it in the config; older ones do not.
+ *           The "black" wall is the pure #000 one
  *   motion  how much moves while [anim] is on: "" this TV's choice (calm on one with little memory, 2.25 GB or less, or that Android
  *           calls low on RAM), "calm" (no overshoot, shorter, only the tile grows: fewer frames on a weak chip), "full"
  *   focus   how the focused app shows: "glass" (a pane gliding from tile to tile) or "ring" (a blue ring on the tile)
@@ -149,8 +152,10 @@ object HomeConfig {
     const val ROWS_MAX = 10.0
     private const val HIDDEN_MAX = 300
     private const val ORDER_MAX = 800
+    /** "sky" (in [PLAIN]) is a gradient that follows the sun from where the TV is ([Sun]); its colours are worked out on the TV and repainted every [Sun.REPAINT_MS]. */
+    const val SKY = "sky"
     /** Plain gradients (HomeActivity.wallColors). */
-    val PLAIN = listOf("night", "ocean", "dusk", "forest", "aurora", "black", "sunset", "ember", "plum", "midnight", "teal", "slate", "graphite", "navy", "wine", "moss")
+    val PLAIN = listOf("sky", "night", "ocean", "dusk", "forest", "aurora", "black", "sunset", "ember", "plum", "midnight", "teal", "slate", "graphite", "navy", "wine", "moss")
     /** Scenes TV Home draws itself, no picture file (WallSpec; app/tvhome wall/WallArt.kt). */
     val ART = listOf("dawn", "peaks", "dunes", "waves", "candy", "peach", "meadow", "mist", "bokeh", "canyon")
     /** The person's own wall: a colour or a gradient they make ([wcol], [wdir]). */
@@ -653,6 +658,7 @@ object HomeConfig {
             .put("infold", o.optBoolean("infold", false))
             .put("watchAt", o.optString("watchAt").takeIf { it in WATCH_AT } ?: WATCH_AT[0])
             .put("anim", o.optBoolean("anim", true))
+            .put("shift", o.optBoolean("shift", false))               // burn-in care: Home moves a few px every minute (ui/PixelShift)
             .put("motion", o.optString("motion").takeIf { it in MOTIONS } ?: "")
             .put("focus", o.optString("focus").takeIf { it == "ring" } ?: "glass")
             .put("cols", o.optInt("cols", COLS_DEFAULT).coerceIn(COLS_MIN, COLS_MAX))
