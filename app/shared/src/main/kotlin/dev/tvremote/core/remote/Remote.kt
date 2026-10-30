@@ -102,7 +102,7 @@ interface Remote : Closeable {
             LG -> setOf("keys", "text", "apps", "app_list", "volume_set", "link", "screen_off", "wol", "scenes", "inputs", "mouse")
             SAMSUNG -> setOf("keys", "text", "apps", "app_list", "wol", "scenes")
             ROKU -> setOf("keys", "text", "apps", "app_list", "wol", "scenes", "inputs")
-            VIDAA -> setOf("keys", "text", "apps", "app_list", "volume_set", "wol", "scenes", "inputs", "pair_code")
+            VIDAA -> setOf("keys", "text", "apps", "app_list", "volume_set", "screen_off", "wol", "scenes", "inputs", "pair_code")
             else -> setOf("keys", "text", "apps", "volume_set", "link", "screen_off", "wol", "scenes", "adb", "pair_code", "store", "inputs", "mouse")
         }
 

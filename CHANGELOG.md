@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Hisense (VIDAA): "Screen off" works without ADB (the backlight goes off, the sound plays; any key brings the picture back).
 - Watch: when the picture stays all black while nothing plays, the page offers the software encoder (some boxes' hardware encoders send black frames, a ZTE B860H).
 - Hisense (VIDAA): the TV's MAC is now learned from `eth0` / `wlan0` and from plain 12-digit values (VIDAA U6.1 TVs such as the 58A53FXVT), both interfaces are kept and woken with Wake-on-LAN; apps launch by name whatever the punctuation or case ("Stan.", "Spotify : Music & Podcasts").
 - TV Home: a "Sun sky" background that goes from night to dawn, day and dusk with the sun where the Weather widget's place is (else the time zone), worked out on the TV with no network and repainted every 5 minutes; nothing runs unless it is the background.
