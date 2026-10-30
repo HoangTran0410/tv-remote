@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: folders on the app grid. A folder is a tile showing up to 4 small icons and its name; OK opens a panel of its apps (Back closes, each app keeps its menu, PIN locks and limits still apply). Made from an app's menu (Put in a folder), renamed, moved on the grid, emptied or deleted from the TV or from the page's Customize > Folders (create, rename, delete, add / take out an app, move between folders, reorder inside one). An empty folder disappears; deleting one puts its apps back on the grid.
+- TV Home: the Play Next row can be ordered "Latest first" by the programme's last engagement time (Row order in the row's menu, Customize and the page); the default stays as the apps give it.
 - A Hisense VIDAA TV's Settings key on the remote now reads "Menu" with the menu icon, on the web remote and the Phone app; it already sent the TV's Menu key (#8).
 - TV Setup: a TV whose clock jumps ahead with no network time no longer forgets paired browsers, and never stamps them with the wrong year.
 - TV Channels: one long OK on a channel opens one menu, not two stacked; a stream check saved while the clock was ahead no longer sticks for a year.

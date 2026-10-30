@@ -133,7 +133,11 @@ object LiveWidgets {
     /** The live widgets that are on the grid (config "tiles"), as live widgets' apps; they show even while their provider is away, saying so. */
     fun apps(c: Context, conf: JSONObject): List<App> {
         val a = conf.optJSONArray("tiles") ?: return emptyList()
-        return List(a.length()) { a.getString(it) }.mapNotNull { if (Target.isPin(it)) Pins.app(c, it) else App(it, title(c, it), null) }   // a shortcut that is gone shows nothing
+        val folders = conf.optJSONObject("folders")
+        return List(a.length()) { a.getString(it) }.mapNotNull {
+            if (HomeConfig.isFolder(it)) folders?.optJSONObject(HomeConfig.folderId(it))?.let { f -> App(it, f.optString("name").ifEmpty { c.getString(R.string.folder_default) }, null, null, f.optJSONArray("apps")?.let { m -> List(m.length()) { i -> m.getString(i) } } ?: emptyList()) }
+            else if (Target.isPin(it)) Pins.app(c, it) else App(it, title(c, it), null)   // a shortcut that is gone shows nothing
+        }
     }
 
     /** The config the clients read gains: "tilesOk", "tilesAvail" [{key, title, kind, layout}] and "tilesState" ([OK] / [MISSING] / [UNTRUSTED]). */

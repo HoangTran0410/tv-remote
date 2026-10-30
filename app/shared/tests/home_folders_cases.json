@@ -1,0 +1,48 @@
+{
+  "about": "Folder operations on TV Home's grid: Folders.kt (FoldersTest) and js/home_folders.js (home_folders.test.js) both give each 'change' (null: does not apply). args: strings and numbers as the operation takes them after the config.",
+  "base": {
+    "dock": ["com.d.dock"],
+    "hidden": ["com.h.hid"],
+    "order": ["com.a.one", "com.b.two", "tile:dev.tvremote.setup/ram", "com.c.three"],
+    "tiles": ["tile:dev.tvremote.setup/ram"],
+    "folders": {}
+  },
+  "withFolder": {
+    "dock": ["com.d.dock"],
+    "hidden": ["com.h.hid"],
+    "order": ["com.a.one", "folder:f1", "tile:dev.tvremote.setup/ram", "com.c.three"],
+    "tiles": ["tile:dev.tvremote.setup/ram", "folder:f1"],
+    "folders": { "f1": { "name": "Video", "apps": ["com.b.two", "com.e.four"] } }
+  },
+  "cases": [
+    { "name": "create takes the app's place in the order", "from": "base", "op": "create", "args": ["f1", "  Video   apps ", "com.b.two"],
+      "change": { "dock": ["com.d.dock"], "hidden": ["com.h.hid"], "order": ["com.a.one", "folder:f1", "tile:dev.tvremote.setup/ram", "com.c.three"],
+        "tiles": ["tile:dev.tvremote.setup/ram", "folder:f1"], "folders": { "f1": { "name": "Video apps", "apps": ["com.b.two"] } } } },
+    { "name": "create from a favourite or a hidden app takes it out of the dock / hidden", "from": "base", "op": "create", "args": ["f2", "X", "com.d.dock"],
+      "change": { "dock": [], "hidden": ["com.h.hid"], "order": ["com.a.one", "com.b.two", "tile:dev.tvremote.setup/ram", "com.c.three", "folder:f2"],
+        "tiles": ["tile:dev.tvremote.setup/ram", "folder:f2"], "folders": { "f2": { "name": "X", "apps": ["com.d.dock"] } } } },
+    { "name": "create refuses a shortcut and a bad id", "from": "base", "op": "create", "args": ["f1", "X", "pin:com.a.one/x"], "change": null },
+    { "name": "create refuses a bad id", "from": "base", "op": "create", "args": ["Bad Id", "X", "com.a.one"], "change": null },
+    { "name": "rename", "from": "withFolder", "op": "rename", "args": ["f1", " Films "],
+      "change": { "dock": ["com.d.dock"], "hidden": ["com.h.hid"], "order": ["com.a.one", "folder:f1", "tile:dev.tvremote.setup/ram", "com.c.three"],
+        "tiles": ["tile:dev.tvremote.setup/ram", "folder:f1"], "folders": { "f1": { "name": "Films", "apps": ["com.b.two", "com.e.four"] } } } },
+    { "name": "rename of an unknown folder", "from": "withFolder", "op": "rename", "args": ["zz", "x"], "change": null },
+    { "name": "delete puts the apps back where the folder was", "from": "withFolder", "op": "delete", "args": ["f1"],
+      "change": { "dock": ["com.d.dock"], "hidden": ["com.h.hid"], "order": ["com.a.one", "com.b.two", "com.e.four", "tile:dev.tvremote.setup/ram", "com.c.three"],
+        "tiles": ["tile:dev.tvremote.setup/ram"], "folders": {} } },
+    { "name": "add from the grid", "from": "withFolder", "op": "add", "args": ["f1", "com.c.three"],
+      "change": { "dock": ["com.d.dock"], "hidden": ["com.h.hid"], "order": ["com.a.one", "folder:f1", "tile:dev.tvremote.setup/ram"],
+        "tiles": ["tile:dev.tvremote.setup/ram", "folder:f1"], "folders": { "f1": { "name": "Video", "apps": ["com.b.two", "com.e.four", "com.c.three"] } } } },
+    { "name": "add from the hidden list, at a place", "from": "withFolder", "op": "add", "args": ["f1", "com.h.hid", 0],
+      "change": { "dock": ["com.d.dock"], "hidden": [], "order": ["com.a.one", "folder:f1", "tile:dev.tvremote.setup/ram", "com.c.three"],
+        "tiles": ["tile:dev.tvremote.setup/ram", "folder:f1"], "folders": { "f1": { "name": "Video", "apps": ["com.h.hid", "com.b.two", "com.e.four"] } } } },
+    { "name": "add refuses a live widget", "from": "withFolder", "op": "add", "args": ["f1", "tile:dev.tvremote.setup/ram"], "change": null },
+    { "name": "remove puts the app on the grid right after the folder", "from": "withFolder", "op": "remove", "args": ["f1", "com.e.four"],
+      "change": { "dock": ["com.d.dock"], "hidden": ["com.h.hid"], "order": ["com.a.one", "folder:f1", "com.e.four", "tile:dev.tvremote.setup/ram", "com.c.three"],
+        "tiles": ["tile:dev.tvremote.setup/ram", "folder:f1"], "folders": { "f1": { "name": "Video", "apps": ["com.b.two"] } } } },
+    { "name": "reorder", "from": "withFolder", "op": "reorder", "args": ["f1", "com.e.four", 0],
+      "change": { "dock": ["com.d.dock"], "hidden": ["com.h.hid"], "order": ["com.a.one", "folder:f1", "tile:dev.tvremote.setup/ram", "com.c.three"],
+        "tiles": ["tile:dev.tvremote.setup/ram", "folder:f1"], "folders": { "f1": { "name": "Video", "apps": ["com.e.four", "com.b.two"] } } } },
+    { "name": "reorder of an app that is not in it", "from": "withFolder", "op": "reorder", "args": ["f1", "com.c.three", 0], "change": null }
+  ]
+}

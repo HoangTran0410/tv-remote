@@ -706,5 +706,21 @@
   "adb_need": "Cần cấp quyền một lần: đổi một cài đặt TV Home bất kỳ trong App điện thoại hoặc App máy tính",
   "adb_failed": "DNS chặn quảng cáo không trả lời, đã giữ cài đặt cũ",
   "adb_note": "Chặn ở mức DNS: chặn tên miền quảng cáo, không chặn quảng cáo chạy trong video YouTube.",
-  "adb_toggle": "Chặn quảng cáo"
+  "adb_toggle": "Chặn quảng cáo",
+  "watch_sort": "Thứ tự hàng",
+  "watch_sort_default": "Theo từng app",
+  "watch_sort_latest": "Mới xem nhất trước",
+  "folder_default": "Thư mục",
+  "folder_put": "Cho vào thư mục",
+  "folder_other": "Chuyển sang thư mục khác",
+  "folder_new": "Thư mục mới",
+  "folder_name": "Tên thư mục",
+  "folder_out": "Đưa ra khỏi thư mục",
+  "folder_earlier": "Lên trước trong thư mục",
+  "folder_later": "Xuống sau trong thư mục",
+  "folder_open": "Mở",
+  "folder_delete": "Xóa thư mục",
+  "folder_note": "Xóa thư mục thì các app trong đó về lại màn hình chính.",
+  "folder_full": "Không thêm được thư mục nữa",
+  "folder_apps": {"one": "%d app", "other": "%d app"}
 }

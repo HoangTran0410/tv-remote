@@ -254,7 +254,50 @@ async function homeOpen() {
   } });
   const namesHead = el('div', { className: 'card-head' }, el('h3', { textContent: T('home.names') }), addName);
   const orderHead = el('h3', { textContent: T('home.order') }), orderBox = el('div', { className: 'group' });
-  const orderFace = (k) => { if (Target.kind(k) !== 'app') return qkLogo(r.config, k); const i = appIcon(k); onMeta(k, (m) => i.fill(m)); return i; };
+  // folders on the grid (HomeConfig "folders"): every edit is one change made by HomeFolders (the TV's Folders.kt does the same) and sent whole
+  const foldHead = el('div', { className: 'card-head' }, el('h3', { textContent: T('home.folders_head') })), foldNote = el('p', { className: 'note', textContent: T('home.folders_note') }), foldBox = el('div', { className: 'list' });
+  const foldName = (id) => (r.config.folders[id] || {}).name || T('home.folder_default');
+  const foldApply = (change) => { if (change) send(change); };
+  const addFold = el('button', { type: 'button', className: 'small', textContent: T('home.folder_new'), onclick: async () => {
+    const c = r.config, free = apps().filter((x) => !c.dock.includes(x) && !HomeFolders.folderOf(c, x));
+    const p = await chooseApp(T('home.folder_first'), free); if (!p) return;
+    const n = await ask(T('home.folder_name_q'), { value: T('home.folder_default'), ok: T('home.folder_create') });
+    if (n !== null && n !== undefined) foldApply(HomeFolders.create(c, HomeFolders.newId(c), String(n), p));
+  } });
+  foldHead.append(addFold);
+  function drawFolders(c) {
+    const on = !!c.foldersOk; foldHead.hidden = foldNote.hidden = foldBox.hidden = !on;
+    if (!on) return;
+    addFold.disabled = !HomeFolders.canCreate(c);
+    const ids = Object.keys(c.folders || {}).sort();
+    foldBox.replaceChildren(...(ids.length ? ids : []).map((id) => {
+      const f = c.folders[id];
+      const rename = el('button', { type: 'button', className: 'small', textContent: T('home.folder_rename'), onclick: async () => {
+        const n = await ask(T('home.folder_name_q'), { value: foldName(id), ok: T('home.folder_rename') });
+        if (n !== null && n !== undefined) foldApply(HomeFolders.rename(r.config, id, String(n)));
+      } });
+      const del = el('button', { type: 'button', className: 'small danger', textContent: T('home.folder_delete'), onclick: async () => {
+        if (await ask(T('home.folder_delete_q', { name: foldName(id) }), { ok: T('home.folder_delete'), danger: true })) foldApply(HomeFolders.delete(r.config, id));
+      } });
+      const add = el('button', { type: 'button', className: 'small', textContent: T('home.folder_add_app'), onclick: async () => {
+        const p = await chooseApp(T('home.folder_add_app'), apps().filter((x) => !r.config.dock.includes(x) && !(r.config.folders[id] || { apps: [] }).apps.includes(x)));
+        if (p) foldApply(HomeFolders.add(r.config, id, p));
+      } });
+      const rows = f.apps.map((pkg, i) => row(pkg, [
+        tool('◀', T('home.folder_left'), () => foldApply(HomeFolders.reorder(r.config, id, pkg, i - 1)), i === 0),
+        tool('▶', T('home.folder_right'), () => foldApply(HomeFolders.reorder(r.config, id, pkg, i + 1)), i === f.apps.length - 1),
+        tool('⇄', T('home.folder_move_to'), async () => {
+          const others = Object.keys(r.config.folders).filter((x) => x !== id);
+          const to = others.length ? await ask(T('home.folder_move_to'), { value: '', choices: others.map((x) => ({ value: x, name: foldName(x) })), ok: T('home.folder_move') }) : null;
+          if (to && r.config.folders[to.trim()]) foldApply(HomeFolders.add(r.config, to.trim(), pkg));
+        }, Object.keys(c.folders).length < 2),
+        tool('✕', T('home.folder_out'), () => foldApply(HomeFolders.remove(r.config, id, pkg))),
+      ]));
+      return el('div', { className: 'group' }, el('div', { className: 'card-head' }, el('h4', { textContent: f.name || T('home.folder_default') }), rename, add, del),
+        rows.length ? el('div', { className: 'list' }, ...rows) : el('p', { className: 'empty', textContent: T('home.folder_empty') }));
+    }));
+  }
+  const orderFace = (k) => { if (homeIsFolder(k)) return el('div', { className: 'appicon placeholder', textContent: '▣' }); if (Target.kind(k) !== 'app') return qkLogo(r.config, k); const i = appIcon(k); onMeta(k, (m) => i.fill(m)); return i; };
   const orderDraw = homeOrderBox(orderBox, orderFace, (k) => appLabel(k), (change) => send(change));
   const addHidden = el('button', { type: 'button', className: 'small', textContent: T('home.hide'), onclick: async () => {
     const p = await chooseApp(T('home.pick_hide'), apps().filter((x) => !r.config.hidden.includes(x)));
@@ -364,6 +407,7 @@ async function homeOpen() {
   const SHOWS = ['showClock', 'showDate', 'showNet', 'showGear', 'showAdd', 'showSuggest', 'showWatch'];
   const shows = Object.fromEntries(SHOWS.map((k) => [k, el('input', { type: 'checkbox', onchange: () => send({ [k]: shows[k].checked }) })]));
   const showHead = el('h3', { className: 'secthead', textContent: T('home.g_sec_shown') });
+  const watchSortHead = el('h3', { textContent: T('home.watch_sort') }), watchSort = el('div', { className: 'fchips' });   // the Play Next order (HomeConfig "watchSort")
   const watchAtHead = el('h3', { textContent: T('home.watch_at') }), watchAt = el('div', { className: 'fchips' });   // where the Play Next items go (HomeConfig "watchAt"); only a TV Home that reports it
   const anim = el('input', { type: 'checkbox', onchange: () => send({ anim: anim.checked }) });
   const infold = el('input', { type: 'checkbox', onchange: () => send({ infold: infold.checked }) });   // HomeConfig "infold", default off
@@ -484,7 +528,7 @@ async function homeOpen() {
     if (!on) return;
     const have = c.tiles || [], offer = c.tilesAvail || [];
     tilesNote.textContent = T(c.tilesState === 'untrusted' ? 'home.tiles_untrusted' : offer.length || have.length || c.pinsOk ? 'home.tiles_note' : 'home.tiles_missing');
-    tilesList.replaceChildren(...have.map((k) => row(k, [tool('✕', T('home.tile_remove'), () => send({ tiles: have.filter((x) => x !== k) }))])));   // a live widget whose provider is away stays, to take off
+    tilesList.replaceChildren(...have.filter((k) => !homeIsFolder(k)).map((k) => row(k, [tool('✕', T('home.tile_remove'), () => send({ tiles: have.filter((x) => x !== k) }))])));   // a live widget whose provider is away stays, to take off
   }
   // the home screen as the settings now make it, at the TV's shape, over every group (CleanTV's idea, 2026-10-27): each change shows
   // here at once, no look over at the TV. The same painter as the themes' pictures; the wall's own picture when the page has one
@@ -510,7 +554,7 @@ async function homeOpen() {
   function draw() {
     const c = r.config;
     drawPrev(c);
-    drawTiles(c);
+    drawTiles(c); drawFolders(c);
     drawThemes(c);
     orderHead.hidden = orderBox.hidden = c.order === undefined;      // a TV Home older than its own order
     if (c.order !== undefined) orderDraw(c, r.apps);
@@ -569,6 +613,9 @@ async function homeOpen() {
     for (const k of SHOWS) { shows[k].checked = c[k] !== false; shows[k].closest('label').hidden = c[k] === undefined; }
     showHead.hidden = c.showClock === undefined;
     watchAtHead.hidden = watchAt.hidden = c.watchAt === undefined;
+    watchSortHead.hidden = watchSort.hidden = c.watchSort === undefined;
+    watchSort.replaceChildren(...[['default', 'home.watch_sort_default'], ['latest', 'home.watch_sort_latest']].map(([k, id]) =>
+      el('button', { type: 'button', className: c.watchSort === k ? 'on' : '', 'aria-pressed': String(c.watchSort === k), onclick: () => send({ watchSort: k }) }, T(id))));
     watchAt.replaceChildren(...[['bottom', 'home.watch_at_bottom'], ['top', 'home.watch_at_top'], ['under1', 'home.watch_at_under1'], ['tiles', 'home.watch_at_tiles']].map(([k, id]) =>
       el('button', { type: 'button', className: c.watchAt === k ? 'on' : '', 'aria-pressed': String(c.watchAt === k), onclick: () => send({ watchAt: k }) }, T(id))));
     clock.checked = c.clock24; greet.checked = c.greet; anim.checked = c.anim !== false;
@@ -953,8 +1000,8 @@ async function homeOpen() {
     ['look', 'sparkle', 180, 'home.g_look', [sect('home.sec_show', focusHead, focus, motionHead, motion, check(anim, 'home.anim'), check(clock, 'home.clock24')),
       sect('home.sec_head', check(greet, 'home.greet'), gstyleHead, gstyle, gnameLine, gtextLine, gtokens, gtype, hsplit, dstyleHead, dstyle, dtextLine, dtokens, dtype),
       sect(showHead, check(shows.showClock, 'home.show_clock'), check(shows.showDate, 'home.show_date'), check(shows.showNet, 'home.show_net'), check(shows.showGear, 'home.show_gear'),
-        check(shows.showAdd, 'home.show_add'), check(shows.showSuggest, 'home.show_suggest'), check(shows.showWatch, 'home.show_watch'), check(infold, 'home.show_infold'), watchAtHead, watchAt),
-      sect('home.sec_grid', colsHead, cols, rowsHead, rowsLine, rowsNote, orderHead, orderBox),
+        check(shows.showAdd, 'home.show_add'), check(shows.showSuggest, 'home.show_suggest'), check(shows.showWatch, 'home.show_watch'), check(infold, 'home.show_infold'), watchAtHead, watchAt, watchSortHead, watchSort),
+      sect('home.sec_grid', colsHead, cols, rowsHead, rowsLine, rowsNote, orderHead, orderBox, foldHead, foldNote, foldBox),
       sect(null, tilesHead, tilesNote, addHome, tilesList),
       sect(null, el('div', { className: 'card-head' }, el('h3', { textContent: T('home.hidden') }), addHidden), hidden),
       sect(null, namesHead, names)]],

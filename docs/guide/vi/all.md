@@ -570,6 +570,17 @@ Một bảng để thêm, chia nhóm: app chưa có trên lưới, ghim kênh / 
 - Giữ OK trên bất kỳ phần tử nào (thời tiết, nút trên cùng, ＋ Thêm) mở menu nhỏ của nó, đổi là thấy ngay. **Sửa màn hình chính** cho chọn cả đồng hồ và widget; Back để thoát.
 - Lối tắt ghim cũng có mục **Di chuyển**, chung thứ tự với app.
 
+## Thư mục trên lưới và thứ tự hàng Xem tiếp
+
+Gom vài app vào một ô thư mục (hiện 4 biểu tượng nhỏ và tên). Sửa được ngay trên TV hoặc ở tab TV → Tùy chỉnh → Thư mục.
+
+1. Giữ OK trên một app → **Trên màn hình chính** → **Cho vào thư mục**: chọn thư mục có sẵn hoặc **Thư mục mới** rồi đặt tên.
+2. OK trên thư mục mở một bảng các app của nó; Back đóng. Mỗi app trong đó vẫn có menu riêng, có **Đưa ra khỏi thư mục**, chuyển sang thư mục khác, lên trước / xuống sau.
+3. Giữ OK trên ô thư mục để đổi tên, di chuyển trên lưới hoặc xóa (app trong đó về lại lưới). Thư mục trống tự biến mất.
+
+- Khóa PIN và giới hạn giờ của app vẫn áp dụng bên trong thư mục.
+- Hàng Xem tiếp: giữ OK trên một mục → **Thứ tự hàng** → **Mới xem nhất trước** (mặc định: theo từng app).
+
 ## Ghim link lên TV Home
 
 Dán link web, YouTube hoặc link app: xem TV mở bằng app nào, rồi ghim thành ô trên lưới hoặc thử mở ngay.

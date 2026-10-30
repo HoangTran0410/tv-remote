@@ -64,7 +64,7 @@ val copyQr = tasks.register<Copy>("copyQr") {
 // ones TV Setup's web UI uses, copied from app/shared/web at build time, so the UI has ONE source; only the words the page needs travel.
 val webDir = file("../shared/web")
 val wordsDir = file("../shared/i18n")
-val homeWebJs = listOf("theme", "i18n", "qr", "base", "home_link", "home_media", "homeweb", "target", "appicon", "quickkeys", "ui", "home_walls", "home_qr", "home_order", "photofit", "home_pin", "home")
+val homeWebJs = listOf("theme", "i18n", "qr", "base", "home_link", "home_media", "homeweb", "target", "appicon", "quickkeys", "ui", "home_walls", "home_qr", "home_order", "home_folders", "photofit", "home_pin", "home")
 val homeWebCss = listOf("base", "page", "apps", "remote", "auto", "kit")
 val homeWebWords = listOf("home.", "homeweb.", "common.", "core.", "apps.", "pin.", "errors.pin_")   // pin.: the "Pin from YouTube" box (home_pin.js), its errors too
 val packHomeWeb = tasks.register("packHomeWeb") {

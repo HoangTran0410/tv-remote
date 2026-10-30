@@ -50,6 +50,12 @@ import org.json.JSONObject
  *   watchAt where the Play Next items go ([WATCH_AT], default "bottom"): "top" a row of their own above the apps, "under1" under
  *           the first row of apps, "bottom" after the last row of apps, "tiles" no row: they follow the grid's last tile in its columns.
  *           A TV Home older than this does not report it, so a page offers the choice only to one that does
+ *   watchSort the Play Next items' order ([WATCH_SORT], default "default"): "default" as the apps and TvProvider give them, "latest" the
+ *           most recently watched first, by the programme's last engagement time (those that give none keep their place after the others)
+ *   folders  folders on the app grid: {"<id>": {"name": "...", "apps": [package, ...]}}, at most [FOLDERS_MAX] of [FOLDER_APPS_MAX] apps. A folder is
+ *           a grid tile like a live widget: its key "folder:<id>" ([isFolder]) sits in "tiles" and in "order", so it is placed, moved and removed
+ *           as any tile; it lives while that key is in "tiles" and it holds an app. An app in a folder is off the grid (and out of
+ *           the dock); one app is in one folder. [Folders] holds the operations the TV and the page both do. A TV Home that has this reports "foldersOk": true
  *   lang    TV Home's words: "" the TV's own language, or one of [LANGS] whatever the TV is set to
  *   anim    motion effects (a focused app lifts, rows glide, the screen fades in); off = instant, with a ring. TV Home also
  *           treats the system's "animator duration scale 0" as off
@@ -434,6 +440,14 @@ object HomeConfig {
     const val TILES_MAX = 24                                          // live widgets and shortcuts together: the picker adds both; "tiles" and "tile:" are stored on TVs and sent between apps: kept
     /** [k] is a live widget's key ("tile:dev.tvremote.setup/ram"), not an app's package name. */
     fun isLive(k: String) = k.length <= 100 && LIVE.matches(k)
+    private val FOLDER = Regex("folder:[a-z0-9]{1,8}")
+    const val FOLDERS_MAX = 12
+    const val FOLDER_APPS_MAX = 40
+    /** [k] is a folder's key ("folder:ab12cd"): a grid tile that holds apps ([Folders]); "folder:" is stored on TVs and sent between apps: kept. */
+    fun isFolder(k: String) = FOLDER.matches(k)
+    fun folderKey(id: String) = "folder:$id"
+    fun folderId(k: String) = k.removePrefix("folder:")
+    val WATCH_SORT = listOf("default", "latest")
     fun liveKey(provider: String, id: String) = "tile:$provider/$id"
     /** The provider's package of a live widget's key, and its id there. */
     fun liveProvider(k: String) = k.removePrefix("tile:").substringBefore('/')
@@ -621,10 +635,14 @@ object HomeConfig {
         var walls = if (wall == WEB) listOf(WEB)
             else o.optJSONArray("walls")?.let { a -> (0 until a.length()).map { a.optString(it) } }.orEmpty().filter { knownWall(it) && it != WEB }.distinct().take(WALLS_MAX)
         if (walls.isEmpty()) walls = listOf(wall)
+        val tilesAsked = strs(o.optJSONArray("tiles")).filter { isLive(it) || Target.isPin(it) || isFolder(it) }.distinct().take(TILES_MAX)
+        val folders = folders(o.optJSONObject("folders"), dock, tilesAsked.filter { isFolder(it) }.map { folderId(it) }.toSet())
+        val folderKeys = folders.keys().asSequence().map { folderKey(it) }.toSet()
+        val tiles = tilesAsked.filter { !isFolder(it) || it in folderKeys }
         return JSONObject()
             .put("dock", JSONArray(dock))
             .put("hidden", JSONArray(pkgs(o.optJSONArray("hidden"), HIDDEN_MAX).filter { it !in dock }))
-            .put("order", JSONArray(pkgs(o.optJSONArray("order"), ORDER_MAX)))
+            .put("order", JSONArray(gridKeys(o.optJSONArray("order"), ORDER_MAX).filter { !isFolder(it) || it in folderKeys }))
             .put("wall", if (wall in walls) wall else walls[0])           // what shows is always one of the set
             .put("walls", JSONArray(walls))
             .put("wurl", wurl)
@@ -652,6 +670,7 @@ object HomeConfig {
             .also { n -> for (k in SHOWS) n.put(k, o.optBoolean(k, true)) }
             .put("infold", o.optBoolean("infold", false))
             .put("watchAt", o.optString("watchAt").takeIf { it in WATCH_AT } ?: WATCH_AT[0])
+            .put("watchSort", o.optString("watchSort").takeIf { it in WATCH_SORT } ?: WATCH_SORT[0])
             .put("anim", o.optBoolean("anim", true))
             .put("motion", o.optString("motion").takeIf { it in MOTIONS } ?: "")
             .put("focus", o.optString("focus").takeIf { it == "ring" } ?: "glass")
@@ -667,7 +686,8 @@ object HomeConfig {
             .put("autoon", o.optBoolean("autoon", false))
             .put("autoapp", Target.clean(o.optString("autoapp")))
             .put("autoall", o.optBoolean("autoall", false))
-            .put("tiles", JSONArray(strs(o.optJSONArray("tiles")).filter { isLive(it) || Target.isPin(it) }.distinct().take(TILES_MAX)))
+            .put("tiles", JSONArray(tiles))
+            .put("folders", folders)
             .put("qrs", qrs)
             .put("names", names(o.optJSONObject("names")))
             .put("themes", JSONArray(customThemes(o)))
@@ -752,6 +772,34 @@ object HomeConfig {
             if (v.isNotEmpty()) out.put(k, v)
         }
         return out
+    }
+
+    /**
+     * The folders kept: an [asked] id (its key is in "tiles") of 1-8 lowercase letters and digits, a name of one line ([NAME_MAX]),
+     * installed-app packages only (no shortcut, widget or folder), none in the dock, each app in one folder (the first by id wins);
+     * a folder with no app is no folder. Sorted by id, so the same folders always make the same text.
+     */
+    fun folders(g: JSONObject?, dock: List<String>, asked: Set<String>): JSONObject {
+        val out = JSONObject()
+        if (g == null) return out
+        val seen = HashSet<String>(dock)
+        for (id in g.keys().asSequence().sorted()) {
+            if (out.length() >= FOLDERS_MAX) break
+            if (!isFolder(folderKey(id)) || id !in asked) continue
+            val f = g.optJSONObject(id) ?: continue
+            val apps = pkgs(f.optJSONArray("apps"), FOLDER_APPS_MAX).filter { Target.kind(it) == Target.Kind.APP && seen.add(it) }
+            if (apps.isEmpty()) continue
+            val name = f.optString("name").replace(Regex("\\s+"), " ").trim().take(NAME_MAX).trim()
+            out.put(id, JSONObject().put("name", name).put("apps", JSONArray(apps)))
+        }
+        return out
+    }
+
+    /** "order": targets and folder keys ([pkgs] alone would drop the folders). */
+    private fun gridKeys(a: JSONArray?, max: Int): List<String> {
+        val out = LinkedHashSet<String>()
+        if (a != null) for (i in 0 until a.length()) a.optString(i).let { if (Target.valid(it) || isFolder(it)) out.add(it) }
+        return out.take(max)
     }
 
     private fun strs(a: JSONArray?) = if (a == null) emptyList() else (0 until a.length()).map { a.optString(it) }

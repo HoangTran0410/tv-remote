@@ -11,14 +11,16 @@ import dev.tvremote.home.Target
  * An app the TV can open from a home screen, with the picture it gives for one: a TV banner (16:9), else its icon. Or a shortcut
  * another app pinned here ([pin], a ShortcutInfo: [Pins]); its [pkg] is then "pin:<app>/<id>", the key of its tile.
  */
-class App(val pkg: String, val orig: String, val info: ActivityInfo?, val pin: Any? = null) {
+class App(val pkg: String, val orig: String, val info: ActivityInfo?, val pin: Any? = null, val members: List<String> = emptyList()) {
     /** The name shown everywhere: the person's own ([Apps.names], "names" of the settings) else the app's. */
     val label: String get() = Apps.names[pkg] ?: orig
     val renamed: Boolean get() = Apps.names.containsKey(pkg)
     /** A live widget ([LiveWidgets]) rather than an app: its pkg is "tile:<provider>/<id>", it has no pictures, a press runs its action. */
     val live: Boolean get() = HomeConfig.isLive(pkg)
-    /** On the grid by the settings' "tiles" (a live widget or a shortcut the picker added), not an installed app. */
-    val grid: Boolean get() = live || (pin != null && Target.isPin(pkg))
+    /** A folder ([Folders]): a tile that holds [members] (installed apps' packages); a press opens a panel of them. Its pkg is "folder:<id>". */
+    val folder: Boolean get() = HomeConfig.isFolder(pkg)
+    /** On the grid by the settings' "tiles" (a live widget, a folder or a shortcut the picker added), not an installed app. */
+    val grid: Boolean get() = live || folder || (pin != null && Target.isPin(pkg))
     var banner: Drawable? = null
     var icon: Drawable? = null
 

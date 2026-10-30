@@ -51,6 +51,7 @@ import dev.tvremote.tvui.TvUi
 import dev.tvremote.update.Release
 import dev.tvremote.update.SelfUpdate
 import dev.tvremote.home.apps.App
+import dev.tvremote.home.apps.FolderArt
 import dev.tvremote.home.apps.AppPages
 import dev.tvremote.home.apps.HomeLock
 import dev.tvremote.home.apps.AppRules
@@ -402,7 +403,7 @@ class HomeActivity : Activity() {
     private fun watchRead() {
         val cap = watchCap(); val w = tileW()
         watchBg.execute {
-            val got = (if (conf.optBoolean("showWatch", true)) Watch.read(this, cap, Store.rowsOff(this)) else emptyList()).map { it to Watch.art(this, it, w, TvUi.CARD) }
+            val got = (if (conf.optBoolean("showWatch", true)) Watch.read(this, cap, Store.rowsOff(this), conf.optString("watchSort", "default")) else emptyList()).map { it to Watch.art(this, it, w, TvUi.CARD) }
             runOnUiThread {
                 if (isDestroyed || got.map { it.first.key + it.first.title + it.first.done + (it.second != null) } == watch.map { it.first.key + it.first.title + it.first.done + (it.second != null) }) return@runOnUiThread
                 watch = got; show()
@@ -419,6 +420,7 @@ class HomeActivity : Activity() {
     private fun watchAt() = conf.optString("watchAt").takeIf { it in HomeConfig.WATCH_AT } ?: HomeConfig.WATCH_AT[0]
     /** How many items are read: a row of their own scrolls sideways, so it holds more; among the tiles they are one grid row's worth, or the grid would grow without end. */
     private fun watchCap() = if (watchAt() == "tiles") conf.optInt("cols", HomeConfig.COLS_DEFAULT) else WATCH_ROW
+    private fun watchSort() = conf.optString("watchSort").takeIf { it in HomeConfig.WATCH_SORT } ?: HomeConfig.WATCH_SORT[0]
     private fun watchAtName(k: String) = getString(when (k) { "top" -> R.string.watch_at_top; "under1" -> R.string.watch_at_under1; "tiles" -> R.string.watch_at_tiles; else -> R.string.watch_at_bottom })
 
     private fun watchMenu(it: Watch.Item) {
@@ -427,6 +429,9 @@ class HomeActivity : Activity() {
             gi(R.drawable.ic_updown, getString(R.string.watch_at), live = { watchAtName(watchAt()) }) {      // one press, the next place: the home screen changes behind the menu
                 val n = HomeConfig.WATCH_AT[(HomeConfig.WATCH_AT.indexOf(watchAt()) + 1) % HomeConfig.WATCH_AT.size]
                 Store.change(this, JSONObject().put("watchAt", n))
+            },
+            gi(R.drawable.ic_updown, getString(R.string.watch_sort), live = { getString(if (watchSort() == "latest") R.string.watch_sort_latest else R.string.watch_sort_default) }) {   // one press, the other order: the row is read again behind the menu
+                Store.change(this, JSONObject().put("watchSort", if (watchSort() == "latest") "default" else "latest"))
             },
             gi(R.drawable.ic_star, getString(R.string.watch_pin)) { watchPin(it, pic) },
             gi(R.drawable.ic_eye_off, getString(R.string.watch_hide, it.app)) { Store.rowsOff(this, it.pkg); watchRead() },
@@ -941,6 +946,8 @@ class HomeActivity : Activity() {
             val keep = l.filter { !(Target.kind(it).let { t -> t == Target.Kind.PIN || t == Target.Kind.TILE } && gone(Target.pkg(it))) }
             if (keep.size != l.size) change.put(k, org.json.JSONArray(keep))
         }
+        val folders = if (Store.get(this).optJSONObject("folders")?.length() ?: 0 > 0) Folders.forget(Store.get(this)) { gone(it) } else null   // an uninstalled app leaves its folder (an emptied one goes)
+        if (folders != null) runOnUiThread { if (!isDestroyed) Store.change(this, Folders.forget(Store.get(this)) { gone(it) } ?: return@runOnUiThread) }
         if (change.length() > 0) runOnUiThread { if (!isDestroyed) Store.change(this, change) }   // its listeners redraw: the main thread only (a dialog "Only the original thread…" on the FPT box)
         if (pkg != null) { Pins.refresh(this); LiveWidgets.refresh(this) }
     }
@@ -950,7 +957,7 @@ class HomeActivity : Activity() {
     /** A change of the settings ([Store.onChange]): everything that reads them, drawn again. */
     private fun onConf() {
         readNames(); if (Pins.resize(pinW())) pinsRedraw()
-        if (conf.optString("lang") != Lang.shown) relang() else { show(); watchRead(); wallTimer(); bingCheck(); peek() }
+        if (conf.optString("lang") != Lang.shown) relang() else { show(); watchRead(); wallTimer(); bingCheck(); peek(); folderFill?.invoke() }
     }
 
     /** [b] is [a] with another "shade" and nothing else. */
@@ -977,7 +984,8 @@ class HomeActivity : Activity() {
         val dockPkgs = Store.list(this, "dock").filter { it in byKey }
         val hidden = Store.list(this, "hidden").toSet()
         val shownPins = pins.filter { it.pkg !in byPkg && it.pkg !in dockPkgs }   // a shortcut put on the grid by the picker shows as that tile, not twice
-        val key = (dockPkgs + shownPins.map { it.pkg }).joinToString(",") + "|" + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden }.joinToString(",") { it.pkg } + "|" + apps.count { it.pkg in hidden } + "|" + conf.optInt("cols") + "|" + conf.optJSONArray("order") + "|" + conf.optJSONObject("names") + "|" + suggestSetup() + "|" + conf.optBoolean("showAdd", true)
+        val inFolder = if (conf.optJSONObject("folders")?.length() ?: 0 == 0) emptySet() else Folders.members(conf)   // none: no work at all
+        val key = (dockPkgs + shownPins.map { it.pkg }).joinToString(",") + "|" + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden && it.pkg !in inFolder }.joinToString(",") { it.pkg } + "|" + apps.filter { it.folder }.joinToString(",") { it.pkg + it.members.size } + "|" + apps.count { it.pkg in hidden } + "|" + conf.optInt("cols") + "|" + conf.optJSONArray("order") + "|" + conf.optJSONObject("names") + "|" + suggestSetup() + "|" + conf.optBoolean("showAdd", true)
         val all = key + "|" + watchAt() + "|" + watch.joinToString(",") { it.first.key + it.first.title + (it.second != null) }
         if (all == shownKey) { badgeTiles(); return }                 // nothing that decides the tiles changed: not one view is rebuilt (the power mark may have)
         shownKey = all
@@ -987,7 +995,7 @@ class HomeActivity : Activity() {
         for (r in 0 until grid.childCount) (grid.getChildAt(r) as ViewGroup).removeAllViews()   // the tiles leave their rows alive, to be put in new ones
         grid.removeAllViews()
         val place = Store.list(this, "order").withIndex().associate { it.value to it.index }   // the grid's own order; an app it does not know goes last, A-Z
-        val rest = (shownPins + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden }).sortedBy { place[it.pkg] ?: if (it.pin != null && !it.grid) -1 else Int.MAX_VALUE }   // a pin nobody placed stays where it always was: right after the favourites
+        val rest = (shownPins + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden && it.pkg !in inFolder }).sortedBy { place[it.pkg] ?: if (it.pin != null && !it.grid) -1 else Int.MAX_VALUE }   // a pin nobody placed stays where it always was: right after the favourites
         val cols = conf.optInt("cols", HomeConfig.COLS_DEFAULT)
         val gap = dp(GRID_GAP)
         val w = tileW()                                               // one size for every tile: the favourites are only the first ones
@@ -1245,6 +1253,103 @@ class HomeActivity : Activity() {
     private fun centre(v: View): Int { val xy = IntArray(2); v.getLocationInWindow(xy); return xy[0] + v.width / 2 }
     private fun centres(p: ViewGroup) = IntArray(p.childCount) { centre(p.getChildAt(it)) }
 
+    // ---- folders ([Folders]): a tile of the grid that holds apps; OK opens a panel of them, each app keeping its own menu ----
+
+    private var folderDlg: android.app.Dialog? = null
+    private var folderFill: (() -> Unit)? = null                      // the open panel drawn again from the settings (null while none is open)
+
+    private fun folderDo(change: JSONObject?) { if (change != null) Store.change(this, change) }
+
+    /** A folder's own menu (its tile's long OK or Menu): open, move on the grid, rename, remove (its apps go back to the grid). */
+    private fun folderMenu(a: App) {
+        val id = HomeConfig.folderId(a.pkg)
+        elementMenu(a.label, listOf(
+            gi(R.drawable.ic_apps, getString(R.string.folder_open)) { ui.post { openFolder(a) } },
+            gi(R.drawable.ic_expand, getString(R.string.move)) { ui.post { startMove(a.pkg) } },
+            gi(R.drawable.ic_pen, getString(R.string.rename)) { ui.post { nameDialog(R.string.folder_name, a.label) { n -> folderDo(Folders.rename(conf, id, n.ifEmpty { getString(R.string.folder_default) })) } } },
+            gi(R.drawable.ic_trash, getString(R.string.folder_delete)) { folderDo(Folders.delete(conf, id)) },
+            editItem()), getString(R.string.folder_note))
+    }
+
+    /** Where to put [pkg]: an existing folder (not [from]) or a new one; a new folder asks for its name first. */
+    private fun folderPicker(pkg: String, from: String?) {
+        val items = ArrayList<TvGlass.Item>()
+        for ((id, f) in Folders.of(conf)) if (id != from && f.apps.size < HomeConfig.FOLDER_APPS_MAX)
+            items.add(TvGlass.Item(R.drawable.ic_apps, f.name.ifEmpty { getString(R.string.folder_default) }, resources.getQuantityString(R.plurals.folder_apps, f.apps.size, f.apps.size)) { folderDo(Folders.add(conf, id, pkg)) })
+        if (Folders.canCreate(conf)) items.add(TvGlass.Item(R.drawable.ic_plus, getString(R.string.folder_new)) {
+            ui.post { nameDialog(R.string.folder_name, getString(R.string.folder_default)) { n -> folderDo(Folders.create(conf, Folders.newId(conf), n.ifEmpty { getString(R.string.folder_default) }, pkg)) } }
+        })
+        if (items.isEmpty()) { toast(R.string.folder_full); return }
+        open = TvGlass.menu(this, R.style.Menu, getString(R.string.folder_put), items, checkIcon = R.drawable.ic_check, font = glassFont)
+    }
+
+    /** A name asked for with the TV's keyboard (a new folder, a rename); an empty one is passed on as "" (the caller picks the default). */
+    private fun nameDialog(title: Int, initial: String, done: (String) -> Unit) {
+        val box = dev.tvremote.tvui.TvField(this).apply {
+            Font.on(this); textSize = 16f; isSingleLine = true; maxLines = 1
+            filters = arrayOf(android.text.InputFilter.LengthFilter(HomeConfig.NAME_MAX))
+            imeOptions = android.view.inputmethod.EditorInfo.IME_ACTION_DONE or android.view.inputmethod.EditorInfo.IME_FLAG_NO_EXTRACT_UI
+            setText(initial); setSelection(text.length)
+        }
+        val dlg = android.app.AlertDialog.Builder(this, R.style.Menu).setTitle(title)
+            .setView(FrameLayout(this).apply { setPadding(dp(24), dp(4), dp(24), 0); addView(box) })
+            .setPositiveButton(R.string.ok) { _, _ -> done(Folders.cleanName(box.text.toString())) }.setNegativeButton(android.R.string.cancel, null).create()
+        box.setOnEditorActionListener { _, _, _ -> done(Folders.cleanName(box.text.toString())); dlg.dismiss(); true }
+        open = dlg
+        dlg.show()
+    }
+
+    /** The folder's panel over Home: its apps as tiles (D-pad as anywhere, OK opens, long OK / Menu their own menu), Back closes. */
+    private fun openFolder(a: App) {
+        val id = HomeConfig.folderId(a.pkg)
+        if (Folders.of(conf)[id] == null) return
+        folderDlg?.dismiss()
+        val dlg = android.app.Dialog(this, R.style.Menu)
+        val cols = 4; val gap = dp(24)
+        val w = ((resources.displayMetrics.widthPixels * 0.6f).toInt() - (cols - 1) * gap) / cols
+        val title = Font.on(TvUi.text(this, "", 22f, bold = true))
+        val body = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false; setPadding(dp(16), dp(16), dp(16), dp(16)) }   // room for a focused tile's growth
+        val scroll = ScrollView(this).apply { addView(body); clipChildren = false; clipToPadding = false; isVerticalScrollBarEnabled = false }
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL; setPadding(dp(32), dp(24), dp(32), dp(20)); clipChildren = false
+            background = TvUi.round(TvUi.SHEET_FILL, dp(24).toFloat(), 1, TvUi.SHEET_EDGE)
+            addView(title); addView(scroll, LinearLayout.LayoutParams(-2, -2))
+        }
+        fun build(mem: List<App>, focusPkg: String?, focusAt: Int) {
+            if (!dlg.isShowing) return
+            body.removeAllViews()
+            var row: LinearLayout? = null
+            mem.forEachIndexed { i, m ->
+                if (i % cols == 0) { row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; clipChildren = false }; body.addView(row, LinearLayout.LayoutParams(-2, -2).apply { if (i > 0) topMargin = gap }) }
+                val t = PanelTile(this, m, w, m.label, ::dp).apply {
+                    setOnClickListener { dlg.dismiss(); ui.post { launch(m) } }
+                    setOnLongClickListener { menu(m); true }
+                    setOnKeyListener { _, code, e -> if (code == KeyEvent.KEYCODE_MENU) { if (e.action == KeyEvent.ACTION_UP) menu(m); true } else false }
+                    onFocusChangeListener = View.OnFocusChangeListener { v, f -> (v as Tile).focus(f) }
+                }
+                row!!.addView(t, LinearLayout.LayoutParams(-2, -2).apply { if (i % cols > 0) leftMargin = gap })
+            }
+            val all = (0 until body.childCount).flatMap { r -> (body.getChildAt(r) as ViewGroup).let { g -> (0 until g.childCount).map { g.getChildAt(it) } } }
+            (all.firstOrNull { (it as? Tile)?.app?.pkg == focusPkg } ?: all.getOrNull(minOf(focusAt, all.size - 1).coerceAtLeast(0)))?.requestFocus()
+        }
+        fun fill() {
+            val f = Folders.of(conf)[id]
+            if (f == null || f.apps.isEmpty()) { dlg.dismiss(); return }
+            title.text = f.name.ifEmpty { getString(R.string.folder_default) }
+            val at = (dlg.currentFocus as? Tile)?.app?.pkg
+            val was = (0 until body.childCount).flatMap { r -> (body.getChildAt(r) as ViewGroup).let { g -> (0 until g.childCount).map { g.getChildAt(it) } } }.indexOf(dlg.currentFocus)
+            val mem = f.apps.mapNotNull { p -> apps.firstOrNull { it.pkg == p } }
+            if (mem.none { it.banner == null && it.icon == null }) build(mem, at, was)
+            else bg.execute { mem.forEach { if (it.banner == null && it.icon == null) it.load(this) }; runOnUiThread { if (!isDestroyed) build(mem, at, was) } }   // pictures off the main thread
+        }
+        dlg.setContentView(card)
+        dlg.window?.apply { setBackgroundDrawable(android.graphics.drawable.ColorDrawable(0)); setLayout(-2, -2); setGravity(Gravity.CENTER); setDimAmount(.6f); addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND) }
+        dlg.setOnDismissListener { if (folderDlg === dlg) { folderDlg = null; folderFill = null } }
+        folderDlg = dlg; folderFill = ::fill; open = dlg
+        dlg.show()
+        fill()
+    }
+
     // ---- live widgets ([LiveWidgets]): read every few seconds while Home is on screen, never while it is not ----
 
     private fun liveSays(mode: String) = getString(if (mode == LiveWidgets.UNTRUSTED) R.string.live_untrusted else R.string.live_need_setup)
@@ -1284,7 +1389,7 @@ class HomeActivity : Activity() {
     private fun syncLive() {
         val live = LiveWidgets.apps(this, conf)
         val now = apps.filter { it.grid }
-        if (live.map { it.pkg to it.label } == now.map { it.pkg to it.label }) return
+        if (live.map { Triple(it.pkg, it.label, it.members) } == now.map { Triple(it.pkg, it.label, it.members) }) return   // a folder's apps too: its picture shows them
         apps = (apps.filter { !it.grid } + live).sortedBy { it.label.lowercase() }
     }
 
@@ -1302,9 +1407,10 @@ class HomeActivity : Activity() {
         apps = apps.sortedBy { it.label.lowercase() }
     }
 
-    private fun makeTile(a: App, w: Int) = Tile(this, a, w, a.label, ::dp, ::liveSays).apply {
+    private fun makeTile(a: App, w: Int) = Tile(this, a, w, a.label, ::dp, ::liveSays, art = if (a.folder) FolderArt.of(this, a.members) else null).apply {
         setOnClickListener {
             if (editing) { menu(a); return@setOnClickListener }
+            if (a.folder) { openFolder(a); return@setOnClickListener }   // a folder opens its panel: no app, no zoom
             if (a.live) { pressLive(a); return@setOnClickListener }   // a live widget does its job in place: no app opens, no zoom
             fun go(o: Bundle?) { if (!(if (a.pin != null) Pins.open(this@HomeActivity, a, o) else Apps.launch(this@HomeActivity, a.pkg, o))) { zoom.end(); toast(R.string.no_open) } }
             fun start() { lastOpened = a.pkg; if (!zoom.open(this, ::go)) go(null) }
@@ -1745,6 +1851,7 @@ class HomeActivity : Activity() {
      */
     private fun menu(a: App) {
         Store.tipDone(this); tip()                                    // they found the menu: the tip has done its job
+        if (a.folder) { folderMenu(a); return }
         if (a.grid || a.pin != null || a.pkg == packageName) { menu(a, null); return }
         AppRules.read(this, a.pkg) { st -> menu(a, st) }
     }
@@ -1815,6 +1922,7 @@ class HomeActivity : Activity() {
     /** What opening the app by its tile does, without the zoom. */
     private fun launch(a: App) {
         if (a.live) { pressLive(a); return }
+        if (a.folder) { openFolder(a); return }
         fun start() { lastOpened = a.pkg; if (!(if (a.pin != null) Pins.open(this, a, null) else Apps.launch(this, a.pkg, null))) toast(R.string.no_open) }
         if (a.pin == null && HomeLock.isLocked(this, a.pkg)) askPin(a.label) { start() } else start()
     }
@@ -1827,7 +1935,15 @@ class HomeActivity : Activity() {
         val dockedPin = a.pin != null && !a.grid
         // 1. where it sits on the home screen
         val home = ArrayList<TvGlass.Item>()
-        home.add(item(R.drawable.ic_expand, R.string.move) { ui.post { startMove(a.pkg) } })
+        val inFolder = if (a.live || a.pin != null || a.folder) null else Folders.folderOf(conf, a.pkg)   // an app in a folder is moved inside it, not on the grid
+        if (inFolder == null) home.add(item(R.drawable.ic_expand, R.string.move) { ui.post { startMove(a.pkg) } })
+        else {
+            val mine = Folders.of(conf)[inFolder]?.apps.orEmpty(); val at = mine.indexOf(a.pkg)
+            home.add(item(R.drawable.ic_up, R.string.folder_out) { folderDo(Folders.remove(conf, inFolder, a.pkg)) })
+            if (at > 0) home.add(item(R.drawable.ic_left, R.string.folder_earlier) { folderDo(Folders.reorder(conf, inFolder, a.pkg, at - 1)) })
+            if (at in 0 until mine.size - 1) home.add(item(R.drawable.ic_right, R.string.folder_later) { folderDo(Folders.reorder(conf, inFolder, a.pkg, at + 1)) })
+        }
+        if (!a.live && a.pin == null && !a.folder && !dockedPin && a.pkg != packageName) home.add(item(R.drawable.ic_apps, if (inFolder == null) R.string.folder_put else R.string.folder_other) { ui.post { folderPicker(a.pkg, inFolder) } })
         if (dockedPin) home.add(item(R.drawable.ic_close, R.string.unpin) { Pins.remove(this, a); pins = pins.filter { it !== a }; shownKey = ""; show() })
         if (!a.live) home.add(item(R.drawable.ic_pen, R.string.rename) { ui.post { rename(a) } })
         val rowOff = a.pkg in Store.rowsOff(this)
@@ -1839,7 +1955,7 @@ class HomeActivity : Activity() {
                 watchRead(); sub(a, st, 0, me)
             })
         }
-        if (!dockedPin) {
+        if (!dockedPin && inFolder == null) {
             home.add(item(R.drawable.ic_eye_off, R.string.hide) { Store.change(this, JSONObject().put("hidden", org.json.JSONArray(Store.list(this, "hidden") + a.pkg))
                 .put("dock", org.json.JSONArray(Store.list(this, "dock") - a.pkg))) })
             if (a.grid) home.add(item(R.drawable.ic_trash, R.string.remove_from_grid) {   // off the grid: it leaves "tiles" and its places in the dock, the order and the hidden list
@@ -2333,7 +2449,7 @@ class HomeActivity : Activity() {
  * One app: its banner (or icon on a colour, with the name; or, for a live widget, its own render: [LiveFace]), the name under it shown while focused. Focus grows it and rings it
  * ([TvTile]: the look is tvui's, TV Home's own moved there). [app] null: the "hidden apps" tile.
  */
-class Tile(c: Context, val app: App?, w: Int, label: String, dp: (Number) -> Int, say: (String) -> String = { it }, mark: Int = R.drawable.ic_eye_off,
+open class Tile(c: Context, val app: App?, w: Int, label: String, dp: (Number) -> Int, say: (String) -> String = { it }, mark: Int = R.drawable.ic_eye_off,
            private val art: android.graphics.drawable.Drawable? = null, corner: String? = null) : TvTile(c, w, dp) {
     private val content: View
     private var pic: ImageView? = null                              // the picture, so it can be let go and put back ([release])
@@ -2399,6 +2515,9 @@ class Tile(c: Context, val app: App?, w: Int, label: String, dp: (Number) -> Int
         return hues[(pkg.hashCode() and 0x7fffffff) % hues.size]
     }
 }
+
+/** A folder panel's tile: the ring is its own (the gliding glass belongs to Home's grid, behind this window). */
+class PanelTile(c: Context, app: App, w: Int, label: String, dp: (Number) -> Int) : Tile(c, app, w, label, dp) { override val glassy get() = false }
 
 const val DIM = 0.6f                                                  // the tiles that are not being moved
 /** The most rows of apps the first screen can show (to tenths), as the last layout measured; 0 = not measured yet. */
