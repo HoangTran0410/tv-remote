@@ -4,7 +4,7 @@ Read [README.md](README.md) first: change the row a fault belongs to, and this f
 
 **Code:** `app/shared/src/main/kotlin/dev/tvremote/core/ontv/LauncherSwap.kt` (`LauncherSwap`, `LauncherWatch`),
 `app/shared/src/main/kotlin/dev/tvremote/core/ontv/LauncherInstall.kt`, `app/shared/src/main/kotlin/dev/tvremote/core/ontv/Setup.kt`,
-`app/shared/src/main/kotlin/dev/tvremote/core/ontv/Rescue.kt`, `app/shared/src/main/kotlin/dev/tvremote/core/web/Manage.kt`,
+`app/shared/src/main/kotlin/dev/tvremote/core/ontv/Rescue.kt`, `app/shared/src/main/kotlin/dev/tvremote/core/web/SetupApi.kt`,
 `app/tvsetup/src/main/kotlin/dev/tvremote/setup/LauncherGuard.kt`, `app/tvsetup/src/main/kotlin/dev/tvremote/setup/Reoptimize.kt`,
 `app/tvsetup/src/main/kotlin/dev/tvremote/setup/HomeKey.kt`.
 
@@ -32,7 +32,7 @@ Install / Update TV Setup question (Optimize TV too: its other steps are done by
 |---|---|---|
 | Optimize TV (TV Setup, phone, computer) | `app/shared/src/main/kotlin/dev/tvremote/core/ontv/Setup.kt:takeHome` | log "Home screen: TV Home" (`LauncherSwap.homeOpens`); via `wifi` adds `launcher.key_wifi` (forget the Wi-Fi, join again, Optimize again: a full swap) |
 | Launcher gallery (page, TV Setup) | `app/shared/src/main/kotlin/dev/tvremote/core/ontv/LauncherInstall.kt:run` | swap: the 30 s Keep question; key: kept at once |
-| Settings page, Home screen | `app/shared/src/main/kotlin/dev/tvremote/core/web/Manage.kt:homeSet` | answers `LauncherSwap.homeOpens`; the TV's own launcher picked = the way back |
+| Settings page, Home screen | `app/shared/src/main/kotlin/dev/tvremote/core/web/SetupApi.kt:homeSet` | answers `LauncherSwap.homeOpens`; the TV's own launcher picked = the way back |
 | A firmware update (TV Setup, daily) | `app/tvsetup/src/main/kotlin/dev/tvremote/setup/Reoptimize.kt:homeBack` | swap: chosen again, or `take` again; key: nothing (the rule survives updates) |
 
 Via `home` and `wifi_unknown` (TVs the swap does not know yet) go to the census: `home:key:<via>`, `launcher:key:<via>`.
@@ -85,7 +85,7 @@ home activity and Home passes to the TV's own.
 ## "What does Home open?": `LauncherSwap.homeOpens`
 
 A kept key-way record whose launcher is still there: that launcher; else the HOME role (`LauncherSwap.homeNow`). Used where a person
-reads it or where Home is pressed for them: Optimize's log, the Settings page (`app/shared/src/main/kotlin/dev/tvremote/core/web/Manage.kt:tvsetRead`),
+reads it or where Home is pressed for them: Optimize's log, the Settings page (`app/shared/src/main/kotlin/dev/tvremote/core/web/SetupApi.kt:tvsetRead`),
 "TV frozen" (`app/shared/src/main/kotlin/dev/tvremote/core/ontv/Rescue.kt:run`: `input keyevent` passes the filter by, so it opens TV Home itself).
 Checkout's "never wipe the home screen" and uninstall's "never the home screen" read the role: in the key way the TV's own launcher
 is still the system's home.

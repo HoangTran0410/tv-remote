@@ -225,7 +225,7 @@ const FRIENDLY = [
   [/^factory app: not opened/i, T('errors.factory_app')],
   [/install blocked by this TV's firmware|disabled from pm/i, T('core.fr_install_blocked')],
   [/removed by the TV right after install/i, T('core.fr_removed_after_install')],
-  // the check before installing (apk_fits / Manage.apkFits), then what pm says when it was not caught there
+  // the check before installing (apk_fits / Apk.fits), then what pm says when it was not caught there
   [/apk needs sdk (\d+), the tv has sdk (\d+)/i, (m) => T('core.fr_sdk_low', { need: androidName(m[1]), have: androidName(m[2]) })],
   [/apk is built for (\S+), the tv runs (\S+)/i, (m) => T('core.fr_abi_other', { apk: m[1].replace(/,/g, ', '), tv: m[2].replace(/,/g, ', ') })],
   [/not a changeable permission|SYSTEM_FIXED|POLICY_FIXED|cannot (grant|revoke) system/i, T('core.fr_perm_fixed')],

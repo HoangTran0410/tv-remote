@@ -687,7 +687,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
                 HttpServer.Response.json(st)
             } catch (e: CodeWrong) { HttpServer.Response.json(400, JSONObject().put("error", "code_wrong").put("clock", e.clock))
             } catch (e: IllegalArgumentException) { HttpServer.Response.error(400, e.message.toString()) }
-            "/api/scenes", "/api/scene/run", "/api/scene/pin" -> return sceneRoutes.handle(r)!!
+            "/api/scenes", "/api/scene/run", "/api/scene/pin" -> return sceneRoutes.handle(r) ?: HttpServer.Response.error(405, "post")   // run and pin only take a POST
             "/api/touch" -> {
                 val v = feeds.viewer?.takeIf { it.ready() } ?: return ok()   // no picture session: nothing to touch
                 return TvControl.touch(v, r.json())                          // the wheel (scroll) too, as on the computer

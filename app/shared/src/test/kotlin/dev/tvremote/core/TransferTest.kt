@@ -8,7 +8,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import dev.tvremote.core.web.Cancel
 import dev.tvremote.core.web.Cancelled
-import dev.tvremote.core.web.Manage
+import dev.tvremote.core.web.TvPaths
 import dev.tvremote.core.web.NoRoom
 
 /** Stop, and the check that the TV has room before a file is sent. */
@@ -16,19 +16,19 @@ class TransferTest {
     private val df = "Filesystem       1K-blocks     Used Available Use% Mounted on\n/dev/fuse         12345678  9000000   1200000  89% /storage/emulated\n"
 
     @Test fun dfAvailableColumn() {
-        assertEquals(1_200_000L * 1024, Manage.parseDfFree(df))
-        assertEquals(500L * 1024, Manage.parseDfFree("Filesystem 1K-blocks Used Available Use% Mounted on\n/dev/block/dm-9\n 100 200 500 70% /data"))   // a long name wraps
-        assertNull(Manage.parseDfFree(""))
-        assertNull(Manage.parseDfFree("df: /nope: No such file or directory"))
+        assertEquals(1_200_000L * 1024, TvPaths.parseDfFree(df))
+        assertEquals(500L * 1024, TvPaths.parseDfFree("Filesystem 1K-blocks Used Available Use% Mounted on\n/dev/block/dm-9\n 100 200 500 70% /data"))   // a long name wraps
+        assertNull(TvPaths.parseDfFree(""))
+        assertNull(TvPaths.parseDfFree("df: /nope: No such file or directory"))
     }
 
     @Test fun roomRule() {
         val mb = 1L shl 20
-        assertTrue(Manage.roomFor(100 * mb, 1, 200 * mb))
-        assertFalse(Manage.roomFor(100 * mb, 1, 110 * mb))               // the reserve is kept
-        assertFalse(Manage.roomFor(100 * mb, 2, 200 * mb))               // an APK: the copy and the installed app
-        assertTrue(Manage.roomFor(100 * mb, 2, 300 * mb))
-        assertEquals(2 * 100 * mb + 16 * mb, Manage.needed(100 * mb, 2))
+        assertTrue(TvPaths.roomFor(100 * mb, 1, 200 * mb))
+        assertFalse(TvPaths.roomFor(100 * mb, 1, 110 * mb))               // the reserve is kept
+        assertFalse(TvPaths.roomFor(100 * mb, 2, 200 * mb))               // an APK: the copy and the installed app
+        assertTrue(TvPaths.roomFor(100 * mb, 2, 300 * mb))
+        assertEquals(2 * 100 * mb + 16 * mb, TvPaths.needed(100 * mb, 2))
     }
 
     @Test fun refusalIsSaidWithSizesAndWhatToDo() {

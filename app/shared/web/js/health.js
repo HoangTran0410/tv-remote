@@ -32,7 +32,7 @@ $('#freeram').addEventListener('click', async () => {
   if (r) { toast(T('health.ram_freed', { freed: r.freed, after: r.after })); loadHealth(); recentsNow(true); }
 });
 // The task manager: the apps holding memory, what each is doing, and Stop where stopping cannot hurt the TV (the server
-// decides which: Manage.keepWhy). dumpsys meminfo is slow on a TV, so at most every 45 s while the tab is open.
+// decides which: Procs.keepWhy). dumpsys meminfo is slow on a TV, so at most every 45 s while the tab is open.
 
 // Now: the live figures. History: what the TV Setup app on the TV has written down (drawn by stats.js).
 let hmode = 'now';
@@ -321,7 +321,7 @@ $('#setlistcopy').addEventListener('click', () => {
 });
 
 // Errors: Android notes every app that stops or stops answering in its "dropbox" (kept about 3 days); the core sends those notes
-// cut to the lines that matter (CRASHES in Manage.kt), and this groups them per app, newest first.
+// cut to the lines that matter (CRASHES in HealthApi.kt), and this groups them per app, newest first.
 function parseCrashes(text) {
   const out = []; let e = null, sep = false;
   for (const line of text.split('\n')) {

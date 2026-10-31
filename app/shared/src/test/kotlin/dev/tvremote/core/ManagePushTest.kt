@@ -2,7 +2,8 @@ package dev.tvremote.core
 
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.adb.AdbLink
-import dev.tvremote.core.web.Manage
+import dev.tvremote.core.web.ManageCore
+import dev.tvremote.core.web.TvCopy
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -83,7 +84,7 @@ class ManagePushTest {
         return l
     }
 
-    /** Calls the private push() the way the routes do; an input that breaks halfway stands for a cable pulled mid-transfer. */
+    /** Calls push() the way the routes do; an input that breaks halfway stands for a cable pulled mid-transfer. */
     private fun upload(tv: FakeTv, length: Long, dest: String): Boolean {
         val broken = object : InputStream() {
             private var left = 10
@@ -93,9 +94,7 @@ class ManagePushTest {
                 val n = minOf(left, len); left -= n; return n
             }
         }
-        val m = Manage::class.java.declaredMethods.first { it.name == "push" }.apply { isAccessible = true }
-        val manage = Manage(link(tv), null, null)
-        try { m.invoke(manage, broken, length, dest, null, 1); fail("should throw") } catch (e: java.lang.reflect.InvocationTargetException) { assertTrue(e.cause is IOException) }
+        try { TvCopy(ManageCore(link(tv), null, null)).push(broken, length, dest, null, 1); fail("should throw") } catch (e: IOException) { }
         return tv.shells.any { it == "rm -f " + Adb.q(dest) }
     }
 

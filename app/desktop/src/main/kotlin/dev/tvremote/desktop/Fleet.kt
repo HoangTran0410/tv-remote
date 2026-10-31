@@ -51,7 +51,7 @@ class Fleets(private val keys: File, private val cache: File) {
     fun stop(id: String) { stops[id]?.stop() }
 
     /** A job as JSON while its TVs are writing their progress into it. */
-    fun snapshot(j: JSONObject): JSONObject = dev.tvremote.core.web.Manage.snapshot(j)
+    fun snapshot(j: JSONObject): JSONObject = dev.tvremote.core.web.Jobs.snapshot(j)
 
     fun info(host: String, link: AdbLink): JSONObject {
         val o = JSONObject().put("host", host).put("state", "closed")

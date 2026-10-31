@@ -3,27 +3,29 @@ package dev.tvremote.core
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
-import dev.tvremote.core.web.Manage
+import dev.tvremote.core.web.Apk
+import dev.tvremote.core.web.Procs
+import dev.tvremote.core.web.TvPaths
 
-private typealias Proc = Manage.Companion.Proc
+private typealias Proc = Procs.Proc
 
 /** The checks that keep the file manager inside the TV's shared storage. */
 class ManagePathsTest {
     @Test fun pathsStayInSharedStorage() {
-        assertEquals("/sdcard/Download", Manage.safePath(""))
-        assertEquals("/sdcard/Movies/a b", Manage.safePath("/sdcard//Movies/./a b/"))
-        assertEquals("/storage/ABCD-1234", Manage.safePath("/storage/ABCD-1234"))
+        assertEquals("/sdcard/Download", TvPaths.safePath(""))
+        assertEquals("/sdcard/Movies/a b", TvPaths.safePath("/sdcard//Movies/./a b/"))
+        assertEquals("/storage/ABCD-1234", TvPaths.safePath("/storage/ABCD-1234"))
     }
 
-    @Test(expected = IllegalArgumentException::class) fun noDotDot() { Manage.safePath("/sdcard/../data") }
-    @Test(expected = IllegalArgumentException::class) fun noOtherRoots() { Manage.safePath("/data/local/tmp") }
+    @Test(expected = IllegalArgumentException::class) fun noDotDot() { TvPaths.safePath("/sdcard/../data") }
+    @Test(expected = IllegalArgumentException::class) fun noOtherRoots() { TvPaths.safePath("/data/local/tmp") }
 
     @Test fun safeNames() {
-        assertEquals("passwd", Manage.safeName("../../etc/passwd"))
-        assertEquals("a_b.txt", Manage.safeName("a;b.txt"))
-        assertEquals("phim Việt (1).mp4", Manage.safeName("phim Việt (1).mp4"))
-        assertEquals("file", Manage.safeName("..."))
-        assertEquals(120, Manage.safeName("x".repeat(300)).length)
+        assertEquals("passwd", TvPaths.safeName("../../etc/passwd"))
+        assertEquals("a_b.txt", TvPaths.safeName("a;b.txt"))
+        assertEquals("phim Việt (1).mp4", TvPaths.safeName("phim Việt (1).mp4"))
+        assertEquals("file", TvPaths.safeName("..."))
+        assertEquals(120, TvPaths.safeName("x".repeat(300)).length)
     }
 
     @Test fun memoryPerApp() {
@@ -36,8 +38,8 @@ class ManagePathsTest {
 Total PSS by OOM adjustment:
     119,516K: com.google.android.youtube.tv (pid 4709 / activities)
 """
-        assertEquals(listOf("com.google.android.youtube.tv" to 116, "com.google.android.katniss" to 110), Manage.memoryByApp(sample))
-        assertEquals(emptyList<Pair<String, Int>>(), Manage.memoryByApp("nothing"))
+        assertEquals(listOf("com.google.android.youtube.tv" to 116, "com.google.android.katniss" to 110), Procs.memoryByApp(sample))
+        assertEquals(emptyList<Pair<String, Int>>(), Procs.memoryByApp("nothing"))
         val oom = """Total RSS by OOM adjustment:
     200,000K: com.google.android.youtube.tv (pid 4709 / activities)
 
@@ -49,7 +51,7 @@ Total PSS by OOM adjustment:
      73,623K: Cached
          73,623K: com.google.android.katniss:search (pid 4380)
 """                                                                   // meminfo --oom: no "by process", PSS under group heads
-        assertEquals(listOf("com.google.android.youtube.tv" to 116, "com.google.android.katniss" to 71), Manage.memoryByApp(oom))
+        assertEquals(listOf("com.google.android.youtube.tv" to 116, "com.google.android.katniss" to 71), Procs.memoryByApp(oom))
     }
 
     @Test fun taskManager() {
@@ -80,7 +82,7 @@ Total PSS by OOM adjustment:
 
 Total PSS by category:
 """
-        val keep = Manage.keepNow("com.google.android.apps.tv.launcherx/.home.HomeActivity\ncom.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME\n" +
+        val keep = Procs.keepNow("com.google.android.apps.tv.launcherx/.home.HomeActivity\ncom.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME\n" +
             "package:com.netflix.ninja\npackage:com.spotify.tv.android\n" +
             "com.google.android.youtube.tv/com.google.android.apps.youtube.tv.activity.ShellActivity\ncom.netflix.ninja/.MainActivity")
         assertEquals(listOf(
@@ -93,18 +95,18 @@ Total PSS by category:
             Proc("android.process.acore", 10, "cached", "system"),
             Proc("com.android.keychain", 8, "cached", "system"),          // a system app with no tile: not for people to stop
             Proc("com.android.se", 4, "system", "system"),
-        ), Manage.procsOf(sample, keep))
-        assertEquals("us", Manage.keepWhy("dev.tvremote.setup", keep))
-        assertEquals("us", Manage.keepWhy("dev.tvremote.setup.keys", keep))
-        assertEquals("us", Manage.keepWhy("com.tailscale.ipn", keep))
-        for (p in listOf("dev.tvremote.channels", "dev.tvremote.games", "dev.tvremote.phone")) assertNotEquals("us", Manage.keepWhy(p, keep), p)   // ordinary apps
-        assertEquals(emptyList<Proc>(), Manage.procsOf("nothing", keep))
+        ), Procs.procsOf(sample, keep))
+        assertEquals("us", Procs.keepWhy("dev.tvremote.setup", keep))
+        assertEquals("us", Procs.keepWhy("dev.tvremote.setup.keys", keep))
+        assertEquals("us", Procs.keepWhy("com.tailscale.ipn", keep))
+        for (p in listOf("dev.tvremote.channels", "dev.tvremote.games", "dev.tvremote.phone")) assertNotEquals("us", Procs.keepWhy(p, keep), p)   // ordinary apps
+        assertEquals(emptyList<Proc>(), Procs.procsOf("nothing", keep))
     }
 
     @Test fun mimeTypes() {
-        assertEquals("video/mp4", Manage.mime("/sdcard/a.MP4"))
-        assertEquals("application/vnd.android.package-archive", Manage.mime("x.apk"))
-        assertEquals("*/*", Manage.mime("x.unknown"))
+        assertEquals("video/mp4", TvPaths.mime("/sdcard/a.MP4"))
+        assertEquals("application/vnd.android.package-archive", TvPaths.mime("x.apk"))
+        assertEquals("*/*", TvPaths.mime("x.unknown"))
     }
 }
 
@@ -112,23 +114,23 @@ Total PSS by category:
 class ApkPackageTest {
     @Test fun readsPackage() {
         val m = javaClass.classLoader!!.getResourceAsStream("setup-manifest.bin").readBytes()
-        assertEquals("dev.tvremote.setup", Manage.apkPackage(m))
+        assertEquals("dev.tvremote.setup", Apk.pkg(m))
     }
 
     @Test fun infoAndFit() {
-        val i = Manage.apkInfo(javaClass.classLoader!!.getResourceAsStream("setup-manifest.bin").readBytes())
+        val i = Apk.info(javaClass.classLoader!!.getResourceAsStream("setup-manifest.bin").readBytes())
         assertEquals("dev.tvremote.setup", i["package"])
         assertEquals("21", i["minSdkVersion"])
         assertEquals(true, i["versionCode"]?.toIntOrNull() != null)
-        assertEquals(listOf("arm64-v8a", "x86"), Manage.apkAbis(listOf("lib/arm64-v8a/a.so", "lib/x86/a.so", "lib/x86/b.so", "lib/readme.txt", "assets/lib/x/c.so")))
-        assertEquals(null, Manage.apkFits(i, emptyList(), 28, listOf("armeabi-v7a")))
-        assertEquals("apk needs sdk 29, the tv has sdk 28", Manage.apkFits(mapOf("minSdkVersion" to "29"), emptyList(), 28, emptyList()))
-        assertEquals("apk is built for arm64-v8a, the tv runs armeabi-v7a,armeabi", Manage.apkFits(emptyMap(), listOf("arm64-v8a"), 28, listOf("armeabi-v7a", "armeabi")))
-        assertEquals(null, Manage.apkFits(emptyMap(), listOf("arm64-v8a", "armeabi-v7a"), 28, listOf("armeabi-v7a")))
+        assertEquals(listOf("arm64-v8a", "x86"), Apk.abis(listOf("lib/arm64-v8a/a.so", "lib/x86/a.so", "lib/x86/b.so", "lib/readme.txt", "assets/lib/x/c.so")))
+        assertEquals(null, Apk.fits(i, emptyList(), 28, listOf("armeabi-v7a")))
+        assertEquals("apk needs sdk 29, the tv has sdk 28", Apk.fits(mapOf("minSdkVersion" to "29"), emptyList(), 28, emptyList()))
+        assertEquals("apk is built for arm64-v8a, the tv runs armeabi-v7a,armeabi", Apk.fits(emptyMap(), listOf("arm64-v8a"), 28, listOf("armeabi-v7a", "armeabi")))
+        assertEquals(null, Apk.fits(emptyMap(), listOf("arm64-v8a", "armeabi-v7a"), 28, listOf("armeabi-v7a")))
     }
 
     @Test fun garbageIsNull() {
-        assertEquals(null, Manage.apkPackage(ByteArray(0)))
-        assertEquals(null, Manage.apkPackage("not a manifest at all".toByteArray()))
+        assertEquals(null, Apk.pkg(ByteArray(0)))
+        assertEquals(null, Apk.pkg("not a manifest at all".toByteArray()))
     }
 }

@@ -5,7 +5,7 @@
                                       redirect (`emu redir`), not adb forward: adb forward hid a reply cut short by a reset
     dev/test/smoke.py URL                  any core, e.g. the computer app's test server: TVR_PASS=... dev/test/smoke.py http://127.0.0.1:8769
 
-The routes are read from the code (Manage.kt, RemoteService.kt, the computer app's Server.kt) and from the page's scripts.
+The routes are read from the code (Manage.kt and its parts, RemoteService.kt, the computer app's Server.kt) and from the page's scripts.
 Each is asked with GET and with a POST whose body it may not want (64 KB, not JSON), and must:
   - answer in full: the status line, the headers and as many bytes as Content-Length says (a stream: its first bytes);
   - not fail with 500 (an exception the handler did not expect), nor take longer than 15 s;
@@ -18,7 +18,7 @@ Exit 1 if any route fails; V=1 prints each route as it is asked. Needs only pyth
 import http.client, json, os, re, socket, subprocess, sys, time, urllib.parse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SOURCES = ["app/shared/src/main/kotlin/dev/tvremote/core/web/Manage.kt", "app/tvsetup/src/main/kotlin/dev/tvremote/setup/RemoteService.kt",
+SOURCES = ["app/shared/src/main/kotlin/dev/tvremote/core/web", "app/tvsetup/src/main/kotlin/dev/tvremote/setup/RemoteService.kt",
            "app/desktop/src/main/kotlin/dev/tvremote/desktop"]
 # what changes the TV, a file on it, the saved TVs or this computer; or opens something on the TV's screen
 SKIP = re.compile(r"/(reboot|power|shutdown|kill|delete|rename|mkdir|install|upload|uninstall|clean|free|backup|perm|launch|open|"
@@ -71,7 +71,7 @@ def ask(base, path, method, headers):
     finally: c.close()
 
 
-OPEN = re.compile(r"^/api/(pair/(start|finish|invite)|hook)$")    # a stranger's way in: the pairing, or the hook's own token
+OPEN = re.compile(r"^/api/(pair/(start|finish|invite)|hook|hook/state)$")    # a stranger's way in: the pairing, or the hook's own token
 
 
 def locked(base, tv):
