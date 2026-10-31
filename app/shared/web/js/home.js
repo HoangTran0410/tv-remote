@@ -31,7 +31,7 @@ const HOME_KEY_WORDS = { 183: 'home.key_red', 184: 'home.key_green', 185: 'home.
   190: 'home.key_btn3', 191: 'home.key_btn4', 195: 'home.key_btn8', 192: 'home.key_btn5', 284: 'home.key_allapps', 176: 'home.key_settings' };
 const homeKeyName = (code) => HOME_KEY_WORDS[code] ? T(HOME_KEY_WORDS[code]) : String(code - 7);   // KEYCODE_0 is 7
 const homeThemeName = (t) => (t.names || {})[window.LANG] || (t.names || {}).en || t.id;   // a ready-made theme's name in the page's language (the signed list's)
-const HOME_THEME_KEYS = ['wall', 'walls', 'wurl', 'wmode', 'wsnap', 'wkeep', 'wevery', 'shade', 'wfit', 'widgets', 'wsize', 'wopt', 'cols', 'rows', 'focus', 'motion', 'anim', 'clock24', 'greet'];   // HomeConfig.THEME_KEYS
+const HOME_THEME_KEYS = ['wall', 'walls', 'wurl', 'wmode', 'wsnap', 'wkeep', 'wevery', 'shade', 'wfit', 'wfade', 'widgets', 'wsize', 'wopt', 'cols', 'rows', 'focus', 'motion', 'anim', 'clock24', 'greet'];   // HomeConfig.THEME_KEYS
 const HOME_THEME_FILE_MAX = 32768;                                 // a theme file is a few KB; more is not one
 const HOME_THEMES_MAX = 12;                                           // HomeConfig.THEMES_MAX
 const HOME_PHOTO_MAX = 10;                                            // HomeConfig.PHOTO_MAX
@@ -519,13 +519,16 @@ async function homeOpen() {
   // how a photo fills the screen (HomeConfig "wfit"): cropped, or whole over itself blurred (a portrait photo)
   const fitHead = el('h3', { textContent: T('home.fit') }), fit = el('div', { className: 'fchips' });
   const fitNote = el('p', { className: 'note', textContent: T('home.fit_note') });
+  // a video's jump back to its start as a dissolve (HomeConfig "wfade"; the site's video themes set it for a clip whose end is not its start)
+  const fadeBox = el('input', { type: 'checkbox', onchange: () => send({ wfade: fadeBox.checked }) });
+  const fadeRow = el('label', { className: 'check' }, fadeBox, el('span', { textContent: T('home.wfade') })), fadeNote = el('p', { className: 'note', textContent: T('home.wfade_note') });
   const gal = el('div', { className: 'homegal' }), credit = el('p', { className: 'note', textContent: T('home.gal_note') });
   const galHead = el('h3', { textContent: T('home.gallery') });
   // the site's moving backgrounds and pages (wallpapers.json "links"): each sets the web wall to its address, as TV Home's own "Suggested"
   const sugHead = el('h3', { textContent: T('home.wh_suggest') }), sugBox = el('div', { className: 'homegal' }), sugNote = el('p', { className: 'note', textContent: T('home.sug_note') });
   sugHead.hidden = sugBox.hidden = sugNote.hidden = true;
   const markSug = (c) => { for (const b of sugBox.children) { const on = c.wall === 'web' && c.wurl === b.dataset.url; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); } };
-  homeGallery(gal, credit, galHead, (n) => { r = n; homeNow = n; draw(); }, { box: sugBox, head: sugHead, note: sugNote, pick: (u) => send({ wall: 'web', wurl: u, wmode: 'live' }), mark: () => markSug(r.config) });
+  homeGallery(gal, credit, galHead, (n) => { r = n; homeNow = n; draw(); }, { box: sugBox, head: sugHead, note: sugNote, pick: (u, fade) => send({ wall: 'web', wurl: u, wmode: 'live', wfade: fade }), mark: () => markSug(r.config) });
 
   // "Add to home screen": a picker of the apps (hidden ones too), their shortcuts and the live widgets; a press puts one on the grid or
   // takes it off and the list stays open. Shortcuts and live widgets are in config "tiles" (the order they have on the grid), an app is
@@ -609,6 +612,7 @@ async function homeOpen() {
       el('button', { type: 'button', className: (c.motion || '') === k ? 'on' : '', onclick: () => send({ motion: k }) }, T(id))));
     shadeHead.hidden = shade.hidden = shadeNote.hidden = !c.shadeOk;
     fitHead.hidden = fit.hidden = fitNote.hidden = !c.fitOk;
+    fadeBox.checked = c.wfade === true; fadeRow.hidden = fadeNote.hidden = c.wfade === undefined;   // an older TV Home does not report it
     fit.replaceChildren(...[['cover', 'home.fit_cover'], ['contain', 'home.fit_contain']].map(([k, id]) => {
       const on = (c.wfit || 'cover') === k;
       return el('button', { type: 'button', className: on ? 'on' : '', 'aria-pressed': String(on), onclick: () => send({ wfit: k }) }, T(id));
@@ -1006,7 +1010,7 @@ async function homeOpen() {
   const vFold = UI.card(T('home.v_head'), { fold: true }, vfpsHead, vfps, vresHead, vres);   // the video's own settings, in the videos' part
   const GROUPS = [
     ['themes', 'star', 45, 'home.themes', [themeHint, themeMineHead, themeMine, themeLine, themeNote, themeReadyHead, themeReady, themeCommHead, themeComm]],
-    ['bg', 'image', 330, 'home.wall', [everyHead, every, everyNote, shadeHead, shade, shadeNote, fitHead, fit, fitNote,
+    ['bg', 'image', 330, 'home.wall', [everyHead, every, everyNote, shadeHead, shade, shadeNote, fitHead, fit, fitNote, fadeRow, fadeNote,
       hOnline, wOnline, sugHead, sugBox, sugNote, webHead, webLine, webModeHead, webMode, webEveryHead, webEvery, webKeep, webModeNote,
       hPhotos, photoAct, wPhotos, holdNote, galHead, gal, credit,
       hVideos, videoAct, vstate, vperf, wVideos, vFold, vnote, file, vfile,
@@ -1143,7 +1147,7 @@ async function homeGallery(box, credit, head, done, sug) {
     sug.box.replaceChildren(...links.map((l) => {
       const face = l.thumb ? el('img', { src: l.thumb, alt: '', loading: 'lazy' }) : el('i', { className: 'mi', innerHTML: '<svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg>' });
       const tag = l.kind === 'video' ? T('home.sug_video') : l.kind === 'page' ? T('home.sug_page') : '';
-      const b = el('button', { type: 'button', title: [l.name[lang] || l.name.en, l.credit, l.license].filter(Boolean).join(' · '), onclick: () => sug.pick(l.url) },
+      const b = el('button', { type: 'button', title: [l.name[lang] || l.name.en, l.credit, l.license].filter(Boolean).join(' · '), onclick: () => sug.pick(l.url, !!l.fade) },
         face, el('span', { textContent: l.name[lang] || l.name.en }), ...(tag ? [el('small', { className: 'badge', textContent: tag })] : []));
       b.dataset.url = l.url;
       return b;

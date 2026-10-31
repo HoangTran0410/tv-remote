@@ -249,6 +249,8 @@
   "c_focus_glass": "Kính",
   "c_shade": "Phủ tối hình nền",
   "c_fit": "Cách hiện ảnh",
+  "c_fade": "Mờ dần khi video lặp lại",
+  "c_fade_sub": "Cho video có cảnh cuối khác cảnh đầu",
   "fit_cover": "Phủ kín màn hình",
   "fit_contain": "Hiện trọn ảnh",
   "c_shade_keys": "◀ ▶ ±5% · ▲ ▼ ±10% · OK xong",

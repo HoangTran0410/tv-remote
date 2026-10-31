@@ -329,8 +329,89 @@
       "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F855381%2F855381-hd_1920_1080_30fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-fireplace-t.jpg",
       "thumb": "v-fireplace-t.jpg",
       "thumb_sha256": "61edaada89f2159656934f56cefb48ab6e212db0e14a846e9032983daf54e827",
+      "fade": false,
       "credit": "Pexels",
       "source": "https://www.pexels.com/video/855381/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "pastel",
+      "kind": "video",
+      "name": {
+        "vi": "Chuyển màu pastel",
+        "en": "Pastel glow",
+        "ru": "Пастельное сияние"
+      },
+      "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F7898649%2F7898649-hd_1920_1080_15fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-pastel-t.jpg",
+      "thumb": "v-pastel-t.jpg",
+      "thumb_sha256": "dd95d59559d5eebaa7b9d60fc4d78224896e8041debaf575e8b4aa62e902234c",
+      "fade": false,
+      "credit": "Pexels",
+      "source": "https://www.pexels.com/video/7898649/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "colour-flow",
+      "kind": "video",
+      "name": {
+        "vi": "Sắc màu trôi",
+        "en": "Colour flow",
+        "ru": "Цветной поток"
+      },
+      "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F11387730%2F11387730-hd_1920_1080_30fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-colour-flow-t.jpg",
+      "thumb": "v-colour-flow-t.jpg",
+      "thumb_sha256": "aa306671105f9300d5785f71cb3228cc43c035c44a080117d4f1332597aef5e5",
+      "fade": false,
+      "credit": "Pexels",
+      "source": "https://www.pexels.com/video/11387730/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "pink-waves",
+      "kind": "video",
+      "name": {
+        "vi": "Sóng hồng",
+        "en": "Pink waves",
+        "ru": "Розовые волны"
+      },
+      "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F34396899%2F14572011_1920_1080_30fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-pink-waves-t.jpg",
+      "thumb": "v-pink-waves-t.jpg",
+      "thumb_sha256": "eaf43e602ee917795b14b5f53a9a7d324434ce61a25bcd13e0a567300b66432b",
+      "fade": false,
+      "credit": "Pexels",
+      "source": "https://www.pexels.com/video/34396899/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "glow-dots",
+      "kind": "video",
+      "name": {
+        "vi": "Hạt sáng",
+        "en": "Glowing dots",
+        "ru": "Светящиеся точки"
+      },
+      "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F34567729%2F14646022_1920_1080_30fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-glow-dots-t.jpg",
+      "thumb": "v-glow-dots-t.jpg",
+      "thumb_sha256": "4e326062fd6d693ce0d0d23b8b012a1c22c16b544d9e268479505de55f1f4d41",
+      "fade": false,
+      "credit": "Pexels",
+      "source": "https://www.pexels.com/video/34567729/",
+      "license": "Pexels License"
+    },
+    {
+      "id": "stardust",
+      "kind": "video",
+      "name": {
+        "vi": "Bụi sao",
+        "en": "Stardust",
+        "ru": "Звёздная пыль"
+      },
+      "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F12920706%2F12920706-hd_1920_1080_30fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-stardust-t.jpg",
+      "thumb": "v-stardust-t.jpg",
+      "thumb_sha256": "855539dd5a6848f82edaa19e6eb25b4884306be9a02d764c82740c43d7a5d8e8",
+      "fade": false,
+      "credit": "Pexels",
+      "source": "https://www.pexels.com/video/12920706/",
       "license": "Pexels License"
     },
     {
@@ -344,6 +425,7 @@
       "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F5600929%2F5600929-hd_1920_1080_25fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-aurora-harbor-t.jpg",
       "thumb": "v-aurora-harbor-t.jpg",
       "thumb_sha256": "5bb282d35033cb5d6058fe67c1a6a169fef61533bfe9e2e7417a648c356add89",
+      "fade": true,
       "credit": "Pexels",
       "source": "https://www.pexels.com/video/5600929/",
       "license": "Pexels License"
@@ -359,6 +441,7 @@
       "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F852435%2F852435-hd_1920_1080_30fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-aurora-peaks-t.jpg",
       "thumb": "v-aurora-peaks-t.jpg",
       "thumb_sha256": "ebe116719b8b3b6076c9371d330a66166cedc9e684286691a8bd961422f0ffc7",
+      "fade": true,
       "credit": "Pexels",
       "source": "https://www.pexels.com/video/852435/",
       "license": "Pexels License"
@@ -374,6 +457,7 @@
       "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F2556513%2F2556513-hd_1920_1080_25fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-aquarium-t.jpg",
       "thumb": "v-aquarium-t.jpg",
       "thumb_sha256": "dbe157ee3573ba75869fa15908bb6c432cf7fe172d57ae8ef42a40292eaab24e",
+      "fade": true,
       "credit": "Pexels",
       "source": "https://www.pexels.com/video/2556513/",
       "license": "Pexels License"
@@ -389,6 +473,7 @@
       "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F1926295%2F1926295-hd_1920_1080_25fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-milky-way-live-t.jpg",
       "thumb": "v-milky-way-live-t.jpg",
       "thumb_sha256": "a420c68f94ce027c202cf8f1771c7cb26644e0c9cb6f2c1353e5c602e8ad573c",
+      "fade": true,
       "credit": "Pexels",
       "source": "https://www.pexels.com/video/1926295/",
       "license": "Pexels License"
@@ -404,6 +489,7 @@
       "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F1877846%2F1877846-hd_1920_1080_30fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-night-sky-t.jpg",
       "thumb": "v-night-sky-t.jpg",
       "thumb_sha256": "4fcd2e3b342176230f6b6426a714587f5aa54f004c6be0dc4678ee6ac67ec9ec",
+      "fade": true,
       "credit": "Pexels",
       "source": "https://www.pexels.com/video/1877846/",
       "license": "Pexels License"
@@ -419,6 +505,7 @@
       "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F5721853%2F5721853-hd_1920_1080_30fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-cloud-sea-t.jpg",
       "thumb": "v-cloud-sea-t.jpg",
       "thumb_sha256": "dbcf3eee32ea5f303159edea88688de98a4f9fc6a2b39f6daa6b01b84138d547",
+      "fade": true,
       "credit": "Pexels",
       "source": "https://www.pexels.com/video/5721853/",
       "license": "Pexels License"
@@ -434,6 +521,7 @@
       "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F2888383%2F2888383-hd_1920_1080_24fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-mountain-mist-t.jpg",
       "thumb": "v-mountain-mist-t.jpg",
       "thumb_sha256": "1e6d2e41c51f75e61498b6c8b625483e5e13a056eb15c57dd099f37e6117e87b",
+      "fade": true,
       "credit": "Pexels",
       "source": "https://www.pexels.com/video/2888383/",
       "license": "Pexels License"
@@ -449,6 +537,7 @@
       "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F1654216%2F1654216-hd_1920_1080_30fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-city-timelapse-t.jpg",
       "thumb": "v-city-timelapse-t.jpg",
       "thumb_sha256": "7463f990ea051952ffe578b2b2b1e27621324b6117dcb92fcfd47480b151b03c",
+      "fade": true,
       "credit": "Pexels",
       "source": "https://www.pexels.com/video/1654216/",
       "license": "Pexels License"
@@ -464,6 +553,7 @@
       "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F18914444%2F18914444-hd_1920_1080_30fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-beach-live-t.jpg",
       "thumb": "v-beach-live-t.jpg",
       "thumb_sha256": "716b29f6eda9eee2e73e7b70b77982208ab1ae1f00247e6ddd3149440c6f989f",
+      "fade": true,
       "credit": "Pexels",
       "source": "https://www.pexels.com/video/18914444/",
       "license": "Pexels License"
@@ -479,6 +569,7 @@
       "url": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F3783927%2F3783927-hd_1920_1080_24fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-halong-live-t.jpg",
       "thumb": "v-halong-live-t.jpg",
       "thumb_sha256": "3c65b190a563dfde86be53bdc61cdc15525dddb206d2f8016488398cf389e267",
+      "fade": true,
       "credit": "Pexels",
       "source": "https://www.pexels.com/video/3783927/",
       "license": "Pexels License"

@@ -592,6 +592,8 @@ object Customize {
             tile(R.drawable.ic_contrast, a.getString(R.string.c_shade), null, "shade")
             // a photo cropped to fill the screen, or whole over itself blurred (HomeConfig "wfit": a portrait photo)
             tile(R.drawable.ic_image, a.getString(R.string.c_fit), null, "wfit", listOf("cover" to a.getString(R.string.fit_cover), "contain" to a.getString(R.string.fit_contain)))
+            // a video's jump back to its start as a dissolve (HomeConfig "wfade"; the site's video themes set it for a clip whose end is not its start)
+            tile(R.drawable.ic_play, a.getString(R.string.c_fade), a.getString(R.string.c_fade_sub), "wfade")
             col.addView(label(a.getString(R.string.rot), 13f, Color.WHITE), LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(18); bottomMargin = dp(8) })
             var chipRow: LinearLayout? = null
             HomeConfig.EVERY.forEachIndexed { i, k ->
@@ -662,7 +664,7 @@ object Customize {
                     setOnClickListener {
                         val c = Store.get(a)
                         Suggest.byKey(k)?.let { sg ->                               // the page it is: one choice, as the web page tile (clean() keeps "web" alone in a set)
-                            Store.change(a, JSONObject().put("wall", HomeConfig.WEB).put("wurl", sg.url).put("wmode", "live")); markAll()
+                            Store.change(a, JSONObject().put("wall", HomeConfig.WEB).put("wurl", sg.url).put("wmode", "live").put("wfade", sg.fade)); markAll()
                             return@setOnClickListener
                         }
                         if (k == HomeConfig.WEB) {                                // the link is pasted on a phone (a QR), how it updates is picked there with the D-pad

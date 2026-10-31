@@ -8,6 +8,10 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 - TV Home: a video background loops with no pause at the end (was about 0.1 s on the FPT box).
 - TV Home: a video background from a web link that is too heavy for the TV (4K60, a high bitrate) is made light on the TV first instead of playing as stripes; light links still start at once.
+- TV Home: a video background whose last scene differs from its first can fade into it at the loop instead of jumping (Wallpaper: "Fade when the video starts over"; on for the site's scenery videos)
+- TV Home: 5 new suggested video backgrounds that loop seamlessly (pastel, colour flow, pink waves, glow dots, stardust)
+- Picture: on Android 9 and older, "Use Software" now really picks the TV's software encoder (it found none there and ran the hardware one again); the log names the encoder used
+- Computer app: TVs found by the scan are listed under the IP field, so a TV appearing mid-scan no longer moves the field under the pointer
 
 ## 0.38.0 - 2026-10-31
 

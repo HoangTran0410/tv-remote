@@ -249,6 +249,8 @@
   "c_focus_glass": "Glass",
   "c_shade": "Dim the background",
   "c_fit": "Photo fit",
+  "c_fade": "Fade when the video starts over",
+  "c_fade_sub": "For a video whose end differs from its start",
   "fit_cover": "Fill the screen",
   "fit_contain": "Whole photo",
   "c_shade_keys": "◀ ▶ ±5% · ▲ ▼ ±10% · OK done",

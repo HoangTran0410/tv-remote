@@ -213,6 +213,17 @@ Measured on emulator-5554 (TV Setup, open → list drawn): 2.5–3.6 s before, ~
   stripes; a link of a whole film is not a wallpaper). No warning to the person: it is made light by itself, as an upload is.
   Testing with a local server: Python's `http.server` has no Range, and MediaPlayer then fails on a file with its moov at the end
   or with audio ("Failed to init from data source", -1004): a fault of the test server, not of 4K.
+- **A clip whose end is not its start (2026-10-31, the user: "the turn is easy to see on the scenery videos").** Gapless does not
+  help when the last frame differs from the first. `dev/gen/loop_seam.py` measures it: the jump from last to first frame in
+  multiples of the clip's usual frame-to-frame step (64x36 grey). Of the 11 Pexels suggestions only the fireplace loops (x1.6); the
+  others jump x4.5 (aquarium) to x130 (Ha Long). Two answers, both kept: (1) five clips that loop by themselves (x2 or less: pastel,
+  colour flow, pink waves, glow dots, stardust; `LOOPS` in `dev/gen/wallpapers.py`); (2) a **fade** at the turn for the others,
+  `wfade` (default off; on in the site's video themes and set by a suggestion's `fade`, a switch in Wallpaper on the TV and the page).
+  Not baked into the files (a cross-faded copy per clip on the site, and a person's own upload would need it too): at a turn [Loop]
+  hands the go to [VideoWall], which copies the last frame (PixelCopy, API 24+; older boxes simply jump), shows it over the video
+  and fades it out in 1 s while the new turn plays under it; [Loop] waits at most 250 ms for that and sets its clock again from the
+  frame after, so nothing is dropped. FPT box, Ha Long clip: the per-frame change at the turn went from one spike (26) to ~1 s of
+  5-7; 0 dropped frames with fade on and off; Home CPU 17 -> 21 % (the copy and the fading view, once per turn).
 
 ## TV Home themes (2026-10-24)
 

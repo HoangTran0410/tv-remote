@@ -168,6 +168,12 @@ def vn():
 # Pages: only ones that need no login, show no ads and stay silent (earth.nullschool.net; NASA Eyes, Stellarium, lofi.co were heavy and full of menus).
 PEXELS = [
     ("fireplace", 855381, 30, "free-video-855381.jpg", {"vi": "Lò sưởi", "en": "Fireplace", "ru": "Камин"}),
+    # made to loop (found 2026-10-31 among ~40 calm clips by dev/gen/loop_seam.py); newer Pexels files carry their own name, not "<id>-hd_..."
+    ("pastel", 7898649, 15, None, {"vi": "Chuyển màu pastel", "en": "Pastel glow", "ru": "Пастельное сияние"}),
+    ("colour-flow", 11387730, 30, None, {"vi": "Sắc màu trôi", "en": "Colour flow", "ru": "Цветной поток"}),
+    ("pink-waves", 34396899, "14572011_1920_1080_30fps.mp4", None, {"vi": "Sóng hồng", "en": "Pink waves", "ru": "Розовые волны"}),
+    ("glow-dots", 34567729, "14646022_1920_1080_30fps.mp4", None, {"vi": "Hạt sáng", "en": "Glowing dots", "ru": "Светящиеся точки"}),
+    ("stardust", 12920706, 30, None, {"vi": "Bụi sao", "en": "Stardust", "ru": "Звёздная пыль"}),
     ("aurora-harbor", 5600929, 25, "pexels-photo-5600929.jpeg", {"vi": "Cực quang cảng", "en": "Harbour aurora", "ru": "Сияние над гаванью"}),
     ("aurora-peaks", 852435, 30, "free-video-852435.jpg", {"vi": "Cực quang núi", "en": "Aurora peaks", "ru": "Сияние над горами"}),
     ("aquarium", 2556513, 25, "free-video-2556513.jpg", {"vi": "Bể cá", "en": "Aquarium", "ru": "Аквариум"}),
@@ -179,6 +185,9 @@ PEXELS = [
     ("beach-live", 18914444, 30, None, {"vi": "Hoàng hôn biển", "en": "Sunset beach", "ru": "Закат на пляже"}),
     ("halong-live", 3783927, 24, "pexels-photo-3783927.jpeg", {"vi": "Vịnh Hạ Long", "en": "Ha Long Bay", "ru": "Бухта Халонг"}),
 ]
+# The clips whose last frame is their first (dev/gen/loop_seam.py: the jump at the turn within ~2 frame steps); every other one gets
+# "fade": TV Home dissolves its turn (HomeConfig "wfade"). Measured 2026-10-31: fireplace 1.6x, the rest 4.5x-130x.
+LOOPS = {"fireplace", "pastel", "colour-flow", "pink-waves", "glow-dots", "stardust"}
 BEACH_POSTER = "https://images.pexels.com/videos/26310139/beach-background-beach-waves-beautiful-sunset-crashing-waves-26310139.jpeg?auto=compress&cs=tinysrgb&w=640"
 SITE = "https://tvremote.pages.dev/home/"
 
@@ -187,12 +196,15 @@ def links():
     from urllib.parse import quote
     out = []
     for i, vid, fps, poster, names in PEXELS:
-        src = BEACH_POSTER if poster is None else "https://images.pexels.com/videos/%d/%s?auto=compress&cs=tinysrgb&w=640" % (vid, poster)
+        mp4 = "https://videos.pexels.com/video-files/%d/" % vid + (fps if isinstance(fps, str) else "%d-hd_1920_1080_%dfps.mp4" % (vid, fps))
+        if poster is None and i != "beach-live":                 # no poster known: a frame of the clip itself
+            pic = subprocess.run(["ffmpeg", "-v", "error", "-user_agent", "Mozilla/5.0", "-ss", "3", "-i", mp4, "-frames:v", "1", "-f", "image2pipe", "-c:v", "png", "-"], capture_output=True, check=True).stdout
+        else:
+            pic = get(BEACH_POSTER if poster is None else "https://images.pexels.com/videos/%d/%s?auto=compress&cs=tinysrgb&w=640" % (vid, poster))
         t = "v-" + i + "-t.jpg"
-        tsha, _ = save(fit(Image.open(io.BytesIO(get(src))).convert("RGB"), .5).resize((320, 180), Image.LANCZOS), os.path.join(OUT, t), quality=72)
-        mp4 = "https://videos.pexels.com/video-files/%d/%d-hd_1920_1080_%dfps.mp4" % (vid, vid, fps)
+        tsha, _ = save(fit(Image.open(io.BytesIO(pic)).convert("RGB"), .5).resize((320, 180), Image.LANCZOS), os.path.join(OUT, t), quality=72)
         out.append({"id": i, "kind": "video", "name": names, "url": SITE + "loop.html?v=" + quote(mp4, safe="") + "&p=" + quote(SITE + t, safe=""),
-                    "thumb": t, "thumb_sha256": tsha, "credit": "Pexels", "source": "https://www.pexels.com/video/%d/" % vid, "license": "Pexels License"})
+                    "thumb": t, "thumb_sha256": tsha, "fade": i not in LOOPS, "credit": "Pexels", "source": "https://www.pexels.com/video/%d/" % vid, "license": "Pexels License"})
         print("link", i)
     vt = open(os.path.join(OUT, "vn-t.jpg"), "rb").read()
     out.insert(0, {"id": "vn", "kind": "slides", "name": {"vi": "Việt Nam", "en": "Việt Nam", "ru": "Вьетнам"},

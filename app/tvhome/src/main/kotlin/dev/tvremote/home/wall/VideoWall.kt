@@ -1,6 +1,9 @@
 package dev.tvremote.home.wall
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.os.Build
+import android.view.PixelCopy
 import android.media.MediaMetadataRetriever
 import android.os.Process
 import android.view.Gravity
@@ -35,17 +38,23 @@ import java.io.File
  * (dev/decisions/tv-home.md "TV Home: video"). A net video's first turns are streamed by MediaPlayer (not looped) while [NetVideo]
  * keeps its file; when one ends, play() starts again and takes the kept file, which loops.
  *
+ * A clip whose end is not its start jumps at the turn; with [fade] on (HomeConfig "wfade": the site's themes set it for such clips,
+ * the person can turn it on or off) the turn is a dissolve: the end's last frame is copied off the surface ([PixelCopy], API 24), laid
+ * over it and faded out over [FADE_MS] while the next turn plays below. One picture of the video's size, made only when fade is on.
+ *
  * It plays only while Home is on screen: [stop] (Home stopped: another app in front, screen off, memory short) releases the decoder,
  * which the app in front may need; [start] makes it again. No timer, no polling.
  */
 class VideoWall(private val app: Context, private val root: ViewGroup, private val ui: Handler,
-                private val measured: (Measure) -> Unit, private val failed: () -> Unit) {
+                private val fade: () -> Boolean, private val measured: (Measure) -> Unit, private val failed: () -> Unit) {
     /** What 20 s of playing showed: frames shown per second against the clip's own, this process's CPU (% of one core), errors. */
     class Measure(val fps: Float, val want: Float, val cpu: Int, val errors: Int)
 
     private val view = SurfaceView(app)
     private var poster: ImageView? = null
     private var veil: View? = null
+    private var still: ImageView? = null                            // the end's last frame over the next turn, fading out
+    private var shot: Bitmap? = null
     private var player: MediaPlayer? = null                         // a stream's first turns
     private var loop: Loop? = null                                  // a file
     private var surface: Surface? = null
@@ -105,6 +114,7 @@ class VideoWall(private val app: Context, private val root: ViewGroup, private v
         release()
         (view.parent as? ViewGroup)?.removeView(view)
         poster?.let { (it.parent as? ViewGroup)?.removeView(it) }; poster = null
+        still?.let { (it.parent as? ViewGroup)?.removeView(it) }; still = null
         veil?.let { (it.parent as? ViewGroup)?.removeView(it) }
         veil = null; file = null; url = null
     }
@@ -153,9 +163,44 @@ class VideoWall(private val app: Context, private val root: ViewGroup, private v
                 covered(false)
                 if (file == f && t0 == 0L) beginMeasure(f)
             } } },
-            error = { e -> Log.w(TAG, "loop error", e); ui.post { if (loop === l) { errors++; release(); failed() } } })   // a file the codec cannot play: the poster stays
+            error = { e -> Log.w(TAG, "loop error", e); ui.post { if (loop === l) { errors++; release(); failed() } } },   // a file the codec cannot play: the poster stays
+            turn = { go -> Build.VERSION.SDK_INT >= 24 && ui.post { if (loop === l && fade()) dissolve(go) else go.run() } })
         loop = l
         l.start()
+    }
+
+    /** The turn as a dissolve: the end's frame copied, shown over the surface, and [go] once it is drawn; then it fades out. */
+    private fun dissolve(go: Runnable) {
+        if (Build.VERSION.SDK_INT < 24 || vw <= 0 || vh <= 0) return go.run()
+        val k = minOf(1f, root.width.coerceAtLeast(1).toFloat() / vw)      // never bigger than the screen
+        val bw = (vw * k).toInt().coerceAtLeast(1); val bh = (vh * k).toInt().coerceAtLeast(1)
+        val b = shot?.takeIf { it.width == bw && it.height == bh } ?: try { Bitmap.createBitmap(bw, bh, Bitmap.Config.ARGB_8888) } catch (e: Throwable) { null }
+        if (b == null) return go.run()
+        shot = b
+        try {
+            PixelCopy.request(view, b, { r ->
+                val v = if (r == PixelCopy.SUCCESS && loop != null) stillView() else null
+                if (v == null) { go.run(); return@request }
+                v.animate().cancel()
+                v.setImageBitmap(b); v.alpha = 1f; v.visibility = View.VISIBLE
+                v.postOnAnimation { v.post {                                      // drawn: the next turn may show below it
+                    go.run()
+                    v.animate().alpha(0f).setDuration(FADE_MS).withEndAction { v.visibility = View.GONE; v.setImageDrawable(null) }.start()
+                } }
+            }, ui)
+        } catch (e: Throwable) { go.run() }                             // the surface is gone (Home stopping)
+    }
+
+    private fun stillView(): ImageView? = still ?: veil?.let { vl ->
+        ImageView(app).apply {
+            scaleType = ImageView.ScaleType.CENTER_CROP; isFocusable = false; visibility = View.GONE   // cropped as the surface is ([cover])
+            root.addView(this, root.indexOfChild(vl), FrameLayout.LayoutParams(-1, -1))
+        }.also { still = it }
+    }
+
+    private fun unfade() {
+        still?.let { it.animate().cancel(); it.visibility = View.GONE; it.setImageDrawable(null) }
+        shot = null                                                     // its memory back while nothing plays
     }
 
     /** A stream's first turns, its sound off; not looped: at its end play() takes the kept file. */
@@ -183,6 +228,7 @@ class VideoWall(private val app: Context, private val root: ViewGroup, private v
         ui.removeCallbacks(measure)                                     // nothing is measured (or kept running) once it does not play
         covered(true)
         loop?.let { loop = null; it.stop() }
+        unfade()
         val p = player ?: return
         player = null
         quit(p)
@@ -237,5 +283,6 @@ class VideoWall(private val app: Context, private val root: ViewGroup, private v
 
     companion object {
         const val TAG = "TvHomeVideo"
+        const val FADE_MS = 1000L
     }
 }

@@ -21,6 +21,8 @@ import org.json.JSONObject
  *   vid:<8 hex> a wall too: a looping video or animated GIF from TV Home's media library (app/tvhome wall/Videos.kt: the file is
  *           `videos/<id>.mp4` there, GIFs are turned into mp4 on arrival). Any such id is accepted here; whether its file is there is the
  *           launcher's to know ([Walls.usable]), so a deleted one is skipped by the rotation and falls to Night when shown
+ *   wfade   a video wall loops as a dissolve (its last frame fades into the next turn), not a cut: for a clip whose end is not its
+ *           start. Off by default; the site's video themes and suggestions set it for such clips, a theme carries it
  *   vfps, vres  how a GIF or a heavy video is made light at upload ([VFPS], [VRES]); "" = the source's own / the screen's own size. Applies to the next uploads
  *   photo   when a photo last changed, so the launcher reads it again
  *   wfit    how a photo (yours, Bing, a picture theme) fills the screen ([WFITS]): "cover" cropped to fill it, "contain" whole over
@@ -466,7 +468,7 @@ object HomeConfig {
     const val THEMES_MAX = 12
     const val THEME_NAME_MAX = 24
     /** The settings a theme holds and an apply switches . */
-    val THEME_KEYS = listOf("wall", "walls", "wurl", "wcol", "wdir", "wmode", "wsnap", "wkeep", "wevery", "shade", "wfit",
+    val THEME_KEYS = listOf("wall", "walls", "wurl", "wcol", "wdir", "wmode", "wsnap", "wkeep", "wevery", "shade", "wfit", "wfade",
         "widgets", "wsize", "wopt", "cols", "rows", "focus", "motion", "anim", "clock24", "greet")
     private val THEME_ID = Regex("t[0-9]{1,4}")
     /** What the first screen draws that the person can take off (not in a theme: a look does not hide the way to the settings). */
@@ -660,6 +662,7 @@ object HomeConfig {
             .put("wmode", o.optString("wmode").takeIf { it in WMODES } ?: "live")
             .put("wsnap", o.optInt("wsnap", WSNAP_DEFAULT).takeIf { it in WSNAPS } ?: WSNAP_DEFAULT)
             .put("wkeep", o.optBoolean("wkeep", false))
+            .put("wfade", o.optBoolean("wfade", false))               // a video wall's turn as a dissolve (wall/VideoWall): for a clip whose end is not its start
             .put("wevery", o.optString("wevery").takeIf { it in EVERY } ?: "off")
             .put("photo", o.optLong("photo", 0).coerceAtLeast(0))
             .put("wfit", o.optString("wfit").takeIf { it in WFITS } ?: "cover")

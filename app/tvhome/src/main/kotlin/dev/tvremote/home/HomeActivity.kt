@@ -1731,7 +1731,7 @@ class HomeActivity : Activity() {
         if (!isDestroyed && !trimmed && conf.optString("wall") == HomeConfig.WEB) livePage(conf.optString("wurl"))
     }
 
-    private fun videoWall(root: ViewGroup) = VideoWall(this, root, ui, { m -> if (netVideo.isEmpty()) videoMeasured(conf.optString("wall"), m) }) {
+    private fun videoWall(root: ViewGroup) = VideoWall(this, root, ui, { conf.optBoolean("wfade") }, { m -> if (netVideo.isEmpty()) videoMeasured(conf.optString("wall"), m) }) {
         if (netVideo.isNotEmpty()) netFailed() else { detachVideo(); ui.postDelayed(videoRetry, 120_000) }
     }.also { video = it }
 

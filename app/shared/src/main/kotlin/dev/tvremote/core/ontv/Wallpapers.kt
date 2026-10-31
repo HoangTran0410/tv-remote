@@ -21,7 +21,7 @@ object Wallpapers {
                val credit: String, val source: String, val license: String, val bytes: Int)
     /** A suggested background that is a page, not a picture to send ("links": the slideshow, a video, a live page): the client sets "web" to [url]. */
     class Link(val id: String, val kind: String, val name: Map<String, String>, val url: String, val thumb: String, val thumbSha: String,
-               val credit: String, val source: String, val license: String)
+               val credit: String, val source: String, val license: String, val fade: Boolean = false)   // fade: HomeConfig "wfade" for this video
     class Gallery(val walls: List<Wall>, val base: String, val links: List<Link> = emptyList()) {
         operator fun get(id: String) = walls.firstOrNull { it.id == id }
         fun link(id: String) = links.firstOrNull { it.id == id }
@@ -45,7 +45,7 @@ object Wallpapers {
             val e = l.optJSONObject(i) ?: return@mapNotNull null
             val n = e.optJSONObject("name") ?: JSONObject()
             Link(e.optString("id"), e.optString("kind"), n.keys().asSequence().associateWith { n.getString(it) }, e.optString("url"), e.optString("thumb"),
-                e.optString("thumb_sha256").lowercase(), e.optString("credit"), e.optString("source"), e.optString("license"))
+                e.optString("thumb_sha256").lowercase(), e.optString("credit"), e.optString("source"), e.optString("license"), e.optBoolean("fade"))
                 .takeIf { it.id.isNotEmpty() && it.kind in KINDS && it.url.startsWith("https://") && (it.thumb.isEmpty() || NAME.matches(it.thumb)) }
         } }.orEmpty())
     } catch (e: org.json.JSONException) { throw IOException("wallpaper list: " + e.message) }
@@ -64,7 +64,7 @@ object Wallpapers {
             .put("kb", (w.bytes + 512) / 1024).put("thumb", "/api/home/walls/thumb?id=" + w.id)
     })).put("links", JSONArray(g.links.map { l ->
         JSONObject().put("id", l.id).put("kind", l.kind).put("name", JSONObject(l.name)).put("url", l.url).put("credit", l.credit).put("source", l.source)
-            .put("license", l.license).put("thumb", if (l.thumb.isEmpty()) "" else "/api/home/walls/thumb?id=" + l.id)
+            .put("license", l.license).put("fade", l.fade).put("thumb", if (l.thumb.isEmpty()) "" else "/api/home/walls/thumb?id=" + l.id)
     }))
 
     private fun checked(b: ByteArray, sha: String): ByteArray {

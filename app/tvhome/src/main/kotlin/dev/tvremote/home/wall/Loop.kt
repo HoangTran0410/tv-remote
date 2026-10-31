@@ -17,9 +17,14 @@ import java.io.File
  * Frames are let go at their own time (`releaseOutputBuffer(i, ns)`, the compositor shows each on its vsync); one already two frames
  * late is dropped rather than shown, and counted. [first] runs once the first frame is out, [size] with the picture's size, [error] when
  * the decoder fails; all three on this thread.
+ *
+ * [turn] runs on this thread when a turn's first frame is decoded, before it is shown (the last frame of the turn before is on screen):
+ * true = wait for the go it is handed (at most [TURN_WAIT_MS]: the end's picture is being taken for a fade, [VideoWall]); the clock is
+ * then set again from that frame, so the wait drops nothing.
  */
 class Loop(private val f: File, private val surface: Surface, private val size: (Int, Int) -> Unit,
-           private val first: () -> Unit, private val error: (Throwable) -> Unit) {
+           private val first: () -> Unit, private val error: (Throwable) -> Unit,
+           private val turn: (Runnable) -> Boolean = { false }) {
     @Volatile private var going = true
     @Volatile var shown = 0; private set
     @Volatile var dropped = 0; private set
@@ -47,12 +52,13 @@ class Loop(private val f: File, private val surface: Surface, private val size: 
             var last = 0L                                               // the latest time read this turn
             var t0 = -1L; var at0 = 0L                                  // the first frame's time and when it was shown (ns)
             var told = false
+            val turns = java.util.ArrayDeque<Long>()                    // where each turn queued so far begins, in the moved-on times
             while (going) {
                 val i = c.dequeueInputBuffer(5_000)
                 if (i >= 0) {
                     var n = ex.readSampleData(c.getInputBuffer(i)!!, 0)
                     if (n < 0) {                                        // the end: the next turn's first sample, at its moved-on time
-                        shift += last + frameUs; last = 0L
+                        shift += last + frameUs; last = 0L; turns.add(shift)
                         ex.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
                         n = ex.readSampleData(c.getInputBuffer(i)!!, 0)
                         if (n < 0) throw IllegalStateException("empty video")
@@ -68,7 +74,15 @@ class Loop(private val f: File, private val surface: Surface, private val size: 
                     size(w, h)
                 }
                 if (o < 0) continue
-                val now = System.nanoTime()
+                var now = System.nanoTime()
+                if (turns.isNotEmpty() && info.presentationTimeUs >= turns.peek()!!) {
+                    turns.poll()
+                    val go = java.util.concurrent.CountDownLatch(1)
+                    if (turn(Runnable { go.countDown() })) {
+                        go.await(TURN_WAIT_MS, java.util.concurrent.TimeUnit.MILLISECONDS)
+                        now = System.nanoTime(); t0 = info.presentationTimeUs; at0 = now   // the wait is not lateness
+                    }
+                }
                 if (t0 < 0) { t0 = info.presentationTimeUs; at0 = now }
                 val due = at0 + (info.presentationTimeUs - t0) * 1000
                 if (now > due + 2 * frameUs * 1000) { c.releaseOutputBuffer(o, false); dropped++; continue }   // late: the next one is nearer its time
@@ -86,5 +100,9 @@ class Loop(private val f: File, private val surface: Surface, private val size: 
             try { codec?.release() } catch (e: Throwable) { }
             ex.release()
         }
+    }
+
+    companion object {
+        const val TURN_WAIT_MS = 250L
     }
 }

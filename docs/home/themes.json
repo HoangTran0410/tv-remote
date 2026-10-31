@@ -413,6 +413,7 @@
    "conf": {
     "wall": "web",
     "wurl": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F18914444%2F18914444-hd_1920_1080_30fps.mp4&p=https%3A%2F%2Fimages.pexels.com%2Fvideos%2F26310139%2Fbeach-background-beach-waves-beautiful-sunset-crashing-waves-26310139.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D330",
+    "wfade": true,
     "shade": 30,
     "widgets": [
      "clock",
@@ -461,6 +462,7 @@
    "conf": {
     "wall": "web",
     "wurl": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F3783927%2F3783927-hd_1920_1080_24fps.mp4&p=https%3A%2F%2Fimages.pexels.com%2Fvideos%2F3783927%2Fpexels-photo-3783927.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D330",
+    "wfade": true,
     "shade": 30,
     "widgets": [
      "clock",
@@ -859,5 +861,5 @@
    }
   }
  ],
- "rev": 1793011245
+ "rev": 1793412419
 }

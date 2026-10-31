@@ -24,7 +24,8 @@ object Suggest {
     private const val DAY = 24 * 3600_000L
     private val FILE = Regex("[a-z0-9][a-z0-9._-]*\\.jpg")
 
-    class Item(val id: String, val kind: String, val names: Map<String, String>, val url: String, val thumb: String, val sha: String) {
+    class Item(val id: String, val kind: String, val names: Map<String, String>, val url: String, val thumb: String, val sha: String,
+               val fade: Boolean = false) {   // a video whose end is not its start: picked, it sets HomeConfig "wfade"
         val key get() = PREFIX + id
         fun name(lang: String) = names[lang] ?: names["en"] ?: id
     }
@@ -61,7 +62,7 @@ object Suggest {
             val url = HomeConfig.wurl(e.optString("url"))
             val kind = e.optString("kind")
             if (url.isEmpty() || !url.startsWith("https://") || kind !in KINDS) null
-            else Item(e.optString("id"), kind, names(e), url, e.optString("thumb").takeIf { FILE.matches(it) } ?: "", e.optString("thumb_sha256").lowercase())
+            else Item(e.optString("id"), kind, names(e), url, e.optString("thumb").takeIf { FILE.matches(it) } ?: "", e.optString("thumb_sha256").lowercase(), e.optBoolean("fade"))
         }
         val pics = o.optJSONArray("walls")?.let { a -> (0 until a.length()).mapNotNull { a.optJSONObject(it) } }.orEmpty().mapNotNull { e ->
             val file = e.optString("file")

@@ -93,6 +93,17 @@ class Tv(
     }
 
     companion object {
+        /**
+         * The software H.264 encoder in scrcpy's list_encoders. scrcpy marks "(sw)" only from Android 10 (MediaCodecInfo.isSoftwareOnly
+         * is API 29); before, Google's own encoders are the software ones by name (OMX.google.*, c2.android.*): issue #10, Android 9,
+         * "Use Software" found none and the hardware encoder ran again.
+         */
+        fun softIn(list: String): String? {
+            val all = Regex("--video-codec=h264 --video-encoder=(\\S+)(?:\\s+\\((\\w+)\\))?").findAll(list).map { it.groupValues[1] to it.groupValues[2] }.toList()
+            return all.firstOrNull { it.second == "sw" }?.first
+                ?: all.firstOrNull { it.second.isEmpty() && (it.first.startsWith("OMX.google.") || it.first.startsWith("c2.android.")) }?.first
+        }
+
         private const val MOUSE_ID: Short = 1
         private const val MOUSE_TICK_MS = 8                          // at most ~125 writes a second
         /** The boot mouse: 3 buttons, relative X / Y, wheel; the report is 4 bytes (buttons, dx, dy, wheel). */
@@ -285,6 +296,7 @@ class Tv(
                 if (!wantVideo && !wantControl) throw IOException("this TV cannot send its sound (Android 11 or newer is needed)")
             }
             val soft = if (!wantVideo) null else when (encoder) { "hw" -> null; "sw" -> softFor(a); else -> softEncoder[host] }
+            soft?.let { WireLog.all.add("·", "picture $host encoder $it") }   // which one ran: the log a person sends says it (issue #10)
             /** Starts scrcpy-server and opens its sockets in the order it takes them; again after [rest]. */
             fun startServer(): List<Adb.Stream> {
                 val got = arrayListOf<Adb.Stream>()
@@ -399,7 +411,7 @@ class Tv(
     private fun softFor(a: Adb): String? {
         softName[host]?.let { return it }
         val list = try { a.shell("CLASSPATH=$REMOTE app_process / com.genymobile.scrcpy.Server $VER cleanup=false list_encoders=true 2>&1", 15000) } catch (e: IOException) { return null }   // cleanup=false: or scrcpy deletes its jar
-        val soft = Regex("--video-codec=h264 --video-encoder=(\\S+)\\s+\\(sw\\)").find(list)?.groupValues?.get(1) ?: return null
+        val soft = softIn(list) ?: return null.also { WireLog.all.add("·", "picture $host no software encoder") }   // Auto's hardware one then: said, not silent
         softName[host] = soft                                         // not [softEncoder]: "Software" picked once is not Auto's choice
         return soft
     }
