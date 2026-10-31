@@ -16,6 +16,8 @@ Bạn thấy hình TV ngay trên máy và chạm hay bấm chuột như đang ch
 
 > 💡 Video có bản quyền (Netflix…) hiện màu đen và báo “TV không cho chiếu hình lên đây”. Đây là chủ ý của app đó, không phải lỗi.
 
+> 💡 **Trực tiếp** đen mà **Ảnh chụp** có hình: bấm nút độ nét (960p…) → **Bộ mã hóa** → **Phần mềm**.
+
 > 💡 Wi-Fi yếu hoặc iPhone: chọn **Ảnh chụp** thay **Trực tiếp**.
 
 💡 Nhiều máy xem cùng lúc được; góc hình hiện **👁 2**. Cùng một app máy tính hay trang web của TV thì dùng chung một luồng hình.

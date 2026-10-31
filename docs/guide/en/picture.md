@@ -16,6 +16,8 @@ You see the TV's picture on your device and tap or click as if touching the TV.
 
 > 💡 Protected video (Netflix…) shows black with “the TV does not allow its picture here”. That is the app's choice, not a fault.
 
+> 💡 **Live** is black but **Screenshots** works: tap the size button (960p…) → **Encoder** → **Software**.
+
 > 💡 Weak Wi-Fi or an iPhone: pick **Screenshots** instead of **Live**.
 
 💡 Several devices can watch at once; the picture shows **👁 2**. Browsers on one computer app or TV web page share one stream.
