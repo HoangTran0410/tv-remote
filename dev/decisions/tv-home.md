@@ -177,7 +177,17 @@ Measured on emulator-5554 (TV Setup, open → list drawn): 2.5–3.6 s before, ~
   MediaPlayer is prepared 4 s before the end (`VideoWall.LEAD_MS`) and takes the surface on completion: completion -> first frame 57-73 ms.
   After: a site video (`NetVideo`) 0.05 s a turn, a library video (720p, B-frames) 0.13-0.14 s. A web wall's video is kept as a file
   after its first play (`wall/NetVideo.kt`, 80 MB max, 3 kept): streamed again on each return to Home, a weak box waited on the
-  network at each start. Not measured on the FPT box yet.
+  network at each start.
+- **The loop again (2026-10-31, FPT box, release build, SurfaceFlinger `--latency` of the video layer, 6 s clip, 4 loops):** the second
+  player held the last frame **270-300 ms** a turn (log "loop gap" 264-317 ms; 300 ms between presented frames against 40 ms normal).
+  Inside the turn: `quit` of the old player 64-73 ms on the main thread, `setSurface` + `start` 2-4 ms, the rest (~200 ms) is the new
+  decoder's set-up: a player prepared with no surface cannot configure its codec, so "ready before the end" only parsed the file.
+  Neither part can be hidden. `isLooping` on the **audio-less copy** ([Silent]) keeps codec and surface and only flushes + seeks:
+  gaps **60-100 ms** (site video, kept file), 60-120 ms (library video); the emulator's 0.05 s agrees. So the second player (`armNext`,
+  `turn`, `LEAD_MS`) is gone and a file loops by itself. A stream's first turn (a net video before [NetVideo] has its file; it has
+  sound) is not looped: at its end `play()` starts again and takes the kept file's silent copy (one 300 ms hold, once; measured with
+  the cache cleared). Two SurfaceViews ping-ponging could go below 60 ms; not built (two layers on a box that may have one overlay
+  plane, to win two frames).
 
 ## TV Home themes (2026-10-24)
 
