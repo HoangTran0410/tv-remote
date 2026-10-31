@@ -35,7 +35,7 @@ import java.io.File
  * at volume 0 and waits for the audio to start again at each turn (seconds on the FPT box). The earlier loop, a second MediaPlayer made
  * ready before the end and given the surface at completion, held the last frame ~290 ms a turn there: the old player's stop/release
  * (~70 ms, on Home's main thread) and the new player's decoder set-up (~210 ms: prepared without a surface it cannot configure the
- * codec before setSurface) cannot be hidden, so no second player (dev/decisions/tv-home.md "The loop"). A net video's first turns
+ * codec before setSurface) cannot be hidden, so no second player (dev/decisions/tv-home.md "TV Home: video"). A net video's first turns
  * are streamed (with its sound, not looped) while [NetVideo] keeps its file; when one ends, play() starts again and takes the kept
  * file's silent copy, which loops.
  *
