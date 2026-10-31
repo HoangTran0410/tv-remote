@@ -16,6 +16,7 @@ import android.os.Looper
 import android.widget.Toast
 import dev.tvremote.core.Words
 import dev.tvremote.core.scenes.Scenes
+import dev.tvremote.setup.rules.Rules
 import dev.tvremote.tvui.TvUi
 import org.json.JSONArray
 import org.json.JSONObject

@@ -12,10 +12,16 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.Parcel
 import android.util.SparseArray
-import android.widget.Toast
 import android.view.KeyEvent
+import android.widget.Toast
 import dev.tvremote.core.T
+import dev.tvremote.setup.health.Support
+import dev.tvremote.setup.home.HomeKey
+import dev.tvremote.setup.keys.HoldKeys
+import dev.tvremote.setup.keys.KeyFix
+import dev.tvremote.setup.keys.KeyList
 import dev.tvremote.setup.keys.KeysProtocol
+import dev.tvremote.setup.rules.Usage
 
 /**
  * Gives a button back that only the stock launcher answered (see [KeyFix]). The accessibility service that sees the keys is the one of

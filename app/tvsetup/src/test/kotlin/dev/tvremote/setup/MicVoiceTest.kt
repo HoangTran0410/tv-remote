@@ -1,6 +1,7 @@
 package dev.tvremote.setup
 
 import dev.tvremote.setup.MicVoice.Step
+import dev.tvremote.setup.rules.Rules
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

@@ -1,11 +1,13 @@
 package dev.tvremote.setup
 
-import dev.tvremote.core.T
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import dev.tvremote.core.T
 import dev.tvremote.core.adb.Adb
+import dev.tvremote.setup.link.Scope
+import dev.tvremote.setup.link.Tls
 
 /**
  * Gives a TV Setup pass to a phone or computer that already has ADB on this TV (it could do everything anyway). With it,

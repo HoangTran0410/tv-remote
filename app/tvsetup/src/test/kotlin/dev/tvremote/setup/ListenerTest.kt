@@ -1,5 +1,6 @@
 package dev.tvremote.setup
 
+import dev.tvremote.setup.rules.Guard
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test

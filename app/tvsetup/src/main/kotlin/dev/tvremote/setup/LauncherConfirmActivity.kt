@@ -17,6 +17,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import dev.tvremote.core.T
+import dev.tvremote.setup.home.LauncherGuard
 import kotlin.math.roundToInt
 
 /**

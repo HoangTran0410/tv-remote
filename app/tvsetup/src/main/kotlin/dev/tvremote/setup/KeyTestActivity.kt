@@ -17,6 +17,13 @@ import android.widget.TextView
 import android.widget.Toast
 import dev.tvremote.core.T
 import dev.tvremote.home.HomeConfig
+import dev.tvremote.setup.home.HomeKey
+import dev.tvremote.setup.keys.BackExit
+import dev.tvremote.setup.keys.HoldKeys
+import dev.tvremote.setup.keys.KeyFix
+import dev.tvremote.setup.keys.KeyLog
+import dev.tvremote.setup.keys.KeyNames
+import dev.tvremote.setup.keys.KeyPress
 import dev.tvremote.tvui.TvUi
 
 /** The tester is open: the key filter ([KeysBridge]) reports every key it is asked about here, and eats it (Home must not leave). */

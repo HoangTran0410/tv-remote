@@ -20,13 +20,13 @@ import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.Socket
 import java.security.SecureRandom
+import org.json.JSONObject
 
 /**
  * Drawing over the TV's screen for a phone or computer (Draw.kt in the shared code says how the strokes come). A window over

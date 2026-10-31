@@ -32,5 +32,5 @@ test('a block or an empty answer has no window; the cap is 8 like Rules.WINDOWS_
   assert.deepEqual(JSON.parse(JSON.stringify(schedWindows({ block: true }))), []);
   assert.equal(dayText([1]), 'D1');
   assert.equal(SCHED_WINDOWS_MAX, 8);
-  assert.match(fs.readFileSync(path.join(__dirname, '../../tvsetup/src/main/kotlin/dev/tvremote/setup/Rules.kt'), 'utf8'), /const val WINDOWS_MAX = 8/);
+  assert.match(fs.readFileSync(path.join(__dirname, '../../tvsetup/src/main/kotlin/dev/tvremote/setup/rules/Rules.kt'), 'utf8'), /const val WINDOWS_MAX = 8/);
 });

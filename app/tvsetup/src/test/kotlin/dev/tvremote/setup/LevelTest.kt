@@ -1,6 +1,7 @@
 package dev.tvremote.setup
 
 import dev.tvremote.home.HomeConfig
+import dev.tvremote.setup.home.LiveWidgets
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

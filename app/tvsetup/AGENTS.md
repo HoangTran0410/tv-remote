@@ -21,6 +21,21 @@ app/tvsetup/                  TV Setup: MainActivity (the TV screen), RemoteServ
                          their banners copied in as `res/drawable/eco_*.png`; installed over ADB, else through Android's installer)
 ```
 
+### By folder (`src/main/kotlin/dev/tvremote/setup/`)
+
+Everything the manifest, another app or an old client names stays at the root, in package `dev.tvremote.setup` (`am start/broadcast -n
+dev.tvremote.setup/.X`, `HomeInfo`'s authority, appops): the Application, activities, receivers (`DimReceiver` in `DimLayer.kt`,
+`DrawReceiver`, `NotifyReceiver`, `SceneRunActivity` in `ScenePin.kt`, `WelcomeReceiver` in `Welcome.kt`), `RemoteService`, `HomeInfo`,
+`KeysBridge`, plus `MicVoice`, `WebViewFix`. Never move one of those into a folder. The rest, by what it does (tests mirror the folders):
+
+| Folder | Files |
+|---|---|
+| `rules/` | `Rules`, `Guard`, `Clock`, `Kids` (+ `Lockout`), `Totp`, `Usage`: sleep timer, bedtime, limits, the PIN lock |
+| `home/` | `HomeApp`, `HomeCompile`, `HomeControl`, `HomeKey`, `HomeKeys` (+ `AutoOpen`), `HomePower`, `LiveWidgets`, `LauncherGuard`, `Reoptimize`: what TV Home asks of TV Setup, the home screen swap |
+| `keys/` | `KeyFix`, `KeyList`, `KeyLog`, `KeysAddon`, `HoldKeys`: the key filter and its add-on |
+| `link/` | `Paired`, `PairBackoff`, `Scope`, `Tls`, `LinkFailure`, `OnPhone`, `DnsWatch`, `KeepAdb`, `KeepAwake`, `TailscaleWatch`: who may reach the TV and keeping the link up |
+| `health/` | `AdbReport`, `AutoUpdate`, `Nightly`, `Stats`, `Support`, `SupportDump`: updates, nightly work, stats, support |
+
 ## Key tester
 
 `KeyTestActivity` (+ pure `KeyLog.kt`: names, history, BackExit) shows every key live. Keys the system eats (HOME, app keys) come

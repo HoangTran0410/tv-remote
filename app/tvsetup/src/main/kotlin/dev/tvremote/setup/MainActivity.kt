@@ -1,10 +1,6 @@
 package dev.tvremote.setup
 
 import android.app.Activity
-import dev.tvremote.core.T
-import dev.tvremote.tvui.Marks
-import dev.tvremote.tvui.TvUi
-import dev.tvremote.core.Words
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -19,10 +15,25 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
+import dev.tvremote.core.T
+import dev.tvremote.core.Words
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.ontv.Setup
 import dev.tvremote.core.ontv.SetupUpdate
 import dev.tvremote.core.ontv.Tailscale
+import dev.tvremote.setup.health.AutoUpdate
+import dev.tvremote.setup.health.Support
+import dev.tvremote.setup.keys.HoldKeys
+import dev.tvremote.setup.keys.KeyFix
+import dev.tvremote.setup.keys.KeysAddon
+import dev.tvremote.setup.link.KeepAdb
+import dev.tvremote.setup.link.OnPhone
+import dev.tvremote.setup.link.Paired
+import dev.tvremote.setup.link.Tls
+import dev.tvremote.setup.rules.Guard
+import dev.tvremote.setup.rules.Rules
+import dev.tvremote.tvui.Marks
+import dev.tvremote.tvui.TvUi
 import dev.tvremote.update.Release
 import java.io.File
 import java.util.Locale

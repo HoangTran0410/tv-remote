@@ -1,6 +1,5 @@
 package dev.tvremote.setup
 
-import dev.tvremote.core.T
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
@@ -19,6 +18,7 @@ import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import dev.tvremote.core.T
 
 /**
  * The web UI on the TV itself, for when there is no phone or computer at hand: the page RemoteService serves, in a WebView,

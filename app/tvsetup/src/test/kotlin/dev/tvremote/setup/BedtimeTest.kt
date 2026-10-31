@@ -1,11 +1,12 @@
 package dev.tvremote.setup
 
+import dev.tvremote.setup.rules.Rules
+import java.util.Calendar
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.util.Calendar
 
 class BedtimeTest {
     private fun at(h: Int, m: Int): Long = Calendar.getInstance().apply { set(2026, 9, 14, h, m, 0); set(Calendar.MILLISECOND, 0) }.timeInMillis

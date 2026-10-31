@@ -5,7 +5,7 @@ Why some code looks odd ([the list](../DECISIONS.md)).
 ## The apps leaning on each other
 
 - **TV Home has no ADB**: its power button (screen off, standby, power off) asks TV Setup through the `HomeInfo` provider
-  (signature-checked) with one of three fixed words, never a command line (`setup/HomePower.kt`). When TV Setup's service
+  (signature-checked) with one of three fixed words, never a command line (`setup/home/HomePower.kt`). When TV Setup's service
   is not running, HomePower opens a link of its own on the same key and closes it after; the screen-off helper is
   `nohup setsid`, so it outlives that link.
 - **A feature that needs another app stays visible and says how to get it** (Downloader code or "install from the phone"),

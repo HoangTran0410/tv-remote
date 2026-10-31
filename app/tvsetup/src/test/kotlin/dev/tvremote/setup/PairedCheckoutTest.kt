@@ -1,5 +1,6 @@
 package dev.tvremote.setup
 
+import dev.tvremote.setup.link.Paired
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

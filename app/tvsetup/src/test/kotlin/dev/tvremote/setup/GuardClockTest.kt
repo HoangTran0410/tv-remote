@@ -1,5 +1,7 @@
 package dev.tvremote.setup
 
+import dev.tvremote.setup.rules.Guard
+import dev.tvremote.setup.rules.Marks
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

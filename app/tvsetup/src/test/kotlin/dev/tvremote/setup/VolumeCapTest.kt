@@ -1,11 +1,12 @@
 package dev.tvremote.setup
 
+import dev.tvremote.setup.rules.Rules
+import java.util.Calendar
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
-import java.util.Calendar
 
 /** Which volume limit holds at a time of day (Rules.volumeCap), what Guard then enforces: the setter is RulesTest's. */
 class VolumeCapTest {

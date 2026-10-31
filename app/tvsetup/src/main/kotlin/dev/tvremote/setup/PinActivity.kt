@@ -1,7 +1,5 @@
 package dev.tvremote.setup
 
-import dev.tvremote.core.T
-import dev.tvremote.tvui.Marks
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
@@ -17,8 +15,16 @@ import android.widget.Button
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import org.json.JSONObject
+import dev.tvremote.core.T
+import dev.tvremote.setup.health.Stats
+import dev.tvremote.setup.rules.Clock
+import dev.tvremote.setup.rules.Guard
+import dev.tvremote.setup.rules.Kids
+import dev.tvremote.setup.rules.Lockout
+import dev.tvremote.setup.rules.Rules
+import dev.tvremote.tvui.Marks
 import kotlin.math.roundToInt
+import org.json.JSONObject
 
 /**
  * Over a locked app ([Rules.needsPin]: a locked app, or any app in kids mode) the moment it comes to the front ([Guard]): its PIN on the

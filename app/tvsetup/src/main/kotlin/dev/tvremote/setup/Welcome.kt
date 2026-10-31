@@ -15,9 +15,9 @@ import android.provider.Settings
 import android.util.Base64
 import android.util.Log
 import dev.tvremote.core.ontv.Welcome
-import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.File
+import org.json.JSONObject
 
 /**
  * The welcome screen's settings and file, kept here on the TV (prefs "welcome", the file in `welcome/` of this app's folder on shared

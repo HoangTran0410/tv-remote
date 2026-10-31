@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.res.Configuration
 import android.os.Build
 import dev.tvremote.core.Words
+import dev.tvremote.setup.keys.KeyFix
+import dev.tvremote.setup.keys.KeyList
 import java.util.Locale
 
 /** Before any screen, service or receiver: the words (i18n/<lang>.json in the assets) in the TV's language, again when it changes. */

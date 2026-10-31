@@ -6,6 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.util.Base64
 import dev.tvremote.core.scenes.Scenes
+import dev.tvremote.setup.health.Nightly
+import dev.tvremote.setup.health.Support
+import dev.tvremote.setup.home.Reoptimize
+import dev.tvremote.setup.keys.KeysAddon
+import dev.tvremote.setup.rules.CodeWrong
+import dev.tvremote.setup.rules.Rules
 import org.json.JSONArray
 import org.json.JSONObject
 

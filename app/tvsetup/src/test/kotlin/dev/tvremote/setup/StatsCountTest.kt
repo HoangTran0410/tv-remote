@@ -1,6 +1,7 @@
 package dev.tvremote.setup
 
 import android.app.usage.UsageEvents
+import dev.tvremote.setup.health.Stats
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

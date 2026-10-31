@@ -5,8 +5,8 @@ Read [README.md](README.md) first: change the row a fault belongs to, and this f
 **Code:** `app/shared/src/main/kotlin/dev/tvremote/core/ontv/LauncherSwap.kt` (`LauncherSwap`, `LauncherWatch`),
 `app/shared/src/main/kotlin/dev/tvremote/core/ontv/LauncherInstall.kt`, `app/shared/src/main/kotlin/dev/tvremote/core/ontv/Setup.kt`,
 `app/shared/src/main/kotlin/dev/tvremote/core/ontv/Rescue.kt`, `app/shared/src/main/kotlin/dev/tvremote/core/manage/SetupApi.kt`,
-`app/tvsetup/src/main/kotlin/dev/tvremote/setup/LauncherGuard.kt`, `app/tvsetup/src/main/kotlin/dev/tvremote/setup/Reoptimize.kt`,
-`app/tvsetup/src/main/kotlin/dev/tvremote/setup/HomeKey.kt`.
+`app/tvsetup/src/main/kotlin/dev/tvremote/setup/home/LauncherGuard.kt`, `app/tvsetup/src/main/kotlin/dev/tvremote/setup/home/Reoptimize.kt`,
+`app/tvsetup/src/main/kotlin/dev/tvremote/setup/home/HomeKey.kt`.
 
 **Tests:** `app/shared/src/test/kotlin/dev/tvremote/core/LauncherTest.kt`: each row names its test.
 
@@ -33,7 +33,7 @@ Install / Update TV Setup question (Optimize TV too: its other steps are done by
 | Optimize TV (TV Setup, phone, computer) | `app/shared/src/main/kotlin/dev/tvremote/core/ontv/Setup.kt:takeHome` | log "Home screen: TV Home" (`LauncherSwap.homeOpens`); via `wifi` adds `launcher.key_wifi` (forget the Wi-Fi, join again, Optimize again: a full swap) |
 | Launcher gallery (page, TV Setup) | `app/shared/src/main/kotlin/dev/tvremote/core/ontv/LauncherInstall.kt:run` | swap: the 30 s Keep question; key: kept at once |
 | Settings page, Home screen | `app/shared/src/main/kotlin/dev/tvremote/core/manage/SetupApi.kt:homeSet` | answers `LauncherSwap.homeOpens`; the TV's own launcher picked = the way back |
-| A firmware update (TV Setup, daily) | `app/tvsetup/src/main/kotlin/dev/tvremote/setup/Reoptimize.kt:homeBack` | swap: chosen again, or `take` again; key: nothing (the rule survives updates) |
+| A firmware update (TV Setup, daily) | `app/tvsetup/src/main/kotlin/dev/tvremote/setup/home/Reoptimize.kt:homeBack` | swap: chosen again, or `take` again; key: nothing (the rule survives updates) |
 
 Via `home` and `wifi_unknown` (TVs the swap does not know yet) go to the census: `home:key:<via>`, `launcher:key:<via>`.
 

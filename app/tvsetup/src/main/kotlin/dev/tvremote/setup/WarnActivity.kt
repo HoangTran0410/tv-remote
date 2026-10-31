@@ -1,6 +1,5 @@
 package dev.tvremote.setup
 
-import dev.tvremote.core.T
 import android.app.Activity
 import android.graphics.Color
 import android.graphics.Typeface
@@ -13,8 +12,13 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
-import org.json.JSONObject
+import dev.tvremote.core.T
+import dev.tvremote.setup.health.Stats
+import dev.tvremote.setup.rules.Guard
+import dev.tvremote.setup.rules.Kids
+import dev.tvremote.setup.rules.Rules
 import kotlin.math.roundToInt
+import org.json.JSONObject
 
 /**
  * Shown over whatever is on the TV by [Guard]: the sleep timer is about to end (with +15 minutes, now, or cancel), bedtime

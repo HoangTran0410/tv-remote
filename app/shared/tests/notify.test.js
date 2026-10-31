@@ -73,5 +73,5 @@ test('it is in Tools, a scene step, and a feature that needs a newer TV Setup', 
   assert.ok(auto.includes("case 'notify'") && auto.includes("k === 'notify'"));
   assert.ok(/SETUP_NEEDS = \{[^}]*notify:/.test(core));
   assert.ok(read('shared/src/main/kotlin/dev/tvremote/core/ontv/SetupNeed.kt').includes('"notify" to "0.4.2"'));
-  assert.ok(read('tvsetup/src/main/kotlin/dev/tvremote/setup/Scope.kt').includes('"/api/notify"'));
+  assert.ok(read('tvsetup/src/main/kotlin/dev/tvremote/setup/link/Scope.kt').includes('"/api/notify"'));
 });

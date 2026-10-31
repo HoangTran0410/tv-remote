@@ -1,4 +1,4 @@
-// Android's usage events are read in ONE place, Usage.events (app/tvsetup .../setup/Usage.kt): a TV that booted with its clock
+// Android's usage events are read in ONE place, Usage.events (app/tvsetup .../setup/rules/Usage.kt): a TV that booted with its clock
 // ahead keeps its current stretch of events in the future, and a plain queryEvents(begin, now) comes back empty until the
 // next reboot (dev/decisions/apps.md "Usage events and a clock that ran ahead"). A second direct call would bring that back.
 const test = require('node:test');
@@ -19,7 +19,7 @@ function kotlin(dir, out = []) {
 
 test('usage events are only queried through Usage.events', () => {
   const bad = kotlin(ROOT)
-    .filter((p) => !p.endsWith(path.join('setup', 'Usage.kt')))
+    .filter((p) => !p.endsWith(path.join('setup', 'rules', 'Usage.kt')))
     .filter((p) => /\.queryEvents\(/.test(fs.readFileSync(p, 'utf8')))
     .map((p) => path.relative(ROOT, p));
   assert.deepStrictEqual(bad, [], 'use Usage.events(c, begin, now) { e -> } instead of queryEvents');

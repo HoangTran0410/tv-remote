@@ -1,7 +1,6 @@
 package dev.tvremote.setup
 
 import android.app.Activity
-import dev.tvremote.core.T
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -13,6 +12,7 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import dev.tvremote.core.T
 import kotlin.math.roundToInt
 
 /** Shows the pairing code on the TV while a new phone or computer asks to control it. Closes by itself. */

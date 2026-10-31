@@ -1,7 +1,5 @@
 package dev.tvremote.setup
 
-import dev.tvremote.core.Words
-import dev.tvremote.core.T
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -19,26 +17,53 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
 import dev.tvremote.core.Caps
+import dev.tvremote.core.T
+import dev.tvremote.core.Words
 import dev.tvremote.core.adb.AdbLink
-import dev.tvremote.core.picture.Feeds
-import dev.tvremote.core.web.HttpServer
-import dev.tvremote.core.web.Invite
 import dev.tvremote.core.manage.Manage
-import dev.tvremote.core.scenes.Scenes
 import dev.tvremote.core.ontv.Notify
 import dev.tvremote.core.ontv.Setup
 import dev.tvremote.core.ontv.SetupUpdate
+import dev.tvremote.core.picture.Feeds
 import dev.tvremote.core.picture.Tv
 import dev.tvremote.core.picture.TvControl
 import dev.tvremote.core.picture.Watchers
+import dev.tvremote.core.scenes.Scenes
+import dev.tvremote.core.web.HttpServer
+import dev.tvremote.core.web.Invite
 import dev.tvremote.core.web.WebPage
-import org.json.JSONArray
-import org.json.JSONObject
+import dev.tvremote.setup.health.AdbReport
+import dev.tvremote.setup.health.AutoUpdate
+import dev.tvremote.setup.health.Nightly
+import dev.tvremote.setup.health.Stats
+import dev.tvremote.setup.health.Support
+import dev.tvremote.setup.home.AutoOpenWatch
+import dev.tvremote.setup.home.HomeCompile
+import dev.tvremote.setup.home.HomeKey
+import dev.tvremote.setup.home.LauncherGuard
+import dev.tvremote.setup.home.Reoptimize
+import dev.tvremote.setup.keys.KeyFix
+import dev.tvremote.setup.keys.KeyFixWatch
+import dev.tvremote.setup.link.DnsWatch
+import dev.tvremote.setup.link.KeepAdb
+import dev.tvremote.setup.link.KeepAwake
+import dev.tvremote.setup.link.LinkFailure
+import dev.tvremote.setup.link.PairBackoff
+import dev.tvremote.setup.link.Paired
+import dev.tvremote.setup.link.Scope
+import dev.tvremote.setup.link.TailscaleWatch
+import dev.tvremote.setup.link.Tls
+import dev.tvremote.setup.rules.Clock
+import dev.tvremote.setup.rules.CodeWrong
+import dev.tvremote.setup.rules.Guard
+import dev.tvremote.setup.rules.Rules
 import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
+import org.json.JSONArray
+import org.json.JSONObject
 
 /**
  * The web remote that lives on the TV: an HTTP server on port 8765 serving one page, and an input session to the TV's

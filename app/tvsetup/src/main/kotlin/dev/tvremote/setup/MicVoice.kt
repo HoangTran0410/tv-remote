@@ -8,6 +8,7 @@ import dev.tvremote.core.T
 import dev.tvremote.core.ontv.Channels
 import dev.tvremote.core.scenes.Scenes
 import dev.tvremote.core.scenes.Voice
+import dev.tvremote.setup.rules.Rules
 import org.json.JSONArray
 import org.json.JSONObject
 

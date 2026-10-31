@@ -11,13 +11,24 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import dev.tvremote.core.Words
-import org.json.JSONArray
-import org.json.JSONObject
+import dev.tvremote.setup.health.Stats
+import dev.tvremote.setup.home.HomeApp
+import dev.tvremote.setup.home.HomeControl
+import dev.tvremote.setup.home.HomeKeys
+import dev.tvremote.setup.home.HomePower
+import dev.tvremote.setup.home.LiveWidgets
+import dev.tvremote.setup.keys.KeyFix
+import dev.tvremote.setup.rules.Guard
+import dev.tvremote.setup.rules.Kids
+import dev.tvremote.setup.rules.Rules
+import dev.tvremote.setup.rules.Usage
 import java.io.File
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import org.json.JSONArray
+import org.json.JSONObject
 
 /**
  * What TV Home's "usage" widget shows (HomeConfig.USAGE), counted here so it is the same number the app limits hold to:
