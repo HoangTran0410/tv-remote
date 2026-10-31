@@ -11,7 +11,7 @@ QUIET=${QUIET:-3}        # busy weeks in a row with few route changes before the
 BUSY=5                   # fewer code commits than this: not a week that says anything
 MAXPCT=10                # route changes allowed in a quiet week, in % of its code commits
 
-API='app/shared/src/main/kotlin/dev/tvremote/core/web/Manage.kt app/desktop/src/main/kotlin/dev/tvremote/desktop/Server.kt app/tvsetup/src/main/kotlin/dev/tvremote/setup/RemoteService.kt'
+API='app/shared/src/main/kotlin/dev/tvremote/core/manage/Manage.kt app/desktop/src/main/kotlin/dev/tvremote/desktop/Server.kt app/tvsetup/src/main/kotlin/dev/tvremote/setup/RemoteService.kt'
 NOISE='^(CHANGELOG|README|CLAUDE|VERSION|docs/|dev/)|/VERSION$'   # notes, the site and version bumps are not code
 
 count() {                                                            # code / route / web-only commits in [since, until)

@@ -1,11 +1,13 @@
-package dev.tvremote.core.web
+package dev.tvremote.core.manage
 import dev.tvremote.core.adb.AdbLink
+import dev.tvremote.core.web.Cancel
+import dev.tvremote.core.web.HttpServer
 import dev.tvremote.tvapps.AppList
-import org.json.JSONArray
-import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
+import org.json.JSONArray
+import org.json.JSONObject
 
 /**
  * TV Apps' /api for Manage on all three cores (`/api/tvapps`, `…/icon`, `…/install`): the signed list matched to this

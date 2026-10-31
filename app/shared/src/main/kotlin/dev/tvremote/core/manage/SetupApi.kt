@@ -1,4 +1,4 @@
-package dev.tvremote.core.web
+package dev.tvremote.core.manage
 import dev.tvremote.core.B64
 import dev.tvremote.core.Words
 import dev.tvremote.core.adb.Adb
@@ -9,6 +9,8 @@ import dev.tvremote.core.ontv.Setup
 import dev.tvremote.core.ontv.SetupNeed
 import dev.tvremote.core.ontv.SetupUpdate
 import dev.tvremote.core.ontv.Welcome
+import dev.tvremote.core.web.Cancel
+import dev.tvremote.core.web.HttpServer
 import dev.tvremote.update.Release
 import java.io.IOException
 import java.io.InputStream

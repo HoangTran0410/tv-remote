@@ -1,10 +1,12 @@
-package dev.tvremote.core.web
+package dev.tvremote.core.manage
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.adb.AdbLink
 import dev.tvremote.core.adb.Pkg
-import org.json.JSONObject
+import dev.tvremote.core.web.Cancel
+import dev.tvremote.core.web.HttpServer
 import java.io.IOException
 import java.util.regex.Pattern
+import org.json.JSONObject
 
 /** What every part of [Manage] shares: the TV's link, the names of its apps, this app's own folder and the jobs the page polls. */
 internal class ManageCore(val link: AdbLink, val labels: Manage.Labels?, val dir: java.io.File?) {

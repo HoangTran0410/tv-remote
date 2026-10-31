@@ -13,7 +13,7 @@ import android.widget.Toast
 import dev.tvremote.core.adb.AdbLink
 import dev.tvremote.core.Errors
 import dev.tvremote.core.Fleet
-import dev.tvremote.core.web.Manage
+import dev.tvremote.core.manage.Manage
 import dev.tvremote.core.ontv.RemoteLabels
 import dev.tvremote.core.ontv.Checkout
 import org.json.JSONObject

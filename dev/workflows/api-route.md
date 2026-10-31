@@ -4,7 +4,7 @@ Cores: Phone app (`phone`), Computer app (`pc`), TV web page (`tv`). Read first:
 [AGENTS.md](../../AGENTS.md) and the web entry in [app/shared/AGENTS.md](../../app/shared/AGENTS.md).
 
 1. **Where it goes.** Work that talks to the TV through a shell goes in the `route()` of the part of `Manage` it belongs to, in
-   `app/shared/src/main/kotlin/dev/tvremote/core/web/` (`AppsApi`, `FilesApi`, `InstallApi`, `HealthApi`, `SetupApi`, `HomeApi`;
+   `app/shared/src/main/kotlin/dev/tvremote/core/manage/` (`AppsApi`, `FilesApi`, `InstallApi`, `HealthApi`, `SetupApi`, `HomeApi`;
    the TV itself in `Manage.handle`): one `when (what)` branch (`"home/theme"` in `HomeApi.kt` is a model), a POST-only one in the
    block after `if (!post) return null`; one name per route across the parts. The logic in a helper under `app/shared/src/main/kotlin/dev/tvremote/core/ontv/`. All three cores then answer it.
 2. **Only some cores.** Computer app: `route()` in `app/desktop/src/main/kotlin/dev/tvremote/desktop/Server.kt`; mind its sets

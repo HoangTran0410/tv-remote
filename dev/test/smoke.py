@@ -18,7 +18,7 @@ Exit 1 if any route fails; V=1 prints each route as it is asked. Needs only pyth
 import http.client, json, os, re, socket, subprocess, sys, time, urllib.parse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SOURCES = ["app/shared/src/main/kotlin/dev/tvremote/core/web", "app/tvsetup/src/main/kotlin/dev/tvremote/setup/RemoteService.kt",
+SOURCES = ["app/shared/src/main/kotlin/dev/tvremote/core/manage", "app/shared/src/main/kotlin/dev/tvremote/core/web", "app/tvsetup/src/main/kotlin/dev/tvremote/setup/RemoteService.kt",
            "app/desktop/src/main/kotlin/dev/tvremote/desktop"]
 # what changes the TV, a file on it, the saved TVs or this computer; or opens something on the TV's screen
 SKIP = re.compile(r"/(reboot|power|shutdown|kill|delete|rename|mkdir|install|upload|uninstall|clean|free|backup|perm|launch|open|"

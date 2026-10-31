@@ -1,26 +1,30 @@
-package dev.tvremote.core.web
+package dev.tvremote.core.manage
+import dev.tvremote.core.WireLog
 import dev.tvremote.core.Words
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.io.InputStream
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.adb.AdbLink
 import dev.tvremote.core.adb.AdbPrompt
 import dev.tvremote.core.adb.AdbTls
 import dev.tvremote.core.adb.Mdns
+import dev.tvremote.core.adb.TvShell
 import dev.tvremote.core.ontv.Draw
-import dev.tvremote.core.remote.Inputs
 import dev.tvremote.core.ontv.Notify
 import dev.tvremote.core.ontv.NowPlaying
-import dev.tvremote.core.scenes.Scenes
 import dev.tvremote.core.ontv.ScreenOff
 import dev.tvremote.core.ontv.Setup
 import dev.tvremote.core.ontv.SetupNeed
 import dev.tvremote.core.ontv.Tailscale
-import dev.tvremote.core.adb.TvShell
-import dev.tvremote.core.WireLog
+import dev.tvremote.core.remote.Inputs
+import dev.tvremote.core.scenes.Scenes
+import dev.tvremote.core.web.Cancel
+import dev.tvremote.core.web.Cancelled
+import dev.tvremote.core.web.HttpServer
+import dev.tvremote.core.web.Invite
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
+import org.json.JSONArray
+import org.json.JSONObject
 
 /**
  * Managing a TV over ADB for the page all three apps serve. The paths and the answers are the ones the computer's server gives

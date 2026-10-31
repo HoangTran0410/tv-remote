@@ -1,5 +1,6 @@
-package dev.tvremote.core.web
+package dev.tvremote.core.manage
 import dev.tvremote.core.adb.Adb
+import dev.tvremote.core.web.HttpServer
 import java.io.IOException
 import java.net.URLEncoder
 import org.json.JSONObject

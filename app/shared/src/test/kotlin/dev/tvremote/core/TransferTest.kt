@@ -8,7 +8,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import dev.tvremote.core.web.Cancel
 import dev.tvremote.core.web.Cancelled
-import dev.tvremote.core.web.TvPaths
+import dev.tvremote.core.manage.TvPaths
 import dev.tvremote.core.web.NoRoom
 
 /** Stop, and the check that the TV has room before a file is sent. */

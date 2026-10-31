@@ -1,6 +1,7 @@
-package dev.tvremote.core.web
-import org.json.JSONObject
+package dev.tvremote.core.manage
+import dev.tvremote.core.web.Cancel
 import java.util.Collections
+import org.json.JSONObject
 
 /** The installs, downloads and updates the page polls (`/api/job?id=`), their Stops, and what is under way for the phone's notification. */
 class Jobs {

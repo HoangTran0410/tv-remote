@@ -1,4 +1,4 @@
-package dev.tvremote.core.web
+package dev.tvremote.core.manage
 
 /** What an APK says about itself, read here before it goes to the TV: its manifest, the CPUs it was built for, whether it fits. */
 internal object Apk {

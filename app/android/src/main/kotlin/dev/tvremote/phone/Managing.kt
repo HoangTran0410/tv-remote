@@ -22,7 +22,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import dev.tvremote.core.adb.AdbLink
 import dev.tvremote.core.web.HttpServer
-import dev.tvremote.core.web.Manage
+import dev.tvremote.core.manage.Manage
 import dev.tvremote.core.ontv.RemoteLabels
 import java.io.File
 import java.io.FileOutputStream

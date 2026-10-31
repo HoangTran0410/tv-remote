@@ -3,9 +3,9 @@ package dev.tvremote.core
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
-import dev.tvremote.core.web.Apk
-import dev.tvremote.core.web.Procs
-import dev.tvremote.core.web.TvPaths
+import dev.tvremote.core.manage.Apk
+import dev.tvremote.core.manage.Procs
+import dev.tvremote.core.manage.TvPaths
 
 private typealias Proc = Procs.Proc
 

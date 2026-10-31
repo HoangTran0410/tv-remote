@@ -12,7 +12,7 @@ import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.adb.AdbLink
 import dev.tvremote.core.ontv.Channels
 import dev.tvremote.core.ontv.Home
-import dev.tvremote.core.web.Manage
+import dev.tvremote.core.manage.Manage
 
 // Things sent to the TV: links, shared links and files from other apps, photos / videos / songs from this phone, the Play Store.
 

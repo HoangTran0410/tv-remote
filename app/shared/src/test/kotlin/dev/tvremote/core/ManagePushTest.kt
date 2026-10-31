@@ -2,8 +2,8 @@ package dev.tvremote.core
 
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.adb.AdbLink
-import dev.tvremote.core.web.ManageCore
-import dev.tvremote.core.web.TvCopy
+import dev.tvremote.core.manage.ManageCore
+import dev.tvremote.core.manage.TvCopy
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail

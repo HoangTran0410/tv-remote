@@ -23,7 +23,7 @@ import dev.tvremote.core.adb.AdbLink
 import dev.tvremote.core.picture.Feeds
 import dev.tvremote.core.web.HttpServer
 import dev.tvremote.core.web.Invite
-import dev.tvremote.core.web.Manage
+import dev.tvremote.core.manage.Manage
 import dev.tvremote.core.scenes.Scenes
 import dev.tvremote.core.ontv.Notify
 import dev.tvremote.core.ontv.Setup

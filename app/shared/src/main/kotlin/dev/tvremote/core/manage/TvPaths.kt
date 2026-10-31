@@ -1,4 +1,4 @@
-package dev.tvremote.core.web
+package dev.tvremote.core.manage
 import java.util.Locale
 
 /** Where files may go on the TV and whether they fit: the paths and names the page sends are cleaned here before any shell sees them. */

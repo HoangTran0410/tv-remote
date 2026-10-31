@@ -191,8 +191,8 @@ class Server(private val repo: File, private val keys: File, private val pass: P
         }
         if (!r.path.startsWith("/api/")) page().serve(r.path, r.headers["accept-encoding"].orEmpty())?.let { return it }
         if (r.path == "/api/hook/config") return hookConfig(r)
-        if (r.path == "/api/crash") return dev.tvremote.core.web.Manage.crash(r)             // the page's error box, with or without a TV
-        if (r.path == "/api/census") return dev.tvremote.core.web.Manage.census(r)           // Settings, with or without a TV
+        if (r.path == "/api/crash") return dev.tvremote.core.manage.Manage.crash(r)             // the page's error box, with or without a TV
+        if (r.path == "/api/census") return dev.tvremote.core.manage.Manage.census(r)           // Settings, with or without a TV
         return dispatch(r)
     }
 
@@ -246,7 +246,7 @@ class Server(private val repo: File, private val keys: File, private val pass: P
             "/api/downloader" -> return Response.json(dev.tvremote.core.Downloader.json())   // needs no TV: the help for installing TV Setup types it
             "/api/tvs" -> return Response.json(JSONObject().put("current", s.host).put("tvs", saved.tvs))
             "/api/discover" -> return Response.json(Discover.poll(r.query.containsKey("new")))
-            "/api/diagnose" -> return dev.tvremote.core.web.Manage.diagnose(r, s.link)   // no session needed: a TV that never connected has none (Diagnose.kt)
+            "/api/diagnose" -> return dev.tvremote.core.manage.Manage.diagnose(r, s.link)   // no session needed: a TV that never connected has none (Diagnose.kt)
             "/api/setup/status" -> return setupStatus(s)
             "/api/assist" -> return Response.json(assist.state(r.lang))
             "/api/screen" -> return screenshot(s)

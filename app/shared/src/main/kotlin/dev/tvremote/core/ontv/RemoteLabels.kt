@@ -3,7 +3,7 @@ import java.io.File
 import java.io.IOException
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.adb.AdbLink
-import dev.tvremote.core.web.Manage
+import dev.tvremote.core.manage.Manage
 
 /**
  * The remote's side (phone, computer): runs [Meta] on the TV and answers from what it printed and drew. With a [cache] (one

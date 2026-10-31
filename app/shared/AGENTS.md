@@ -16,9 +16,11 @@ app/shared/src/.../core/ Kotlin shared by the apps, one package per kind of work
                          Android 11+ Wireless debugging: SPAKE2 with BoringSSL's own M/N, TLS 1.3 through `app/shared/conscrypt`
                          ConscryptBackend, found by mDNS; Phone and Computer apps only, `Manage.canPair`), TvShell, Pkg
   picture/               Tv (scrcpy session, video/audio/control), Feeds, AudioOut (Opus playback), Downmix, SoundQueue
-  web/                   Manage (the /api core for the web UI: routes the TV itself, the rest to its parts, each a ManagePart with
-                         its own `route()`: AppsApi, FilesApi, InstallApi, HealthApi, SetupApi, HomeApi, TvCopy; Jobs (the jobs
-                         the page polls), pure helpers TvPaths / Procs / Apk; a new route goes in the part it belongs to), HttpServer, WebPage, Invite, Qr, Transfer (Stop, no room), Hook, Telegram + TelegramHttp (the Telegram bot: long polling, runs in TV Setup; commands, alerts via `RemoteService.alert(kind)`, history, `/start <code>` pairing; the phone/computer card reaches it through Manage `/api/telegram` -> RulesReceiver `do:"telegram"`; TV Home asks HomeInfo `call("telegram", ""|"code")` -> `{state: token_missing|none|ready, bot, code, code_left, link}`, see dev/decisions/tv-setup.md "Telegram bot")
+  manage/                Manage (the /api core for the web UI: routes the TV itself, the rest to its parts, each a ManagePart with
+                         its own `route()`: AppsApi, FilesApi, InstallApi, HealthApi, SetupApi, HomeApi, LauncherApi, TvAppsApi,
+                         TvCopy; Jobs (the jobs the page polls), pure helpers TvPaths / Procs / Apk; a new route goes in the part
+                         it belongs to)
+  web/                   HttpServer, WebPage, Invite, Qr, Transfer (Stop, no room), Hook, Telegram + TelegramHttp (the Telegram bot: long polling, runs in TV Setup; commands, alerts via `RemoteService.alert(kind)`, history, `/start <code>` pairing; the phone/computer card reaches it through Manage `/api/telegram` -> RulesReceiver `do:"telegram"`; TV Home asks HomeInfo `call("telegram", ""|"code")` -> `{state: token_missing|none|ready, bot, code, code_left, link}`, see dev/decisions/tv-setup.md "Telegram bot")
                          (Home Assistant / Shortcuts: `/api/hook`, its own token; TV Setup on 8765, the computer app on port+1 only while on)
   ontv/                  things done on the TV over ADB: Setup (Optimize TV; TV Home as the home screen; Bloat: brands' apps,
                          plus `docs/optimize/bloat.json` from the site, signed by `dev/sign/sign_bloat.py`, only adding to keep), SetupNeed / SetupUpdate, SetupFiles (reading TV Setup's

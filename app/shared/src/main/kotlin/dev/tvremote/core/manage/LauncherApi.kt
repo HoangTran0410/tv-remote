@@ -1,4 +1,4 @@
-package dev.tvremote.core.web
+package dev.tvremote.core.manage
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.adb.AdbLink
 import dev.tvremote.core.ontv.LauncherInstall
@@ -6,10 +6,12 @@ import dev.tvremote.core.ontv.LauncherSwap
 import dev.tvremote.core.ontv.Launchers
 import dev.tvremote.core.ontv.RulesClient
 import dev.tvremote.core.ontv.Setup
-import org.json.JSONArray
-import org.json.JSONObject
+import dev.tvremote.core.web.Cancel
+import dev.tvremote.core.web.HttpServer
 import java.io.File
 import java.io.IOException
+import org.json.JSONArray
+import org.json.JSONObject
 
 /**
  * The launcher gallery's /api (`/api/launchers`, `/api/launcher/...`), for Manage on all three cores: what the signed list holds and how it fits

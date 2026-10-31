@@ -5,7 +5,7 @@ import dev.tvremote.core.remote.Atv
 import dev.tvremote.core.remote.CodePairing
 import dev.tvremote.core.remote.Vidaa
 import dev.tvremote.core.picture.Feeds
-import dev.tvremote.core.web.Manage
+import dev.tvremote.core.manage.Manage
 import dev.tvremote.core.remote.Remote
 import dev.tvremote.core.ontv.RemoteLabels
 import dev.tvremote.core.scenes.Scenes

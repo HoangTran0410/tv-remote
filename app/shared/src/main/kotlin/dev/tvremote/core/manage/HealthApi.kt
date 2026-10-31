@@ -1,10 +1,11 @@
-package dev.tvremote.core.web
+package dev.tvremote.core.manage
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.ontv.Meminfo
 import dev.tvremote.core.ontv.Power
 import dev.tvremote.core.ontv.Sensors
 import dev.tvremote.core.ontv.SetupFiles
 import dev.tvremote.core.ontv.SetupNeed
+import dev.tvremote.core.web.HttpServer
 import java.util.regex.Pattern
 import org.json.JSONArray
 import org.json.JSONObject

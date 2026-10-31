@@ -1,4 +1,4 @@
-package dev.tvremote.core.web
+package dev.tvremote.core.manage
 import dev.tvremote.core.ontv.Setup
 
 /** The apps in the TV's memory, and which of them may be stopped (the task manager, the open apps, the AI report). */
