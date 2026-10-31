@@ -25,8 +25,8 @@ path is `docs/*` (Cloudflare's `*` spans folders; `docs/**` matches nothing and 
 | `js/stories.js`, `css/stories.css` | the tour's How it works and install tabs |
 | `demo/` (`index.html`, `sw.js`, `mock.js`) | the live demo at `/demo/`, see below |
 | `llms.txt` | the app in plain words for AI agents: keep it true when features or download links change |
-| `robots.txt`, `sitemap.xml` | for search engines |
-| `_worker.js` | Cloudflare Pages worker: passes every request to the static files, except `/guide?t=<topic>`, whose title and og: tags it sets from that topic (a chat app's link preview never sees `#topic`). Not served as a file |
+| `robots.txt` | for search engines (the sitemap is `_worker.js`'s) |
+| `_worker.js` | Cloudflare Pages worker. `/dl/<file>`: the release's file on GitHub. **One address per language:** `/<page>` is served in Vietnamese only, `/en/<page>` in English only (lang, title and description from `data-en` on `<title>` / `<meta name=description>`, canonical, hreflang, the other language's spans removed); old `?lang=` links 301 there; a person's VI / EN pick (`langPick`, nav.js) or a non-Vietnamese browser on a Vietnamese page is sent to the other address, never a crawler. `/guide?t=<topic>`: that topic's name and first lines as title and description, its own canonical. `/sitemap.xml`: the pages and every guide topic, both languages. Not served as a file. Test locally with `npx wrangler pages dev docs` (a plain file server shows both languages in place, as before) |
 | `_headers` | Cloudflare Pages response headers: images 1 week, GSAP 30 days (css/js keep the default: revalidated, as their names have no version) |
 | `img/` | screenshots (`dev/shots/shots.py`) and the link previews `og-<lang>.jpg` (1200×630, TV Home from `tvhome-widgets-<lang>.webp`: `dev/shots/shots.py og`) |
 

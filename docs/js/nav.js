@@ -63,6 +63,14 @@
     '</div></div>' +
     '<div class="navprog" aria-hidden="true"></div></nav>');
 
+  // a page the server wrote in one language (_worker.js, langURL): the other language is another address. Remembered as the
+  // person's own pick, which sends them there next time; before the page's own handler, which would only swap the words in place
+  document.addEventListener("click", function(e){
+    var b = e.target.closest(".lang button"); if (!b || !window.langURL) return;
+    e.preventDefault(); e.stopPropagation();
+    try { localStorage.setItem("langPick", b.dataset.set); } catch(x){}
+    if (b.dataset.set !== document.documentElement.dataset.fixed) location.assign(langURL(b.dataset.set));
+  }, true);
   // the menu closes on a tap on a link, outside, or Escape, and when the screen grows past the menu's width
   var btn = document.querySelector("nav .menubtn"), sheet = document.getElementById("navsheet");
   function set(open, back){ sheet.hidden = !open; btn.setAttribute("aria-expanded", open); if (!open && back) btn.focus(); }

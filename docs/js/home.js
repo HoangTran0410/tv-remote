@@ -2,8 +2,8 @@
 (function(){
   var root = document.documentElement;
   var titles = {
-    vi: "TV Remote · Điều khiển Android TV từ điện thoại",
-    en: "TV Remote · Control Android TV from your phone"
+    vi: "TV Remote: điều khiển và dọn sạch Android TV bằng điện thoại",
+    en: "TV Remote: control and clean up Android TV from your phone"
   };
   function setLang(l){
     root.dataset.lang = l; root.lang = l; document.title = titles[l];
@@ -249,7 +249,7 @@
       if (!(n > 0)) return;
       var el = document.getElementById(id), b = el.querySelectorAll("b"), v = n;
       if (plus) v = n >= 1000 ? Math.floor(n / 100) * 100 : n >= 100 ? Math.floor(n / 10) * 10 : n;
-      b[0].textContent = fmt(v, "vi") + (plus && v < n ? "+" : ""); b[1].textContent = fmt(v, "en") + (plus && v < n ? "+" : "");
+      [].forEach.call(b, function(x){ var l = x.closest(".en") ? "en" : "vi"; x.textContent = fmt(v, l) + (plus && v < n ? "+" : ""); });   // the served page keeps one language's (_worker.js)
       el.hidden = false; got[id] = 1;
       document.getElementById("st-sep").hidden = !(got["st-dl"] && got["st-us"]);
       box.hidden = false; requestAnimationFrame(function(){ box.classList.add("on"); });
