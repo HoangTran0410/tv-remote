@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.38.0 - 2026-10-31
+
+Web 0.38.0 · Phone app 0.35.0 · TV app 0.36.0 · TV Home 0.22.0 · TV Channels 0.17.0 · TV Games 0.16.0 · TV Apps 0.2.0
 
 - TV Home: a video background turns over without the long freeze: the picture holds about 0.1 s at the loop point (was about 0.3 s on the FPT box, more on longer clips), and the second player is gone.
 - TV Home: a folder can hold any tile on the grid, not only apps (live widgets and pinned shortcuts or links too): every tile's menu has Put in a folder with New folder first, and + Add → New folder lists them beside the apps. The page (Customize TV Home, Look, Folders; and each live widget or shortcut row) does the same.
