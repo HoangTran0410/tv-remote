@@ -73,4 +73,16 @@ class NetVideoTest {
     @Test fun `a good one is kept`() {
         assertNotNull(NetVideo.load(dir, url("ok"), Long.MAX_VALUE))
     }
+
+    @Test fun `one that cannot be made light is not kept, nor fetched again`() {
+        repeat(3) { assertNull(NetVideo.load(dir, url("ok"), Long.MAX_VALUE) { _, _ -> false }) }
+        assertEquals(1, hits.get())
+        assertEquals(emptyList<String>(), dir.list()!!.toList())          // neither what came nor a half-made file
+    }
+
+    @Test fun `what is kept is what fit made`() {
+        val f = NetVideo.load(dir, url("ok"), Long.MAX_VALUE) { got, out -> got.length() == 1000L && out.writeBytes(ByteArray(10)).let { true } }
+        assertEquals(10L, f!!.length())
+        assertEquals(listOf(f.name), dir.list()!!.toList())
+    }
 }

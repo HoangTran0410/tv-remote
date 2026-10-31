@@ -4,6 +4,10 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- TV Home: a video background from a web link that is too heavy for the TV (4K60, a high bitrate) is made light on the TV first instead of playing as stripes; light links still start at once.
+
 ## 0.38.0 - 2026-10-31
 
 Web 0.38.0 · Phone app 0.35.0 · TV app 0.36.0 · TV Home 0.22.0 · TV Channels 0.17.0 · TV Games 0.16.0 · TV Apps 0.2.0

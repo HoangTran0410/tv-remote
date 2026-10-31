@@ -130,13 +130,20 @@ class VideoWall(private val app: Context, private val root: ViewGroup, private v
         } catch (e: Throwable) { release(); ui.post { failed() } }
     }
 
-    /** What to play, its picture alone: the library file, a net video's kept file, else its address (and the file is fetched for the next turns). */
+    /**
+     * What to play, its picture alone: the library file, a net video's kept file, else its address once it is known to be light for
+     * this TV (and the file is fetched for the next turns). Null: nothing yet, the poster shows.
+     */
     private fun source(): String? {
         file?.let { return if (it.isFile) Silent.of(app, it).path else null }   // a wall has no sound (the user, 2026-10-27): the copy without audio, [Silent]
         val u = url ?: return null
         NetVideo.kept(app, u)?.let { return Silent.of(app, it).path }
-        NetVideo.fetch(app, u) { }
-        return u
+        val again = { ui.post { if (url == u) play() } }                // the poster until then
+        return when (NetVideo.heavy(u)) {
+            null -> { NetVideo.judge(app, u) { again() }; null }
+            true -> { NetVideo.fetch(app, u) { again() }; null }        // never streamed: its file is made light first
+            false -> { NetVideo.fetch(app, u) { }; u }
+        }
     }
 
     private fun wire(p: MediaPlayer, loops: Boolean) {

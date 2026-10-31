@@ -127,14 +127,21 @@ object Videos {
                 Probe("gif", "image/gif", m.width(), m.height(), m.duration().toLong(), 0, 0)
             } catch (e: Throwable) { null }
         }
+        return video(f.path)
+    }
+
+    /** [probe] of a video link, from its header alone (MediaExtractor reads the moov box, not the clip); null when it cannot be read. */
+    fun probeUrl(u: String): Probe? = video(u)
+
+    private fun video(src: String): Probe? {
         val ex = MediaExtractor()
         return try {
-            ex.setDataSource(f.path)
+            ex.setDataSource(src)
             val t = (0 until ex.trackCount).firstOrNull { ex.getTrackFormat(it).getString(MediaFormat.KEY_MIME)?.startsWith("video/") == true } ?: return null
             val fm = ex.getTrackFormat(t)
             val r = MediaMetadataRetriever()
             val (rot, br) = try {
-                r.setDataSource(f.path)
+                if (src.startsWith("http")) r.setDataSource(src, HashMap()) else r.setDataSource(src)
                 (r.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0) to (r.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)?.toLongOrNull() ?: 0L)
             } finally { r.release() }
             var w = fm.getInteger(MediaFormat.KEY_WIDTH); var h = fm.getInteger(MediaFormat.KEY_HEIGHT)
@@ -238,17 +245,8 @@ object Videos {
             if (why == null) {
                 if (!staged.renameTo(out)) { staged.copyTo(out, true); staged.delete() }
             } else {
-                val (lw, lh) = limit(sw, sh, o)
-                var (tw, th) = target(p.w, p.h, lw, lh)
-                var fps = outFps(p, o, tw, th, Transcode::encodes, ::hwRate)
-                var r = Transcode.run(c, staged, out, p, tw, th, fps) { j.pct = it }
-                if (r == null || !Transcode.sane(out, tw, th, if (fps > 0) fps else p.fps.takeIf { it > 0 } ?: 30)) {   // once more, lighter: 30 fps, at most 720p
-                    out.delete()
-                    target(tw, th, 1280, 720).let { tw = it.first; th = it.second }; fps = 30
-                    r = Transcode.run(c, staged, out, p, tw, th, fps) { j.pct = it }
-                    if (r == null || !Transcode.sane(out, tw, th, fps)) throw Failure("transcode")
-                }
-                ms = r.ms; w = tw; h = th
+                val m = makeLight(c, staged, out, p, sw, sh, o) { j.pct = it } ?: throw Failure("transcode")
+                ms = m.ms; w = m.w; h = m.h
             }
             val q = probe(out) ?: run { out.delete(); throw Failure("video") }
             val shot = firstFrame(out, sw, sh) ?: run { out.delete(); throw Failure("video") }
@@ -264,6 +262,26 @@ object Videos {
     }
 
     private class Failure(val code: String) : Exception(code)
+
+    class Made(val ms: Long, val w: Int, val h: Int)
+
+    /**
+     * [src] made light into [out] ([Transcode]) for a [sw] x [sh] screen, at the size and rate [o] allows; once more at 30 fps and at most
+     * 720p when what came out is not sane. Null (and no [out]) when neither is. Blocking: an upload's arrival, a web wall's link ([NetVideo]).
+     */
+    fun makeLight(c: Context, src: File, out: File, p: Probe, sw: Int, sh: Int, o: Opts, progress: (Int) -> Unit): Made? {
+        val (lw, lh) = limit(sw, sh, o)
+        var (tw, th) = target(p.w, p.h, lw, lh)
+        var fps = outFps(p, o, tw, th, Transcode::encodes, ::hwRate)
+        var r = Transcode.run(c, src, out, p, tw, th, fps, progress)
+        if (r == null || !Transcode.sane(out, tw, th, if (fps > 0) fps else p.fps.takeIf { it > 0 } ?: 30)) {   // once more, lighter: 30 fps, at most 720p
+            out.delete()
+            target(tw, th, 1280, 720).let { tw = it.first; th = it.second }; fps = 30
+            r = Transcode.run(c, src, out, p, tw, th, fps, progress)
+            if (r == null || !Transcode.sane(out, tw, th, fps)) { out.delete(); return null }
+        }
+        return Made(r.ms, tw, th)
+    }
 
     /** An id nobody has (checked against the index and the folder: a half-made file never collides). */
     private fun freshId(c: Context): String {

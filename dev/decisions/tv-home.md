@@ -188,6 +188,22 @@ Measured on emulator-5554 (TV Setup, open → list drawn): 2.5–3.6 s before, ~
   sound) is not looped: at its end `play()` starts again and takes the kept file's silent copy (one 300 ms hold, once; measured with
   the cache cleared). Two SurfaceViews ping-ponging could go below 60 ms; not built (two layers on a box that may have one overlay
   plane, to win two frames).
+- **A web wall's link is checked like an upload (2026-10-31, FPT box, release build).** Its decoder (`c2.realtek.video.avc.decoder`)
+  says 4096x2176 at most, 4K30, 20 Mbps; the screen's mode is 1080p50. SurfaceFlinger frames of the video layer, 6 x 3 s:
+
+  | link (12 s fireplace) | as it was | now |
+  |---|---|---|
+  | 720p30 2.5 Mbps | 30 fps, mediaserver 26 %, Home 4 % | the same (judged light) |
+  | 4K30 H.264 20 Mbps / HEVC 12 Mbps | 30 fps, mediaserver 24 / 18 % | not streamed: made 1080p first |
+  | 4K60 H.264 35 Mbps | **green and brown stripes over the whole screen**, 6 frames then none, no player error | 51 s on the box -> 1080p30, 30 fps, longest gap 50 ms |
+
+  Nothing said so: the player gave no error, so the WebView fallback never ran. Now [NetVideo] probes the link's header
+  ([Videos.probeUrl], ~0.7 s once, before the first frame) with the same [Videos.heavy] as an upload: light = streamed as before;
+  heavy = never streamed, the file is fetched and made light ([Videos.makeLight], the upload's code) before it is kept, the
+  poster (or the gradient) shows meanwhile. Too big to keep (over 80 MB) and heavy: never played, the poster stays (better than
+  stripes; a link of a whole film is not a wallpaper). No warning to the person: it is made light by itself, as an upload is.
+  Testing with a local server: Python's `http.server` has no Range, and MediaPlayer then fails on a file with its moov at the end
+  or with audio ("Failed to init from data source", -1004): a fault of the test server, not of 4K.
 
 ## TV Home themes (2026-10-24)
 
