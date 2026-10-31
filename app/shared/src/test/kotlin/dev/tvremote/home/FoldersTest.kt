@@ -64,10 +64,10 @@ class FoldersTest {
     @Test fun cleanKeepsOnlyWholeFolders() {
         val c = JSONObject()
             .put("dock", JSONArray(listOf("com.d.dock")))
-            .put("tiles", JSONArray(listOf("folder:f1", "folder:f2", "folder:f3", "folder:BAD")))
+            .put("tiles", JSONArray(listOf("folder:f1", "folder:f2", "folder:f3", "folder:BAD", "tile:dev.tvremote.setup/ram", "pin:com.z/y")))
             .put("order", JSONArray(listOf("folder:f1", "folder:f9", "com.a.one")))
             .put("folders", JSONObject()
-                .put("f1", JSONObject().put("name", "  A\n  B ").put("apps", JSONArray(listOf("com.a.one", "com.d.dock", "pin:com.z/y", "tile:dev.tvremote.setup/ram", "folder:f2", "com.a.one"))))
+                .put("f1", JSONObject().put("name", "  A\n  B ").put("apps", JSONArray(listOf("com.a.one", "com.d.dock", "pin:com.z/y", "tile:dev.tvremote.setup/ram", "tile:dev.tvremote.setup/gone", "folder:f2", "com.a.one"))))
                 .put("f2", JSONObject().put("name", "dup").put("apps", JSONArray(listOf("com.a.one"))))   // an app is in one folder: the first id wins
                 .put("f3", JSONObject().put("name", "empty").put("apps", JSONArray()))
                 .put("f4", JSONObject().put("name", "no tile").put("apps", JSONArray(listOf("com.k.kept")))))
@@ -75,8 +75,8 @@ class FoldersTest {
         val f = o.getJSONObject("folders")
         assertEquals(listOf("f1"), f.keys().asSequence().toList())
         assertEquals("A B", f.getJSONObject("f1").getString("name"))
-        assertEquals(listOf("com.a.one"), strs(f.getJSONObject("f1").getJSONArray("apps")))   // no dock app, shortcut, widget or folder in it
-        assertEquals(listOf("folder:f1"), strs(o.getJSONArray("tiles")))                    // f2 lost its only app, f3 is empty, BAD is no key
+        assertEquals(listOf("com.a.one", "pin:com.z/y", "tile:dev.tvremote.setup/ram"), strs(f.getJSONObject("f1").getJSONArray("apps")))   // no dock app, folder, or shortcut / widget that is not a grid tile
+        assertEquals(listOf("folder:f1", "tile:dev.tvremote.setup/ram", "pin:com.z/y"), strs(o.getJSONArray("tiles")))                    // f2 lost its only app, f3 is empty, BAD is no key
         assertEquals(listOf("folder:f1", "com.a.one"), strs(o.getJSONArray("order")))        // f9 is no folder
     }
 

@@ -748,15 +748,16 @@
   "folder_put": "Cho vào thư mục",
   "folder_other": "Chuyển sang thư mục khác",
   "folder_new": "Thư mục mới",
-  "folder_new_hint": "Gom nhiều app vào một ô",
-  "folder_choose_hint": "Đánh dấu các app muốn cho vào, rồi bấm Xong.",
+  "folder_new_with": "Tạo thư mục có ô này",
+  "folder_new_hint": "Gom nhiều ô vào một",
+  "folder_choose_hint": "Đánh dấu app, lối tắt, widget muốn cho vào, rồi bấm Xong.",
   "folder_name": "Tên thư mục",
   "folder_out": "Đưa ra khỏi thư mục",
   "folder_earlier": "Lên trước trong thư mục",
   "folder_later": "Xuống sau trong thư mục",
   "folder_open": "Mở",
   "folder_delete": "Xóa thư mục",
-  "folder_note": "Xóa thư mục thì các app trong đó về lại màn hình chính.",
+  "folder_note": "Xóa thư mục thì mọi thứ trong đó về lại màn hình chính.",
   "folder_full": "Không thêm được thư mục nữa",
-  "folder_apps": {"one": "%d app", "other": "%d app"}
+  "folder_items": {"one": "%d ô", "other": "%d ô"}
 }

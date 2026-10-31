@@ -453,6 +453,8 @@ object HomeConfig {
     const val FOLDER_APPS_MAX = 40
     /** [k] is a folder's key ("folder:ab12cd"): a grid tile that holds apps ([Folders]); "folder:" is stored on TVs and sent between apps: kept. */
     fun isFolder(k: String) = FOLDER.matches(k)
+    /** What a folder can hold: an installed app, or a live widget or shortcut that is a grid tile (its key stays in "tiles"; [folders] keeps it only while it does). */
+    fun folderMember(k: String) = Target.kind(k).let { it == Target.Kind.APP || it == Target.Kind.TILE || it == Target.Kind.PIN }
     fun folderKey(id: String) = "folder:$id"
     fun folderId(k: String) = k.removePrefix("folder:")
     fun liveKey(provider: String, id: String) = "tile:$provider/$id"
@@ -643,7 +645,7 @@ object HomeConfig {
             else o.optJSONArray("walls")?.let { a -> (0 until a.length()).map { a.optString(it) } }.orEmpty().filter { knownWall(it) && it != WEB }.distinct().take(WALLS_MAX)
         if (walls.isEmpty()) walls = listOf(wall)
         val tilesAsked = strs(o.optJSONArray("tiles")).filter { isLive(it) || Target.isPin(it) || isFolder(it) }.distinct().take(TILES_MAX)
-        val folders = folders(o.optJSONObject("folders"), dock, tilesAsked.filter { isFolder(it) }.map { folderId(it) }.toSet())
+        val folders = folders(o.optJSONObject("folders"), dock, tilesAsked.filter { isFolder(it) }.map { folderId(it) }.toSet(), tilesAsked.toSet())
         val folderKeys = folders.keys().asSequence().map { folderKey(it) }.toSet()
         val tiles = tilesAsked.filter { !isFolder(it) || it in folderKeys }
         return JSONObject()
@@ -783,10 +785,10 @@ object HomeConfig {
 
     /**
      * The folders kept: an [asked] id (its key is in "tiles") of 1-8 lowercase letters and digits, a name of one line ([NAME_MAX]),
-     * installed-app packages only (no shortcut, widget or folder), none in the dock, each app in one folder (the first by id wins);
+     * installed apps, and live widgets and shortcuts that are in [tiles] (no folder), none in the dock, each app in one folder (the first by id wins);
      * a folder with no app is no folder. Sorted by id, so the same folders always make the same text.
      */
-    fun folders(g: JSONObject?, dock: List<String>, asked: Set<String>): JSONObject {
+    fun folders(g: JSONObject?, dock: List<String>, asked: Set<String>, tiles: Set<String> = emptySet()): JSONObject {
         val out = JSONObject()
         if (g == null) return out
         val seen = HashSet<String>(dock)
@@ -794,7 +796,7 @@ object HomeConfig {
             if (out.length() >= FOLDERS_MAX) break
             if (!isFolder(folderKey(id)) || id !in asked) continue
             val f = g.optJSONObject(id) ?: continue
-            val apps = pkgs(f.optJSONArray("apps"), FOLDER_APPS_MAX).filter { Target.kind(it) == Target.Kind.APP && seen.add(it) }
+            val apps = pkgs(f.optJSONArray("apps"), FOLDER_APPS_MAX).filter { (Target.kind(it) == Target.Kind.APP || (folderMember(it) && it in tiles)) && seen.add(it) }
             if (apps.isEmpty()) continue
             val name = f.optString("name").replace(Regex("\\s+"), " ").trim().take(NAME_MAX).trim()
             out.put(id, JSONObject().put("name", name).put("apps", JSONArray(apps)))

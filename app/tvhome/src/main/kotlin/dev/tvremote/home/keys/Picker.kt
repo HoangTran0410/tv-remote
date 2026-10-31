@@ -263,8 +263,9 @@ object Picker {
             var left = limit
             for (s in sections.indices) {
                 if (left <= 0) break
-                if (mode == Mode.CHOOSE && s != 0) continue
+                if (mode == Mode.CHOOSE && pick == null && s != 0) continue
                 val here = items.filter { it.section == s && (q.isEmpty() || fold(it.label).contains(q) || fold(it.tag).contains(q)) }
+                if (mode == Mode.CHOOSE && s != 0 && here.isEmpty()) continue   // a folder's picker: only the kinds that are on the grid, no "none" lines
                 val empty = when {
                     s == 1 && !Pins.can(a) -> a.getString(R.string.pk_pins_need_home)
                     s == 3 && LiveWidgets.available(a).isEmpty() -> a.getString(if (LiveWidgets.status(a) == LiveWidgets.UNTRUSTED) R.string.power_untrusted else R.string.c_live_none)
@@ -337,7 +338,16 @@ object Picker {
             if (mode == Mode.TARGET) got.add(Item("", a.getString(R.string.pk_none), null, "", 0))
             if (mode == Mode.TARGET && actions) got.add(Item(Target.CONTROL, a.getString(R.string.cc_title), null, a.getString(R.string.pk_over_apps), 0, R.drawable.ic_settings))   // a key's action: the Control Center over any app
             for (p in apps) got.add(Item(p.pkg, p.label, p, if (p.pkg in hidden && mode == Mode.GRID) a.getString(R.string.pk_hidden) else "", 0))
-            if (mode == Mode.CHOOSE) { allKeys = apps.map { it.pkg }; chosen.clear(); if (pick == null) chosen.addAll(apps.map { it.pkg }.filter { it !in hidden }); a.runOnUiThread { labels() } }
+            if (mode == Mode.CHOOSE) { allKeys = apps.map { it.pkg }; chosen.clear(); if (pick == null) chosen.addAll(apps.map { it.pkg }.filter { it !in hidden }); a.runOnUiThread { labels() }
+                if (pick != null) {                                    // a folder can hold what is on the grid besides apps: shortcuts and live widgets (their keys stay in "tiles")
+                    val inTiles = Store.list(a, "tiles").toSet()
+                    val onGrid = (a as? dev.tvremote.home.HomeActivity)?.loaded()?.filter { it.grid && !it.folder && it.pkg in inTiles }.orEmpty()
+                    val live = LiveWidgets.available(a).associateBy { it.key }
+                    val names = apps.associate { it.pkg to it.label }
+                    for (p in onGrid) if (p.live) live[p.pkg]?.let { t -> got.add(Item(t.key, t.title.ifEmpty { p.label }, null, a.getString(R.string.pk_live), 3, LiveWidgets.iconRes(a, t))) }
+                        else got.add(Item(p.pkg, p.label, p, names[Target.pkg(p.pkg)] ?: "", 1))
+                }
+            }
             else {
             Pins.refresh(a, apps)
             val avail = try { JSONArray(a.getSharedPreferences("pins", Context.MODE_PRIVATE).getString("avail", "[]")) } catch (e: Exception) { JSONArray() }

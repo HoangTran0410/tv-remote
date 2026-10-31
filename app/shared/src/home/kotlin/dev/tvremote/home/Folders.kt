@@ -9,7 +9,8 @@ import org.json.JSONObject
  * the five fields a folder touches (dock, hidden, order, tiles, folders), so one write is one redraw. The page's `js/home_folders.js`
  * is the twin of these (tests/home_folders.test.js and FoldersTest hold the same cases).
  *
- * A folder is a grid tile ([HomeConfig.folderKey] in "tiles" and "order"); its apps are off the grid, out of the dock and out of
+ * A folder is a grid tile ([HomeConfig.folderKey] in "tiles" and "order"); its members (apps, and the live widgets and shortcuts
+ * already in "tiles", which stay there) are off the grid, out of the dock and out of
  * "hidden". Taking an app out puts it on the grid right after the folder; deleting a folder puts all its apps there. A folder with
  * no app is deleted by the same operation that emptied it.
  */
@@ -78,12 +79,12 @@ object Folders {
 
     /**
      * A new folder [id] named [name] holding [app] (a folder always holds an app). It takes [app]'s place in the grid's order (the
-     * end when it has none). Null when it does not fit or [app] is not an installed-app target.
+     * end when it has none). Null when it does not fit or [app] is not a [HomeConfig.folderMember].
      */
     fun create(c: JSONObject, id: String, name: String, app: String): JSONObject? {
         val s = State(c)
         if (s.folders.size >= HomeConfig.FOLDERS_MAX || s.tiles.size >= HomeConfig.TILES_MAX || id in s.folders || !HomeConfig.isFolder(s.key(id))) return null
-        if (Target.kind(app) != Target.Kind.APP) return null
+        if (!HomeConfig.folderMember(app)) return null
         val at = s.order.indexOf(app)
         s.take(app)
         s.folders[id] = Folder(cleanName(name), mutableListOf(app))
@@ -112,7 +113,7 @@ object Folders {
     /** [app] into folder [id] (from the grid, the dock, the hidden list or another folder; an emptied folder goes), at [to] (the end by default). */
     fun add(c: JSONObject, id: String, app: String, to: Int = Int.MAX_VALUE): JSONObject? {
         val s = State(c)
-        if (id !in s.folders || Target.kind(app) != Target.Kind.APP) return null
+        if (id !in s.folders || !HomeConfig.folderMember(app)) return null
         if (app in s.folders[id]!!.apps) return if (to == Int.MAX_VALUE) s.change() else reorder(c, id, app, to)
         if (s.folders[id]!!.apps.size >= HomeConfig.FOLDER_APPS_MAX && app !in s.folders[id]!!.apps) return null
         s.take(app)

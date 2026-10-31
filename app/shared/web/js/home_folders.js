@@ -1,11 +1,12 @@
 // 📁 Folders on TV Home's app grid, as the page edits them: the twin of app/shared/src/home/kotlin/.../Folders.kt (tests/home_folders_cases.json
 // holds the cases both are tested with). Each operation takes the TV's config and returns the change to send (dock, hidden, order,
 // tiles, folders: one write, one redraw on the TV), or null when it does not apply. A folder is a grid tile "folder:<id>" in "tiles"
-// and "order" holding installed apps; its apps are off the grid; an emptied folder is deleted.
+// and "order" holding installed apps and the live widgets and shortcuts on the grid; its apps are off the grid; an emptied folder is deleted.
 
 const FOLDER_MAX = 12, FOLDER_APPS_MAX = 40, FOLDER_TILES_MAX = 24, FOLDER_NAME_MAX = 30;
 const homeFolderKey = (id) => 'folder:' + id;
 const homeIsFolder = (k) => /^folder:[a-z0-9]{1,8}$/.test(String(k || ''));
+const homeFolderMember = (k) => ['app', 'tile', 'pin'].includes(Target.kind(k));   // an app, or a live widget / shortcut already in "tiles" (it stays there)
 const homeFolderName = (s) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, FOLDER_NAME_MAX).trim();
 
 function homeFolderState(c) {
@@ -37,7 +38,7 @@ const HomeFolders = {
   create(c, id, name, app) {
     const s = homeFolderState(c);
     if (Object.keys(s.folders).length >= FOLDER_MAX || s.tiles.length >= FOLDER_TILES_MAX || s.folders[id] || !homeIsFolder(homeFolderKey(id))) return null;
-    if (Target.kind(app) !== 'app') return null;
+    if (!homeFolderMember(app)) return null;
     const at = s.order.indexOf(app);
     homeFolderTake(s, app);
     s.folders[id] = { name: homeFolderName(name), apps: [app] };
@@ -59,7 +60,7 @@ const HomeFolders = {
   },
   add(c, id, app, to = Infinity) {
     const s = homeFolderState(c); const f = s.folders[id];
-    if (!f || Target.kind(app) !== 'app') return null;
+    if (!f || !homeFolderMember(app)) return null;
     if (f.apps.includes(app)) return to === Infinity ? homeFolderChange(s) : HomeFolders.reorder(c, id, app, to);
     if (f.apps.length >= FOLDER_APPS_MAX) return null;
     homeFolderTake(s, app);

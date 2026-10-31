@@ -48,22 +48,23 @@ function appIcon(pkg) {
 }
 // A modal to pick one of [pkgs] (the TV's apps) by its tile, with a search over the names (no accents needed): the package,
 // or null when closed. [now]: the one picked before, marked.
-function chooseApp(title, pkgs, now) {
+function chooseApp(title, pkgs, now, how = {}) {   // [how]: {label(p), icon(p)} for keys that are no app (a live widget, a shortcut)
   return new Promise((done) => {
+    const nameOf = how.label || appName;
     let picked = null;
     const fold = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').toLowerCase();
     const q = el('input', { type: 'search', placeholder: T('common.search_by_app_name'), spellcheck: false, autocomplete: 'off' });
     const none = el('p', { className: 'empty', textContent: T('apps.choose_none'), hidden: true });
-    const named = (p) => appName(p) !== p;                             // a bare package name goes last
-    const tiles = pkgs.slice().sort((a, b) => named(b) - named(a) || appName(a).localeCompare(appName(b))).map((p) => {
-      const icon = appIcon(p), name = el('span', { textContent: appName(p) });
-      onMeta(p, (m) => { icon.fill(m); put(name, 'textContent', appName(p)); });
+    const named = (p) => nameOf(p) !== p;                             // a bare package name goes last
+    const tiles = pkgs.slice().sort((a, b) => named(b) - named(a) || nameOf(a).localeCompare(nameOf(b))).map((p) => {
+      const icon = how.icon ? how.icon(p) : appIcon(p), name = el('span', { textContent: nameOf(p) });
+      if (!how.icon) onMeta(p, (m) => { icon.fill(m); put(name, 'textContent', appName(p)); });
       const b = el('button', { type: 'button', className: 'tile' + (p === now ? ' on' : ''), title: p, onclick: () => { picked = p; d.close(); } }, icon, name);
       b.pkg = p; return b;
     });
     const filter = () => {
       const s = fold(q.value.trim()); let n = 0;
-      tiles.forEach((t) => { t.hidden = !!s && !fold(appName(t.pkg)).includes(s) && !t.pkg.includes(s); if (!t.hidden) n++; });
+      tiles.forEach((t) => { t.hidden = !!s && !fold(nameOf(t.pkg)).includes(s) && !t.pkg.includes(s); if (!t.hidden) n++; });
       none.hidden = n > 0;
     };
     q.addEventListener('input', filter);

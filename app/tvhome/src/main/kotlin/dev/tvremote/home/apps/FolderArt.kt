@@ -45,9 +45,9 @@ class FolderArt(private val icons: List<Drawable>) : Drawable() {
         const val SHOWN = 4
         private const val PANEL = 0x33FFFFFF                            // the soft square behind the four icons
 
-        /** The art of a folder holding [members] (only the first [SHOWN] icons are fetched; an app that is gone is skipped). */
+        /** The art of a folder holding [members] (a live widget or shortcut shows its app's icon; only the first [SHOWN] icons are fetched; an app that is gone is skipped). */
         fun of(c: Context, members: List<String>): FolderArt = FolderArt(members.asSequence().mapNotNull { p ->
-            try { c.packageManager.getApplicationIcon(p) } catch (e: Exception) { null }
+            try { c.packageManager.getApplicationIcon(dev.tvremote.home.Target.pkg(p)) } catch (e: Exception) { null }
         }.take(SHOWN).toList())
     }
 }

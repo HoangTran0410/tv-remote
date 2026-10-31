@@ -748,15 +748,16 @@
   "folder_put": "Put in a folder",
   "folder_other": "Move to another folder",
   "folder_new": "New folder",
-  "folder_new_hint": "Group apps under one tile",
-  "folder_choose_hint": "Tick the apps to put in it, then Done.",
+  "folder_new_with": "A new folder with this tile in it",
+  "folder_new_hint": "Group tiles under one",
+  "folder_choose_hint": "Tick the apps, shortcuts and widgets to put in it, then Done.",
   "folder_name": "Folder name",
   "folder_out": "Take out of the folder",
   "folder_earlier": "Earlier in the folder",
   "folder_later": "Later in the folder",
   "folder_open": "Open",
   "folder_delete": "Remove folder",
-  "folder_note": "Removing a folder puts its apps back on the home screen.",
+  "folder_note": "Removing a folder puts everything in it back on the home screen.",
   "folder_full": "No room for another folder",
-  "folder_apps": {"one": "%d app", "other": "%d apps"}
+  "folder_items": {"one": "%d item", "other": "%d items"}
 }

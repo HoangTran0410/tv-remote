@@ -7,6 +7,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 ## Unreleased
 
 - TV Home: a video background turns over without the long freeze: the picture holds about 0.1 s at the loop point (was about 0.3 s on the FPT box, more on longer clips), and the second player is gone.
+- TV Home: a folder can hold any tile on the grid, not only apps (live widgets and pinned shortcuts or links too): every tile's menu has Put in a folder with New folder first, and + Add → New folder lists them beside the apps. The page (Customize TV Home, Look, Folders; and each live widget or shortcut row) does the same.
 - TV Home: switching off the power-on app forgets the app too, so "Open even over another app" can no longer open an app that was switched off.
 - TV Home: a pinned link's menu shows where it goes; pressing it lets you change the link in place (same spot, remote key and your own name), no more delete and add again.
 - TV Home: a tile opened by a remote key shows which key on its corner (a colour dot, the number, or the key's icon), beside the lock.

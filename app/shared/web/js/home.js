@@ -258,11 +258,25 @@ async function homeOpen() {
   const orderHead = el('h3', { textContent: T('home.order') }), orderBox = el('div', { className: 'group' });
   // folders on the grid (HomeConfig "folders"): every edit is one change made by HomeFolders (the TV's Folders.kt does the same) and sent whole
   const foldHead = el('div', { className: 'card-head' }, el('h3', { textContent: T('home.folders_head') })), foldNote = el('p', { className: 'note', textContent: T('home.folders_note') }), foldBox = el('div', { className: 'list' });
+  // what a folder can hold: the apps and the live widgets / shortcuts put on the grid ("tiles"), as on TV Home (HomeConfig.folderMember)
+  const foldable = (c) => [...apps(), ...(c.tiles || []).filter((k) => homeFolderMember(k) && Target.kind(k) !== 'app')].filter((x) => !c.dock.includes(x));
+  const foldPick = (title, list, now) => chooseApp(title, list, now, { label: appLabel, icon: (k) => Target.kind(k) === 'app' ? appIcon(k) : qkLogo(r.config, k) });
   const foldName = (id) => (r.config.folders[id] || {}).name || T('home.folder_default');
   const foldApply = (change) => { if (change) send(change); };
+  // a tile's own "Put in a folder": New folder first (named, then made with the tile in it), then the folders there are
+  const putInFolder = async (k) => {
+    const c = r.config, ids = Object.keys(c.folders || {}).sort().filter((x) => x !== HomeFolders.folderOf(c, k));
+    const fresh = HomeFolders.canCreate(c) ? [{ value: '+', name: T('home.folder_new'), sub: T('home.folder_new_with') }] : [];
+    const to = await ask(T('home.folder_put'), { value: '', choices: [...fresh, ...ids.map((x) => ({ value: x, name: foldName(x) }))], only: true, ok: T('home.folder_move') });
+    if (!to) return;
+    if (to.trim() === '+') {
+      const n = await ask(T('home.folder_name_q'), { value: T('home.folder_default'), ok: T('home.folder_create') });
+      if (n !== null && n !== undefined) foldApply(HomeFolders.create(r.config, HomeFolders.newId(r.config), String(n), k));
+    } else if (r.config.folders[to.trim()]) foldApply(HomeFolders.add(r.config, to.trim(), k));
+  };
   const addFold = el('button', { type: 'button', className: 'small', textContent: T('home.folder_new'), onclick: async () => {
-    const c = r.config, free = apps().filter((x) => !c.dock.includes(x) && !HomeFolders.folderOf(c, x));
-    const p = await chooseApp(T('home.folder_first'), free); if (!p) return;
+    const c = r.config, free = foldable(c).filter((x) => !HomeFolders.folderOf(c, x));
+    const p = await foldPick(T('home.folder_first'), free); if (!p) return;
     const n = await ask(T('home.folder_name_q'), { value: T('home.folder_default'), ok: T('home.folder_create') });
     if (n !== null && n !== undefined) foldApply(HomeFolders.create(c, HomeFolders.newId(c), String(n), p));
   } });
@@ -282,7 +296,7 @@ async function homeOpen() {
         if (await ask(T('home.folder_delete_q', { name: foldName(id) }), { ok: T('home.folder_delete'), danger: true })) foldApply(HomeFolders.delete(r.config, id));
       } });
       const add = el('button', { type: 'button', className: 'small', textContent: T('home.folder_add_app'), onclick: async () => {
-        const p = await chooseApp(T('home.folder_add_app'), apps().filter((x) => !r.config.dock.includes(x) && !(r.config.folders[id] || { apps: [] }).apps.includes(x)));
+        const p = await foldPick(T('home.folder_add_app'), foldable(r.config).filter((x) => !(r.config.folders[id] || { apps: [] }).apps.includes(x)));
         if (p) foldApply(HomeFolders.add(r.config, id, p));
       } });
       const rows = f.apps.map((pkg, i) => row(pkg, [
@@ -290,7 +304,7 @@ async function homeOpen() {
         tool('▶', T('home.folder_right'), () => foldApply(HomeFolders.reorder(r.config, id, pkg, i + 1)), i === f.apps.length - 1),
         tool('⇄', T('home.folder_move_to'), async () => {
           const others = Object.keys(r.config.folders).filter((x) => x !== id);
-          const to = others.length ? await ask(T('home.folder_move_to'), { value: '', choices: others.map((x) => ({ value: x, name: foldName(x) })), ok: T('home.folder_move') }) : null;
+          const to = others.length ? await ask(T('home.folder_move_to'), { value: '', choices: others.map((x) => ({ value: x, name: foldName(x) })), only: true, ok: T('home.folder_move') }) : null;
           if (to && r.config.folders[to.trim()]) foldApply(HomeFolders.add(r.config, to.trim(), pkg));
         }, Object.keys(c.folders).length < 2),
         tool('✕', T('home.folder_out'), () => foldApply(HomeFolders.remove(r.config, id, pkg))),
@@ -300,7 +314,7 @@ async function homeOpen() {
     }));
   }
   const orderFace = (k) => { if (homeIsFolder(k)) return el('div', { className: 'appicon placeholder' }, UI.icon('folder')); if (Target.kind(k) !== 'app') return qkLogo(r.config, k); const i = appIcon(k); onMeta(k, (m) => i.fill(m)); return i; };
-  const orderDraw = homeOrderBox(orderBox, orderFace, (k) => appLabel(k), (change) => send(change));
+  const orderDraw = homeOrderBox(orderBox, orderFace, (k) => appLabel(k), (change) => send(change), (k) => putInFolder(k));
   const addHidden = el('button', { type: 'button', className: 'small', textContent: T('home.hide'), onclick: async () => {
     const p = await chooseApp(T('home.pick_hide'), apps().filter((x) => !r.config.hidden.includes(x)));
     if (p) send({ hidden: [...r.config.hidden, p] });
@@ -530,7 +544,7 @@ async function homeOpen() {
     if (!on) return;
     const have = c.tiles || [], offer = c.tilesAvail || [];
     tilesNote.textContent = T(c.tilesState === 'untrusted' ? 'home.tiles_untrusted' : offer.length || have.length || c.pinsOk ? 'home.tiles_note' : 'home.tiles_missing');
-    tilesList.replaceChildren(...have.filter((k) => !homeIsFolder(k)).map((k) => row(k, [tool('✕', T('home.tile_remove'), () => send({ tiles: have.filter((x) => x !== k) }))])));   // a live widget whose provider is away stays, to take off
+    tilesList.replaceChildren(...have.filter((k) => !homeIsFolder(k)).map((k) => row(k, [tool('📁', T('home.folder_put'), () => putInFolder(k), !c.foldersOk || !!HomeFolders.folderOf(c, k)), tool('✕', T('home.tile_remove'), () => send({ tiles: have.filter((x) => x !== k) }))])));   // a live widget whose provider is away stays, to take off
   }
   // the home screen as the settings now make it, at the TV's shape, over every group (CleanTV's idea, 2026-10-27): each change shows
   // here at once, no look over at the TV. The same painter as the themes' pictures; the wall's own picture when the page has one

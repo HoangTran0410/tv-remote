@@ -35,7 +35,7 @@ function ask(text, o = {}) {
       onclick: () => { input.value = c.value; mark(); } },
       el('div', { className: 'name' }, el('span', {}, el('b', { textContent: c.name }), c.tag ? el('span', { className: 'ltag', textContent: c.tag }) : null),
         c.sub ? el('small', { textContent: c.sub }) : null))));
-    if (pick) { input.addEventListener('input', mark); input.placeholder = T('core.type_own'); }
+    if (pick) { input.addEventListener('input', mark); input.placeholder = T('core.type_own'); if (o.only) input.hidden = true; }   // only: the rows are the whole choice, no box to type an id in
     if (o.pin && input) { input.type = 'password'; input.inputMode = 'numeric'; input.autocomplete = 'new-password'; }   // the phone's number pad, dots
     const yes = el('button', { type: 'submit', className: o.danger ? 'danger' : 'primary', textContent: o.ok || 'OK' });
     const no = el('button', { type: 'button', textContent: o.no || T('common.cancel'), onclick: () => d.close() });
@@ -48,7 +48,7 @@ function ask(text, o = {}) {
       done(typed ? (ok ? (boxes ? boxes.map((b) => b.value) : input.value) : null) : ok);
     });
     document.body.append(d); d.showModal(); mark();
-    if (boxes) boxes[0].select(); else if (input) input.select(); else yes.focus();
+    if (boxes) boxes[0].select(); else if (input && !input.hidden) input.select(); else if (pick && input) pick.querySelector('.item')?.focus(); else yes.focus();
   });
   const p = askQ.then(run); askQ = p.catch(() => {}); return p;
 }

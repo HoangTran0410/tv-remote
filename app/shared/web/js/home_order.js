@@ -27,7 +27,7 @@ function homeOrderChange(keys) { return { dock: [], order: keys }; }
 
 // The editor: [box] is filled; [face](key) a tile's picture, [name](key) its words; [save](change) writes it. Returns draw(c, apps),
 // called with every new answer from the TV: while something is moved and not saved, the moved order stays.
-function homeOrderBox(box, face, name, save) {
+function homeOrderBox(box, face, name, save, fold) {   // [fold](key): a picked tile's "Put in a folder" (none: no button)
   let base = [], keys = [], cols = 5, picked = -1, dropped = 0;
   const grid = el('div', { className: 'homeorder', role: 'list' });
   const note = el('p', { className: 'note', textContent: T('home.order_note') });
@@ -37,7 +37,8 @@ function homeOrderBox(box, face, name, save) {
     paint();
   } });
   const undo = el('button', { type: 'button', textContent: T('common.cancel'), onclick: () => { keys = base.slice(); picked = -1; paint(); } });
-  const acts = el('div', { className: 'actions end' }, undo, ok);
+  const inFold = el('button', { type: 'button', textContent: T('home.folder_put'), hidden: true, onclick: async () => { const k = keys[picked]; picked = -1; paint(); if (k && fold) await fold(k); } });
+  const acts = el('div', { className: 'actions end' }, inFold, undo, ok);
   box.replaceChildren(note, grid, acts);
   const dirty = () => keys.join() !== base.join();
 
@@ -58,6 +59,7 @@ function homeOrderBox(box, face, name, save) {
     grid.style.setProperty('--cols', cols);
     grid.replaceChildren(...keys.map((k, i) => cell(k, i)));
     ok.disabled = undo.disabled = !dirty();
+    inFold.hidden = !fold || picked < 0 || homeIsFolder(keys[picked]);
     put(note, 'textContent', T(picked >= 0 ? 'home.order_where' : dirty() ? 'home.order_dirty' : 'home.order_note'));
   }
 
