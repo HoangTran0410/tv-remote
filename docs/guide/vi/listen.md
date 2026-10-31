@@ -3,7 +3,7 @@
 Nghe TV bằng tai nghe của bạn để không làm phiền người khác. Cần TV Android 11 trở lên.
 
 1. Bấm **🎧 Nghe** cạnh nút Xem.
-2. Chọn **Cách nghe tiếng TV**: **Chỉ máy này** (loa TV im) hoặc **Cả TV và máy này** (TV Android 13 trở lên).
+2. Chọn **Cách nghe tiếng TV**: **Chỉ máy này** (loa TV im, có tiếng lại khi bấm Dừng) hoặc **Cả TV và máy này** (TV Android 13 trở lên).
 3. Muốn tiếng đẹp hơn, bấm **HQ** (160 kbit/s).
 4. Tiếng bị giật: bấm **Đều**. Trễ khoảng nửa giây nhưng không giật.
 

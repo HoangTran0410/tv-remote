@@ -324,7 +324,7 @@ You see the TV's picture on your device and tap or click as if touching the TV.
 Hear the TV in your own headphones without bothering anyone. Needs Android 11 or newer on the TV.
 
 1. Tap **🎧 Listen** beside Watch.
-2. Pick **How to listen**: **This device only** (the TV goes quiet) or **TV and this device** (TV on Android 13+).
+2. Pick **How to listen**: **This device only** (the TV goes quiet until you stop) or **TV and this device** (TV on Android 13+).
 3. For nicer sound tap **HQ** (160 kbit/s).
 4. Sound stutters: tap **Even**. About half a second late, but steady.
 
@@ -339,7 +339,7 @@ Choppy or blurry? Open **🖥️ Picture quality** from the quality button next 
 | Size (240p … 960p) | Choppy: go smaller. Want sharp: go bigger. |
 | Or: Sharpest / Screenshots | Sharpest is on the computer app only. |
 | Frames/s · Bitrate | Weak network: lower the bitrate. |
-| Encoder | Auto, Hardware or Software. Try another if the picture glitches. |
+| Encoder | Auto, Hardware or Software. Try another if the picture glitches. Only a black screen while nothing plays: tap **Use Software** on the picture. |
 | TV under 1.5 GB RAM | Holds at 720p, 20 fps to stay smooth. Pick another level and it follows you. |
 | Frame pace | **Fastest** (default) shows at once. **Even** adds about 33 ms for smoother motion. Only shown in browsers with WebCodecs. |
 

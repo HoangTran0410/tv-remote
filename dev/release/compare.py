@@ -20,6 +20,8 @@ def strip(name, text):
     if name.endswith(C_LIKE):
         text = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
         text = re.sub(r"(?<![:\\\"'])//.*", "", text)                 # not the // of a URL in a string
+        if name.endswith((".kt", ".kts", ".java")):
+            text = re.sub(r"(?m)^(package|import) .*$", "", text)       # a file moved to another package changes only these
     elif name.endswith((".xml", ".html", ".svg")):
         text = re.sub(r"<!--.*?-->", "", text, flags=re.S)
     elif name.endswith(HASH):
@@ -27,9 +29,20 @@ def strip(name, text):
     return [l.rstrip() for l in text.splitlines() if l.strip()]
 
 
+_moves = {}
+
+
+def moves(tag, root="."):
+    """New path -> path at the tag, for the files git sees as moved since (a package split: issue #8, 2026-10-31)."""
+    if tag not in _moves:
+        out = subprocess.run(["git", "diff", "-M", "--name-status", "--diff-filter=R", tag, "--"], cwd=root, capture_output=True, text=True).stdout
+        _moves[tag] = {l.split("\t")[2]: l.split("\t")[1] for l in out.splitlines() if l.count("\t") == 2}
+    return _moves[tag]
+
+
 def at(tag, path, root="."):
     """The file's bytes at the tag, under its old path if it was moved since; None when it did not exist."""
-    for n in dict.fromkeys([path, before(path)]):
+    for n in dict.fromkeys(x for x in [path, before(path), moves(tag, root).get(path)] if x):
         r = subprocess.run(["git", "show", f"{tag}:{n}"], cwd=root, capture_output=True)
         if not r.returncode:
             return r.stdout
