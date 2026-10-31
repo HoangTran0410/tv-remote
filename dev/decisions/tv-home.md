@@ -188,6 +188,15 @@ Measured on emulator-5554 (TV Setup, open → list drawn): 2.5–3.6 s before, ~
   sound) is not looped: at its end `play()` starts again and takes the kept file's silent copy (one 300 ms hold, once; measured with
   the cache cleared). Two SurfaceViews ping-ponging could go below 60 ms; not built (two layers on a box that may have one overlay
   plane, to win two frames).
+- **The loop, third time (2026-10-31, FPT box, release build): no MediaPlayer for a file.** The ~100 ms of `isLooping` (flush +
+  seek, the Realtek decoder refilling) was still seen by the user. [Loop] feeds MediaExtractor's samples to one MediaCodec round and
+  round: at the end the extractor is sought back and the times moved on by one clip, so the decoder never sees an end, a flush or a
+  seek. SurfaceFlinger frames of the video layer (3 s windows over several turns): city 1080p30 (kept site file) and a 12 s 720p30
+  library clip with an AAC track: longest gap **50 ms** in every window (one frame of 30 fps on the 50 Hz screen), was 100-117 ms.
+  Only the video track is read, so [Silent] (the audio-less copy) is gone. CPU moved, not grew: mediaserver 18.8 % + Home 5.2 %
+  before, Home 19.5 % (its `MediaCodec_loop` / HwBinder threads, the feeder 2.4 %) + mediaserver 0 now; the self-measure counts
+  [Loop]'s own shown / dropped frames (601 of 601 in 20 s). Emulator: plays, gaps 50-119 ms everywhere (the software decoder under
+  load), not at the turn only. Streams (a link's first turns) still use MediaPlayer, not looped.
 - **A web wall's link is checked like an upload (2026-10-31, FPT box, release build).** Its decoder (`c2.realtek.video.avc.decoder`)
   says 4096x2176 at most, 4K30, 20 Mbps; the screen's mode is 1080p50. SurfaceFlinger frames of the video layer, 6 x 3 s:
 

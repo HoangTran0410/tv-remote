@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: a video background loops with no pause at the end (was about 0.1 s on the FPT box).
 - TV Home: a video background from a web link that is too heavy for the TV (4K60, a high bitrate) is made light on the TV first instead of playing as stripes; light links still start at once.
 
 ## 0.38.0 - 2026-10-31
