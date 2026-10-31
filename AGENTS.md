@@ -93,7 +93,7 @@ lists), release/, admin/; `gen/optimize_images.py` never touches `docs/home/` an
 
 - Release only when the user says so, once what it carries is tested; keep GitHub Actions runs few (nothing runs on push). TV Setup
   updates itself and the TV apps quietly (`AutoUpdate`), so a release costs TVs little, but a bad one spreads with nobody pressing
-  anything; the Phone and Computer apps ask, so not two versions of either on one day. Details: dev/release/AGENTS.md.
+  anything; the Phone and Computer apps ask, yet several releases a day are fine (the user, 2026-10-31): test first. Details: dev/release/AGENTS.md.
 - Notes go under `## Unreleased` in `CHANGELOG.md` (English only, plain `- ` bullets) as features land. A change to what a
   `docs/guide.html` topic describes: update it and set `data-v="next"`.
 - Push without asking once tested and committed (a push deploys `docs/` at once). Sub-agents never push.
