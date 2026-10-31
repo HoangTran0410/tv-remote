@@ -1,5 +1,6 @@
 // "TVs it ran on": draws the census (GET /v1/tvs of the tvr-census Worker, dev/census) into every [data-tvs] element.
-// data-limit="8": show only that many brands until the person searches or picks a kind (the home page); the rest is tvs.html.
+// data-limit="8": the home page: that many brands as small tiles (the brand, its count, its top model; ~3 screens of rows on a phone
+// before) until the person searches or picks a kind; a tile searches its brand. The rest is tvs.html.
 (function(){
   var URL_ = "https://tvr-census.99-hoangtran.workers.dev/v1/tvs";
   var W = {                                                         // the words, both languages
@@ -26,7 +27,10 @@
     el.innerHTML = '<div class="tv-tools"><input type="search" class="tv-q" autocomplete="off" spellcheck="false" aria-label="Search"><div class="tv-chips" role="group"></div></div><p class="tv-sum"></p><div class="tv-list"></div>';
     var inp = el.querySelector(".tv-q"), chips = el.querySelector(".tv-chips"), sum = el.querySelector(".tv-sum"), list = el.querySelector(".tv-list");
     inp.oninput = function(){ q = norm(inp.value.trim()); draw(); };
-    list.onclick = function(e){ var b = e.target.closest(".tv-fold"); if (b) { open[b.dataset.b] = !open[b.dataset.b]; draw(); } };
+    list.onclick = function(e){
+      var b = e.target.closest(".tv-fold"); if (b) { open[b.dataset.b] = !open[b.dataset.b]; draw(); }
+      var c = e.target.closest(".tv-tile"); if (c) { inp.value = c.dataset.b; inp.oninput(); }
+    };
     chips.onclick = function(e){ var b = e.target.closest("button"); if (b) { kind = b.dataset.k; draw(); } };
 
     function draw(){
@@ -36,6 +40,7 @@
       chips.innerHTML = W.kinds.map(function(k){
         return '<button type="button" data-k="' + k[0] + '" aria-pressed="' + (kind === k[0]) + '">' + esc(k[1 + lang()]) + ' <span class="n">' + counts[k[0]] + "</span></button>";
       }).join("");
+      if (!data && limit && !failed) { sum.innerHTML = "&nbsp;"; list.innerHTML = '<div class="tv-tiles" aria-busy="true">' + new Array(limit + 1).join('<span class="tv-tile tv-wait"><b>&nbsp;</b><span class="n">&nbsp;</span><small>&nbsp;</small></span>') + '</div><span class="btn tv-more tv-wait">&nbsp;</span>'; return; }   // the same room as the tiles: a link to #install is not pushed off screen when the list lands
       if (!data) { sum.textContent = ""; list.innerHTML = '<p class="tv-note">' + esc(failed ? t("off") : t("load")) + "</p>"; return; }
       if (!models.length) { sum.textContent = ""; list.innerHTML = '<p class="tv-note">' + esc(t("empty")) + "</p>"; return; }
       var shown = models.filter(function(m){
@@ -47,7 +52,10 @@
       sum.textContent = t("sum", { d: shown.reduce(function(a, m){ return a + (m.count || 0); }, 0), n: shown.length, b: order.length });
       var cut = limit && !q && kind === "all" && order.length > limit;
       var fold = !q && kind === "all";                                  // a search or a chip shows every match
-      var html = (cut ? order.slice(0, limit) : order).map(function(g){
+      var html = cut ? '<div class="tv-tiles">' + order.slice(0, limit).map(function(g){
+        var m = g.rows.reduce(function(a, r){ return r.count > a.count ? r : a; });
+        return '<button type="button" class="tv-tile" data-b="' + esc(g.brand) + '"><b>' + esc(g.brand) + '</b><span class="n">' + g.n + '</span><small>' + esc(m.model) + " ×" + m.count + "</small></button>";
+      }).join("") + "</div>" : order.map(function(g){
         return '<section class="tv-brand"><h3><span>' + esc(g.brand) + '</span><b>' + g.n + "</b></h3>" + g.rows.map(function(m, i){
           if (fold && g.rows.length > SHOW + 1 && !open[g.brand] && i >= SHOW) return "";
           var k = kindFor(m);

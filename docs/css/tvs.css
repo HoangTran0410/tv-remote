@@ -26,6 +26,14 @@
 .tv-fold:hover{background:var(--card2)}
 .tv-note{color:var(--muted);padding:28px 8px;text-align:center;column-span:all}
 .tv-more{display:flex;width:fit-content;margin:6px auto 0;column-span:all}
+.tv-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;column-span:all;margin-bottom:14px}
+.tv-tile{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:baseline;gap:2px 8px;padding:12px 14px;text-align:left;background:var(--bg2);border:1px solid var(--line);border-radius:14px;color:var(--text);font:inherit;cursor:pointer}
+.tv-tile:hover{border-color:var(--line2);background:var(--card2)}
+.tv-tile b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tv-tile .n{font-size:12px;font-weight:700;color:var(--muted)}
+.tv-tile small{grid-column:1/-1;color:var(--dim);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tv-wait{cursor:default;opacity:.45;color:transparent}.tv-tile.tv-wait:hover{background:var(--bg2);border-color:var(--line)}
+@media(max-width:560px){.tv-tiles{grid-template-columns:1fr 1fr;gap:8px}.tv-tile{padding:10px 12px}}
 @media(max-width:560px){
   .tvs-box{padding:14px}
   .tv-chips{width:100%}
@@ -60,3 +68,4 @@
 /* the headline in big numbers (js/tvs.js big): the count is the news, the section's name the eyebrow above it */
 .tvs-eye{background:linear-gradient(90deg,#8b7bff,#d06bff);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.04em;text-transform:none;font-size:15px}
 .tvs-big{font-size:clamp(34px,6.4vw,64px);font-weight:800;line-height:1.08;letter-spacing:-.02em;margin:8px 0 14px}
+@media(max-width:760px){.tvs-big{min-height:2.16em}}   /* the count wraps to two lines here, its placeholder one: no jump when it lands */
