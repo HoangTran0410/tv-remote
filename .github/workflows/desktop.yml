@@ -52,6 +52,7 @@ jobs:
           curl -H "x-tvr-pass: $TVR_PASS" -sf -X POST -H 'Content-Type: application/json' -d '{}' http://127.0.0.1:8765/api/shutdown
           for i in $(seq 60); do curl -H "x-tvr-pass: $TVR_PASS" -s http://127.0.0.1:8765/api/about >/dev/null || break; sleep 1; done   # the Intel Mac runner took >20 s once (v0.36.1)
           ! curl -H "x-tvr-pass: $TVR_PASS" -s http://127.0.0.1:8765/api/about
+          for i in $(seq 20); do grep -q "Window closed" "$log" && break; sleep 1; done   # written after the port closes: Windows took >0 s (v0.39.0)
           grep -q "Window closed" "$log"
       - name: update itself                                            # Updater.kt: a copy that says 0.0.1, a fake GitHub serving this build
         run: |
@@ -131,6 +132,7 @@ jobs:
           curl -H "x-tvr-pass: $TVR_PASS" -sf -X POST -H 'Content-Type: application/json' -d '{}' http://127.0.0.1:8765/api/shutdown
           for i in $(seq 60); do curl -H "x-tvr-pass: $TVR_PASS" -s http://127.0.0.1:8765/api/about >/dev/null || break; sleep 1; done   # the Intel Mac runner took >20 s once (v0.36.1)
           ! curl -H "x-tvr-pass: $TVR_PASS" -s http://127.0.0.1:8765/api/about
+          for i in $(seq 20); do grep -q "Window closed" "$log" && break; sleep 1; done   # written after the port closes: Windows took >0 s (v0.39.0)
           grep -q "Window closed" "$log"
       - if: inputs.tag != '' && matrix.runner == 'macos-14'
         env: { GH_TOKEN: "${{ github.token }}" }
