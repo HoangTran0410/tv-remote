@@ -1,5 +1,10 @@
 package dev.tvremote.phone
 
+import dev.tvremote.phone.ir.title
+import dev.tvremote.phone.picker.reachAroundVpn
+import dev.tvremote.phone.ui.button
+import dev.tvremote.phone.ui.loadLang
+
 import dev.tvremote.core.T
 import android.app.Notification
 import android.app.NotificationChannel

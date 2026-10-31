@@ -10,7 +10,7 @@ Cores: Phone app (`phone`), Computer app (`pc`), TV web page (`tv`). Read first:
 2. **Only some cores.** Computer app: `route()` in `app/desktop/src/main/kotlin/dev/tvremote/desktop/Server.kt`; mind its sets
    `OURS` / `NATIVE_TOO` (what an LG or Samsung TV may call). TV web page: `route()` in
    `app/tvsetup/src/main/kotlin/dev/tvremote/setup/RemoteService.kt` (and `PASSIVE` if it must not count as use). Phone app: the Manage
-   screen is the same web UI served by the in-app core (`app/android/src/main/kotlin/dev/tvremote/phone/Managing.kt`); a
+   screen is the same web UI served by the in-app core (`app/android/src/main/kotlin/dev/tvremote/phone/manage/Managing.kt`); a
    native-only call goes in the phone's own Kotlin.
 3. **Caller**: the page calls `api()` in `app/shared/web/js/core.js` (a page script asks the owner of the state, see "The page's
    state" in [app/shared/web/AGENTS.md](../../app/shared/web/AGENTS.md)). Errors: words a person can act on, in `Errors.kt` and

@@ -1,5 +1,9 @@
 package dev.tvremote.phone
 
+import dev.tvremote.phone.manage.version
+import dev.tvremote.phone.picker.name
+import dev.tvremote.phone.ui.runs
+
 import android.app.ActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context

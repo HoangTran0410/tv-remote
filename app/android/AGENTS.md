@@ -11,13 +11,22 @@ Read with the root [AGENTS.md](../../AGENTS.md) (rules, build, tests, releases a
 ## Files
 
 ```
-app/android/.../phone/   phone app, one file per part, as extension functions on MainActivity: MainActivity (state, lifecycle),
-                         Ui, Net, PickerScreen, RemoteScreen, Typing, InfoScreens, KeysOnly, AdbHelp, Media, Managing (the
-                         web UI in a WebView), Updater + QuietUpdate (silent on Android 12+), Listen + ListenService (🎧), Automation (timer, scenes, voice),
-                         SceneStore, Headless + SceneActivity/SceneService (widget, tiles, shortcuts), PadMap (a game controller → keys; the page's is `js/gamepad.js`), AirMouse (the gyroscope as a pointer: a virtual HID mouse through scrcpy, `Tv.mouseOpen`; LG's pointer by `Remote.pointer`), Diagnosing (the self-check's screen), Tiles, RemoteWidget, ManyTvs (the list of TVs:
-                         install / remove / restart on several at once), SetupBanner (a new TV Setup), Drawing (✏️ on the picture), NowPlayingBar
-                         (the now playing strip, the TV's clipboard), IrRemote + Ir + IrCodes (the infrared remote on the phone's IR LED: screen,
-                         encoders NEC / Samsung32 / SIRC / RC5 / RC6 / RCA / raw, `assets/ir/codes.json` made by `dev/gen/ir_codes.py` from Flipper-IRDB, CC0)
+app/android/.../phone/   phone app: extension functions on MainActivity, one file per part, in a folder per feature (as app/tvhome's)
+  (root)                 what Android or the OS names or starts: PhoneApp, MainActivity (state, lifecycle), SceneActivity + SceneService
+                         (widget, tiles, shortcuts), ListenService (🎧), WorkService, QuietUpdate (silent on Android 12+; `$Done` receiver),
+                         Tiles (Quick Settings), RemoteWidget. Manifest names, pinned widgets and shortcuts point here: never move them.
+  remote/                the remote screen: RemoteScreen, PhoneRemote (from remote.json), Typing, KbdWatch, KeysOnly, InputsMenu,
+                         Rescuing (Unfreeze TV), GamesPointer, PadMap (a game controller -> keys; the page's is `js/gamepad.js`)
+  picture/               the TV's picture: Pip (floating player), VideoFrame, Drawing (✏️), AirMouse (the gyroscope as a pointer: a virtual
+                         HID mouse through scrcpy, `Tv.mouseOpen`; LG's pointer by `Remote.pointer`)
+  media/                 sound and what plays: Listen (🎧), Talk (quick talk), NowPlayingBar (+ the TV's clipboard), NowApp, Media (links, shares, files to the TV)
+  picker/                the list of TVs and getting in: PickerScreen, ManyTvs (install / remove / restart on several), AdbHelp, Diagnosing
+                         (the self-check's screen), Wol, TvStatus, SetupBanner (a new TV Setup), Net
+  scenes/                Automation (timer, scenes, voice), SceneStore, Headless (acting with no remote screen)
+  manage/                Managing (the web UI in a WebView), InfoScreens (Settings, About), Updater, PhoneSupport
+  ir/                    the infrared remote on the phone's IR LED: IrRemote (screen), Ir (encoders NEC / Samsung32 / SIRC / RC5 / RC6 /
+                         RCA / raw), IrCodes (`assets/ir/codes.json` made by `dev/gen/ir_codes.py` from Flipper-IRDB, CC0), IrAuto, IrLearn
+  ui/                    Ui (colours, words, view helpers), Popup, IconButton, Palette
 ```
 
 ## Remote screen

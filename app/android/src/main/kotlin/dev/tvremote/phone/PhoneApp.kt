@@ -1,5 +1,8 @@
 package dev.tvremote.phone
 
+import dev.tvremote.phone.picker.open
+import dev.tvremote.phone.ui.loadLang
+
 import android.app.Application
 import dev.tvremote.core.Words
 

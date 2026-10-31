@@ -1,5 +1,9 @@
 package dev.tvremote.phone
 
+import dev.tvremote.phone.scenes.SceneStore
+import dev.tvremote.phone.ui.label
+import dev.tvremote.phone.ui.loadLang
+
 import dev.tvremote.core.T
 import android.annotation.TargetApi
 import android.app.PendingIntent

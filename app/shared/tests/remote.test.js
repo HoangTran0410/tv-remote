@@ -66,7 +66,7 @@ test('every action in remote.json has a handler on the web page', () => {
 });
 
 test('every action in remote.json has a handler in the phone app (PhoneRemote.kt)', () => {
-  const src = read('android/src/main/kotlin/dev/tvremote/phone/PhoneRemote.kt');
+  const src = read('android/src/main/kotlin/dev/tvremote/phone/remote/PhoneRemote.kt');
   const have = new Set([...src.matchAll(/^\s+"(\w+)" to act\b/gm)].map((m) => m[1]));
   for (const e of phoneEntries().filter((x) => x.do)) assert.ok(have.has(e.do), e.id + ': no phoneActions["' + e.do + '"]');
   // (RemoteSpecTest.kt checks the same against the real map)

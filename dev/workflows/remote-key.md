@@ -10,13 +10,13 @@ Read first: "The remote screen is drawn from one file" in [app/shared/web/AGENTS
    brands can send; a new key is added there first (`remote.test.js`: "every key is a name the servers know").
 3. **A new `do` action** needs a handler on both sides: the web in `REMOTE_DO` (`app/shared/web/js/remote_spec.js`, drawn by
    `app/shared/web/js/remote.js`) and the phone in `phoneActions`
-   (`app/android/src/main/kotlin/dev/tvremote/phone/PhoneRemote.kt`). If a side truly cannot, limit the entry with `cores` and a
+   (`app/android/src/main/kotlin/dev/tvremote/phone/remote/PhoneRemote.kt`). If a side truly cannot, limit the entry with `cores` and a
    `why`. Reuse an existing handler when one fits.
 4. **Words**: `rkey.<id>` (and the `sub` id) in `app/shared/i18n/vi.json` first, then `en.json` and every other language of
    `app/shared/i18n/langs.json` (`app/shared/tests/i18n.test.js` fails on a missing id).
 5. **Icon**: it must be in the shared set; if new, add it to `dev/gen/gen_icons.py` and regenerate (never hand-edit `ic_*.xml`).
 6. **Hand-laid parts are outside the file** (top row, D-pad, number keys, volume / channel pills, the listen menu): change those in
-   `app/shared/web/js/` and `app/android/src/main/kotlin/dev/tvremote/phone/RemoteScreen.kt` by hand, or say why one side cannot.
+   `app/shared/web/js/` and `app/android/src/main/kotlin/dev/tvremote/phone/remote/RemoteScreen.kt` by hand, or say why one side cannot.
 7. **Tests**: `node --test app/shared/tests/` (`app/shared/tests/remote.test.js`: schema, icons, key names, handlers on both
    sides) and `cd app/gradle && ./gradlew :shared:testDebugUnitTest :android:testDebugUnitTest` (`RemoteSpecTest`).
 8. README.md / README.vi.md if the feature is visible; `docs/guide.html` topic + `data-v="next"` if it describes the remote;
