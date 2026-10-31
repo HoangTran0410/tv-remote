@@ -327,7 +327,7 @@ class BrowseActivity : Activity() {
         if (all.isNotEmpty()) {
         add(TvUi.row(this, R.drawable.ic_tv, getString(R.string.all), "${all.size}") { pick(ALL) }, group == ALL, ALL)
         all.groupingBy { it.first().group }.eachCount().entries.sortedByDescending { it.value }.forEach { (g, n) ->
-            add(TvUi.row(this, groupIcon(g), groupName(g), "$n") { pick(g) }, group == g, g)
+            add(TvUi.row(this, groupIcon(g), groupName(this, g), "$n") { pick(g) }, group == g, g)
         }
         }
         if (hadFocus && at in 0 until rail.childCount) rail.getChildAt(at).requestFocus()   // a rebuilt list keeps the person's place
@@ -398,7 +398,7 @@ class BrowseActivity : Activity() {
         title.text = when (group) {
             SEARCH -> getString(R.string.search)
             ALL -> countryName
-            else -> if (gid != null) mineName(gid) else if (pl != null) Store.playlist(this, pl)?.name.orEmpty() else "$countryName · ${groupName(group)}"
+            else -> if (gid != null) mineName(gid) else if (pl != null) Store.playlist(this, pl)?.name.orEmpty() else "$countryName · ${groupName(this, group)}"
         }
         chrome()
         when {
@@ -506,7 +506,7 @@ class BrowseActivity : Activity() {
                 main.post { if (!ok) Toast.makeText(this, R.string.pin_refused, Toast.LENGTH_LONG).show() }
             }
         })
-        val why = listOfNotNull(c.quality.takeIf { it.isNotEmpty() }, groupName(c.group),
+        val why = listOfNotNull(c.quality.takeIf { it.isNotEmpty() }, groupName(this, c.group),
             getString(R.string.geo).takeIf { c.geo }, getString(R.string.not_always).takeIf { c.notAlways },
             getString(R.string.down).takeIf { Store.alive(this, c.url) == false && ch.size == 1 })
         box.addView(TvUi.text(this, why.joinToString(" · "), 13f, TvUi.DIM).apply {
@@ -1014,7 +1014,7 @@ class BrowseActivity : Activity() {
             val dead = ch.all { Store.alive(this@BrowseActivity, it.url) == false }
             val on = Guide.known(c.id)?.let { Guide.now(it) }
             val from = if (group == SEARCH && c.country.isNotEmpty() && c.country != cc) names[c.country] ?: c.group else null   // a flag and the country, for the other countries' cards
-            h.sub.text = (on?.title ?: from ?: groupName(c.group)).let { if (dead) "● $it" else it }
+            h.sub.text = (on?.title ?: from ?: groupName(h.sub.context, c.group)).let { if (dead) "● $it" else it }
             if (on == null && Guide.known(c.id) == null) guideFor(ch)
             h.sub.setTextColor(if (dead) TvUi.BAD else TvUi.DIM)
             h.itemView.alpha = if (dead) 0.6f else 1f
@@ -1036,7 +1036,8 @@ class BrowseActivity : Activity() {
         fun fold(s: String) = Normalizer.normalize(s.lowercase().replace('đ', 'd'), Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").trim()
 
         /** iptv-org's group names in the app's language where we have them; its "Undefined" (no category given) is "Other". */
-        fun groupName(g: String) = if (Lang.code() == "vi") VI[g.lowercase()] ?: g else if (g.equals("undefined", true)) "Other" else g
+        /** The category in the app's language (cat_<id> in i18n/apps/<lang>/channels.json); one iptv-org adds later shows as it comes. */
+        fun groupName(c: Context, g: String) = CATS[g.lowercase()]?.let { c.getString(it) } ?: g
 
         /** A line icon per iptv-org category: the list is read at a glance (an unknown category gets the plain TV). */
         fun groupIcon(g: String) = when (g.lowercase()) {
@@ -1050,13 +1051,15 @@ class BrowseActivity : Activity() {
             "undefined" -> R.drawable.ic_more; else -> R.drawable.ic_tv
         }
 
-        private val VI = mapOf(
-            "general" to "Tổng hợp", "news" to "Tin tức", "entertainment" to "Giải trí", "movies" to "Phim", "series" to "Phim bộ",
-            "sports" to "Thể thao", "kids" to "Thiếu nhi", "music" to "Âm nhạc", "documentary" to "Tài liệu", "education" to "Giáo dục",
-            "culture" to "Văn hóa", "religious" to "Tôn giáo", "lifestyle" to "Đời sống", "cooking" to "Ẩm thực", "travel" to "Du lịch",
-            "business" to "Kinh tế", "comedy" to "Hài", "family" to "Gia đình", "legislative" to "Quốc hội", "outdoor" to "Ngoài trời",
-            "science" to "Khoa học", "shop" to "Mua sắm", "weather" to "Thời tiết", "auto" to "Xe", "animation" to "Hoạt hình",
-            "classic" to "Kinh điển", "relax" to "Thư giãn", "public" to "Công cộng", "undefined" to "Khác",
+        private val CATS = mapOf(
+            "general" to R.string.cat_general, "undefined" to R.string.cat_undefined, "news" to R.string.cat_news, "animation" to R.string.cat_animation,
+            "auto" to R.string.cat_auto, "business" to R.string.cat_business, "classic" to R.string.cat_classic, "comedy" to R.string.cat_comedy,
+            "cooking" to R.string.cat_cooking, "culture" to R.string.cat_culture, "documentary" to R.string.cat_documentary, "education" to R.string.cat_education,
+            "entertainment" to R.string.cat_entertainment, "family" to R.string.cat_family, "interactive" to R.string.cat_interactive, "kids" to R.string.cat_kids,
+            "legislative" to R.string.cat_legislative, "lifestyle" to R.string.cat_lifestyle, "movies" to R.string.cat_movies, "music" to R.string.cat_music,
+            "outdoor" to R.string.cat_outdoor, "public" to R.string.cat_public, "relax" to R.string.cat_relax, "religious" to R.string.cat_religious,
+            "science" to R.string.cat_science, "series" to R.string.cat_series, "shop" to R.string.cat_shop, "sports" to R.string.cat_sports,
+            "travel" to R.string.cat_travel, "weather" to R.string.cat_weather, "xxx" to R.string.cat_xxx,
         )
     }
 }

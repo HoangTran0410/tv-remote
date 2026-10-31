@@ -1,0 +1,6 @@
+{
+  "app_name": "TV Setup Keys",
+  "keys_fix": "TV Setup Keys : touches de la télécommande",
+  "keys_wake": "TV Setup Keys : réveil uniquement (allume tout seul quand l'écran est éteint)",
+  "keys_about": "Fait partie de TV Setup : rend leur fonction aux touches de la télécommande qui ne répondent pas, et évite que la télécommande de la TV n'ouvre aussi une application quand elle ne fait que réveiller l'écran. Ne lit rien de ce qui s'affiche à l'écran."
+}

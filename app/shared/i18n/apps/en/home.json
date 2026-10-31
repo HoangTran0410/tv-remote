@@ -377,7 +377,7 @@
   "pk_live": "Widgets",
   "pk_links": "Channels in apps",
   "pk_hidden": "Hidden",
-  "pk_live": "Widget",
+  "pk_live_tag": "Widget",
   "pk_none": "None",
   "pk_over_apps": "Over any app",
   "pk_none_found": "Nothing found",

@@ -324,7 +324,7 @@ class PlayActivity : Activity() {
         val c = streams.firstOrNull() ?: return
         infoNum.text = "${at + 1}"
         infoName.text = c.name
-        infoSub.text = listOfNotNull(c.quality.ifEmpty { null }, c.group.takeUnless { it.isEmpty() || it.equals("undefined", true) }?.let { BrowseActivity.groupName(it) }, Lineup.title.ifEmpty { null }).joinToString(" · ")
+        infoSub.text = listOfNotNull(c.quality.ifEmpty { null }, c.group.takeUnless { it.isEmpty() || it.equals("undefined", true) }?.let { BrowseActivity.groupName(this, it) }, Lineup.title.ifEmpty { null }).joinToString(" · ")
         Logos.into(infoLogo, c.logo, 200) { got -> infoTile.background = TvUi.round(if (got && Logos.isLight(c.logo)) LogoFit.DARK_TILE else LogoFit.LIGHT_TILE, TvUi.dp(this, 10)) }
         info.visibility = View.VISIBLE
         main.removeCallbacks(hideInfo); main.postDelayed(hideInfo, 5000)

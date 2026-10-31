@@ -1624,6 +1624,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "c31ffd8708ebffb497bc6100|0.23.0": {
+  "at": "2026-11-01T03:49:30+07:00",
+  "n": 1,
+  "note": "framework: GcWatcher asks system_server releaseSomeActivities under memory pressure, binder >10s on TCL Android 11; no app frame, once"
+ },
  "c373576682d59c3aa492f81e|0.26.3": {
   "at": "2026-10-30T09:07:59+07:00",
   "n": 1,

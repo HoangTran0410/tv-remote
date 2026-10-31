@@ -344,7 +344,7 @@ object Picker {
                     val onGrid = (a as? dev.tvremote.home.HomeActivity)?.loaded()?.filter { it.grid && !it.folder && it.pkg in inTiles }.orEmpty()
                     val live = LiveWidgets.available(a).associateBy { it.key }
                     val names = apps.associate { it.pkg to it.label }
-                    for (p in onGrid) if (p.live) live[p.pkg]?.let { t -> got.add(Item(t.key, t.title.ifEmpty { p.label }, null, a.getString(R.string.pk_live), 3, LiveWidgets.iconRes(a, t))) }
+                    for (p in onGrid) if (p.live) live[p.pkg]?.let { t -> got.add(Item(t.key, t.title.ifEmpty { p.label }, null, a.getString(R.string.pk_live_tag), 3, LiveWidgets.iconRes(a, t))) }
                         else got.add(Item(p.pkg, p.label, p, names[Target.pkg(p.pkg)] ?: "", 1))
                 }
             }
@@ -357,7 +357,7 @@ object Picker {
                 val app = Pins.app(a, o.getString("key")) ?: continue
                 got.add(Item(o.getString("key"), o.getString("title"), app, names[o.getString("app")] ?: "", 1))
             }
-            for (t in LiveWidgets.available(a)) got.add(Item(t.key, t.title, null, a.getString(R.string.pk_live), 3, LiveWidgets.iconRes(a, t)))
+            for (t in LiveWidgets.available(a)) got.add(Item(t.key, t.title, null, a.getString(R.string.pk_live_tag), 3, LiveWidgets.iconRes(a, t)))
             }
             }
             if (mode == Mode.GRID && only != null && Pins.can(a)) for (l in Links.installed(a).filter { it.group == only }) {   // one app's channels, from + Add (~200 of all apps' here were too many); kept logos only, small cards: full-size ones for ~80 were ~70 MB

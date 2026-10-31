@@ -7,7 +7,7 @@ cắm" for "Fold unplugged inputs"; "Luôn về khi bật TV" that never said wh
 ## The rules
 
 1. **No language is the source: write each one as its speakers say it, never word by word from another.** Code,
-   comments and docs are English; the words a person sees are written for that person, in vi, en, ru or any other, each
+   comments and docs are English; the words a person sees are written for that person, in vi, en, ru, fr or any other, each
    as plain as the others. Start from the idea (what will they see, what should they do), not from another language's
    label or the code's names, and write it the way a native speaker would say it.
 2. **Say what happens, not how it works inside.** "Chỉ hiện cổng đang cắm", not "Gập cổng"; "Tự mở TV Home khi bật
@@ -34,6 +34,7 @@ Keep it in every language; ◀ ▶ ▲ ▼ in a key hint are the remote's keys, 
 | Vietnamese (`vi`) | Everyday words, not Hán-Việt or translated ones: "mở", "hiện", "ẩn", "cắm", "tắt"; avoid "kích hoạt", "thực thi", "khởi chạy", "gập", "ghi đè". "TV", "app", "Wi-Fi", "HDMI" stay as people say them. Sentence case, no Title Case. |
 | English (`en`) | Plain verbs, sentence case ("Show only plugged-in inputs"), no "Enable/Disable X functionality". Phrasal verbs are fine ("turn on", "set up"). |
 | Russian (`ru`) | What Android TV and phones say in Russian ("Источники", "Настройки", "Таймер сна"); infinitive or noun for labels ("Показывать только подключённые входы"), «ёлочки» for quotes. Not a word-by-word copy of the English. |
+| French (`fr`) | What Android TV and phones say in French ("Entrées", "Paramètres", "Minuteur de mise en veille", "Réessayer"); "vous", sentence case, a non-breaking space before ? ! : ; and inside « ». "TV" stays "TV" ("la TV"). Not a word-by-word copy of the English. |
 | A new language | Its own TV/phone menus are the reference; a native speaker's look before release if possible. |
 
 ## Before / after (real ones)

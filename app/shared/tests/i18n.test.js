@@ -140,7 +140,9 @@ test('apps/<lang>/<module>.json: every language of langs.json has every module w
     for (const l of LANGS) {
       const f = `apps/${l}/${m}.json`;
       if (!fs.existsSync(path.join(apps, '..', f))) { bad.push(f + ' missing'); continue; }
-      const b = JSON.parse(fs.readFileSync(path.join(apps, '..', f), 'utf8'));
+      const text = fs.readFileSync(path.join(apps, '..', f), 'utf8'), b = JSON.parse(text);
+      const ids = [...text.matchAll(/^ {2}"([^"]+)":/gm)].map((x) => x[1]);   // JSON.parse keeps the last of two: one id read as two things
+      for (const k of ids.filter((k, i) => ids.indexOf(k) !== i)) bad.push(`${f}: ${k} twice`);
       for (const k of Object.keys(en)) {
         if (!(k in b)) { bad.push(`${f}: ${k} missing`); continue; }
         if (shape(b[k]) !== shape(en[k])) bad.push(`${f}: ${k} is a ${shape(b[k])}, en a ${shape(en[k])}`);

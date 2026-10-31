@@ -3,7 +3,7 @@
 // browser misses. See dev/test/AGENTS.md.
 //
 //   npm install --prefix dev playwright && npx --prefix dev playwright install webkit     (once)
-//   TVR_PASS=... node dev/test/layout.js [URL]        default http://127.0.0.1:8779/: the computer app's test server, whose first saved
+//   TVR_PASS=... [LANGS=fr] node dev/test/layout.js [URL]       default http://127.0.0.1:8779/: the computer app's test server, whose first saved
 //                                                TV (the TV emulator) it opens
 //
 // For Chromium and WebKit x widths 1100 and 400 x every tab + the settings dialog, in English (longer words than Vietnamese)
@@ -113,7 +113,7 @@ function scan(root) {
   let bad = 0;
   for (const engine of ['chromium', 'webkit']) {
     const browser = await (engine === 'chromium' ? pw.chromium.launch({ channel: 'chrome' }).catch(() => pw.chromium.launch()) : pw.webkit.launch());   // the installed Chrome
-    for (const lang of ['en', 'vi']) for (const width of [1100, 400]) {
+    for (const lang of (process.env.LANGS || 'en,vi').split(',')) for (const width of [1100, 400]) {
       const page = await browser.newPage({ viewport: { width, height: 900 } });
       await page.addInitScript(watch);
       await page.route('**/api/playing*', (r) => r.fulfill({ contentType: 'application/json', body: JSON.stringify({ state: 'playing', title: 'A long title that never fits in the strip, so its line runs', sub: 'A long channel name that does not fit either', app: 'YouTube', pkg: 'com.google.android.youtube.tv', pos: 60000, dur: 3600000, speed: 1, seek: true }) }));

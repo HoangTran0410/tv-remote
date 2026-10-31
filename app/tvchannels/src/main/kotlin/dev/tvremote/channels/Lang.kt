@@ -8,7 +8,7 @@ import java.util.Locale
 /**
  * The app's language: "" follows the TV, or "vi" / "en". Plain Activities (no AppCompat: it would add ~1 MB to a 1 GB box), so
  * each one wraps its base context in [wrap]; the chosen locale is also the JVM default, which the country names ([Catalog])
- * and the category words ([BrowseActivity.groupName]) read.
+ * reads.
  */
 object Lang {
     val CHOICES = listOf("") + dev.tvremote.i18n.Langs.CODES
