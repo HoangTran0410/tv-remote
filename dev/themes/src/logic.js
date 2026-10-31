@@ -7,7 +7,7 @@ export const PER_DAY = 3;
 export const MAX_QUEUE_BYTES = 350_000_000, MAX_AGE_DAYS = 60;   // D1 free = 500 MB a database: refuse new ones past 350 MB of waiting pictures
 export const ALLOWED_HOST = "tvremote.pages.dev";
 // HomeConfig.THEME_KEYS (app/shared/src/home/kotlin/.../HomeConfig.kt) + "wstyle", which it still reads once; ../test fails when they differ
-export const THEME_KEYS = ["wall", "walls", "wurl", "wcol", "wdir", "wmode", "wsnap", "wkeep", "wevery", "shade", "wfit",
+export const THEME_KEYS = ["wall", "walls", "wurl", "wcol", "wdir", "wmode", "wsnap", "wkeep", "wevery", "shade", "wfit", "wfade",
   "widgets", "wsize", "wopt", "cols", "rows", "focus", "motion", "anim", "clock24", "greet", "wstyle"];
 
 // one line, no control characters, trimmed, cut to [max] (the whole value is refused when empty)
