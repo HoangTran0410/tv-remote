@@ -9,6 +9,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - TV mic button: a sentence that is no command now searches (YouTube, else the TV's own search) instead of ending on "Did not understand"; an app said by its full name opens on the first pause, without waiting for the recognizer's end. The search from the phone and the page skips a YouTube that is installed but switched off (FPT boxes), so it reaches the TV's search.
 - TV mic button: on Google TV boxes that hand the mic button to the Assistant before any app sees it (FPT Play box), "Mic button" now makes TV Remote the TV's assistant while it is on, and gives Google's back when it goes off.
 - TV mic button: clear steps on the card (listening with a live sound graph, heard, doing) and a faster end: the sentence ends when its words stop changing for 0.9 s, playing media pauses while listening, and the final text is not waited for over 1.2 s. The first press no longer freezes the card for 2-4 s (the app names and sentences are read ahead), and volume and mute act at once instead of after ~1 s a press.
+- TV mic button: when Google's recognizer sends back no word for 3.5 s, the card asks to say it again and listens afresh once, instead of waiting out 8-10 s; cancelling it no longer sends the mic button back to the Assistant for 10 minutes.
 - TV mic button: the 1.2 s pause that ends listening now reaches Google TV's recognizer (it read the value only as a whole number and waited its own longer time).
 
 ## 0.40.0 - 2026-11-01

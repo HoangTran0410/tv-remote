@@ -42,6 +42,20 @@ class MicActivity : Activity(), RecognitionListener {
     private val settle = Runnable { if (!done) { log("settled"); sr?.stopListening(); think() } }   // the sentence stopped changing: that is its end
     private val late = Runnable { log("late"); finish(partial, cut = true) }                         // no final text in time: the partial one
     private var thinking = false
+    private var retried = false
+    /** Speech began but no word came back (Google's server stalled: 7 s of nothing, FPT 2026-11-01): a fresh session once, said on the card, then give up. */
+    private val stall = Runnable {
+        if (done || partial.isNotEmpty()) return@Runnable
+        if (retried) { giveUp.run(); return@Runnable }
+        retried = true
+        log("stall: again")
+        swap(act, T("mic.again"), TvUi.DIM)
+        level.go()
+        ui.removeCallbacks(giveUp); ui.postDelayed(giveUp, 7000)
+        listen()
+    }
+    private var rmsMax = -99f
+    private var rmsAt = 0L
     private val t0 = android.os.SystemClock.uptimeMillis()
     private var focus: Any? = null
     private var asking = false
@@ -52,6 +66,7 @@ class MicActivity : Activity(), RecognitionListener {
         private const val SHADE = 0x66000000                              // the screen under the card, a little dimmed (TvUi.SCRIM hides the video the person is speaking about)
         private const val SETTLE_MS = 900L
         private const val LATE_MS = 1200L
+        private const val STALL_MS = 3500L                            // speech began, no word yet by then
         @Volatile var live: MicActivity? = null
         /** The key came again, or was let go after a hold: stop listening and work with what was heard. */
         fun enough() { live?.let { a -> a.ui.post { a.sr?.stopListening() } } }
@@ -116,6 +131,7 @@ class MicActivity : Activity(), RecognitionListener {
 
     private fun listen() {
         quiet(true)
+        sr?.let { try { it.destroy() } catch (e: Exception) { } }    // the stalled session, on a retry
         val r = try { SpeechRecognizer.createSpeechRecognizer(this) } catch (e: Exception) { null }
         if (r == null) { fail(); return }
         sr = r
@@ -153,7 +169,7 @@ class MicActivity : Activity(), RecognitionListener {
     private fun say(top: String, below: String, closeIn: Long) {
         swap(heard, top); swap(act, below, TvUi.DIM)
         level.stop()
-        ui.removeCallbacks(giveUp); ui.removeCallbacks(settle); ui.removeCallbacks(late)
+        ui.removeCallbacks(giveUp); ui.removeCallbacks(settle); ui.removeCallbacks(late); ui.removeCallbacks(stall)
         ui.removeCallbacks(close)
         if (closeIn > 0) { quiet(false); ui.postDelayed(close, closeIn) }   // an end: the TV's sound back
     }
@@ -165,8 +181,13 @@ class MicActivity : Activity(), RecognitionListener {
 
     // ---- RecognitionListener
     override fun onReadyForSpeech(p: Bundle?) { log("ready"); heard.text = T("mic.listening") }
-    override fun onBeginningOfSpeech() { log("speech") }
-    override fun onRmsChanged(rms: Float) { level.feed(rms) }
+    override fun onBeginningOfSpeech() { log("speech"); ui.removeCallbacks(stall); ui.postDelayed(stall, STALL_MS) }
+    override fun onRmsChanged(rms: Float) {
+        level.feed(rms)
+        rmsMax = maxOf(rmsMax, rms)
+        val now = android.os.SystemClock.uptimeMillis()
+        if (now - rmsAt >= 500) { if (rmsAt > 0) log("level %.1f".format(rmsMax)); rmsAt = now; rmsMax = -99f }   // noise or silence, when a try stalls
+    }
     override fun onBufferReceived(b: ByteArray?) { }
     override fun onEndOfSpeech() { log("end"); if (partial.isNotEmpty()) think() }
     override fun onEvent(t: Int, b: Bundle?) { }
@@ -177,7 +198,7 @@ class MicActivity : Activity(), RecognitionListener {
         log("partial \"$t\"")
         partial = t
         heard.text = t
-        ui.removeCallbacks(giveUp)
+        ui.removeCallbacks(giveUp); ui.removeCallbacks(stall)
         val cmd = parse(t)
         if (!thinking) swap(act, if (cmd != null) "→ " + MicVoice.describe(cmd, this) else T("mic.speak"), if (cmd != null) TvUi.ACCENT else TvUi.DIM)
         ui.removeCallbacks(earlyRun); ui.removeCallbacks(settle)
@@ -202,6 +223,7 @@ class MicActivity : Activity(), RecognitionListener {
                 if (!MicVoice.granted(this)) ask() else { MicVoice.broke(); say(T("mic.no_perm"), T("mic.use_phone"), 3500) }
             }
             SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> say(T("mic.busy"), "", 1800)
+            SpeechRecognizer.ERROR_CLIENT -> { }                       // our own cancel (a stall, Back, the time up) echoed back: never "no recognizer", the timers end it
             else -> fail()
         }
     }
@@ -218,7 +240,7 @@ class MicActivity : Activity(), RecognitionListener {
     private fun finish(text: String, cut: Boolean) {
         if (done) return
         done = true
-        ui.removeCallbacks(earlyRun); ui.removeCallbacks(giveUp); ui.removeCallbacks(settle); ui.removeCallbacks(late)
+        ui.removeCallbacks(earlyRun); ui.removeCallbacks(giveUp); ui.removeCallbacks(settle); ui.removeCallbacks(late); ui.removeCallbacks(stall)
         if (cut) sr?.cancel()
         quiet(false)
         log("finish \"$text\"")

@@ -2288,6 +2288,7 @@
   "mic.allow": "Autorisez TV Setup à utiliser le micro",
   "mic.use_phone": "Utilisez le micro de l’application pour téléphone. Le bouton micro revient à l’Assistant pendant quelques minutes.",
   "mic.busy": "Occupé, réessayez",
+  "mic.again": "Pas bien entendu, répétez",
   "mic.thinking": "Compris, un instant…",
   "mic.needs_adb": "ADB doit être activé",
   "mic.failed": "Ça n’a pas marché",
