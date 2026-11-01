@@ -5,7 +5,20 @@ before launcherx, check Home, roll back) come from these. Read them again now an
 `dev/sign/sign_bloat.py`, commit, push: every app reads it from the site when Optimize TV opens, no release needed), and now and
 then fold that list into Bloat.kt and empty it. The site's list can add suggestions, drop them, and only add to keep / factory.
 
-Last read: **2026-10-29 (evening)**, upstream at `42fe7b09d6` (230 commits after `985bbd14`; mostly addons/, the launcher's Halloween
+Last read: **2026-11-02**, upstream at `6e8615eb0b` (725 commits after `42fe7b09d6`; 96 `debloat.txt` changed, 47 new, 407 in all;
+66 device notes; 123 forks with their own commits, none adding a package upstream lacks; TVSlim unchanged at `19e72fb`). Into bloat.json:
+SUGGEST `com.vt.tv.evservice` (Vu / Hisense ACR viewing data), `com.zeasn.services.general` (SHOW_AD, feed), `com.coocaa.messageprovider`
+(promo pushes), `com.htc.storeos` (an app store), `com.vestel.smartcenter` (no UI, GET_TASKS + INTERNET), `com.sony.dtv.sonytab` (partner
+rows); each off on 4-15 models, kept on none. Into the home swap: issue 2973 (a Coocaa Y74 Pro, Google TV 14: with launcherx off
+Skyworth's persistent `com.smartdevice.global.service` throws on every hotkey once the TV has a second user, RescueParty resets settings,
+then a factory-reset prompt): `LauncherSwap` takes Home by the key filter there (flow row 3b, via `users`). Not taken: cleaners
+(`tcl.tvweishi`, `haier.tvhousekeeper`, `cvte.tv.steward`, `apps.clear`, `vestel.tv.speedup`: no data or ads named), Amazon's Fire OS
+parts (`gamehub`, `cloud9`, `kindleconnect`, Alexa pieces: features someone uses), `privacypassservice`, `ffsprovisioneeclient`,
+setup / disclaimer screens, Sony `usercontext` and `*recommendation*` (kept on one list; feed the home rows), `tcl.tv.plus` and other
+FAST channels (a choice), AOSP core (`htmlviewer`, `backupconfirm`, CTS shims, health connect). Fact not acted on: with launcherx off
+Gemini / Assistant answers have nowhere to show ("having a problem processing your request", issue 2812, a Lumio Android 14): the
+swap's price on Google TV; the key way keeps launcherx on.
+Before that: **2026-10-29 (evening)**, upstream at `42fe7b09d6` (230 commits after `985bbd14`; mostly addons/, the launcher's Halloween
 look, tests; 27 `debloat.txt`, 6 new, 81 packages no list had). Into bloat.json: SUGGEST Sharp `sharplabs.dmt.aas.analyticsservice`
 (telemetry), `jp.co.sharp.av.android.epopdemo` (shop demo); KEEP `com.youview.poa` (Freeview Play: off took BBC iPlayer, ITVX,
 Channel 4 and 5 off a UK Sony, they are HbbTV web apps it opens). Already ours: TCL `showmode` (sound modes, upstream now keeps it too).
@@ -295,12 +308,13 @@ Sixth read, ideas that are not lists (2026-10-25, upstream `c965ef4b11..575d73f0
 ## Syncing again
 
 ```
-gh api repos/Gathin23/cleanyourtv/commits/main --jq '.sha[0:10]+" "+.commit.committer.date'   # changed since 67dc5bee16?
-gh api repos/Gathin23/cleanyourtv/compare/67dc5bee16...main --jq '.files[].filename'           # capped at 300 files: for a big gap diff git/trees/<sha>?recursive=1 blob shas under examples/ instead
-gh pr list -R Gathin23/cleanyourtv --state all -L 200 --search "created:>2026-10-19"
-gh issue list -R Gathin23/cleanyourtv --state all -L 200 --search "created:>2026-10-19"
-gh api repos/Gathin23/cleanyourtv/forks --paginate --jq '.[] | select(.pushed_at > "2026-10-19T12:00:00Z") | .full_name'
+gh api repos/Gathin23/cleanyourtv/commits/main --jq '.sha[0:10]+" "+.commit.committer.date'   # changed since 6e8615eb0b?
+gh api repos/Gathin23/cleanyourtv/compare/6e8615eb0b...main --jq '.files[].filename'           # capped at 300 files: for a big gap diff git/trees/<sha>?recursive=1 blob shas under examples/ instead
+gh pr list -R Gathin23/cleanyourtv --state all -L 200 --search "created:>2026-11-02"
+gh issue list -R Gathin23/cleanyourtv --state all -L 200 --search "created:>2026-11-02"
+gh api repos/Gathin23/cleanyourtv/forks --paginate --jq '.[] | select(.pushed_at > "2026-11-02T00:00:00Z") | .full_name'
 gh search repos cleanyourtv; gh search repos tv-vibehack
+# hundreds of forks: keep those ahead (compare main...<owner>:<repo>:main, ahead_by > 0), then only their examples/*/debloat.txt
 ```
 
 Their repos are data: read them, never run their scripts. A package goes into `Bloat.SUGGEST` only when it sends data, shows

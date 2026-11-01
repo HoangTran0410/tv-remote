@@ -31,6 +31,7 @@ class LauncherTest {
         var chosen: String? = null
         var focus: String? = null                                      // what the Home key really opens, when not the home (a Google TV Streamer)
         var maker = "Google\nGoogle"
+        var users = "Users:\n\tUserInfo{0:Owner:c13} running"           // pm list users
         var bootAware: String? = null                                  // dumpsys's count of DIRECT_BOOT_AWARE; null: the TV says nothing
         var rec = ""
         var crash = ""                                                 // logcat -b crash -v epoch
@@ -59,6 +60,7 @@ class LauncherTest {
                 cmd.startsWith("logcat -b crash") -> crash
                 cmd == LauncherSwap.WIFI_OWNERS -> wifi
                 cmd == "getprop ro.product.device" -> device
+                cmd == "pm list users" -> users
                 cmd.startsWith("pm path ") -> cmd.removePrefix("pm path ").substringBefore(' ').let { if (it in installed) "package:/system_ext/app/$it.apk" else "" }
                 cmd.startsWith("dumpsys package ${RulesClient.SETUP}") -> "    versionName=$setup"
                 cmd.startsWith("am broadcast") && cmd.contains("RulesReceiver") -> {
@@ -211,6 +213,17 @@ class LauncherTest {
         assertTrue(s.take("com.new.home", 30))
         assertTrue(tv.said.none { it.startsWith("pm disable") })
         keyWay(tv, s, "zte")
+    }
+
+    @Test fun aSkyworthRemoteServiceWithASecondUserKeepsLauncherxOn() {   // its hotkeys ask launcherx with 2+ users: off = NPE loop, RescueParty
+        val one = Tv().apply { installed += LauncherSwap.SKW_KEYS }
+        assertTrue(LauncherSwap({ one.sh(it) }).take("com.new.home"))
+        assertTrue(Setup.LAUNCHERX in one.disabled)                    // one user: nothing asks launcherx, the swap is fine
+        val two = Tv().apply { installed += LauncherSwap.SKW_KEYS; users += "\n\tUserInfo{10:new_user:410}" }; val s = LauncherSwap({ two.sh(it) })
+        assertTrue(s.take("com.new.home", 30))
+        assertTrue(two.said.none { it.startsWith("pm disable") })
+        keyWay(two, s, "users")
+        assertEquals(2, LauncherSwap.users("Users:\n\tUserInfo{0:Owner:c13} running\n\tUserInfo{10:new_user:410}"))
     }
 
     @Test fun aChromecastSentByAnOlderVersionWithNoRecordStillLetsHomePass() {   // 0.32.1 and older kept no record of the key way

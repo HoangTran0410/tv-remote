@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "updated": "2026-11-01",
+  "updated": "2026-11-02",
   "about": "Optimize TV's additions to Bloat.kt, read from the site: suggest (package -> name, ticked by default), drop (no longer suggested), keep and factory (Java regexes, only added). Edit, run dev/sign/sign_bloat.py, commit both files.",
   "suggest": {
     "android.autoinstalls.config.askey.tvbox": "Askey app installer",
@@ -104,7 +104,13 @@
     "com.hisense.electronictutorial": "Hisense on-screen manual",
     "com.hisense.tv.weather": "Hisense weather feed card",
     "com.tcl.appreciate.art": "TCL art screensaver promos",
-    "com.tcl.playskill": "TCL tips"
+    "com.tcl.playskill": "TCL tips",
+    "com.coocaa.messageprovider": "Coocaa promo messages",
+    "com.htc.storeos": "HTC app store",
+    "com.sony.dtv.sonytab": "Sony tab (partner rows)",
+    "com.vestel.smartcenter": "Vestel app watcher (sees what you open)",
+    "com.vt.tv.evservice": "Vu / Hisense viewing data (ACR)",
+    "com.zeasn.services.general": "Zeasn ads and weather feed"
   },
   "drop": [
     "com.xm.webcontent"

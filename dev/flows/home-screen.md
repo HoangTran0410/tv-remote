@@ -39,7 +39,7 @@ Via `home` and `wifi_unknown` (TVs the swap does not know yet) go to the census:
 
 ## LauncherSwap.take(pkg): the cases, in order
 
-Cases (`app/shared/src/main/kotlin/dev/tvremote/core/ontv/LauncherSwap.kt:WHYS`): crash, home, timeout, interrupted, user, wifi, wifi_unknown, cast, zte, board, boot, keys, key
+Cases (`app/shared/src/main/kotlin/dev/tvremote/core/ontv/LauncherSwap.kt:WHYS`): crash, home, timeout, interrupted, user, wifi, wifi_unknown, cast, zte, users, board, boot, keys, key
 
 | # | Told apart by | Way | Test |
 |---|---|---|---|
@@ -47,6 +47,7 @@ Cases (`app/shared/src/main/kotlin/dev/tvremote/core/ontv/LauncherSwap.kt:WHYS`)
 | 1 | a key-way record from before | its rule is dropped first, then the rows below | `theWayBackFromTheKeyFilterLetsHomePassAndANewPickReplacesIt` |
 | 2 | Chromecast / Google TV Streamer (`LauncherSwap.CAST_HOSTS`): the wizard off breaks casting | key, via `cast` | `aChromecastKeepsItsWizardForCastingAndTvSetupTakesHome` |
 | 3 | `com.control.device` (a ZTE box that factory-resets with no system launcher on) | key, via `zte` | `aZteBoxWithItsResetWatchdogKeepsItsLauncherOn` |
+| 3b | Skyworth's remote service `com.smartdevice.global.service` and 2+ Android users (a Google TV profile): its hotkeys ask launcherx's provider, off = a crash per press, RescueParty resets settings, then a factory-reset prompt (cleanyourtv issue 2973) | key, via `users` | `aSkyworthRemoteServiceWithASecondUserKeepsLauncherxOn` |
 | 4 | a MOKA board (`LauncherSwap.NO_SWAP`): the wizard comes back each boot, a boot loop | key, via `board` | `aMokaBoardGetsHomeByTheKeyFilterAndNothingIsTouched` |
 | 5 | no FallbackHome, the launcher not direct-boot aware: a black screen at boot | key, via `boot`, the role NOT set | `noFallbackHomeNeedsALauncherThatStartsBeforeTheUnlock` |
 | 6 | the wizard's Home cannot go off alone, and a saved Wi-Fi is the wizard's (`LauncherSwap.wifiSafe` false): off = offline | everything back on, key, via `wifi` (issue #9, a TCL) | `aWizardHoldingTheWifiLeavesHomeToTheKeyFilter` |

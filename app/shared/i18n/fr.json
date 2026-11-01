@@ -2822,6 +2822,7 @@
   "launcher.why_wifi_unknown": "Impossible de vérifier si le réseau Wi-Fi appartient à l’application de configuration initiale de la TV. Par précaution, rien n’a été modifié. Réessayez dans quelques minutes.",
   "launcher.why_cast": "Sur un Chromecast ou un Google TV Streamer, le nouvel écran d’accueil exige de désactiver l’application de configuration initiale, et la diffusion depuis un téléphone échoue alors avec « Appareil non approuvé ». La TV garde son écran d’accueil d’origine.",
   "launcher.why_zte": "Ce boîtier ZTE se réinitialise aux paramètres d’usine quand son propre écran d’accueil est désactivé. La TV garde son écran d’accueil d’origine.",
+  "launcher.why_users": "Cette TV a plusieurs profils : sans son écran d’accueil, elle plante et se réinitialise. La TV garde son écran d’accueil.",
   "launcher.key_wifi": "Accueil ouvre TV Home via TV Setup. Pour un changement complet : oubliez ce Wi-Fi (Paramètres → Réseau), reconnectez-vous-y, puis relancez Optimiser la TV.",
   "launcher.why_board": "Les cartes MOKA (Kalley, PRISM+) réactivent leur application de configuration à chaque démarrage : un nouvel écran d’accueil resterait bloqué sur le logo.",
   "launcher.why_boot": "Cette TV n’a pas d’écran d’accueil de secours au démarrage : un nouvel écran d’accueil pourrait laisser un écran noir. La TV garde le sien.",

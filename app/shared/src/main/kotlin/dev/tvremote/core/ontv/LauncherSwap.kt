@@ -47,7 +47,7 @@ class LauncherSwap(private val sh: (String) -> String, private val log: (String)
         val NO_SWAP = setOf("moka", "kalley", "prismplus", "prism+")
 
         /** Every [Rec.why] and [via]: the flow's "Cases" list (dev/flows/check.js keeps them equal). */
-        val WHYS = listOf("crash", "home", "timeout", "interrupted", "user", "wifi", "wifi_unknown", "cast", "zte", "board", "boot", "keys", "key")
+        val WHYS = listOf("crash", "home", "timeout", "interrupted", "user", "wifi", "wifi_unknown", "cast", "zte", "users", "board", "boot", "keys", "key")
         /** [Rec.why] of a launcher Home reaches through TV Setup's key filter, nothing turned off ([byKey]). */
         const val KEY = "key"
         /**
@@ -60,7 +60,7 @@ class LauncherSwap(private val sh: (String) -> String, private val log: (String)
 
         /** The words (their id) for why a swap was put back ([Rec.why]): one table for TV Setup, the page and the computer's settings. */
         /** The whys where the swap was refused before anything stayed changed: the TV kept its launcher, it did not "go back". */
-        val REFUSED = setOf("wifi", "wifi_unknown", "cast", "zte", "board", "boot", KEYS)
+        val REFUSED = setOf("wifi", "wifi_unknown", "cast", "zte", "users", "board", "boot", KEYS)
         /** The notice's words for a swap put back with [why]: "kept its launcher" for a refusal, "went back" for an undone swap. */
         fun backId(why: String): String = if (why in REFUSED) "core.fr_launcher_kept" else "core.fr_launcher_back"
 
@@ -72,6 +72,9 @@ class LauncherSwap(private val sh: (String) -> String, private val log: (String)
         /** Google's own players, where a phone's cast says "Untrusted device" once the wizard is off (cleanyourtv): Home is not taken there. */
         val CAST_HOSTS = setOf("sabrina", "boreal", "kirkwood")
         const val ZTE_WATCHDOG = "com.control.device"                 // see keyWhy
+        const val SKW_KEYS = "com.smartdevice.global.service"         // see keyWhy
+        /** How many Android users [out] (`pm list users`) lists. */
+        fun users(out: String): Int = Regex("UserInfo\\{").findAll(out).count()
 
         /**
          * Whether the wizard ([uid] its uid) can go off without the TV going offline: false when a saved network is its own (saved during
@@ -216,11 +219,15 @@ class LauncherSwap(private val sh: (String) -> String, private val log: (String)
      * Why the swap must not be tried on this TV (flow rows 2-5), or null. The [all] home screens, the launcher [pkg].
      * cast: a Chromecast's casting needs the wizard. zte: a ZTE box factory-resets with no system launcher on. board: a MOKA board's
      * wizard comes back each boot (a boot loop with launcherx off). boot: no FallbackHome and a launcher that cannot start before
-     * the unlock (a Vision, CVTE, Android 13: black screen at every boot, cleanyourtv).
+     * the unlock (a Vision, CVTE, Android 13: black screen at every boot, cleanyourtv). users: Skyworth's persistent remote service
+     * asks launcherx's provider on every hotkey once the TV has a second user (a Google TV profile); with launcherx off that is an
+     * NPE, and its crashes walk RescueParty to a settings reset, then a reboot and a factory-reset prompt (Coocaa Y74 Pro, Google TV 14,
+     * cleanyourtv issue 2973).
      */
     private fun keyWhy(all: List<String>, pkg: String): String? = when {
         cast() -> "cast"
         sh("pm path $ZTE_WATCHDOG 2>/dev/null").contains("package:") -> "zte"
+        sh("pm path $SKW_KEYS 2>/dev/null").contains("package:") && users(sh("pm list users")) > 1 -> "users"
         sh("getprop ro.product.manufacturer; getprop ro.product.brand").lowercase().split("\n").any { it.trim() in NO_SWAP } -> "board"
         all.none { "FallbackHome" in it } && sh("dumpsys package $pkg 2>/dev/null | grep -c DIRECT_BOOT_AWARE").trim().toIntOrNull() == 0 -> "boot"
         else -> null

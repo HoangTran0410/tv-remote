@@ -2711,6 +2711,7 @@
  "launcher.why_wifi_unknown": "Không xem được mạng Wi-Fi có thuộc trình cài đặt ban đầu của TV không, nên giữ nguyên cho an toàn. Thử lại sau ít phút.",
  "launcher.why_cast": "Trên Chromecast và Google TV Streamer, đổi màn hình chính phải tắt trình cài đặt ban đầu, khi đó cast từ điện thoại bị lỗi \"Untrusted device\". TV giữ màn hình chính cũ.",
  "launcher.why_zte": "Hộp ZTE này tự khôi phục cài đặt gốc khi màn hình chính của nó bị tắt. TV giữ màn hình chính cũ.",
+ "launcher.why_users": "TV có nhiều hồ sơ: tắt màn hình chính của nó làm TV lỗi rồi tự đặt lại. TV giữ màn hình chính cũ.",
  "launcher.key_wifi": "Home mở TV Home qua TV Setup. Muốn đổi hẳn: Quên Wi-Fi này (Cài đặt → Mạng), kết nối lại, chạy lại Tối ưu TV.",
  "launcher.why_board": "MOKA (Kalley, PRISM+) tự bật lại trình cài đặt mỗi lần khởi động: đổi màn hình chính sẽ kẹt logo. TV giữ màn hình cũ.",
  "launcher.why_boot": "TV không có màn hình chờ khi khởi động: màn hình chính mới có thể làm TV kẹt màn đen. TV giữ màn hình cũ.",
