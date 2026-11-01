@@ -1,2 +1,6 @@
 # gsap.min.js is GreenSock's file, vendored as is
 docs/lib/gsap.min.js linguist-vendored=true
+# LF everywhere for these: a Windows checkout (core.autocrlf) must not change the bytes of a signed list or a script
+*.json text eol=lf
+*.sig text eol=lf
+*.sh text eol=lf
