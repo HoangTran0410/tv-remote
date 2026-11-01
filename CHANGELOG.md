@@ -4,6 +4,10 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- TV mic button: a sentence that is no command now searches (YouTube, else the TV's own search) instead of ending on "Did not understand"; an app said by its full name opens on the first pause, without waiting for the recognizer's end. The search from the phone and the page skips a YouTube that is installed but switched off (FPT boxes), so it reaches the TV's search.
+
 ## 0.40.0 - 2026-11-01
 
 Web 0.40.0 · Phone app 0.37.0 · TV app 0.38.0 · TV Home 0.24.0 · TV Channels 0.18.0 · TV Games 0.17.0 · TV Apps 0.3.0
