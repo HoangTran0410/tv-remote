@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.40.0 - 2026-11-01
+
+Web 0.40.0 · Phone app 0.37.0 · TV app 0.38.0 · TV Home 0.24.0 · TV Channels 0.18.0 · TV Games 0.17.0 · TV Apps 0.3.0
 
 - TV Home: fixed a loop that could keep the main thread at 100% CPU for hours (the TV turned slow and stopped answering keys) when the focus glass waited for an item that was never laid out; it now waits for that item's layout instead of retrying at once.
 - TV Home backgrounds: two new slideshows, "Famous paintings" (24 public-domain landscapes: Monet, Van Gogh, Hokusai, Turner…) and "Earth from above" (24 Google Earth View pictures, imagery owners credited). They come from the site, so TV Home needs no update.
