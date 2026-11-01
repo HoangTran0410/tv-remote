@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.40.2 - 2026-11-01
+
+Web 0.40.2 · Phone app 0.37.2 · TV app 0.38.2 · TV Home 0.24.2 · TV Channels 0.18.1 · TV Games 0.17.0 · TV Apps 0.3.0
 
 - TV Setup: no longer sends itself back to the home screen every few seconds on a TV that keeps an "Allow USB debugging?" question in its history without showing it (a TCL, Android 12): it steps aside once per question and comes back when none shows
 - TV Setup: a daily limit can no longer be set on TV Setup itself (from Telegram, Home Assistant or voice), and one kept from before is ignored: used up, it closed TV Setup every 15 seconds
