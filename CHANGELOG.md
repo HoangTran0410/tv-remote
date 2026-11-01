@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Optimize TV: 8 more packages suggested (Google Calendar sync, Gallery, Fire TV Channels row, on-screen manuals, Hisense weather card, TCL art and tips promos), picked from CleanTV's stats with every risky kind left out.
 - French (Français) in every app and the web page (issue #12).
 - TV Channels: channel categories in the app's language (only Vietnamese had them before; Russian showed English).
 - TV Home: the app picker's section header says "Widgets" again (one id was used for two words).

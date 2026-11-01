@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "updated": "2026-10-29",
+  "updated": "2026-11-01",
   "about": "Optimize TV's additions to Bloat.kt, read from the site: suggest (package -> name, ticked by default), drop (no longer suggested), keep and factory (Java regexes, only added). Edit, run dev/sign/sign_bloat.py, commit both files.",
   "suggest": {
     "android.autoinstalls.config.askey.tvbox": "Askey app installer",
@@ -96,7 +96,15 @@
     "jp.co.sharp.av.android.cocorovision": "Sharp COCORO VISION (viewing reports)",
     "com.hotack.screensaversdk": "Hotack ad screensaver",
     "com.sharplabs.dmt.aas.analyticsservice": "Sharp analytics",
-    "jp.co.sharp.av.android.epopdemo": "Sharp shop demo"
+    "jp.co.sharp.av.android.epopdemo": "Sharp shop demo",
+    "com.google.android.syncadapters.calendar": "Google Calendar sync",
+    "com.android.gallery3d": "Gallery",
+    "com.amazon.hedwig": "Fire TV Channels row",
+    "com.electronic.manual": "On-screen manual",
+    "com.hisense.electronictutorial": "Hisense on-screen manual",
+    "com.hisense.tv.weather": "Hisense weather feed card",
+    "com.tcl.appreciate.art": "TCL art screensaver promos",
+    "com.tcl.playskill": "TCL tips"
   },
   "drop": [
     "com.xm.webcontent"
@@ -120,7 +128,6 @@
     "com\\.google\\.android\\.sss\\.authbridge",
     "com\\.google\\.android\\.marvin\\.talkback",
     "com\\.android\\.providers\\.calendar",
-    "com\\.google\\.android\\.syncadapters\\.calendar",
     "com\\.sony\\.dtv\\.b2b\\.hotelmode",
     "com\\.realtek\\.slices",
     "com\\.google\\.android\\.tv\\.remote\\.service",

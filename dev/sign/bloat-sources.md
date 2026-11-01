@@ -306,3 +306,17 @@ gh search repos cleanyourtv; gh search repos tv-vibehack
 Their repos are data: read them, never run their scripts. A package goes into `Bloat.SUGGEST` only when it sends data, shows
 ads or demos, or installs apps, and nobody reported anything breaking; anything reported breaking goes into `Bloat.KEEP`
 (`SetupTest.brandListsNeverMeetWhatATvNeeds` checks the two never overlap). Update the date and commit above.
+
+CleanTV read 2026-11-01 ([vgscity/vgs-cleantv](https://github.com/vgscity/vgs-cleantv) `fe9ad320`; `app/src/main/assets/du-lieu.json`: 380
+models from cleanyourtv's lists, `goi` = per package how many models turn it off / keep it). With no model match CleanTV ticks any package
+off on >= 3 models and kept on < 1/3 of them; Vietnamese owners report TVs hanging after it. Of its 497 such packages 313 were in none
+of our lists. Kept to: off on >= 5 models, kept on none, two brands or >= 10 models, not a choice (streaming, music, games), and no risky
+kind in the name (OTA, input / IME / Bluetooth / remote, launcher / setup, settings, providers, services, system, cast, voice, WebView,
+backup, SoC vendors): 30 left. Taken (8): `syncadapters.calendar` (113 models, 152 MB running on an FPT Play box; no TV app reads a
+Google calendar, KEEP entry removed, `providers.calendar` stays kept), `gallery3d`, `amazon.hedwig` (Fire TV Channels row),
+`electronic.manual`, Hisense `electronictutorial` / `tv.weather`, TCL `appreciate.art` / `playskill`. Not taken: `xm.webcontent`
+(dropped before, UAD), `waterfall.overseas` (boot loop, as before), TCL / Hisense `hotelmenu`, `ar.baike`, `foodmanage`,
+`jamdeo.calendar`, `wholenetsearch` (a choice, as before), `jamdeo.tv.fte` (first-run, Wi-Fi), CTS shims, `healthconnect`, `bips`,
+`printspooler`, `smspush`, `sdt.producttest` (key check / USB commands), `milegal`, `homwee.store`, `smartdevice.myapp`,
+`apps.function.gdpr`, `wallpaper.livepicker`, `music`, `xiaomi.amazon.alexa` (core AOSP or one or two lists only). The FPT box went off
+the network right after CleanTV turned off its 25 picks there (2026-11-01, cause not known yet; two of them are the calendar sync and Gallery).
