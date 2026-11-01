@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Setup: no longer sends itself back to the home screen every few seconds on a TV that keeps an "Allow USB debugging?" question in its history without showing it (a TCL, Android 12): it steps aside once per question and comes back when none shows
 - TV Setup: a daily limit can no longer be set on TV Setup itself (from Telegram, Home Assistant or voice), and one kept from before is ignored: used up, it closed TV Setup every 15 seconds
 - TV Home: links and shortcuts pinned to the home screen go into folders like any tile (the menu had no "Put in a folder" for them), and the page's grid order and folders list them too
 - Ludo: the board fits the TV screen (it showed zoomed and cut off in TV Games, whose window reports a larger size once the page overflows it) (#15)

@@ -47,6 +47,8 @@ import kotlin.math.roundToInt
 class MainActivity : Activity() {
     companion object {
         @Volatile var shown = false                                   // on screen: no update in the background meanwhile (AutoUpdate)
+        private val steppedFor = java.util.Collections.synchronizedSet(HashSet<String>())   // the questions it stepped aside for once ([unblock])
+        private val QUESTION = Regex("ActivityRecord\\{(\\w+)[^}]*UsbDebuggingActivity")
     }
 
     private lateinit var dot: View
@@ -652,21 +654,31 @@ class MainActivity : Activity() {
     @Volatile private var connecting = false
     private var watching = false
 
-    private fun questionUp(a: dev.tvremote.core.adb.Adb) = (a.shell("dumpsys activity activities | grep -c 'Hist.*UsbDebuggingActivity'", 10000).trim().toIntOrNull() ?: 0) > 0
+    /** The TV's "Allow USB debugging?" screens in its history, by their record ids. */
+    private fun questions(a: dev.tvremote.core.adb.Adb): Set<String> =
+        QUESTION.findAll(a.shell("dumpsys activity activities | grep 'Hist.*UsbDebuggingActivity'", 10000)).map { it.groupValues[1] }.toSet()
+    private fun questionUp(a: dev.tvremote.core.adb.Adb) = questions(a).isNotEmpty()
+    private fun questionShown(a: dev.tvremote.core.adb.Adb) = (a.shell("dumpsys activity activities | grep -c 'ResumedActivity.*UsbDebuggingActivity'", 10000).trim().toIntOrNull() ?: 0) > 0
 
     /** While this screen is in front, never hide the TV's question: one left behind it (it opened over one, or one queued
      *  came up just as it returned) keeps the TV from showing any other, a phone's included, and nobody sees why. With ADB
-     *  at hand this screen looks every 3 s: it steps aside for such a question, and answers a leftover copy of its own. */
+     *  at hand this screen looks every 3 s: it steps aside for such a question, and answers a leftover copy of its own.
+     *  Once per question: a TCL (Android 12) keeps one in its history that never comes up, and stepping aside for it every
+     *  3 s sent this screen to TV Home each time it opened; one still not on screen after the step aside brings it back. */
     private fun unblock(a: dev.tvremote.core.adb.Adb) = Thread {
         val mine = a.fingerprint()
         while (adb === a) {
             try {
                 Thread.sleep(3000)
-                if (!shown || !questionUp(a)) continue
+                if (!shown) continue
+                val q = questions(a) - steppedFor
+                if (q.isEmpty()) continue
+                steppedFor += q
                 ui { if (shown) moveTaskToBack(true) }
                 val r = dev.tvremote.core.adb.AdbPrompt.allow(a, mine, 6000, false)   // a copy of its own: already trusted
-                dev.tvremote.core.WireLog.all.add("·", "TV Setup stepped aside for a question: $r")
-                if (r == "allowed" && !questionUp(a)) a.shell("am start -n $packageName/.MainActivity", 10000)
+                val hidden = r != "allowed" && !questionShown(a)                   // not on screen behind us either: a dead one
+                dev.tvremote.core.WireLog.all.add("·", "TV Setup stepped aside for a question: $r" + if (hidden) ", none on screen: back" else "")
+                if (r == "allowed" && !questionUp(a) || hidden) a.shell("am start -n $packageName/.MainActivity", 10000)
             } catch (e: InterruptedException) { return@Thread } catch (ignored: Exception) { }
         }
     }.apply { isDaemon = true }.start()
