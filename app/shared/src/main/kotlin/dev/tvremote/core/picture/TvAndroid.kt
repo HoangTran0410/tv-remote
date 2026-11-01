@@ -67,6 +67,7 @@ private class SurfaceScreen(private val surface: Surface, private val host: Stri
     private var mode = 0                                              // 0 tuned + vendor keys, 1 no keys at all, 2 Android's software decoder
     @Volatile private var outs = 0                                    // frames out at this [mode] (any size); not reset by a catch-up,
     private var ins = 0                                               // which a decoder giving nothing triggers itself
+    private var spsSaid = ""                                          // what the last SPS was (LiveDecode.fixConfig), logged once
 
     override fun start(w: Int, h: Int) {
         release()
@@ -134,7 +135,11 @@ private class SurfaceScreen(private val surface: Surface, private val host: Stri
         if (debug) stats.out(age, draw, now, gate.catchUps)?.let { Log.d(TAG, it) }
     }
 
-    override fun feed(config: Boolean, pts: Long, data: ByteArray): Boolean {
+    override fun feed(config: Boolean, pts: Long, raw: ByteArray): Boolean {
+        val data = if (!config) raw else LiveDecode.fixConfig(raw).let { (d, said) ->
+            if (said != spsSaid) { spsSaid = said; WireLog.all.add("·", "picture $host $said") }
+            d
+        }
         if (config) this.config = data
         if (away) return true
         var now = SystemClock.elapsedRealtime()

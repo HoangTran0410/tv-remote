@@ -108,6 +108,7 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.speech.RecognizerIntent
 import android.view.Gravity
 import android.view.InputDevice
@@ -136,6 +137,7 @@ import java.util.Locale
 
 /** How long the picture's session outlives the app leaving the screen: as the page's (screen.js picAwayT) */
 private const val PIC_AWAY_MS = 15_000L
+private const val PIC_HELD_MS = 15_000L                             // a picture this long after "live" worked: its death starts the tries over
 
 /** Phone remote: pick a TV (saved, found on the Wi-Fi, or typed IP), then live picture with touch, and remote buttons. */
 class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
@@ -154,6 +156,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
     @Volatile internal var pic: Tv? = null                             // the picture: a session of its own, as on the computer, so that
                                                                       // switching it on or off leaves the keys' one (and what rides on it) alone
     private var picTries = 0
+    private var picLiveAt = 0L                                       // a picture that dies within PIC_HELD_MS of "live" still counts as a try
     private var picWatchers = 0                                       // devices watching this TV, ours too (Watchers.kt)
     @Volatile internal var sound: Tv? = null                           // the TV's sound, a session of its own (Listen.kt)
     internal var soundTries = 0
@@ -620,7 +623,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
                 when (key) {
                     "rate" -> status.text = title(entry ?: h) + " · " + (if (listen) "🎧 " else "") + detail + " KB/s" + others()
                     "live" -> {
-                        picTries = 0; picShown = true
+                        picLiveAt = SystemClock.elapsedRealtime(); picShown = true
                         pipUpdate()
                         tv?.carry(from)                               // keys go by the picture's session: the keys' own can rest
                         ui.removeCallbacks(countWatchers); ui.postDelayed(countWatchers, 3000)
@@ -631,6 +634,8 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
                         pic = null
                         tv?.carry(null)
                         if (tv?.ready() != true) return@post          // the TV is gone: the keys' session reconnects both
+                        if (picLiveAt > 0 && SystemClock.elapsedRealtime() - picLiveAt > PIC_HELD_MS) picTries = 0   // it held: a new run of tries (issue #16 restarted every 5 s, forever)
+                        picLiveAt = 0
                         if (++picTries <= 3) ui.postDelayed(picRetry, 1000L * picTries)
                         else {                                        // never a picture: a TV with one encoder may be busy with another device
                             val t = tv ?: return@post
