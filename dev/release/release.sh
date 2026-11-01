@@ -142,7 +142,9 @@ else
   gh workflow run desktop.yml -f tag="v$VER"
   for i in $(seq 30); do RUN=$(gh run list --workflow desktop.yml --event workflow_dispatch -L 5 --json databaseId,createdAt -q ".[] | select(.createdAt >= \"$START\") | .databaseId" | head -1); [ -n "$RUN" ] && break; sleep 5; done
   [ -n "$RUN" ] || { echo "the desktop workflow did not start: gh workflow run desktop.yml -f tag=v$VER"; exit 1; }
-  gh run watch "$RUN" --exit-status >/dev/null || { echo "a computer app failed to build: gh run view $RUN --log-failed"; exit 1; }
+  # one rerun of the failed jobs first: a runner image brownout or a flaky window check (Windows, v0.39.x) passes the second time
+  gh run watch "$RUN" --exit-status >/dev/null || { echo "a computer app failed: its jobs once more"; gh run rerun "$RUN" --failed && sleep 10 && gh run watch "$RUN" --exit-status >/dev/null; } \
+    || { echo "a computer app failed to build twice: gh run view $RUN --log-failed (gh api .../check-runs/<job>/annotations says why a job was cancelled)"; exit 1; }
 fi
 dev/release/sums.sh "v$VER"                                                   # the signed list of every file, last: until it is there no app offers this release
 gh release view "v$VER" --json assets -q '.assets[].name'

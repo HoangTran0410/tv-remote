@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { runner: macos-14, app: "TV Remote.app/Contents/MacOS/TV Remote", res: "TV Remote.app/Contents/app/res", log: "Library/Application Support/TV Remote" }
+          - { runner: macos-15, app: "TV Remote.app/Contents/MacOS/TV Remote", res: "TV Remote.app/Contents/app/res", log: "Library/Application Support/TV Remote" }   # Apple chip; macos-14 was retired 2026-11-02 (its brownouts cancelled v0.40.1 and v0.40.2)
           - { runner: macos-15-intel, app: "TV Remote.app/Contents/MacOS/TV Remote", res: "TV Remote.app/Contents/app/res", log: "Library/Application Support/TV Remote" }
           - { runner: windows-latest, app: "TV Remote/TV Remote.exe", res: "TV Remote/app/res", log: "AppData/Roaming/TV Remote" }
           - { runner: ubuntu-22.04, app: "tv-remote/bin/tv-remote", res: "tv-remote/lib/app/res", log: ".local/share/tv-remote", run: "xvfb-run -a" }
@@ -101,7 +101,7 @@ jobs:
     needs: app
     strategy:
       fail-fast: false
-      matrix: { runner: [macos-14, macos-15-intel] }
+      matrix: { runner: [macos-15, macos-15-intel] }
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
@@ -112,7 +112,7 @@ jobs:
         run: |
           set -x
           mkdir -p a x u
-          ditto -x -k arts/TV-Remote-macos-14/TV-Remote-mac-arm64.zip a
+          ditto -x -k arts/TV-Remote-macos-15/TV-Remote-mac-arm64.zip a
           ditto -x -k arts/TV-Remote-macos-15-intel/TV-Remote-mac-x64.zip x
           app/desktop/universal.sh "a/TV Remote.app" "x/TV Remote.app" "u/TV Remote.app"
           lipo -info "u/TV Remote.app/Contents/MacOS/TV Remote" "u/TV Remote.app/Contents/runtime/Contents/Home/lib/server/libjvm.dylib"
@@ -134,9 +134,9 @@ jobs:
           ! curl -H "x-tvr-pass: $TVR_PASS" -s http://127.0.0.1:8765/api/about
           for i in $(seq 20); do grep -q "Window closed" "$log" && break; sleep 1; done   # written after the port closes: Windows took >0 s (v0.39.0)
           grep -q "Window closed" "$log"
-      - if: inputs.tag != '' && matrix.runner == 'macos-14'
+      - if: inputs.tag != '' && matrix.runner == 'macos-15'
         env: { GH_TOKEN: "${{ github.token }}" }
         run: gh release upload "${{ inputs.tag }}" TV-Remote-mac.zip --clobber
-      - if: inputs.tag == '' && matrix.runner == 'macos-14'
+      - if: inputs.tag == '' && matrix.runner == 'macos-15'
         uses: actions/upload-artifact@v4
         with: { name: TV-Remote-mac-universal, path: TV-Remote-mac.zip, compression-level: 0 }
