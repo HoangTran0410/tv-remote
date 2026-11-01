@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "updated": "2026-10-24",
+  "updated": "2026-11-01",
   "providers": [
     {
       "id": "tv360",
@@ -214,6 +214,75 @@
       },
       "play": "https://api.vtvdigital.org/live-channel/v21.0/playback/source",
       "body": "{\"channelId\":\"{id}\",\"platform\":\"webPC\"}"
+    },
+    {
+      "id": "stations",
+      "kind": "streams",
+      "name": "Đài địa phương",
+      "on": true,
+      "country": "vn",
+      "streams": [
+        {
+          "name": "VTV5 Tay Nam Bo HD",
+          "url": "https://vtvgolivepre-vtv02.vtvdigital.vn/hls/vtv/live/vtv5tnb/free/master.m3u8",
+          "group": "General"
+        },
+        {
+          "name": "VTV5 Tay Nguyen HD",
+          "url": "https://vtvgolivepre-vtv02.vtvdigital.vn/hls/vtv/live/vtv5tn/free/master.m3u8",
+          "group": "General"
+        },
+        {
+          "name": "Can Tho TV",
+          "url": "https://live.canthotv.vn/live/tv/playlist.m3u8",
+          "group": "General"
+        },
+        {
+          "name": "Dong Thap TV",
+          "url": "https://618b88f69e53b.streamlock.net/THDT/thdttv/playlist.m3u8",
+          "group": "General"
+        },
+        {
+          "name": "Lâm Đồng",
+          "url": "https://live.baolamdong.vn/ltv1/index.m3u8",
+          "group": "General"
+        },
+        {
+          "name": "Quảng Ninh 1",
+          "url": "https://cdn.baoquangninh.vn/live/285f5e4256ea38d48eebdc6175909c847fe/playlist.m3u8",
+          "group": "General"
+        },
+        {
+          "name": "Quảng Ninh 3",
+          "url": "https://live.baoquangninh.vn/qtvlive/tv3live.m3u8",
+          "group": "General"
+        },
+        {
+          "name": "Lào Cai",
+          "url": "https://live.baolaocai.vn/channel2/stream.m3u8",
+          "group": "General"
+        },
+        {
+          "name": "VOV5",
+          "url": "https://str.vov.gov.vn/vovlive/vov5.sdp_aac/playlist.m3u8",
+          "group": "Music"
+        },
+        {
+          "name": "VOV Giao thông Hà Nội",
+          "url": "https://str.vov.gov.vn/vovlive/vovGTHN.sdp_aac/playlist.m3u8",
+          "group": "Music"
+        },
+        {
+          "name": "VOV Giao thông TP.HCM",
+          "url": "https://str.vov.gov.vn/vovlive/vovGTHCM.sdp_aac/playlist.m3u8",
+          "group": "Music"
+        },
+        {
+          "name": "Cần Thơ Radio 2",
+          "url": "https://live.canthotv.vn/live/radiocs2/playlist.m3u8",
+          "group": "Music"
+        }
+      ]
     }
   ]
 }
