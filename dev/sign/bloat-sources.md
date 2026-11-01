@@ -318,5 +318,6 @@ Google calendar, KEEP entry removed, `providers.calendar` stays kept), `gallery3
 (dropped before, UAD), `waterfall.overseas` (boot loop, as before), TCL / Hisense `hotelmenu`, `ar.baike`, `foodmanage`,
 `jamdeo.calendar`, `wholenetsearch` (a choice, as before), `jamdeo.tv.fte` (first-run, Wi-Fi), CTS shims, `healthconnect`, `bips`,
 `printspooler`, `smspush`, `sdt.producttest` (key check / USB commands), `milegal`, `homwee.store`, `smartdevice.myapp`,
-`apps.function.gdpr`, `wallpaper.livepicker`, `music`, `xiaomi.amazon.alexa` (core AOSP or one or two lists only). The FPT box went off
-the network right after CleanTV turned off its 25 picks there (2026-11-01, cause not known yet; two of them are the calendar sync and Gallery).
+`apps.function.gdpr`, `wallpaper.livepicker`, `music`, `xiaomi.amazon.alexa` (core AOSP or one or two lists only). CleanTV on the FPT box turned
+off nothing (Skip); it lost ADB because CleanTV, sent to the background, leaves a 60 s job on the TV that sets `adb_enabled 0`,
+which "Keep ADB on" does not cancel.
