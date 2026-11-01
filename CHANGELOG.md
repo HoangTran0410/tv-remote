@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: live widgets and shortcuts no longer offer "Hide" (they showed nowhere after it, not even under + Add, and + Add counted them as apps); one hidden before comes back on the grid; they keep "Remove from the home screen"
+- TV Home: channel avatars in "Pin from YouTube" and on their pinned tiles are drawn larger (round logos were a small dot)
 - Voice: "open the app X" / "mở ứng dụng X" opens the installed app whose name is closest, a few letters off or split differently ("Việt MyTV" opens VietMITV); without the word "app" names still match strictly
 - Phone app: the TV's picture no longer stays black with a box whose encoder stamps its frames out of order (an A95X F3 Air): the phone rebuilt its decoder every 0.6 s, thinking it lagged (#16)
 

@@ -133,7 +133,8 @@ object Links {
             cv.drawText(android.text.TextUtils.ellipsize(name, android.text.TextPaint(p), w * .84f, android.text.TextUtils.TruncateAt.END).toString(), w / 2f, h * .46f - (p.ascent() + p.descent()) / 2, p)
             return b
         }
-        val s = minOf(w * .62f / logo.width, h * .46f / logo.height)   // room at the bottom-right for the app's badge (Pins.badged)
+        val square = logo.width in (logo.height * 4 / 5)..(logo.height * 5 / 4)   // a channel's round avatar (YouTube): at .46 it was a small dot; a square leaves the corners free for the badge
+        val s = minOf(w * .62f / logo.width, h * (if (square) .74f else .46f) / logo.height)   // room at the bottom-right for the app's badge (Pins.badged)
         val lw = logo.width * s; val lh = logo.height * s
         cv.drawBitmap(logo, null, RectF((w - lw) / 2, (h - lh) / 2 - h * .04f, (w + lw) / 2, (h + lh) / 2 - h * .04f), Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG))
         return b

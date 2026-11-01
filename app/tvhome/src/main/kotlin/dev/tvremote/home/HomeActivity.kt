@@ -2014,7 +2014,8 @@ class HomeActivity : Activity() {
             })
         }
         if (!dockedPin && inFolder == null) {
-            home.add(item(R.drawable.ic_eye_off, R.string.hide) { Store.change(this, JSONObject().put("hidden", org.json.JSONArray(Store.list(this, "hidden") + a.pkg))
+            // apps only: + Add lists hidden apps, a hidden live widget or shortcut would be lost (they have Remove from the grid)
+            if (!a.grid) home.add(item(R.drawable.ic_eye_off, R.string.hide) { Store.change(this, JSONObject().put("hidden", org.json.JSONArray(Store.list(this, "hidden") + a.pkg))
                 .put("dock", org.json.JSONArray(Store.list(this, "dock") - a.pkg))) })
             if (a.grid) home.add(item(R.drawable.ic_trash, R.string.remove_from_grid) {   // off the grid: it leaves "tiles" and its places in the dock, the order and the hidden list
                 if (Target.isPin(a.pkg)) { Pins.off(this, a.pkg); pinsRead(); return@item }   // its system pin too, or it came back as that

@@ -24,6 +24,11 @@ class HomeConfigTest {
         assertEquals(7, HomeConfig.clean(HomeConfig.clean(JSONObject().put("cols", 7))).getInt("cols"))
     }
 
+    @Test fun hiddenKeepsAppsOnly() {                                // a live widget or shortcut hidden showed nowhere: it comes back
+        val c = HomeConfig.clean(JSONObject().put("hidden", org.json.JSONArray(listOf("com.a.b", "tile:dev.tvremote.setup/clock", "pin:com.a.b/x"))))
+        assertEquals("[\"com.a.b\"]", c.getJSONArray("hidden").toString())
+    }
+
     @Test fun emptyGivesTheDefaults() {
         val c = HomeConfig.clean(JSONObject())
         assertEquals(emptyList<String>(), dock(c))
@@ -458,8 +463,8 @@ class HomeConfigTest {
         val c = HomeConfig.clean(JSONObject().put("tiles", JSONArray(listOf(k, k, "junk", "tile:Bad Pkg/ram")))
             .put("dock", JSONArray(listOf("com.a.b", k))).put("hidden", JSONArray(listOf("tile:com.x.y/z1"))).put("order", JSONArray(listOf(k))))
         assertEquals(listOf(k), c.getJSONArray("tiles").let { a -> List(a.length()) { a.getString(it) } })
-        assertEquals(listOf("com.a.b", k), dock(c))                    // a tile sits among the apps in the dock, the hidden list and the order
-        assertEquals(listOf("tile:com.x.y/z1"), hidden(c))
+        assertEquals(listOf("com.a.b", k), dock(c))                    // a tile sits among the apps in the dock and the order
+        assertEquals(emptyList<String>(), hidden(c))                  // never hidden: only apps are (hiddenKeepsAppsOnly)
         assertEquals(c.toString(), HomeConfig.clean(JSONObject(c.toString())).toString())   // cleaning twice changes nothing
         assertEquals("dev.tvremote.setup", HomeConfig.liveProvider(k)); assertEquals("ram", HomeConfig.liveId(k))
         assertEquals(0, HomeConfig.clean(JSONObject()).getJSONArray("tiles").length())

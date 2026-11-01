@@ -652,7 +652,7 @@ object HomeConfig {
         val tiles = tilesAsked.filter { !isFolder(it) || it in folderKeys }
         return JSONObject()
             .put("dock", JSONArray(dock))
-            .put("hidden", JSONArray(pkgs(o.optJSONArray("hidden"), HIDDEN_MAX).filter { it !in dock }))
+            .put("hidden", JSONArray(pkgs(o.optJSONArray("hidden"), HIDDEN_MAX).filter { it !in dock && Target.kind(it) == Target.Kind.APP }))   // apps only: a live widget or shortcut hidden showed nowhere, not even in + Add (older TV Homes let one in)
             .put("order", JSONArray(gridKeys(o.optJSONArray("order"), ORDER_MAX).filter { !isFolder(it) || it in folderKeys }))
             .put("wall", if (wall in walls) wall else walls[0])           // what shows is always one of the set
             .put("walls", JSONArray(walls))
