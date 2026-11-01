@@ -94,6 +94,18 @@ object Voice {
         return null
     }
 
+    /**
+     * [cmd] (from [parse] of [text]) names the app in full, its alias or its whole name, not a start of it: the TV's voice may then open it
+     * on a pause in the partial text, without waiting for the recognizer's end ("mở you" finds YouTube loosely, so it never counts).
+     */
+    fun whole(text: String, cmd: Command?): Boolean {
+        if (cmd !is Command.App) return false
+        val ph = phrases ?: return false
+        val s = strip(norm(text), ph)
+        val want = ph.open.matchEntire(s)?.groupValues?.get(1) ?: s
+        return ph.apps.any { want in it.names && cmd.pkg in it.pkgs } || norm(cmd.name) == want
+    }
+
     /** What a sentence would do, in words ([id] in i18n with [args]), without doing it: the Phone app's hold-to-talk preview. */
     data class Say(val id: String, val args: Map<String, String> = emptyMap())
     /** [command] null: the sentence goes to the TV's search / Assistant, as [parse] says. */

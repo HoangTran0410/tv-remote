@@ -98,8 +98,20 @@ object MicVoice {
         is Voice.Command.Scene -> T("mic.do_scene", "name" to (scenes(c)[cmd.id] ?: cmd.id))
     }
 
-    /** Only keys and scenes are safe to act on before the sentence ends: "mở you" is not "mở YouTube". */
-    fun earlyOk(cmd: Voice.Command?): Boolean = cmd is Voice.Command.Key || cmd is Voice.Command.Scene
+    /** Keys, scenes and an app named in full are safe to act on before the sentence ends: "mở you" is not "mở YouTube". */
+    fun earlyOk(cmd: Voice.Command?, text: String): Boolean = cmd is Voice.Command.Key || cmd is Voice.Command.Scene || Voice.whole(text, cmd)
+
+    /**
+     * A sentence that is no command, looked up instead of a dead end: the same order as [dev.tvremote.core.adb.TvShell.search] (YouTube's
+     * results, else the TV's own search), started from the voice screen in front, so no ADB is needed. The words for what took it, null when nothing did.
+     */
+    fun search(c: Context, text: String): String? {
+        val yt = dev.tvremote.core.adb.TvShell.YOUTUBE
+        val has = try { c.packageManager.getApplicationInfo(yt, 0).enabled } catch (e: Exception) { false }   // installed but switched off (an FPT box): the TV's search
+        val i = if (has) Intent(Intent.ACTION_VIEW, android.net.Uri.parse(dev.tvremote.core.adb.TvShell.youtube(text))).setPackage(yt)
+            else Intent("android.search.action.GLOBAL_SEARCH").putExtra(android.app.SearchManager.QUERY, text)
+        return try { c.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); if (has) T("remote.searching_youtube", "q" to text) else T("talk.ask", "sentence" to text) } catch (e: Exception) { null }
+    }
 
     /** Carries [cmd] out (off the main thread). Null: done; else the words of what could not be done. */
     fun run(c: Context, cmd: Voice.Command): String? {

@@ -58,6 +58,12 @@ class VoiceTest {
         assertEquals("com.google.android.youtube.tv", (p("mở ứng dụng youtube") as Command.App).pkg)
     }
 
+    @Test fun wholeNameOnly() {
+        fun w(t: String) = Voice.whole(t, p(t))
+        assertTrue(w("mở YouTube")); assertTrue(w("mở ứng dụng youtube")); assertTrue(w("FPT Play")); assertTrue(w("open vlc"))
+        assertFalse(w("mở you")); assertFalse(w("mở fpt")); assertFalse(w("tắt tiếng")); assertFalse(w("thời tiết hôm nay"))
+    }
+
     @Test fun unknownGoesToTheAssistant() {
         assertNull(p("mở Spotify"))
         assertNull(p("thời tiết hôm nay"))

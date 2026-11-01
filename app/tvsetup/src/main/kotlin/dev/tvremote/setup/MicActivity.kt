@@ -130,7 +130,7 @@ class MicActivity : Activity(), RecognitionListener {
         val cmd = parse(t)
         act.text = if (cmd != null) "→ " + MicVoice.describe(cmd, this) else T("mic.speak")
         ui.removeCallbacks(earlyRun)
-        if (MicVoice.earlyOk(cmd)) ui.postDelayed(earlyRun, 700)           // a clear short command, then a pause: no need to wait for the recognizer's own end
+        if (MicVoice.earlyOk(cmd, t)) ui.postDelayed(earlyRun, 700)        // a clear short command, then a pause: no need to wait for the recognizer's own end
     }
 
     override fun onResults(r: Bundle?) {
@@ -169,6 +169,7 @@ class MicActivity : Activity(), RecognitionListener {
         MicVoice.fixed()
         heard.text = text
         val cmd = if (text.isEmpty()) null else parse(text)
+        if (cmd == null && text.isNotEmpty()) MicVoice.search(this, text)?.let { act.text = it; ui.postDelayed(close, 600); return }   // not a command: looked up, not a dead end
         if (cmd == null) { say(if (text.isEmpty()) T("mic.nothing") else T("mic.unknown", "text" to text), T("mic.try"), 2500); return }
         act.text = MicVoice.describe(cmd, this)
         val app = applicationContext

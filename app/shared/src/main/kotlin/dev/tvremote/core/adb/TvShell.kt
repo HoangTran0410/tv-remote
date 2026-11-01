@@ -16,12 +16,13 @@ object TvShell {
     /**
      * A sentence for the TV to look up, not a command: YouTube's results when the TV has YouTube, since the Assistant of Android
      * TV knows no Vietnamese (an FPT Play box spun on it for good) and some TVs have no search at all; else the TV's own search /
-     * Assistant. Prints "yt" or "gs" for what took it, nothing when nothing did.
+     * Assistant. Prints "yt" or "gs" for what took it, nothing when nothing did. YouTube only when enabled: an FPT box ships it switched
+     * off, and the link then failed with no search at all.
      */
     fun search(q: String): String {
         val s = q.trim().take(300)
         require(s.isNotEmpty()) { "empty query" }
-        return "if pm path $YOUTUBE >/dev/null 2>&1; then am start -a android.intent.action.VIEW -d " + Adb.q(youtube(s)) + " -p $YOUTUBE 2>&1 | grep -q Error || echo yt; " +
+        return "if pm list packages -e $YOUTUBE 2>/dev/null | grep -qx package:$YOUTUBE; then am start -a android.intent.action.VIEW -d " + Adb.q(youtube(s)) + " -p $YOUTUBE 2>&1 | grep -q Error || echo yt; " +
             "else am start -a android.search.action.GLOBAL_SEARCH --es query " + Adb.q(s) + " 2>&1 | grep -q Error || echo gs; fi"
     }
     const val YOUTUBE = "com.google.android.youtube.tv"
