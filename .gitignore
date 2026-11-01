@@ -36,3 +36,4 @@ dev/test/.local/
 .wrangler/
 .dev.vars
 .codegraph/
+node_modules/
