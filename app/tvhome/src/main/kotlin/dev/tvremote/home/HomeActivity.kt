@@ -1996,7 +1996,7 @@ class HomeActivity : Activity() {
             if (at > 0) home.add(item(R.drawable.ic_left, R.string.folder_earlier) { folderDo(Folders.reorder(conf, inFolder, a.pkg, at - 1)) })
             if (at in 0 until mine.size - 1) home.add(item(R.drawable.ic_right, R.string.folder_later) { folderDo(Folders.reorder(conf, inFolder, a.pkg, at + 1)) })
         }
-        if (!a.folder && !dockedPin && a.pkg != packageName && HomeConfig.folderMember(a.pkg) && (!a.grid || a.pkg in Store.list(this, "tiles"))) home.add(item(R.drawable.ic_apps, if (inFolder == null) R.string.folder_put else R.string.folder_other) { ui.post { folderPicker(a.pkg, inFolder) } })
+        if (!a.folder && !dockedPin && a.pkg != packageName && HomeConfig.folderMember(a.pkg)) home.add(item(R.drawable.ic_apps, if (inFolder == null) R.string.folder_put else R.string.folder_other) { ui.post { folderPicker(a.pkg, inFolder) } })
         if (dockedPin) home.add(item(R.drawable.ic_close, R.string.unpin) { Pins.remove(this, a); pins = pins.filter { it !== a }; shownKey = ""; show() })
         if (!a.live) home.add(item(R.drawable.ic_pen, R.string.rename) { ui.post { rename(a) } })
         val link = Pins.ownIdOf(this, a)?.let { Pins.linkOf(this, it) }

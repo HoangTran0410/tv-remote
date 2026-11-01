@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: links and shortcuts pinned to the home screen go into folders like any tile (the menu had no "Put in a folder" for them), and the page's grid order and folders list them too
 - Ludo: the board fits the TV screen (it showed zoomed and cut off in TV Games, whose window reports a larger size once the page overflows it) (#15)
 
 ## 0.40.1 - 2026-11-01

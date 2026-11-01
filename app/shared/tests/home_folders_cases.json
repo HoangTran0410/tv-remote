@@ -49,6 +49,8 @@
     { "name": "reorder", "from": "withFolder", "op": "reorder", "args": ["f1", "com.e.four", 0],
       "change": { "dock": ["com.d.dock"], "hidden": ["com.h.hid"], "order": ["com.a.one", "folder:f1", "tile:dev.tvremote.setup/ram", "com.c.three"],
         "tiles": ["tile:dev.tvremote.setup/ram", "folder:f1"], "folders": { "f1": { "name": "Video", "apps": ["com.e.four", "com.b.two"] } } } },
-    { "name": "reorder of an app that is not in it", "from": "withFolder", "op": "reorder", "args": ["f1", "com.c.three", 0], "change": null }
+    { "name": "reorder of an app that is not in it", "from": "withFolder", "op": "reorder", "args": ["f1", "com.c.three", 0], "change": null },
+    {"name": "create takes a shortcut TV Home pinned through Android, putting it in tiles", "from": "base", "op": "create", "args": ["f2", "Links", "pin:dev.tvremote.home/pnabc"], "change": {"dock": ["com.d.dock"], "hidden": ["com.h.hid"], "order": ["com.a.one", "com.b.two", "tile:dev.tvremote.setup/ram", "com.c.three", "folder:f2"], "tiles": ["tile:dev.tvremote.setup/ram", "pin:dev.tvremote.home/pnabc", "folder:f2"], "folders": {"f2": {"name": "Links", "apps": ["pin:dev.tvremote.home/pnabc"]}}}},
+    {"name": "add takes a shortcut TV Home pinned through Android, putting it in tiles", "from": "withFolder", "op": "add", "args": ["f1", "pin:dev.tvremote.home/pnabc"], "change": {"dock": ["com.d.dock"], "hidden": ["com.h.hid"], "order": ["com.a.one", "folder:f1", "tile:dev.tvremote.setup/ram", "com.c.three"], "tiles": ["tile:dev.tvremote.setup/ram", "folder:f1", "pin:dev.tvremote.home/pnabc"], "folders": {"f1": {"name": "Video", "apps": ["com.b.two", "com.e.four", "pin:dev.tvremote.home/pnabc"]}}}}
   ]
 }

@@ -259,8 +259,8 @@ async function homeOpen() {
   const orderHead = el('h3', { textContent: T('home.order') }), orderBox = el('div', { className: 'group' });
   // folders on the grid (HomeConfig "folders"): every edit is one change made by HomeFolders (the TV's Folders.kt does the same) and sent whole
   const foldHead = el('div', { className: 'card-head' }, el('h3', { textContent: T('home.folders_head') })), foldNote = el('p', { className: 'note', textContent: T('home.folders_note') }), foldBox = el('div', { className: 'list' });
-  // what a folder can hold: the apps and the live widgets / shortcuts put on the grid ("tiles"), as on TV Home (HomeConfig.folderMember)
-  const foldable = (c) => [...apps(), ...(c.tiles || []).filter((k) => homeFolderMember(k) && Target.kind(k) !== 'app')].filter((x) => !c.dock.includes(x));
+  // what a folder can hold: the apps, the live widgets / shortcuts put on the grid ("tiles") and TV Home's own pins ("pinned"), as on TV Home (HomeConfig.folderMember)
+  const foldable = (c) => [...new Set([...apps(), ...(c.tiles || []).filter((k) => homeFolderMember(k) && Target.kind(k) !== 'app'), ...(c.pinned || []).map((x) => x.key)])].filter((x) => !c.dock.includes(x));
   const foldPick = (title, list, now) => chooseApp(title, list, now, { label: appLabel, icon: (k) => Target.kind(k) === 'app' ? appIcon(k) : qkLogo(r.config, k) });
   const foldName = (id) => (r.config.folders[id] || {}).name || T('home.folder_default');
   const foldApply = (change) => { if (change) send(change); };

@@ -6,7 +6,7 @@
 const FOLDER_MAX = 12, FOLDER_APPS_MAX = 40, FOLDER_TILES_MAX = 24, FOLDER_NAME_MAX = 30;
 const homeFolderKey = (id) => 'folder:' + id;
 const homeIsFolder = (k) => /^folder:[a-z0-9]{1,8}$/.test(String(k || ''));
-const homeFolderMember = (k) => ['app', 'tile', 'pin'].includes(Target.kind(k));   // an app, or a live widget / shortcut already in "tiles" (it stays there)
+const homeFolderMember = (k) => ['app', 'tile', 'pin'].includes(Target.kind(k));   // an app, a live widget or a shortcut (put in "tiles", where it stays)
 const homeFolderName = (s) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, FOLDER_NAME_MAX).trim();
 
 function homeFolderState(c) {
@@ -26,6 +26,12 @@ function homeFolderTake(s, pkg) {
   for (const f of Object.values(s.folders)) f.apps = not(f.apps);
   homeFolderPrune(s);
 }
+// a member that is not an app is kept valid by its key in "tiles" (TV Home's own pins are not there until then); false when it is full
+function homeFolderKeep(s, app) {
+  if (Target.kind(app) === 'app' || s.tiles.includes(app)) return true;
+  if (s.tiles.length >= FOLDER_TILES_MAX) return false;
+  s.tiles.push(app); return true;
+}
 function homeFolderChange(s) { return { dock: s.dock, hidden: s.hidden, order: s.order, tiles: s.tiles, folders: s.folders }; }
 const homeFolderClamp = (to, n) => Math.max(0, Math.min(to, n));
 
@@ -41,6 +47,7 @@ const HomeFolders = {
     if (!homeFolderMember(app)) return null;
     const at = s.order.indexOf(app);
     homeFolderTake(s, app);
+    if (!homeFolderKeep(s, app) || s.tiles.length >= FOLDER_TILES_MAX) return null;   // room for the shortcut and the folder both
     s.folders[id] = { name: homeFolderName(name), apps: [app] };
     s.tiles.push(homeFolderKey(id));
     s.order.splice(at >= 0 && at <= s.order.length ? at : s.order.length, 0, homeFolderKey(id));
@@ -64,6 +71,7 @@ const HomeFolders = {
     if (f.apps.includes(app)) return to === Infinity ? homeFolderChange(s) : HomeFolders.reorder(c, id, app, to);
     if (f.apps.length >= FOLDER_APPS_MAX) return null;
     homeFolderTake(s, app);
+    if (!homeFolderKeep(s, app)) return null;
     const g = s.folders[id]; if (!g) return null;
     g.apps.splice(homeFolderClamp(to, g.apps.length), 0, app);
     return homeFolderChange(s);

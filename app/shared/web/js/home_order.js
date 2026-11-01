@@ -5,13 +5,15 @@
 
 // The grid as TV Home lays it out (HomeActivity.show): its old favourites (config "dock") first, then every other app, live widget
 // and shortcut put on the grid ("tiles") not hidden, in "order", those it does not list after them by name. [apps]: [{pkg, label}].
-// (A shortcut an app pinned by itself is not in the config: the TV puts it after the favourites, and this page never sees it.)
+// A shortcut pinned through Android (TV Home's own links) is not in "tiles": a TV Home that reports them lists it in "pinned".
 function homeGridOrder(c, apps) {
   const folders = c.folders || {};                                   // a folder is a tile; the apps in it are not on the grid
   const inFolder = new Set(Object.values(folders).flatMap((f) => f.apps || []));
   const tiles = (c.tiles || []).filter((t) => Target.kind(t) === 'tile' || Target.kind(t) === 'pin' || (/^folder:[a-z0-9]{1,8}$/.test(t) && folders[t.slice(7)]));
+  const pinned = (c.pinned || []).filter((x) => x && x.key && !tiles.includes(x.key) && !inFolder.has(x.key)).map((x) => x.key);
+  const title = (t) => { const x = [...(c.tilesAvail || []), ...(c.pinned || []), ...(c.pinsAvail || [])].find((y) => y.key === t); return (x && x.title) || Target.id(t); };
   const all = [...apps.filter((a) => !inFolder.has(a.pkg)).map((a) => ({ key: a.pkg, label: a.label || a.pkg })),
-    ...tiles.map((t) => { const x = (c.tilesAvail || []).find((y) => y.key === t); return { key: t, label: t.startsWith('folder:') ? folders[t.slice(7)].name : (x && x.title) || Target.id(t) }; })]
+    ...[...tiles, ...pinned].map((t) => ({ key: t, label: t.startsWith('folder:') ? folders[t.slice(7)].name : title(t) }))]
     .sort((a, b) => { const x = a.label.toLowerCase(), y = b.label.toLowerCase(); return x < y ? -1 : x > y ? 1 : 0; });
   const have = new Set(all.map((a) => a.key)), hidden = new Set(c.hidden || []);
   const dock = (c.dock || []).filter((k) => have.has(k));

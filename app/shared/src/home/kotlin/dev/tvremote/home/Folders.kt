@@ -9,8 +9,8 @@ import org.json.JSONObject
  * the five fields a folder touches (dock, hidden, order, tiles, folders), so one write is one redraw. The page's `js/home_folders.js`
  * is the twin of these (tests/home_folders.test.js and FoldersTest hold the same cases).
  *
- * A folder is a grid tile ([HomeConfig.folderKey] in "tiles" and "order"); its members (apps, and the live widgets and shortcuts
- * already in "tiles", which stay there) are off the grid, out of the dock and out of
+ * A folder is a grid tile ([HomeConfig.folderKey] in "tiles" and "order"); its members (apps, live widgets and shortcuts, which
+ * are put in "tiles" and stay there: a shortcut TV Home pinned through Android is not in it until then) are off the grid, out of the dock and out of
  * "hidden". Taking an app out puts it on the grid right after the folder; deleting a folder puts all its apps there. A folder with
  * no app is deleted by the same operation that emptied it.
  */
@@ -33,6 +33,13 @@ object Folders {
         }
 
         fun key(id: String) = HomeConfig.folderKey(id)
+
+        /** A member that is not an app is kept valid by its key in "tiles" ([HomeConfig.clean]); false when that list is full. */
+        fun keep(app: String): Boolean {
+            if (Target.kind(app) == Target.Kind.APP || app in tiles) return true
+            if (tiles.size >= HomeConfig.TILES_MAX) return false
+            tiles.add(app); return true
+        }
 
         /** [pkg] out of the dock, the hidden list, the order and every folder (an emptied folder goes). */
         fun take(pkg: String) {
@@ -87,6 +94,7 @@ object Folders {
         if (!HomeConfig.folderMember(app)) return null
         val at = s.order.indexOf(app)
         s.take(app)
+        if (!s.keep(app) || s.tiles.size >= HomeConfig.TILES_MAX) return null   // room for the shortcut and the folder both
         s.folders[id] = Folder(cleanName(name), mutableListOf(app))
         s.tiles.add(s.key(id))
         s.order.add(if (at in 0..s.order.size) at else s.order.size, s.key(id))
@@ -117,6 +125,7 @@ object Folders {
         if (app in s.folders[id]!!.apps) return if (to == Int.MAX_VALUE) s.change() else reorder(c, id, app, to)
         if (s.folders[id]!!.apps.size >= HomeConfig.FOLDER_APPS_MAX && app !in s.folders[id]!!.apps) return null
         s.take(app)
+        if (!s.keep(app)) return null
         val f = s.folders[id] ?: return null                       // [app] was its only one and it went with it
         f.apps.add(to.coerceIn(0, f.apps.size), app)
         return s.change()
