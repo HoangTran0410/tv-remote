@@ -7,7 +7,7 @@ function showNowApp(id, label) {
   const pkg = /^[\w]+(\.[\w]+)+$/.test(id) && !label, icon = appIcon(id), name = el('b', { textContent: label || appName(id) });
   box.replaceChildren(el('small', { textContent: T('apps.now_open') }), icon, name);
   if (!pkg) icon.fill({ label: label || id });                         // an LG / Roku id: its name's first letter
-  if (id === 'dev.tvremote.games' && can('adb')) box.append(el('button', { className: 'small', textContent: T('rkey.pad_chip'), onclick: gamePad }));   // the pad page of TV Games (its QR on the TV)
+  if (id === 'dev.tvremote.games' && can('adb')) box.append(el('button', { className: 'small', textContent: T('rkey.pad_chip'), onclick: () => gamePad() }));   // the pad page of TV Games (its QR on the TV); looked up on the press: games.js loads later, and the first /api/state can come back first on a slow TV
   if (pkg) onMeta(id, (m) => { if (nowApp.startsWith(id + '|')) { icon.fill(m); put(name, 'textContent', appName(id)); } });
 }
 function seedMeta(apps) { apps.forEach((a) => { if (a.meta && !META.has(a.pkg)) META.set(a.pkg, a.meta); }); }

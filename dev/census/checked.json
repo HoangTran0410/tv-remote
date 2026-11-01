@@ -1229,6 +1229,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
+ "91edf9043da787065b68c466|0.38.0": {
+  "at": "2026-11-02T02:14:38+07:00",
+  "n": 1,
+  "note": "race: first /api/state before games.js on a slow TV; apps.js looks gamePad up on the press"
+ },
  "93c1d74822c7d6a4439c956b|0.23.0": {
   "at": "2026-10-26T21:47:40+07:00",
   "n": 1,

@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV web page: no error box when the TV is on TV Games while a slow TV is still sending the page ("gamePad is not defined")
 - Apps: the task manager no longer stops an app whose accessibility service is on (a remote button mapper, a screen reader); on some Android 11 TVs that restarted the whole system
 - Optimize TV: TV Home no longer turns off the stock launcher on Skyworth / Coocaa Google TVs with more than one profile (their remote service crashed on every hotkey until the TV reset its settings); Home goes through TV Setup there instead
 - Optimize TV: six more brand apps suggested (Vu / Hisense viewing data, Zeasn ads, Coocaa promo messages, an HTC app store, a Vestel app watcher, Sony's partner tab), from cleanyourtv's newest lists
