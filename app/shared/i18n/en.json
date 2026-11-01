@@ -2282,6 +2282,7 @@
  "mic.allow": "Please allow TV Setup to use the microphone",
  "mic.use_phone": "Use the mic in the phone app. The mic button goes back to the Assistant for a few minutes.",
  "mic.busy": "Busy, try again",
+ "mic.thinking": "Got it, working on it…",
  "mic.needs_adb": "This needs ADB to be on",
  "mic.failed": "That did not work",
  "mic.do_timer": "Turn the TV off in {n} minutes",

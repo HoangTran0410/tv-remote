@@ -100,6 +100,7 @@ internal object Rules {
         if (d.optString("do") in setOf("holdkeys", "mic", "homekey")) Thread({
             if (d.optString("do") == "mic" && d.optBoolean("on")) RemoteService.adb()?.let { MicVoice.grant(c, it) }   // the microphone, allowed through ADB
             if (d.optString("do") == "mic") MicVoice.takeAssist(c)            // the mic button reaches us through the assistant (Google TV)
+            if (d.optString("do") == "mic" && d.optBoolean("on")) MicVoice.apps(c)   // the app names kept on disk now, not on the first press
             KeyFix.sync(c); KeysBridge.poke()
         }, "holdkeys").apply { isDaemon = true }.start()   // the key filter on or off
         return state(c).also { st -> d.optJSONArray("recovery_out")?.let { st.put("recovery", it) } }   // the codes: this once

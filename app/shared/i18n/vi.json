@@ -2198,6 +2198,7 @@
  "mic.allow": "Hãy cho phép TV Setup dùng micro",
  "mic.use_phone": "Dùng mic trên app điện thoại. Nút mic về Trợ lý ít phút.",
  "mic.busy": "Đang bận, thử lại",
+ "mic.thinking": "Đã nghe, đang xử lý…",
  "mic.needs_adb": "Cần bật ADB để làm việc này",
  "mic.failed": "Không làm được",
  "mic.do_timer": "Hẹn giờ tắt TV sau {n} phút",

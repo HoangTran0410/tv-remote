@@ -3,6 +3,7 @@ package dev.tvremote.setup
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.speech.SpeechRecognizer
 import dev.tvremote.core.T
 import dev.tvremote.core.ontv.Channels
@@ -98,10 +99,37 @@ object MicVoice {
 
     private var names: Map<String, String> = emptyMap()
     private var namesAt = 0L
+    @Volatile private var scanning = false
 
-    /** package -> label of the apps with a screen of their own on the TV, kept 5 minutes (a package scan is slow on a weak box). */
-    @Synchronized fun apps(c: Context): Map<String, String> {
-        if (names.isNotEmpty() && System.currentTimeMillis() - namesAt < 300_000) return names
+    /**
+     * package -> label of the apps with a screen of their own on the TV. A scan reads every app's label and takes ~4 s on an FPT box, so
+     * it is kept in a file and redone in the background (every 5 minutes at most): the voice screen never waits for it, except the very
+     * first time on a TV (nothing kept yet).
+     */
+    fun apps(c: Context): Map<String, String> {
+        val fresh = System.currentTimeMillis() - namesAt < 300_000
+        if (names.isNotEmpty() && fresh) return names
+        if (names.isEmpty()) synchronized(this) { if (names.isEmpty()) names = load(c) }
+        if (names.isEmpty()) return scan(c)                           // the first time: nothing else to go by
+        if (!fresh && !scanning) { scanning = true; Thread({ try { scan(c) } finally { scanning = false } }, "mic-apps").apply { isDaemon = true }.start() }
+        return names
+    }
+
+    /** What the voice screen reads, made ready (off the main thread): the sentences' list and the app names. Again: nothing to do. */
+    fun warm(c: Context) {
+        dev.tvremote.core.scenes.VoicePhrases.start({ c.assets.open(it) }, c.filesDir)
+        apps(c)
+    }
+
+    private fun file(c: Context) = java.io.File(c.filesDir, "mic-apps.json")
+
+    private fun load(c: Context): Map<String, String> = try {
+        val o = JSONObject(file(c).readText())
+        o.keys().asSequence().associateWith { o.getString(it) }
+    } catch (e: Exception) { emptyMap() }
+
+    @Synchronized private fun scan(c: Context): Map<String, String> {
+        if (names.isNotEmpty() && System.currentTimeMillis() - namesAt < 300_000) return names   // another thread just did it
         val pm = c.packageManager
         val out = HashMap<String, String>()
         for (cat in arrayOf(Intent.CATEGORY_LEANBACK_LAUNCHER, Intent.CATEGORY_LAUNCHER)) try {
@@ -111,6 +139,7 @@ object MicVoice {
             }
         } catch (e: Exception) { }
         names = out; namesAt = System.currentTimeMillis()
+        try { file(c).writeText(JSONObject(out as Map<*, *>).toString()) } catch (e: Exception) { }
         return out
     }
 
@@ -144,6 +173,22 @@ object MicVoice {
         return try { c.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); if (has) T("remote.searching_youtube", "q" to text) else T("talk.ask", "sentence" to text) } catch (e: Exception) { null }
     }
 
+    /**
+     * Volume and mute straight to the audio service, as the remote's own keys reach it (adjustSuggestedStreamVolume, the TV's volume bar,
+     * and HDMI-CEC to a sound bar where the TV sends it): at once, no ADB, where `input keyevent` took ~1 s a press.
+     */
+    private fun volume(c: Context, cmd: Voice.Command.Key): Boolean {
+        val am = c.getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
+        val dir = when (cmd.key) {
+            "VOL_UP" -> android.media.AudioManager.ADJUST_RAISE
+            "VOL_DOWN" -> android.media.AudioManager.ADJUST_LOWER
+            "MUTE" -> if (Build.VERSION.SDK_INT >= 23) android.media.AudioManager.ADJUST_TOGGLE_MUTE else return false
+            else -> return false
+        }
+        repeat(cmd.times) { am.adjustSuggestedStreamVolume(dir, android.media.AudioManager.USE_DEFAULT_STREAM_TYPE, android.media.AudioManager.FLAG_SHOW_UI) }
+        return true
+    }
+
     /** Carries [cmd] out (off the main thread). Null: done; else the words of what could not be done. */
     fun run(c: Context, cmd: Voice.Command): String? {
         val sh: (String) -> String = { RemoteService.shell(it) ?: throw IllegalStateException("adb") }
@@ -168,17 +213,12 @@ object MicVoice {
                     Scenes.run(steps, Scenes.Shell(sh) { m -> Rules.change(c, JSONObject().put("do", "sleep").put("minutes", m)) })?.let { return it }
                 }
                 is Voice.Command.Key -> {
+                    if (volume(c, cmd)) return null
                     val code = Scenes.KEYS[cmd.key] ?: return null
-                    sh((1..cmd.times).joinToString("; ") { "input keyevent $code" })
+                    sh("input keyevent " + (1..cmd.times).joinToString(" ") { "$code" })   // one `input` for all: each start of it costs ~0.7 s on a TV box
                 }
             }
         } catch (e: IllegalStateException) {
-            // no ADB link: the volume keys still have a way of their own
-            if (cmd is Voice.Command.Key && cmd.key.startsWith("VOL_")) {
-                val am = c.getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
-                repeat(cmd.times) { am.adjustStreamVolume(android.media.AudioManager.STREAM_MUSIC, if (cmd.key == "VOL_UP") android.media.AudioManager.ADJUST_RAISE else android.media.AudioManager.ADJUST_LOWER, android.media.AudioManager.FLAG_SHOW_UI) }
-                return null
-            }
             return T("mic.needs_adb")
         } catch (e: Exception) { return e.message ?: T("mic.failed") }
         return null

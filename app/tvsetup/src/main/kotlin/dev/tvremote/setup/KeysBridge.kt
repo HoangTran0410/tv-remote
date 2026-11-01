@@ -143,6 +143,7 @@ class KeysBridge : Service() {
             digits = d
             hold = HoldKeys.on(this)
             mic = MicVoice.on(this) && micAvailable()
+            if (mic) MicVoice.warm(this)                                       // the first press finds the list read and the names kept
             if (p.size() == 0 && d.size() == 0) KeyFix.sync(this)                      // nothing left to bring back (and no hold): out of the key filter
         }, "keyfix").apply { isDaemon = true }.start()
     }
