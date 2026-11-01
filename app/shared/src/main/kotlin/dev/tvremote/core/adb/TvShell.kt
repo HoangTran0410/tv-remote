@@ -22,10 +22,20 @@ object TvShell {
     fun search(q: String): String {
         val s = q.trim().take(300)
         require(s.isNotEmpty()) { "empty query" }
-        return "if pm list packages -e $YOUTUBE 2>/dev/null | grep -qx package:$YOUTUBE; then am start -a android.intent.action.VIEW -d " + Adb.q(youtube(s)) + " -p $YOUTUBE 2>&1 | grep -q Error || echo yt; " +
+        return "q='cmd package query-activities --brief -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d'; " +
+            "u=\$(\$q " + Adb.q(youtube("x")) + " 2>/dev/null | grep /); b=\$(\$q " + Adb.q(NOT_YOUTUBE) + " 2>/dev/null | grep /); y=; " +
+            "for a in \$u; do case \"\$b\" in *\"\$a\"*) ;; *) y=\${a%%/*}; break;; esac; done; " +
+            "[ -z \"\$u\" ] && pm list packages -e 2>/dev/null | grep -qx package:$YOUTUBE && y=$YOUTUBE; " +   // Android 5-6: no query-activities
+            "if [ -n \"\$y\" ]; then am start -a android.intent.action.VIEW -d " + Adb.q(youtube(s)) + " -p \$y 2>&1 | grep -q Error || echo yt; " +
             "else am start -a android.search.action.GLOBAL_SEARCH --es query " + Adb.q(s) + " 2>&1 | grep -q Error || echo gs; fi"
     }
+    /**
+     * Whichever app opens YouTube's links and not every link: Google's YouTube, Cobalt (YouTube for set-top boxes: an FPT Play box switches
+     * Google's off and ships it), SmartTube, ... found by asking the TV, so no list to keep. Browsers and Downloader take any link: left out
+     * by also asking who opens [NOT_YOUTUBE]. None: the TV's search, last, since on a box with no Google account a press on its results does nothing.
+     */
     const val YOUTUBE = "com.google.android.youtube.tv"
+    const val NOT_YOUTUBE = "https://example.com/results?search_query=x"
     fun youtube(q: String) = "https://www.youtube.com/results?search_query=" + java.net.URLEncoder.encode(q.trim(), "UTF-8")
 
     const val CLEAN = "a=\$(stat -f -c '%a %S' /data); pm trim-caches 999G >/dev/null 2>&1; sleep 2; echo \$a \$(stat -f -c '%a %S' /data)"

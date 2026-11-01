@@ -166,11 +166,21 @@ object MicVoice {
      * results, else the TV's own search), started from the voice screen in front, so no ADB is needed. The words for what took it, null when nothing did.
      */
     fun search(c: Context, text: String): String? {
-        val yt = dev.tvremote.core.adb.TvShell.YOUTUBE
-        val has = try { c.packageManager.getApplicationInfo(yt, 0).enabled } catch (e: Exception) { false }   // installed but switched off (an FPT box): the TV's search
-        val i = if (has) Intent(Intent.ACTION_VIEW, android.net.Uri.parse(dev.tvremote.core.adb.TvShell.youtube(text))).setPackage(yt)
+        val yt = youtubeApp(c)
+        val has = yt != null
+        val i = if (yt != null) Intent(Intent.ACTION_VIEW, android.net.Uri.parse(dev.tvremote.core.adb.TvShell.youtube(text))).setPackage(yt)
             else Intent("android.search.action.GLOBAL_SEARCH").putExtra(android.app.SearchManager.QUERY, text)
         return try { c.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); if (has) T("remote.searching_youtube", "q" to text) else T("talk.ask", "sentence" to text) } catch (e: Exception) { null }
+    }
+
+    /** The app that opens YouTube's links and not every link (the same test as [dev.tvremote.core.adb.TvShell.search]), null: none. */
+    private fun youtubeApp(c: Context): String? {
+        val pm = c.packageManager
+        fun who(url: String) = try {
+            pm.queryIntentActivities(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)).addCategory(Intent.CATEGORY_BROWSABLE), 0).map { it.activityInfo.packageName }
+        } catch (e: Exception) { emptyList() }
+        val any = who(dev.tvremote.core.adb.TvShell.NOT_YOUTUBE).toSet()
+        return who(dev.tvremote.core.adb.TvShell.youtube("x")).firstOrNull { it !in any }
     }
 
     /**

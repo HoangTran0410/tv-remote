@@ -38,4 +38,19 @@ class TvShellTest {
             assertEquals(a.toString(), if (o.isNull("out")) null else o.getString("out"), got)
         }
     }
+
+    /** search() run by a real sh against a fake TV: the YouTube app is found by its links, browsers and Downloader are not (FPT, 2026-11-01). */
+    @Test fun searchPicksTheYoutubeApp() {
+        fun run(youtube: String, any: String): String {
+            val fake = "cmd() { case \"$*\" in *youtube.com*) printf '$youtube';; *) printf '$any';; esac; }; pm() { :; }; " +
+                "exec 3>&1; am() { echo \"started $*\" >&3; }; "
+            val p = ProcessBuilder("sh", "-c", fake + TvShell.search("tom and jerry")).redirectErrorStream(true).start()
+            return p.inputStream.bufferedReader().readText().trim()
+        }
+        val browsers = "    com.esaba.downloader/.Main\\n    com.android.tv.frameworkpackagestubs/.BrowserStub\\n"
+        val fpt = run("    dev.cobalt.youtube/dev.cobalt.app.MainActivity\\n$browsers", browsers)
+        org.junit.Assert.assertTrue(fpt, fpt.contains("-p dev.cobalt.youtube") && fpt.contains("tom+and+jerry"))
+        val none = run(browsers, browsers)
+        org.junit.Assert.assertTrue(none, none.contains("GLOBAL_SEARCH"))
+    }
 }
