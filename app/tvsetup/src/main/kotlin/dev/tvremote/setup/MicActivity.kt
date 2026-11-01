@@ -54,8 +54,10 @@ class MicActivity : Activity(), RecognitionListener {
     override fun onCreate(b: Bundle?) {
         super.onCreate(b)
         live = this
+        val assist = intent.component?.className?.endsWith(".MicAssist") == true   // anyone may start the alias: it only listens while the rule is on, and never takes "say"
+        if (assist && !MicVoice.on(this)) { finish(); return }
         dev.tvremote.core.scenes.VoicePhrases.start({ assets.open(it) }, filesDir)
-        val fake = intent.getStringExtra("say")                        // `am start -n .../.MicActivity --es say "mở youtube"` (the shell only): a test with no microphone
+        val fake = if (assist) null else intent.getStringExtra("say")                      // `am start -n .../.MicActivity --es say "mở youtube"` (the shell only): a test with no microphone
         if (fake != null) { build(); ui.postDelayed({ onPartialResults(Bundle().apply { putStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION, arrayListOf(fake)) }) }, 500)
             ui.postDelayed({ finish(fake, cut = false) }, 1300); return }
         if (!MicVoice.granted(this)) {                                // allowed through ADB when the switch went on; else the TV asks
@@ -178,6 +180,8 @@ class MicActivity : Activity(), RecognitionListener {
             ui.post { if (err != null) { act.setTextColor(TvUi.BAD); act.text = err; ui.postDelayed(close, 2500) } else ui.postDelayed(close, 900) }
         }, "mic-run").apply { isDaemon = true }.start()
     }
+
+    override fun onNewIntent(i: Intent) { super.onNewIntent(i); sr?.stopListening() }   // the mic button again, through the assistant: that is enough
 
     override fun onKeyDown(k: Int, e: KeyEvent): Boolean {
         when (k) {

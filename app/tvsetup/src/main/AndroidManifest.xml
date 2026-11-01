@@ -74,6 +74,10 @@
         <!-- the voice screen the remote's mic button opens, when switched on (MicVoice.kt); started by the key filter's service of this app, and by the shell (DUMP: no app can) for tests -->
         <activity android:name=".MicActivity" android:exported="true" android:permission="android.permission.DUMP" android:excludeFromRecents="true" android:launchMode="singleTask" android:taskAffinity=""
             android:theme="@android:style/Theme.Translucent.NoTitleBar" android:noHistory="true" />
+        <!-- the TV's assistant while the rule "mic" is on (MicVoice.takeAssist): the window manager keeps the mic button from the key filter -->
+        <activity-alias android:name=".MicAssist" android:targetActivity=".MicActivity" android:exported="true">
+            <intent-filter><action android:name="android.intent.action.ASSIST" /><category android:name="android.intent.category.DEFAULT" /></intent-filter>
+        </activity-alias>
         <!-- a scene tile on TV Home (ScenePin.kt): only TV Home's pinned shortcut starts it, so it is not exported -->
         <activity android:name=".SceneRunActivity" android:exported="false" android:excludeFromRecents="true" android:taskAffinity=""
             android:theme="@android:style/Theme.NoDisplay" android:noHistory="true" />

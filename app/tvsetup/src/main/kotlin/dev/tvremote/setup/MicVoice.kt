@@ -56,6 +56,37 @@ object MicVoice {
         return if (listening && eventTime - downTime >= HOLD_MS) Step.RELEASE else Step.EAT
     }
 
+    private const val ASSIST = "dev.tvremote.setup/dev.tvremote.setup.MicAssist"
+    private const val VIS = "voice_interaction_service"                // Settings.Secure.VOICE_INTERACTION_SERVICE and ASSISTANT are hidden names
+    private const val ASSISTANT = "assistant"
+
+    /**
+     * The TV's assistant is MicActivity while the rule is on, Google's again when it goes off. A Google TV's window manager hands the
+     * mic button (SEARCH on an FPT box) to SystemUI's assistant before any key filter sees it, so [KeysBridge] alone never gets it; SystemUI
+     * starts the voice interaction service when one is set, else the activity of "assistant". What was there is kept and put back.
+     * Needs WRITE_SECURE_SETTINGS (granted through ADB, like KeyFix); the recognizer itself (voice_recognition_service) is not touched.
+     */
+    fun takeAssist(c: Context) {
+        if (!dev.tvremote.setup.keys.KeyFix.can(c)) return
+        val r = c.contentResolver
+        val p = c.getSharedPreferences("mic", Context.MODE_PRIVATE)
+        try {
+            val cur = android.provider.Settings.Secure.getString(r, ASSISTANT)
+            if (on(c)) {
+                if (cur == ASSIST) return
+                p.edit().putString("was_assistant", cur ?: "").putString("was_vis", android.provider.Settings.Secure.getString(r, VIS) ?: "").putBoolean("took", true).apply()
+                android.provider.Settings.Secure.putString(r, ASSISTANT, ASSIST)
+                android.provider.Settings.Secure.putString(r, VIS, "")
+            } else if (p.getBoolean("took", false)) {
+                if (cur == ASSIST) {                                  // else the person picked another assistant since: theirs stays
+                    android.provider.Settings.Secure.putString(r, ASSISTANT, p.getString("was_assistant", "")!!.ifEmpty { null })
+                    android.provider.Settings.Secure.putString(r, VIS, p.getString("was_vis", "")!!.ifEmpty { null })
+                }
+                p.edit().remove("took").remove("was_assistant").remove("was_vis").apply()
+            }
+        } catch (e: Exception) { android.util.Log.w("MicVoice", "assistant unchanged: $e") }
+    }
+
     /** The one-time notice that this TV has no recognizer; the key is passed on. */
     fun saidNoRecognizer(c: Context): Boolean = c.getSharedPreferences("mic", Context.MODE_PRIVATE).getBoolean("said_none", false)
     fun sayNoRecognizer(c: Context) { c.getSharedPreferences("mic", Context.MODE_PRIVATE).edit().putBoolean("said_none", true).apply() }
