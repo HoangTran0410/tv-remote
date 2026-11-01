@@ -63,6 +63,9 @@ class LiveGate(private val lagMs: Long = 600, private val staleMs: Long = 70, pr
     @Synchronized fun out(pts: Long, now: Long): Pair<Long, Boolean> {
         var at = -1L
         while (inside.isNotEmpty() && inside.first().pts <= pts) at = inside.removeFirst().at
+        // a frame out whose pts matches none fed (an encoder that reorders or restamps them: an A95X F3, issue #16) still means
+        // the oldest one in is done; matched by pts alone, the oldest stayed inside, read as lag, and the decoder was rebuilt each 0.6 s
+        if (at < 0 && inside.isNotEmpty()) at = inside.removeFirst().at
         val age = if (at < 0) 0 else now - at
         val draw = inside.isEmpty() || age < staleMs || run >= maxRun
         run = if (draw) 0 else run + 1

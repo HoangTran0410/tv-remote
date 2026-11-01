@@ -40,6 +40,14 @@ class LiveDecodeTest {
         assertTrue(g.out(99, 500).second)                             // nothing behind: always drawn
     }
 
+    /** Frames out with pts unlike the ones fed (issue #16: a box's encoder) still empty the queue, one for one: no lag seen. */
+    @Test fun framesOutWithOtherPtsStillCount() {
+        val g = LiveGate()
+        for (i in 0 until 50) { g.fed(1000L + i, i * 30L); g.out(i.toLong(), i * 30L + 20) }
+        assertFalse(g.lagged(50 * 30L + 700))
+        g.fed(5000, 2000); assertTrue(g.lagged(2700))                // nothing out: still lag
+    }
+
     @Test fun freshFramesAlwaysDrawn() {
         val g = LiveGate()
         for (i in 0 until 5) { g.fed(i.toLong(), i * 16L); assertTrue(g.out(i.toLong(), i * 16L + 10).second) }
