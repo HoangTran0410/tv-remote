@@ -7,6 +7,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 ## Unreleased
 
 - TV mic button: a sentence that is no command now searches (YouTube, else the TV's own search) instead of ending on "Did not understand"; an app said by its full name opens on the first pause, without waiting for the recognizer's end. The search from the phone and the page skips a YouTube that is installed but switched off (FPT boxes), so it reaches the TV's search.
+- TV mic button: the 1.2 s pause that ends listening now reaches Google TV's recognizer (it read the value only as a whole number and waited its own longer time).
 
 ## 0.40.0 - 2026-11-01
 
