@@ -30,7 +30,7 @@ grep -q "$(java dev/release/Sign.java pub "$KEY")" app/shared/src/sign/kotlin/de
 # the user guide: a topic whose app files changed since the release it was checked against may now be wrong
 node --test app/shared/tests/ app/tvgames/tests/ >/dev/null 2>&1 || { echo "node tests fail: node --test app/shared/tests/ app/tvgames/tests/"; exit 1; }  # what ships must parse and pass
 (cd app/gradle && ./gradlew -q :shared:testDebugUnitTest >/dev/null 2>&1) || { echo "Kotlin tests fail (speed budgets included): cd app/gradle && ./gradlew :shared:testDebugUnitTest"; exit 1; }   # not in pre-push: Gradle is ~1 min; a release is where a slowdown must not ship
-LINTS=":shared:lintDebug :android:lintDebug :tvsetup:lintDebug :tvkeys:lintDebug :tvhome:lintDebug :tvchannels:lintDebug :tvgames:lintDebug :tvapps:lintDebug"
+LINTS=":shared:lintDebug :android:lintDebug :tvsetup:lintDebug :tvkeys:lintDebug :tvhome:lintDebug :tvchannels:lintDebug :tvgames:lintDebug :tvapps:lintDebug :tvvoice:lintDebug"
 (cd app/gradle && ./gradlew -q $LINTS >/dev/null 2>&1) || { echo "a call newer than Android 5 unguarded (lint NewApi): cd app/gradle && ./gradlew $LINTS"; exit 1; }   # Android 5-6 boxes crash on it (census 8f22ae15)
 if [ -n "$(dev/release/guide_stale.py -q)" ]; then                # no way round it: GUIDE_OK=1 let 51 topics pile up unread by v0.35.0
   dev/release/guide_stale.py
@@ -48,8 +48,8 @@ if [ -n "$LAST" ]; then
   for a in android tvsetup; do                                        # changed code must come with a new number, or nobody gets it
     [ -z "$SKIP_CHECK" ] || continue
     old=$(was $a)
-    more=; [ "$a" = tvsetup ] && more=app/tvkeys                      # TV Setup Keys (the accessibility add-on) rides inside tv-setup.apk with TV Setup's number
-    if [ -n "$old" ] && [ "$old" = "$(cat app/$a/VERSION)" ] && changed "$a" $more; then
+    more=(); [ "$a" = tvsetup ] && more=(app/tvkeys app/tvvoice)     # TV Setup Keys (inside tv-setup.apk) and TV Setup Voice (tv-voice.apk) carry TV Setup's number
+    if [ -n "$old" ] && [ "$old" = "$(cat app/$a/VERSION)" ] && changed "$a" "${more[@]}"; then
       next "$old" > "app/$a/VERSION"
     fi
   done
@@ -110,7 +110,7 @@ if [ -n "$LAST" ]; then
   BUILT=$(gh release download "$LAST" -p versions.json -O - | python3 -c 'import json, sys; d = json.load(sys.stdin); print(d["web"])')
   if [ -n "$NO_DESKTOP" ] || ! LAST="v$BUILT" changed desktop >/dev/null; then DESK=$BUILT; fi
 fi
-./app/android/build.sh && ./app/tvsetup/build.sh && ./app/tvhome/build.sh && ./app/tvchannels/build.sh && ./app/tvgames/build.sh && ./app/tvapps/build.sh
+./app/android/build.sh && ./app/tvsetup/build.sh && ./app/tvhome/build.sh && ./app/tvchannels/build.sh && ./app/tvgames/build.sh && ./app/tvapps/build.sh && ./app/tvvoice/build.sh
 unzip -l app/tvsetup/build/tv-setup.apk | grep -q 'assets/tvkeys.apk' || { echo "tv-setup.apk has no assets/tvkeys.apk (TV Setup Keys, the add-on with the accessibility services): not releasing"; exit 1; }
 printf '{"android": "%s", "tv": "%s", "home": "%s", "channels": "%s", "games": "%s", "tvapps": "%s", "web": "%s"}\n' "$(cat app/android/VERSION)" "$(cat app/tvsetup/VERSION)" "$(cat app/tvhome/VERSION)" "$(cat app/tvchannels/VERSION)" "$(cat app/tvgames/VERSION)" "$(cat app/tvapps/VERSION)" "$DESK" > app/android/build/versions.json
 D=https://github.com/HoangTran0410/tv-remote/releases/latest/download
@@ -130,7 +130,7 @@ NOTES="$NOTES
 | Windows 10/11 | [TV-Remote-windows-x64.zip]($D/TV-Remote-windows-x64.zip) |
 | Linux x64 / arm64 | [TV-Remote-linux-x64.tar.gz]($D/TV-Remote-linux-x64.tar.gz) · [TV-Remote-linux-arm64.tar.gz]($D/TV-Remote-linux-arm64.tar.gz) |"
 # the APKs live only in releases, never in git
-gh release create "v$VER" app/android/build/tv-remote.apk app/tvsetup/build/tv-setup.apk app/tvhome/build/tv-home.apk app/tvchannels/build/tv-channels.apk app/tvgames/build/tv-games.apk app/tvapps/build/tv-apps.apk app/android/build/versions.json --title "v$VER" --notes "$NOTES" --latest  # by date: GitHub would still call 2.24.2 the latest
+gh release create "v$VER" app/android/build/tv-remote.apk app/tvsetup/build/tv-setup.apk app/tvhome/build/tv-home.apk app/tvchannels/build/tv-channels.apk app/tvgames/build/tv-games.apk app/tvapps/build/tv-apps.apk app/tvvoice/build/tv-voice.apk app/android/build/versions.json --title "v$VER" --notes "$NOTES" --latest  # by date: GitHub would still call 2.24.2 the latest
 if [ "$DESK" != "$VER" ]; then
   echo "computer app not built: the $DESK archives attached again"
   T=$(mktemp -d); gh release download "$LAST" -p 'TV-Remote-*' -D "$T" && gh release upload "v$VER" "$T"/TV-Remote-*; rm -rf "$T"

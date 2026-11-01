@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- what Android reads of a speech service; no settings screen -->
+<recognition-service xmlns:android="http://schemas.android.com/apk/res/android" />

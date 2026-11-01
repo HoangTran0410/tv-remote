@@ -17,14 +17,18 @@ object Voice {
     }
 
     /** Lower case, no accents, no punctuation: "Mở YouTube!" and "mo youtube" read the same. */
-    fun fold(s: String): String = Normalizer.normalize(s, Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").replace('đ', 'd').replace('Đ', 'd')
-        .lowercase().replace(Regex("[^\\p{L}\\p{N} ]"), " ").replace(Regex("\\s+"), " ").trim()
+    fun fold(s: String): String = Normalizer.normalize(s, Normalizer.Form.NFD).replace(MARKS, "").replace('đ', 'd').replace('Đ', 'd')
+        .lowercase().replace(SIGNS, " ").replace(SPACES, " ").trim()
+    private val MARKS = Regex("\\p{M}+")                              // compiled once: fold runs thousands of times for one word list (MicVoice.words)
+    private val SIGNS = Regex("[^\\p{L}\\p{N} ]")
+    private val SPACES = Regex("\\s+")
+    private val TIVI = Regex("\\bti ?vi\\b")
 
     /** The words in use ([VoicePhrases] fills it: the site's signed list, else the kept or packed copy); null before an app started it: nothing is understood. */
     @Volatile var phrases: Phrases? = null
 
     /** [fold] with "tivi" / "ti vi" read as "tv", the form every phrase of the list is kept in. */
-    fun norm(s: String): String = fold(s).replace(Regex("\\bti ?vi\\b"), "tv")
+    fun norm(s: String): String = fold(s).replace(TIVI, "tv")
 
     /** Politeness and filler at either end ("giúp tôi", "đi", "nhé", "please") taken off; a sentence that is only filler stays as it is. */
     private fun strip(s0: String, ph: Phrases): String {

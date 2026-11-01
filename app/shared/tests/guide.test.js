@@ -45,6 +45,12 @@ test('docs/guide/*.md match guide.html', () => {
   for (const [f, s] of Object.entries(want)) assert.strictEqual(fs.readFileSync(path.join(dir, f), 'utf8'), s, f + ' is stale: run node dev/gen/guide_md.js');
 });
 
+test('AGENTS.md lists every guide topic (its FEATURES block)', () => {
+  const { features } = require('../../../dev/gen/guide_md.js');
+  const ag = fs.readFileSync(path.join(__dirname, '../../../AGENTS.md'), 'utf8');
+  assert.strictEqual(ag, features(ag), 'AGENTS.md FEATURES is stale: run node dev/gen/guide_md.js');
+});
+
 test('every topic has data-v, data-src and an entry in docs/data/since.json (release.sh stamps both)', () => {
   const since = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../docs/data/since.json'), 'utf8')).topics;
   const bad = [...HTML.matchAll(/<article class="topic" id="([^"]+)"([^>]*)>/g)]

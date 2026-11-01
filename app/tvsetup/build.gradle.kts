@@ -26,6 +26,7 @@ android {
     sourceSets["main"].res.srcDirs("../shared/src/tvui/res")                // tv_style.xml: ONE copy for the TV apps
     sourceSets["main"].java.srcDirs("../shared/conscrypt")                  // ConscryptBackend: pairing with its own TV through Wireless debugging (a Chromecast with Google TV has no 5555)
     sourceSets["main"].java.srcDirs("../tvkeys/src/protocol/kotlin")        // KeysProtocol: what this app and its add-on agree on, ONE copy
+    sourceSets["main"].java.srcDirs("../tvvoice/src/protocol/kotlin")       // VoiceProtocol: the same for TV Setup Voice
     // the add-on's APK (same variant, same key) rides inside this one as assets/tvkeys.apk: see packKeys below
     for (v in listOf("debug", "release")) sourceSets[v].assets.srcDirs(layout.buildDirectory.dir("generated/keys/$v"))
     signingConfigs {

@@ -1,7 +1,9 @@
 package dev.tvremote.setup
 
+import dev.tvremote.core.ontv.VoiceAddon
 import dev.tvremote.setup.MicVoice.Step
 import dev.tvremote.setup.rules.Rules
+import dev.tvremote.setup.voice.VoiceProtocol
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -47,5 +49,18 @@ class MicVoiceTest {
         assertTrue(o.optBoolean("mic"))
         Rules.apply(o, JSONObject().put("do", "mic").put("on", false), 0L)
         assertFalse(o.optBoolean("mic"))
+    }
+
+    /** :shared installs the add-on by its name and cannot see VoiceProtocol; MicVoice binds it by VoiceProtocol's: one package. */
+    @Test fun addonNameIsOne() = assertEquals(VoiceProtocol.ADDON, VoiceAddon.PKG)
+
+    /** Google's assistant coming back (switched on again, updated) is taken back; one the person picked is not. */
+    @Test fun googleComingBackIsTakenBack() {
+        val katniss = "com.google.android.katniss/.search.serviceapi.KatnissVoiceInteractionService"
+        assertTrue(MicVoice.takesBack(katniss, ""))
+        assertTrue(MicVoice.takesBack(katniss, katniss))
+        assertTrue(MicVoice.takesBack(null, katniss))
+        assertTrue(MicVoice.takesBack("com.other.tv/.Assist", "com.other.tv/.Old"))
+        assertFalse(MicVoice.takesBack("com.amazon.alexa/.Voice", katniss))
     }
 }

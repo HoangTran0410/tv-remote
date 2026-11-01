@@ -97,6 +97,7 @@ internal object Rules {
         }
         Guard.poke()
         KeepAwake.live?.check()
+        if (d.optString("do") == "mic_offline") MicVoice.syncOffline(c)       // TV Setup Voice put on the TV or taken off, in the background
         if (d.optString("do") in setOf("holdkeys", "mic", "homekey")) Thread({
             if (d.optString("do") == "mic" && d.optBoolean("on")) RemoteService.adb()?.let { MicVoice.grant(c, it) }   // the microphone, allowed through ADB
             if (d.optString("do") == "mic") MicVoice.takeAssist(c)            // the mic button reaches us through the assistant (Google TV)
@@ -123,6 +124,7 @@ internal object Rules {
             "holdkeys" -> o.put("holdkeys", d.optBoolean("on"))             // HoldKeys: a short press of Input / Settings does nothing, 2 s does
             "homekey" -> o.put("homekey", d.optString("pkg").takeIf { HomeKey.PKG.matches(it) } ?: "")   // HomeKey: Home opens this launcher ("" stops)
             "mic" -> o.put("mic", d.optBoolean("on"))                       // MicVoice: the remote's mic button opens TV Remote's voice, not the Assistant
+            "mic_offline" -> o.put("mic_offline", d.optBoolean("on"))       // TV Setup Voice on the TV: speech heard without Google (MicVoice.syncOffline)
             "awake" -> o.put("awake", d.optBoolean("on"))                   // KeepAwake: the chip kept up while the TV is "off"
             "pin" -> {
                 val pin = d.optString("pin")
@@ -543,7 +545,7 @@ internal object Rules {
             .put("in_bedtime", inBedtime(o, now)).put("snooze_until", o.optLong("snooze_until").let { if (it > now) it else 0L })
             .put("limits", limits).put("volume", o.optJSONArray("volume") ?: JSONArray()).put("volume_now", volumeCap(o, now) ?: JSONObject.NULL)
             .put("ram", ram(o)).put("volume_fixed", Guard.volumeFixed(c)).put("running", RemoteService.isRunning()).put("wanted", active(c))
-            .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("homekey", o.optString("homekey"))
+            .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("mic_offline", o.optBoolean("mic_offline")).put("voice", MicVoice.offlineState(c)).put("homekey", o.optString("homekey"))
             .put("keys", KeysBridge.bound())                           // the key filter is up: LauncherSwap.byKey keeps Home only then (issue #9)
             .put("sched", sched)
             .put("lock", JSONObject().put("pin", o.optJSONObject("lock")?.has("hash") == true)

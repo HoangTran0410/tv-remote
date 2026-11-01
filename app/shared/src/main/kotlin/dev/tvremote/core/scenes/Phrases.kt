@@ -51,6 +51,59 @@ class Phrases(json: String) {
             Alias(x.getString("label"), if (p == null) emptyList() else (0 until p.length()).map { p.getString(it) }, words(x.getJSONArray("names")).toSet())
         }
     }
+    /**
+     * What an offline recognizer that hears only what it is told (TV Setup Voice) listens for, in [lang]: every command phrase, channel
+     * name and app name, said as people say it ("spoken" in the list: the accents, names spelled letter by letter), plus the number words.
+     * One entry per way of saying it; "said=written" where the words heard differ from the written ones ("vê tê vê=vtv"), so the
+     * recognizer hands back what [Voice.parse] reads. [more]: names only this TV has (its apps, scenes). Empty when the list has no
+     * "spoken" for [lang].
+     */
+    private val NOT_WORD = Regex("[^\\p{L}\\p{N}]+")
+
+    fun spoken(lang: String, more: Collection<String> = emptyList()): List<String> {
+        val sp = o.optJSONObject("spoken")?.optJSONObject(lang) ?: return emptyList()
+        val accents = sp.optJSONObject("words")
+        val letters = sp.optJSONObject("letters")
+        val spell = sp.optJSONArray("spell").let { a -> (0 until (a?.length() ?: 0)).map { a!!.getString(it) }.toSet() }
+        fun ways(w: String): List<Pair<String, Boolean>> = when {             // (said, differs from written)
+            w in spell && letters != null -> listOf(w.map { letters.optString(it.toString(), it.toString()) }.joinToString(" ") to true, w to false)
+            accents?.has(w) == true -> accents.getString(w).split('|').map { it to false }
+            else -> listOf(w to false)
+        }
+        val out = LinkedHashSet<String>()
+        fun add(text: String) {
+            val ws = Voice.norm(text).split(' ').filter { it.isNotEmpty() }
+            if (ws.isEmpty()) return
+            val typed = text.lowercase().split(NOT_WORD).filter { it.isNotEmpty() }   // a name written with accents keeps them ("Phim tối")
+            var combos = listOf(listOf<Pair<String, Boolean>>())
+            for ((i, w) in ws.withIndex()) {
+                val t = typed.getOrNull(i)?.takeIf { typed.size == ws.size && Voice.fold(it) == w && it != w }
+                combos = combos.flatMap { c -> (if (t != null) listOf(t to false) else ways(w)).map { c + it } }.take(8)   // "bat tat" x accents: a few ways, not hundreds
+            }
+            for (c in combos) { val said = c.joinToString(" ") { it.first }; out += if (c.any { it.second }) "$said=${ws.joinToString(" ")}" else said }
+        }
+        fun texts(v: Any?, to: MutableList<String>) {
+            when (v) {
+                is JSONObject -> for (k in v.keys()) texts(v.get(k), to)
+                is JSONArray -> for (i in 0 until v.length()) texts(v.get(i), to)
+                is String -> to += v
+            }
+        }
+        val all = ArrayList<String>()
+        texts(o.optJSONObject("lang")?.optJSONObject(lang), all)
+        for (a in apps) all += a.names
+        // channel names are patterns: "htv (?:phim|key)" is "htv phim" and "htv key"; "?\d{1,2}" and the like are the number said after
+        val ch = o.optJSONArray("channel_names")
+        for (i in 0 until (ch?.length() ?: 0)) {
+            val r = ch!!.getString(i)
+            val g = Regex("""\(\?:([^)]*)\)""").find(r)
+            val names = if (g == null) listOf(r) else g.groupValues[1].split('|').map { r.replaceRange(g.range, it) }
+            for (n in names) all += n.replace(Regex("""\\d(\{[\d,]*\}|[*+?])?|[?*+]"""), " ")
+        }
+        for (t in all + more) add(t)
+        sp.optJSONArray("numbers")?.let { a -> for (i in 0 until a.length()) out += a.getString(i) }
+        return out.toList()
+    }
 }
 
 /**

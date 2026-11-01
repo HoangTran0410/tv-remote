@@ -10,6 +10,7 @@ import dev.tvremote.core.ontv.Channels
 import dev.tvremote.core.scenes.Scenes
 import dev.tvremote.core.scenes.Voice
 import dev.tvremote.setup.rules.Rules
+import dev.tvremote.setup.voice.VoiceProtocol
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -32,8 +33,64 @@ object MicVoice {
 
     fun granted(c: Context): Boolean = c.packageManager.checkPermission(PERM, c.packageName) == PackageManager.PERMISSION_GRANTED
 
-    /** Is there a recognizer to ask? Read when the rules are (never in the key path). */
-    fun available(c: Context): Boolean = try { SpeechRecognizer.isRecognitionAvailable(c) } catch (e: Exception) { false }
+    /** Is there a recognizer to ask, the TV's or TV Setup Voice? Read when the rules are (never in the key path). */
+    fun available(c: Context): Boolean = own(c) || offline(c) != null
+
+    /**
+     * The TV's own recognizer (Google's on a Google TV): the one Settings names, installed and on. Not "any RecognitionService": TV Setup
+     * Voice is one too, and a TV whose Google app was switched off still names it.
+     */
+    fun own(c: Context): Boolean = try {
+        val cn = android.content.ComponentName.unflattenFromString(android.provider.Settings.Secure.getString(c.contentResolver, "voice_recognition_service").orEmpty())
+        cn != null && cn.packageName != VoiceProtocol.ADDON && c.packageManager.getApplicationInfo(cn.packageName, 0).enabled && c.packageManager.getServiceInfo(cn, 0).enabled
+    } catch (e: Exception) { false }
+
+    /** TV Setup Voice, when on the TV: speech heard offline (app/tvvoice). */
+    fun offline(c: Context): android.content.ComponentName? = try {
+        c.packageManager.getApplicationInfo(VoiceProtocol.ADDON, 0).takeIf { it.enabled }?.let { android.content.ComponentName(VoiceProtocol.ADDON, VoiceProtocol.SERVICE) }
+    } catch (e: Exception) { null }
+
+    /** The rule "mic_offline" on: TV Setup Voice installed (from the release, over our own ADB). */
+    fun offlineOn(c: Context): Boolean = try { Rules.load(c).optBoolean("mic_offline") } catch (e: Exception) { false }
+
+    @Volatile private var offlineJob = ""                              // "busy", or the last failure's words for the page ("" when none)
+
+    /** For the page: "ready" (on the TV), "busy" (being installed), "failed:<why>", or "none". */
+    fun offlineState(c: Context): String = when {
+        offlineJob == "busy" -> "busy"
+        offline(c) != null -> "ready"
+        offlineJob.isNotEmpty() -> "failed:$offlineJob"
+        else -> "none"
+    }
+
+    /** TV Setup Voice made to match the rule, in the background: installed when on and missing, removed when off (nothing of it stays). */
+    fun syncOffline(c: Context) {
+        if (offlineJob == "busy") return
+        val want = offlineOn(c)
+        if (want == (offline(c) != null)) return
+        val adb = dev.tvremote.setup.RemoteService.adb() ?: run { offlineJob = if (want) "adb" else ""; return }
+        offlineJob = "busy"
+        Thread({
+            offlineJob = try {
+                if (want) dev.tvremote.core.ontv.VoiceAddon.install(adb, c.cacheDir, dev.tvremote.core.Words.lang) else dev.tvremote.core.ontv.VoiceAddon.remove(adb)
+                if (want && offline(c) == null) "install" else ""
+            } catch (e: Exception) { (e.message ?: "install").take(200) }
+        }, "voice-addon").apply { isDaemon = true }.start()
+    }
+
+    /** What TV Setup Voice listens for: the commands as said in Vietnamese (its only model), this TV's apps and scenes ([Phrases.spoken]). */
+    fun words(c: Context): ArrayList<String> {
+        val more = apps(c).values + scenes(c).values
+        val key = (Voice.phrases?.hashCode() ?: 0) * 31 + more.hashCode()
+        spoken?.let { (k, w) -> if (k == key) return w }
+        val t0 = System.currentTimeMillis()
+        val w = ArrayList(Voice.phrases?.spoken("vi", more).orEmpty())
+        android.util.Log.i("MicVoice", "words: ${w.size} in ${System.currentTimeMillis() - t0} ms")
+        spoken = key to w
+        return w
+    }
+    /** The last list, by what it was made from: ~2 s on a TV box (FPT), so made once, off the main thread (MicActivity). */
+    @Volatile private var spoken: Pair<Int, ArrayList<String>>? = null
 
     /** The recognizer failed for a reason that will repeat (no network, no permission): until then the key goes to the system, as before. */
     @Volatile private var brokenUntil = 0L
@@ -74,10 +131,11 @@ object MicVoice {
         try {
             val cur = android.provider.Settings.Secure.getString(r, ASSISTANT)
             if (on(c)) {
-                if (cur == ASSIST) return
-                p.edit().putString("was_assistant", cur ?: "").putString("was_vis", android.provider.Settings.Secure.getString(r, VIS) ?: "").putBoolean("took", true).apply()
-                android.provider.Settings.Secure.putString(r, ASSISTANT, ASSIST)
-                android.provider.Settings.Secure.putString(r, VIS, "")
+                if (cur != ASSIST) {
+                    p.edit().putString("was_assistant", cur ?: "").putString("was_vis", android.provider.Settings.Secure.getString(r, VIS) ?: "").putBoolean("took", true).apply()
+                    android.provider.Settings.Secure.putString(r, ASSISTANT, ASSIST)
+                    android.provider.Settings.Secure.putString(r, VIS, "")
+                }
             } else if (p.getBoolean("took", false)) {
                 if (cur == ASSIST) {                                  // else the person picked another assistant since: theirs stays
                     android.provider.Settings.Secure.putString(r, ASSISTANT, p.getString("was_assistant", "")!!.ifEmpty { null })
@@ -86,6 +144,44 @@ object MicVoice {
                 p.edit().remove("took").remove("was_assistant").remove("was_vis").apply()
             }
         } catch (e: Exception) { android.util.Log.w("MicVoice", "assistant unchanged: $e") }
+        watchAssist(c)
+    }
+
+    /** Google's assistant (or none) coming back is taken back; any other is one the person picked. */
+    fun takesBack(cur: String?, was: String?): Boolean {
+        val pkg = cur?.substringBefore('/').orEmpty()
+        return pkg.isEmpty() || pkg == was?.substringBefore('/') || pkg in GOOGLE_ASSIST
+    }
+    private val GOOGLE_ASSIST = setOf("com.google.android.katniss", "com.google.android.googlequicksearchbox", "com.google.android.apps.tv.launcherx")
+
+    @Volatile private var watch: android.database.ContentObserver? = null
+
+    /**
+     * While the rule is on, the setting is watched: Android gives the assistant back to Google by itself when its app is switched on
+     * again or updated (the role is granted anew), and the mic button went to Google until the next ADB link. Taken back only when it is
+     * the one we keep to put back (Google's coming back); another assistant the person picked stays theirs. Off: no observer.
+     */
+    private fun watchAssist(c: Context) {
+        val app = c.applicationContext
+        val r = app.contentResolver
+        val want = on(app) && app.getSharedPreferences("mic", Context.MODE_PRIVATE).getBoolean("took", false)
+        synchronized(this) {
+            if (want == (watch != null)) return
+            if (!want) { watch?.let { r.unregisterContentObserver(it) }; watch = null; return }
+            watch = object : android.database.ContentObserver(android.os.Handler(android.os.Looper.getMainLooper())) {
+                override fun onChange(self: Boolean) {
+                    val cur = android.provider.Settings.Secure.getString(r, ASSISTANT)
+                    val was = app.getSharedPreferences("mic", Context.MODE_PRIVATE).getString("was_assistant", "")
+                    if (cur != ASSIST && on(app) && takesBack(cur, was)) {
+                        android.util.Log.i("MicVoice", "assistant taken back from $cur")
+                        Thread({ try {
+                            android.provider.Settings.Secure.putString(r, ASSISTANT, ASSIST)
+                            android.provider.Settings.Secure.putString(r, VIS, "")
+                        } catch (e: Exception) { android.util.Log.w("MicVoice", "assistant unchanged: $e") } }, "mic-assist").start()
+                    }
+                }
+            }.also { r.registerContentObserver(android.provider.Settings.Secure.getUriFor(ASSISTANT), false, it) }
+        }
     }
 
     /** The one-time notice that this TV has no recognizer; the key is passed on. */

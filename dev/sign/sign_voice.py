@@ -54,6 +54,16 @@ def check():
                 fail("bad package " + p)
     for r in d["channel_names"]:
         re.compile(r)
+    for l, sp in d.get("spoken", {}).items():                # Phrases.spoken: what an offline recognizer listens for
+        if l not in d["lang"]:
+            fail("spoken.%s: no such language in lang" % l)
+        for k, v in sp.get("words", {}).items():
+            if k != k.lower() or not all(x.strip() for x in v.split("|")):
+                fail("spoken.%s.words.%s: a folded word -> its accented ways, | between them" % (l, k))
+        for w in sp.get("spell", []):
+            if not all(ch in sp.get("letters", {}) for ch in w):
+                fail("spoken.%s.spell: '%s' has a letter not in letters" % (l, w))
+        strs(sp.get("numbers", ["x"]), "spoken.%s.numbers" % l)
     seen = {}
     for l, b in d["lang"].items():                           # one phrase, one key
         for k, v in b["keys"].items():

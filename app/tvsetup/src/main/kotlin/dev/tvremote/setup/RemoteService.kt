@@ -393,6 +393,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         running = this
         DimLayer.restore(this)
         Support.resume(this)                                          // support open when TV Setup stopped (an update, a kill) goes on
+        MicVoice.takeAssist(this)                                     // the rule on: the mic button ours again, and watched (Google takes it back)
         dev.tvremote.core.WireLog.app = "TV Setup " + (try { packageManager.getPackageInfo(packageName, 0).versionName } catch (e: Exception) { "" }) +
             " (TV web page, Android " + Build.VERSION.RELEASE + ")"
         val server = HttpServer(this)
@@ -581,7 +582,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
                 retryMs = 5000
                 failSince = 0L; fails = 0
                 if (!saidAlive && serving) { saidAlive = true; afterUpdate() }
-                if (!KeepAdb.can(this) || !KeyFix.prepared) Thread({ try { link?.get()?.let { KeepAdb.grant(this, it); KeyFix.prepare(this, it); WebViewFix.repair(it); if (MicVoice.on(this)) MicVoice.grant(this, it); MicVoice.takeAssist(this); KeyFix.sync(this) } } catch (e: Exception) { } }, "grant").apply { isDaemon = true }.start()
+                if (!KeepAdb.can(this) || !KeyFix.prepared) Thread({ try { link?.get()?.let { KeepAdb.grant(this, it); KeyFix.prepare(this, it); WebViewFix.repair(it); if (MicVoice.on(this)) MicVoice.grant(this, it); MicVoice.takeAssist(this); MicVoice.syncOffline(this); KeyFix.sync(this) } } catch (e: Exception) { } }, "grant").apply { isDaemon = true }.start()
             }
             "closed", "error" -> {                                    // ADB off, TV just booted, session dropped: keep trying
                 if (resting) return                                   // we closed it ourselves

@@ -959,8 +959,20 @@ class MainActivity : Activity() {
                 Rules.change(this, org.json.JSONObject().put("do", "mic").put("on", on))
                 log(T("mic.tile") + " · " + T(if (on) "mic.on" else "mic.off") + (if (on && !KeyFix.can(this)) " · " + T("keyfix.need_adb") else ""))
             },
+            TvUi.Item(R.drawable.ic_mic, T("mic.offline"), { voiceSub() }, on = { MicVoice.offlineOn(this) }) {   // TV Setup Voice: installed while on (MicVoice.syncOffline)
+                val on = !MicVoice.offlineOn(this)
+                Rules.change(this, org.json.JSONObject().put("do", "mic_offline").put("on", on))
+                log(T("mic.offline") + " · " + T(if (on) "mic.offline_installing" else "mic.offline_removed"))
+            },
             TvUi.Item(R.drawable.ic_keyboard, T("keytest.tile"), T("keytest.sub")) { startActivity(android.content.Intent(this, KeyTestActivity::class.java)) }))   // the key tester
     }
+
+    private fun voiceSub(): String = MicVoice.offlineState(this).let { v -> when {
+        v == "busy" -> T("mic.offline_busy")
+        v == "ready" -> T("mic.offline_ready")
+        v.startsWith("failed:") && MicVoice.offlineOn(this) -> T("mic.offline_failed", "why" to when (val why = v.removePrefix("failed:")) { "adb" -> T("mic.needs_adb"); "voice:none" -> T("core.fr_voice_none"); else -> why })
+        else -> T("mic.offline_sub")
+    } }
 
     /** A box from an Internet provider (FPT Play, Viettel; names as the census sees them): Build's 7 presses ask the ISP's password. */
     private fun ispBox() = listOf(android.os.Build.BRAND, android.os.Build.MANUFACTURER, android.os.Build.MODEL)

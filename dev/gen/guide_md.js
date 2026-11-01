@@ -148,10 +148,43 @@ function build() {
   return files;
 }
 
+/**
+ * The root AGENTS.md's feature list, between its two FEATURES marks: every topic's title by group, so an agent knows what exists
+ * without searching; the detail is docs/guide/en/<id>.md. One line per group keeps it short; then every app's screens.
+ */
+/** Every app's screens, from its manifest (the guide has no topic for some: TV Home's Control Center). */
+function screens() {
+  const out = [];
+  for (const a of fs.readdirSync(path.join(ROOT, 'app')).sort()) {
+    const m = path.join(ROOT, 'app', a, 'src/main/AndroidManifest.xml');
+    if (!fs.existsSync(m)) continue;
+    const names = [...fs.readFileSync(m, 'utf8').matchAll(/<activity(?:-alias)?\b[^>]*?android:name="([^"]+)"/g)].map((x) => x[1].replace(/.*\./, ''));
+    if (names.length) out.push('`app/' + a + '` ' + names.join(', '));
+  }
+  return '- **Screens** (manifests): ' + out.join('; ');
+}
+
+const MARK = ['<!-- FEATURES: node dev/gen/guide_md.js writes this list from docs/guide.html -->', '<!-- /FEATURES -->'];
+function features(agents) {
+  const html = fs.readFileSync(path.join(ROOT, 'docs/guide.html'), 'utf8');
+  const groups = [];
+  for (const t of topics(html)) {
+    const g = clean(inline(t.group, 'en'));
+    if (!groups.length || groups[groups.length - 1][0] !== g) groups.push([g, []]);
+    groups[groups.length - 1][1].push(clean(inline(t.h3, 'en')) + ' `' + t.id + '`');
+  }
+  const list = groups.map(([g, ts]) => '- **' + g + '**: ' + ts.join(', ')).join('\n') + '\n' + screens();
+  const a = agents.indexOf(MARK[0]), b = agents.indexOf(MARK[1]);
+  if (a < 0 || b < a) throw new Error('AGENTS.md lacks the FEATURES marks');
+  return agents.slice(0, a + MARK[0].length) + '\n' + list + '\n' + agents.slice(b);
+}
+
 if (require.main === module) {
+  const ag = path.join(ROOT, 'AGENTS.md');
+  fs.writeFileSync(ag, features(fs.readFileSync(ag, 'utf8')));
   const files = build();
   fs.rmSync(OUT, { recursive: true, force: true });
   for (const [f, s] of Object.entries(files)) { fs.mkdirSync(path.dirname(path.join(OUT, f)), { recursive: true }); fs.writeFileSync(path.join(OUT, f), s); }
   console.log(Object.keys(files).length + ' files in docs/guide/');
 }
-module.exports = { build };
+module.exports = { build, features };

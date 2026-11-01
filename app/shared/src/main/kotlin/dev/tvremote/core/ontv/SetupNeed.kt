@@ -40,6 +40,7 @@ object SetupNeed {
         "keytest" to "0.30.1",                                         // ⌨️ the remote key tester (KeyTestActivity; the release after 0.30.0)
         "support" to "0.33.2",                                         // 🛟 let support look at the TV, opened from a phone, a computer or the web page (RulesReceiver "support"; the release after 0.33.1)
         "scenepin" to "0.34.3",                                        // 📌 a scene as a tile on TV Home (ScenePin, RulesReceiver "scenepin"; the release after 0.34.2)
+        "mic_offline" to "0.38.1",                                     // 🎙️ speech heard on the TV without Google (TV Setup Voice, Rules "mic_offline"; the release after 0.38.0)
         "home_usage" to "0.14.1",                                      // 📊 TV Home's card of app use and limits (HomeInfo)
     )
 
@@ -79,6 +80,7 @@ object SetupNeed {
             "keytest" -> t("core.need_keytest")
             "support" -> t("core.need_support")
             "scenepin" -> t("core.need_scenepin")
+            "mic_offline" -> t("core.need_mic_offline")
             else -> feature
         }
     }

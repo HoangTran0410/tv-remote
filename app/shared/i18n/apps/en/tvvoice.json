@@ -1,0 +1,5 @@
+{
+  "app_name": "TV Setup Voice",
+  "voice_service": "TV Setup Voice",
+  "voice_about": "Part of TV Setup: hears commands on the TV itself, no Internet needed, for the remote's mic button. It only listens when you press the mic."
+}

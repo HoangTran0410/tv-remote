@@ -183,7 +183,7 @@ async function loadHold(now) {
   const r = await api('/api/rules', null, true);
   holdBusy = false;
   if (gen !== holdGen || !r) return;
-  const seen = JSON.stringify([r.holdkeys, r.mic]) + window.LANG;
+  const seen = JSON.stringify([r.holdkeys, r.mic, r.mic_offline, r.voice]) + window.LANG;
   if (seen === holdSeen) return;                                       // nothing new: keep what is on screen
   holdSeen = seen;
   const holdOld = r.holdkeys === undefined;
@@ -199,7 +199,17 @@ async function loadHold(now) {
     const ok = (!micOld || await setupFor('mic')) && await api('/api/rules', { do: 'mic', on });
     cb.disabled = false; if (!ok) cb.checked = !on; else { holdSeen = ''; toast(on ? T('mic.enabled') : T('mic.disabled')); }
   } }), ' ' + T('mic.switch'));
-  box.replaceChildren(UI.group(T('hold.tile'), hold, UI.note(T('hold.sub')), UI.note(T('hold.sub_off'))), UI.group(T('mic.tile'), mic, UI.note(T('mic.sub')), UI.note(T('mic.sub_off')), UI.note(T('mic.eg')), UI.note(T('mic.need'))),
+  // TV Setup Voice (app/tvvoice): speech heard on the TV, for a TV without Google's; TV Setup installs it while on, removes it when off.
+  const voice = String(r.voice || 'none');
+  if (voice === 'busy') setTimeout(() => { if (gen === holdGen) loadHold(true); }, 3000);   // being installed: the state soon
+  const offline = el('label', { className: 'check' }, el('input', { type: 'checkbox', checked: !!r.mic_offline, disabled: voice === 'busy', onchange: async (e) => {
+    const cb = e.currentTarget, on = cb.checked; cb.disabled = true;
+    const ok = (r.mic_offline !== undefined || await setupFor('mic_offline')) && await api('/api/rules', { do: 'mic_offline', on });
+    cb.disabled = false; if (!ok) cb.checked = !on; else { holdSeen = ''; toast(on ? T('mic.offline_installing') : T('mic.offline_removed')); loadHold(true); }
+  } }), ' ' + T('mic.offline'));
+  const vstate = voice === 'busy' ? T('mic.offline_busy') : voice === 'ready' ? T('mic.offline_ready')
+    : voice.startsWith('failed:') && r.mic_offline ? T('mic.offline_failed', { why: voice === 'failed:adb' ? T('mic.needs_adb') : friendly(voice.slice(7)) }) : '';
+  box.replaceChildren(UI.group(T('hold.tile'), hold, UI.note(T('hold.sub')), UI.note(T('hold.sub_off'))), UI.group(T('mic.tile'), mic, UI.note(T('mic.sub')), UI.note(T('mic.sub_off')), UI.note(T('mic.eg')), UI.note(T('mic.need')), offline, UI.note(T('mic.offline_sub')), ...(vstate ? [UI.note(vstate)] : [])),
     // The key tester (KeyTestActivity in TV Setup): opened on the TV by `am start`; an older TV Setup is asked to update first.
     UI.group(T('keytest.tile'), el('div', { className: 'actions' }, el('button', { type: 'button', textContent: T('keytest.open'), onclick: async () => { if (await api('/api/keytest/open', {})) toast(T('keytest.opened')); } })), UI.note(T('keytest.note'))));
 }

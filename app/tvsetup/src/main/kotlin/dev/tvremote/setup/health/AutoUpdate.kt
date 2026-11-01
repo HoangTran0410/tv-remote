@@ -12,6 +12,7 @@ import dev.tvremote.core.ontv.Games
 import dev.tvremote.core.ontv.Home
 import dev.tvremote.core.ontv.SetupUpdate
 import dev.tvremote.core.ontv.TvApps
+import dev.tvremote.core.ontv.VoiceAddon
 import dev.tvremote.home.HomeConfig
 import dev.tvremote.setup.rules.Usage
 import dev.tvremote.update.Release
@@ -116,11 +117,12 @@ internal class AutoUpdate(private val c: Context, private val version: String, p
             if (!ok) waited = true
             return ok
         }
-        Channels.refresh(); Games.refresh(); TvApps.refresh()                           // asked again now, not from the 6 h the pages keep
+        Channels.refresh(); Games.refresh(); TvApps.refresh(); VoiceAddon.refresh()                           // asked again now, not from the 6 h the pages keep
         for ((pkg, state, install) in listOf(
             Triple(Channels.PKG, { Channels.state(sh) }, { Channels.install(a, dir, Words.lang) { free(Channels.PKG, true) } }),
             Triple(Games.PKG, { Games.state(sh) }, { Games.install(a, dir, Words.lang) { free(Games.PKG, true) } }),
-            Triple(TvApps.PKG, { TvApps.state(sh) }, { TvApps.install(a, dir, Words.lang) { free(TvApps.PKG, true) } }))) {
+            Triple(TvApps.PKG, { TvApps.state(sh) }, { TvApps.install(a, dir, Words.lang) { free(TvApps.PKG, true) } }),
+            Triple(VoiceAddon.PKG, { VoiceAddon.state(sh) }, { VoiceAddon.install(a, dir, Words.lang) { free(VoiceAddon.PKG, false) } }))) {   // no screen: only "not in use now"
             try {
                 val s = state()
                 if (s.optBoolean("installed") && s.has("latest")) {

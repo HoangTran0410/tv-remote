@@ -12,6 +12,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - Voice search (phone, computer, TV mic button) finds the TV's YouTube app by the links it opens, not by its name: an FPT Play box's YouTube (Cobalt) now gets the search, where it fell to Google TV's search (results that did nothing when pressed) or failed on the phone.
 - TV mic button: when Google's recognizer sends back no word for 3.5 s, the card asks to say it again and listens afresh once, instead of waiting out 8-10 s; cancelling it no longer sends the mic button back to the Assistant for 10 minutes.
 - TV mic button: the 1.2 s pause that ends listening now reaches Google TV's recognizer (it read the value only as a whole number and waited its own longer time).
+- TV mic button on TVs with no speech recognition: a new option "Understand speech on the TV itself" (TV Setup card, off by default) installs TV Setup Voice, a 25 MB offline recognizer for Vietnamese (Vosk), and removes it when switched off. It is also used when Google's recognizer hears nothing. The card no longer freezes for 1-2 s when it switches over, and the sound graph ignores steady noise such as a fan.
+- TV mic button: when Android hands the assistant back to Google by itself (its app switched on again or updated), TV Remote takes the mic button back at once instead of at the next connection; an assistant the person picked stays theirs. The sound graph moves with the voice the recognizer hears and the words as they come, on boxes whose remote microphone reports a level that does not follow the voice (FPT).
 
 ## 0.40.0 - 2026-11-01
 

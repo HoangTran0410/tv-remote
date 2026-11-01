@@ -11,6 +11,7 @@ import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import dev.tvremote.setup.voice.VoiceProtocol
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
@@ -43,18 +44,20 @@ class MicActivity : Activity(), RecognitionListener {
     private val late = Runnable { log("late"); finish(partial, cut = true) }                         // no final text in time: the partial one
     private var thinking = false
     private var retried = false
+    private var offline = false                                       // TV Setup Voice is listening, not the TV's own recognizer
     /** Speech began but no word came back (Google's server stalled: 7 s of nothing, FPT 2026-11-01): a fresh session once, said on the card, then give up. */
     private val stall = Runnable {
         if (done || partial.isNotEmpty()) return@Runnable
         if (retried) { giveUp.run(); return@Runnable }
         retried = true
+        if (!offline && MicVoice.offline(this) != null) offline = true    // Google's server gave nothing: TV Setup Voice needs none
         log("stall: again")
         swap(act, T("mic.again"), TvUi.DIM)
         level.go()
         ui.removeCallbacks(giveUp); ui.postDelayed(giveUp, 7000)
         listen()
     }
-    private var rmsMax = -99f
+    private var rmsMax = -99f; private var rmsMin = 99f; private var rmsN = 0
     private var rmsAt = 0L
     private val t0 = android.os.SystemClock.uptimeMillis()
     private var focus: Any? = null
@@ -81,7 +84,7 @@ class MicActivity : Activity(), RecognitionListener {
         live = this
         val assist = intent.component?.className?.endsWith(".MicAssist") == true   // anyone may start the alias: it only listens while the rule is on, and never takes "say"
         if (assist && !MicVoice.on(this)) { finish(); return }
-        Thread({ MicVoice.warm(this) }, "mic-warm").apply { isDaemon = true }.start()   // the sentences' list (~1.4 s cold on an FPT box) and the app names, while the recognizer starts
+        Thread({ MicVoice.warm(this); if (MicVoice.offline(this) != null) MicVoice.words(this) }, "mic-warm").apply { isDaemon = true }.start()   // the sentences' list (~1.4 s cold on an FPT box) and the app names, while the recognizer starts
         val fake = if (assist) null else intent.getStringExtra("say")                      // `am start -n .../.MicActivity --es say "mở youtube"` (the shell only): a test with no microphone
         if (fake != null) { build(); for (i in 0 until 12) ui.postDelayed({ level.feed(if (i % 3 == 0) 2f else 7f + i % 4) }, i * 100L)
             ui.postDelayed({ onPartialResults(Bundle().apply { putStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION, arrayListOf(fake)) }) }, 500)
@@ -132,12 +135,23 @@ class MicActivity : Activity(), RecognitionListener {
     private fun listen() {
         quiet(true)
         sr?.let { try { it.destroy() } catch (e: Exception) { } }    // the stalled session, on a retry
-        val r = try { SpeechRecognizer.createSpeechRecognizer(this) } catch (e: Exception) { null }
+        val off = if (offline || !MicVoice.own(this)) MicVoice.offline(this) else null   // the TV's own first; TV Setup Voice where it has none
+        offline = off != null
+        log(if (off != null) "engine offline" else "engine own")
+        val r = try { if (off != null) SpeechRecognizer.createSpeechRecognizer(this, off) else SpeechRecognizer.createSpeechRecognizer(this) } catch (e: Exception) { null }
         if (r == null) { fail(); return }
         sr = r
         r.setRecognitionListener(this)
+        if (off == null) { start(r, null); return }
+        Thread({                                                      // the list takes ~2 s on a TV box the first time: never on the main thread (the card froze, FPT)
+            val words = MicVoice.words(this)
+            ui.post { if (!done && sr === r) start(r, words) }
+        }, "mic-words").apply { isDaemon = true }.start()
+    }
+
+    private fun start(r: SpeechRecognizer, words: ArrayList<String>?) {
         val lang = if (Words.lang == "vi") "vi-VN" else "en-US"
-        r.startListening(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        r.startListening(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply { if (words != null) putStringArrayListExtra(VoiceProtocol.WORDS, words) }
             .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             .putExtra(RecognizerIntent.EXTRA_LANGUAGE, lang).putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             .putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1).putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, packageName)
@@ -181,21 +195,22 @@ class MicActivity : Activity(), RecognitionListener {
 
     // ---- RecognitionListener
     override fun onReadyForSpeech(p: Bundle?) { log("ready"); heard.text = T("mic.listening") }
-    override fun onBeginningOfSpeech() { log("speech"); ui.removeCallbacks(stall); ui.postDelayed(stall, STALL_MS) }
+    override fun onBeginningOfSpeech() { log("speech"); level.speech(true); ui.removeCallbacks(stall); ui.postDelayed(stall, STALL_MS) }
     override fun onRmsChanged(rms: Float) {
         level.feed(rms)
-        rmsMax = maxOf(rmsMax, rms)
+        rmsMax = maxOf(rmsMax, rms); rmsMin = minOf(rmsMin, rms); rmsN++
         val now = android.os.SystemClock.uptimeMillis()
-        if (now - rmsAt >= 500) { if (rmsAt > 0) log("level %.1f".format(rmsMax)); rmsAt = now; rmsMax = -99f }   // noise or silence, when a try stalls
+        if (now - rmsAt >= 500) { if (rmsAt > 0) log("level %.1f..%.1f x%d".format(rmsMin, rmsMax, rmsN)); rmsAt = now; rmsMax = -99f; rmsMin = 99f; rmsN = 0 }   // noise or silence, when a try stalls
     }
     override fun onBufferReceived(b: ByteArray?) { }
-    override fun onEndOfSpeech() { log("end"); if (partial.isNotEmpty()) think() }
+    override fun onEndOfSpeech() { log("end"); level.speech(false); if (partial.isNotEmpty()) think() }
     override fun onEvent(t: Int, b: Bundle?) { }
 
     override fun onPartialResults(r: Bundle?) {
         val t = r?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()?.trim().orEmpty()
         if (t.isEmpty() || done || t == partial) return
         log("partial \"$t\"")
+        if (t.length > partial.length) level.word()
         partial = t
         heard.text = t
         ui.removeCallbacks(giveUp); ui.removeCallbacks(stall)
