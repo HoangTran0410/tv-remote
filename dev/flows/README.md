@@ -15,3 +15,4 @@ The gate (`node dev/flows/check.js`, in the pre-push hook and `app/shared/tests/
 | Flow | Covers |
 |---|---|
 | [home-screen.md](home-screen.md) | another launcher (TV Home, the gallery's) as the home screen: Optimize TV, the launcher gallery, the Settings page, the way back |
+| [home-tiles.md](home-tiles.md) | TV Home's grid: tile kinds, their menu, hide / remove / folders, and the checks (fuzz test, `home_tiles.sh` on a TV) |

@@ -23,6 +23,7 @@ import dev.tvremote.home.HomeConfig
 import dev.tvremote.home.R
 import dev.tvremote.home.Store
 import dev.tvremote.home.Target
+import dev.tvremote.home.Tiles
 import dev.tvremote.home.apps.App
 import dev.tvremote.home.apps.Apps
 import dev.tvremote.home.apps.LinkApps
@@ -342,7 +343,9 @@ object Picker {
                 if (pick != null) {                                    // a folder can hold what is on the grid besides apps: shortcuts and live widgets
                     // all of them, also a shortcut pinned through Android that is not in "tiles" yet (YouTube, channels): Folders.keep puts it there
                     val home = a as? dev.tvremote.home.HomeActivity
-                    val onGrid = (home?.loaded().orEmpty() + home?.pinned().orEmpty()).filter { it.grid && !it.folder }.distinctBy { it.pkg }
+                    val there = home?.loaded().orEmpty() + home?.pinned().orEmpty()
+                    val can = Tiles.folderChoices(there.map { it.pkg }, emptyList(), a.packageName).toSet()   // the one list of what a folder takes (Tiles.kt)
+                    val onGrid = there.filter { it.grid && it.pkg in can }.distinctBy { it.pkg }
                     val live = LiveWidgets.available(a).associateBy { it.key }
                     val names = apps.associate { it.pkg to it.label }
                     for (p in onGrid) if (p.live) live[p.pkg]?.let { t -> got.add(Item(t.key, t.title.ifEmpty { p.label }, null, a.getString(R.string.pk_live_tag), 3, LiveWidgets.iconRes(a, t))) }

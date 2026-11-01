@@ -25,6 +25,7 @@ What it takes care of, for doing it by hand:
 - Emulator snapshots can bring back an old saved-TV list holding real TV addresses: before tapping anything, check `shared_prefs/tvs.xml` (`ips`) of `dev.tvremote.phone` (needs `adb root`) and reduce it to `10.0.2.2` (`dev/test/emu.sh reset`).
 - The Google TV image is arm64-only (runs 64-bit apps only); an x86_64 image (Intel computers) behaves differently there.
 - Tap by text (find the node in `uiautomator dump`), never by fixed coordinates.
+- TV Home's grid and tile menus against the table (`Tiles.kt`): `dev/test/home_tiles.sh <serial>` (exit 1 with what is wrong; dev/flows/home-tiles.md).
 - On a real TV install with `dev/test/tvinstall.sh <serial> <apk>...`: `adb install -r` of TV Home kills the launcher and the
   TV falls into another app; the script sets TV Home again and presses HOME when it was the home.
 - If `adb exec-out screencap` comes back blank on the phone emulator, use `adb emu screenrecord screenshot <file>`.

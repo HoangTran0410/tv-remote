@@ -155,6 +155,7 @@ class HomeActivity : Activity() {
     private var stepping = false
     internal companion object {
         val EASE = PathInterpolator(0.3f, 0f, 0.2f, 1f)               // the page's scroll: eased in and out
+        var shown: java.lang.ref.WeakReference<HomeActivity>? = null  // the Home on screen, for HomeReceiver "tiles" (a check, no control)
         var reopen = false                                            // across recreate(): the panel was open when the language changed
         const val SETUP_CODE = "2397346"                              // TV Setup's Downloader code (README, the site)
         const val BT_CONNECT = "android.permission.BLUETOOTH_CONNECT"
@@ -198,6 +199,7 @@ class HomeActivity : Activity() {
             })
             return
         }
+        shown = java.lang.ref.WeakReference(this)
         shortcutWatch = Pins.watch(this) { r -> bg.execute(r) }
         if (!Pins.listed(this)) bg.execute { Pins.refresh(this) }       // the first Home: + Add has the apps' shortcuts to list
         Store.advance(this, true)                                     // a rotation on "each time Home is shown" (or one that fell due while away): before the first paint, so nothing is drawn twice
@@ -321,6 +323,7 @@ class HomeActivity : Activity() {
     private var shortcutWatch: Any? = null
 
     override fun onDestroy() {
+        if (shown?.get() === this) shown = null
         Pins.unwatch(this, shortcutWatch)
         Customize.forget(this)
         if (locked) { try { unregisterReceiver(unlocked) } catch (e: Exception) { }; super.onDestroy(); return }
@@ -1001,8 +1004,8 @@ class HomeActivity : Activity() {
 
         for (r in 0 until grid.childCount) (grid.getChildAt(r) as ViewGroup).removeAllViews()   // the tiles leave their rows alive, to be put in new ones
         grid.removeAllViews()
-        val place = Store.list(this, "order").withIndex().associate { it.value to it.index }   // the grid's own order; an app it does not know goes last, A-Z
-        val rest = (shownPins + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden && it.pkg !in inFolder }).sortedBy { place[it.pkg] ?: if (it.pin != null && !it.grid) -1 else Int.MAX_VALUE }   // a pin nobody placed stays where it always was: right after the favourites
+        val rest = Tiles.grid(conf, apps.map { it.pkg }, pins.map { it.pkg }) { k -> byKey[k].let { it != null && it.pin != null && !it.grid } }   // the one order (Tiles.kt, TilesTest walks it)
+            .drop(dockPkgs.size).map { byKey.getValue(it) }
         val cols = conf.optInt("cols", HomeConfig.COLS_DEFAULT)
         val gap = dp(GRID_GAP)
         val w = tileW()                                               // one size for every tile: the favourites are only the first ones
@@ -1987,26 +1990,27 @@ class HomeActivity : Activity() {
         fun stays(icon: Int, words: Int, hint: String = "", more: Boolean = false, go: () -> Unit) = TvGlass.Item(icon, getString(words), hint, more, true, go)   // the panel stays: the action swaps its page
         fun again(s: JSONObject?, sub: Int) = sub(a, s ?: st, sub)       // the same page, with what TV Setup said now
         val dockedPin = a.pin != null && !a.grid
+        val acts = Tiles.acts(conf, a.pkg, packageName)                // what this kind of tile offers: the one table (Tiles.kt), not a test per row
         // 1. where it sits on the home screen
         val home = ArrayList<TvGlass.Item>()
         val inFolder = if (a.folder) null else Folders.folderOf(conf, a.pkg)   // a tile in a folder (app, live widget, shortcut) is moved inside it, not on the grid
-        if (inFolder == null) home.add(item(R.drawable.ic_expand, R.string.move) { ui.post { startMove(a.pkg) } })
-        else {
+        if (Tiles.Act.MOVE in acts) home.add(item(R.drawable.ic_expand, R.string.move) { ui.post { startMove(a.pkg) } })
+        else if (inFolder != null) {
             val mine = Folders.of(conf)[inFolder]?.apps.orEmpty(); val at = mine.indexOf(a.pkg)
             home.add(item(R.drawable.ic_up, R.string.folder_out) { folderDo(Folders.remove(conf, inFolder, a.pkg)) })
             if (at > 0) home.add(item(R.drawable.ic_left, R.string.folder_earlier) { folderDo(Folders.reorder(conf, inFolder, a.pkg, at - 1)) })
             if (at in 0 until mine.size - 1) home.add(item(R.drawable.ic_right, R.string.folder_later) { folderDo(Folders.reorder(conf, inFolder, a.pkg, at + 1)) })
         }
-        if (!a.folder && !dockedPin && a.pkg != packageName && HomeConfig.folderMember(a.pkg)) home.add(item(R.drawable.ic_apps, if (inFolder == null) R.string.folder_put else R.string.folder_other) { ui.post { folderPicker(a.pkg, inFolder) } })
+        if (Tiles.Act.FOLDER_PUT in acts && !dockedPin) home.add(item(R.drawable.ic_apps, if (inFolder == null) R.string.folder_put else R.string.folder_other) { ui.post { folderPicker(a.pkg, inFolder) } })
         if (dockedPin) home.add(item(R.drawable.ic_close, R.string.unpin) { Pins.remove(this, a); pins = pins.filter { it !== a }; shownKey = ""; show() })
-        if (!a.live) home.add(item(R.drawable.ic_pen, R.string.rename) { ui.post { rename(a) } })
-        val link = Pins.ownIdOf(this, a)?.let { Pins.linkOf(this, it) }
+        if (Tiles.Act.RENAME in acts) home.add(item(R.drawable.ic_pen, R.string.rename) { ui.post { rename(a) } })
+        val link = if (Tiles.Act.LINK !in acts) null else Pins.ownIdOf(this, a)?.let { Pins.linkOf(this, it) }
         if (link != null) home.add(TvGlass.Item(R.drawable.ic_link, link.removePrefix("https://").removePrefix("http://").removeSuffix("/"), "", false, false) { ui.post { linkEdit(a, link) } }.also { r ->
             // where it goes, and a press changes it; next to Rename, where people look for both (the user, 2026-11-01)
             r.live = { if (LinkApps.preview(this, link).apps.isEmpty()) getString(R.string.link_none) else getString(R.string.link_edit) }
         })
         val rowOff = a.pkg in Store.rowsOff(this)
-        if (!a.live && a.pin == null && conf.optBoolean("showWatch", true) && (rowOff || a.pkg == rowToggled || watch.any { it.first.pkg == a.pkg })) {   // its Play Next items, hidden or brought back where people look for them (found only under + Add, the user, 2026-10-27)
+        if (Tiles.Act.WATCH in acts && conf.optBoolean("showWatch", true) && (rowOff || a.pkg == rowToggled || watch.any { it.first.pkg == a.pkg })) {   // its Play Next items, hidden or brought back where people look for them (found only under + Add, the user, 2026-10-27)
             val me = home.size
             home.add(stays(if (rowOff) R.drawable.ic_eye else R.drawable.ic_eye_off, if (rowOff) R.string.am_watch_show else R.string.am_watch_hide) {
                 if (rowOff) Store.rowsOn(this, a.pkg) else Store.rowsOff(this, a.pkg)
@@ -2014,20 +2018,17 @@ class HomeActivity : Activity() {
                 watchRead(); sub(a, st, 0, me)
             })
         }
-        if (!dockedPin && inFolder == null) {
-            // apps only: + Add lists hidden apps, a hidden live widget or shortcut would be lost (they have Remove from the grid)
-            if (!a.grid) home.add(item(R.drawable.ic_eye_off, R.string.hide) { Store.change(this, JSONObject().put("hidden", org.json.JSONArray(Store.list(this, "hidden") + a.pkg))
-                .put("dock", org.json.JSONArray(Store.list(this, "dock") - a.pkg))) })
-            if (a.grid) home.add(item(R.drawable.ic_trash, R.string.remove_from_grid) {   // off the grid: it leaves "tiles" and its places in the dock, the order and the hidden list
+        if (!dockedPin) {
+            if (Tiles.Act.HIDE in acts) home.add(item(R.drawable.ic_eye_off, R.string.hide) { Tiles.hide(conf, a.pkg)?.let { Store.change(this, it) } })
+            if (Tiles.Act.REMOVE in acts) home.add(item(R.drawable.ic_trash, R.string.remove_from_grid) {
                 if (Target.isPin(a.pkg)) { Pins.off(this, a.pkg); pinsRead(); return@item }   // its system pin too, or it came back as that
-                fun without(k: String) = org.json.JSONArray(Store.list(this, k) - a.pkg)
-                Store.change(this, JSONObject().put("tiles", org.json.JSONArray(Store.list(this, "tiles") - a.pkg)).put("dock", without("dock")).put("hidden", without("hidden")).put("order", without("order")))
+                Tiles.remove(conf, a.pkg)?.let { Store.change(this, it) }
             })
         }
         home.add(editItem())                                          // the whole screen, as the menu of a widget has it: found from an app too
         out.add(Sub("home", R.drawable.ic_home, R.string.am_g_home, "", home))
         // 2. what starts it: the power-on app, a remote key
-        if (!dockedPin) {
+        if (!dockedPin && Tiles.Act.START in acts) {
             val start = ArrayList<TvGlass.Item>()
             val powerApp = conf.optBoolean("autoon") && conf.optString("autoapp") == a.pkg
             val me = out.size
@@ -2043,7 +2044,7 @@ class HomeActivity : Activity() {
             out.add(Sub("start", R.drawable.ic_zap, R.string.am_g_start, keys, start))
         }
         // 3. lock and limits (TV Setup's rules, a code first; with no TV Setup, TV Home's own lock: [HomeLock])
-        val own = st == null && !a.grid && a.pin == null && a.pkg != packageName
+        val own = st == null && Tiles.Act.LOCK in acts
         if (own) {
             val lock = ArrayList<TvGlass.Item>()
             val me = out.size
@@ -2054,7 +2055,7 @@ class HomeActivity : Activity() {
             lock.add(stays(R.drawable.ic_hourglass, R.string.am_limit, getString(R.string.am_limit_need), true) { noteMsg(a, st, me, 1, getString(R.string.am_limit_need_long)) })
             lock.add(stays(R.drawable.ic_info, R.string.am_lock_scope, "", true) { noteMsg(a, st, me, 2, getString(R.string.am_lock_scope_text)) })
             out.add(Sub("lock", R.drawable.ic_shield, R.string.am_g_lock, if (locked) getString(R.string.am_locked) else "", lock))
-        } else if (st != null && !st.optBoolean("prot")) {
+        } else if (st != null && Tiles.Act.LOCK in acts && !st.optBoolean("prot")) {
             val lock = ArrayList<TvGlass.Item>()
             val me = out.size                                         // this page's place among the groups, for coming back to it
             val locked = st.optBoolean("locked"); val limit = st.optInt("limit")
@@ -2067,7 +2068,7 @@ class HomeActivity : Activity() {
             out.add(Sub("lock", R.drawable.ic_shield, R.string.am_g_lock, if (locked) getString(R.string.am_locked) else if (limit > 0) mins(limit) else "", lock))
         }
         // 4. maintenance: an app's own screens and, with TV Setup's ADB, stop and cache
-        if (!a.grid && a.pin == null) {
+        if (Tiles.Act.MAINT in acts) {
             val fix = ArrayList<TvGlass.Item>()
             if (st != null && st.optBoolean("adb") && !st.optBoolean("prot")) {
                 val me = out.size
@@ -2090,6 +2091,36 @@ class HomeActivity : Activity() {
             out.add(Sub("maint", R.drawable.ic_wrench, R.string.am_g_maint, "", fix))
         }
         return out.filter { it.items.isNotEmpty() }
+    }
+
+    /**
+     * The grid as drawn and each tile's menu, against the table ([Tiles]): {"grid", "expect", "tiles": [{key, kind, acts, rows}],
+     * "bad": [what is wrong]}. HomeReceiver "tiles" answers it; dev/test/home_tiles.sh runs it on a TV after any change to tiles.
+     */
+    internal fun tilesCheck(): JSONObject {
+        val keys = apps.map { it.pkg }; val pinKeys = pins.map { it.pkg }
+        val byKey = apps.associateBy { it.pkg } + pins.filter { p -> apps.none { it.pkg == p.pkg } }.associateBy { it.pkg }
+        val expect = Tiles.grid(conf, keys, pinKeys) { k -> byKey[k].let { it != null && it.pin != null && !it.grid } }
+        val drawn = tiles().mapNotNull { it.app?.pkg }
+        val bad = ArrayList(Tiles.problems(conf, keys, pinKeys, packageName))
+        if (drawn != expect) bad.add("drawn grid differs from the table: $drawn vs $expect")
+        val words = mapOf(Tiles.Act.MOVE to R.string.move, Tiles.Act.FOLDER_OUT to R.string.folder_out, Tiles.Act.RENAME to R.string.rename,
+            Tiles.Act.HIDE to R.string.hide, Tiles.Act.REMOVE to R.string.remove_from_grid)
+        val out = org.json.JSONArray()
+        for (a in byKey.values) {
+            if (a.folder) continue
+            val acts = Tiles.acts(conf, a.pkg, packageName)
+            val groups = subs(a, null)
+            val rows = groups.firstOrNull { it.id == "home" }?.items.orEmpty().map { it.label }
+            val docked = a.pin != null && !a.grid
+            for ((act, id) in words) {
+                val want = act in acts && !(docked && (act == Tiles.Act.HIDE || act == Tiles.Act.REMOVE))
+                if (want != (getString(id) in rows)) bad.add("${a.pkg}: menu ${if (want) "lacks" else "has"} \"${getString(id)}\"")
+            }
+            if ((Tiles.Act.START in acts && !docked) != groups.any { it.id == "start" }) bad.add("${a.pkg}: power-on / remote keys group wrong")
+            out.put(JSONObject().put("key", a.pkg).put("kind", Tiles.kind(a.pkg)?.name).put("acts", org.json.JSONArray(acts.map { it.name })).put("rows", org.json.JSONArray(rows)))
+        }
+        return JSONObject().put("grid", org.json.JSONArray(drawn)).put("expect", org.json.JSONArray(expect)).put("tiles", out).put("bad", org.json.JSONArray(bad))
     }
 
     /** A page's title: "App · page" while it fits the panel's head, else the page's own words (the app is named on the first page). */
@@ -2437,11 +2468,8 @@ class HomeActivity : Activity() {
 
     /** Puts [key] at the end of the grid (out of the dock, the hidden list), focused for a move; [own] also adds it to the grid's own items. */
     private fun addToGrid(key: String, own: Boolean) {
-        fun l(k: String) = org.json.JSONArray(Store.list(this, k) - key)
-        val c = JSONObject().put("hidden", l("hidden")).put("dock", l("dock")).put("order", org.json.JSONArray(Store.list(this, "order") - key + key))
-        if (own) c.put("tiles", org.json.JSONArray(Store.list(this, "tiles") - key + key))
         focusNext = key
-        Store.change(this, c)
+        Store.change(this, Tiles.add(conf, key, own))
     }
 
     /**
@@ -2468,7 +2496,7 @@ class HomeActivity : Activity() {
         val p = TvGlass.Panel(this, R.style.Menu, R.drawable.ic_left) { it.typeface = if (it.typeface?.isBold == true) Font.bold else Font.regular }
         fun top(at: Int) {
             val rows = ArrayList<TvGlass.Item>()
-            rows.add(TvGlass.Item(R.drawable.ic_apps, getString(R.string.add_choose), getString(R.string.add_choose_hint, hidden.count { h -> apps.any { it.pkg == h } }), false, false) { open?.dismiss(); open = Picker.show(this, Picker.Mode.CHOOSE, getString(R.string.pk_choose_title)) })
+            rows.add(TvGlass.Item(R.drawable.ic_apps, getString(R.string.add_choose), getString(R.string.add_choose_hint, Tiles.hiddenShown(conf, apps.filter { !it.grid }.map { it.pkg }).size), false, false) { open?.dismiss(); open = Picker.show(this, Picker.Mode.CHOOSE, getString(R.string.pk_choose_title)) })
             if (Folders.canCreate(conf)) rows.add(TvGlass.Item(R.drawable.ic_folder_plus, getString(R.string.folder_new), getString(R.string.folder_new_hint), false, false) { open?.dismiss(); newFolder() })
             if (Pins.can(this)) rows.add(TvGlass.Item(R.drawable.ic_link, getString(R.string.add_link), getString(R.string.add_link_hint), false, false) {   // any link: the QR to the paste page (a page, an app's deep link, YouTube)
                 open?.dismiss(); open = Picker.show(this, Picker.Mode.GRID, getString(R.string.add_link), only = "link", paste = true)
