@@ -88,7 +88,7 @@ class Adb(private val dir: File) : Closeable {
             while (true) {
                 val n = read(buf, 0, buf.size, if (quietMs > 0) quietMs else 0)
                 if (n < 0) break
-                if (n == 0) { close(); throw IOException("the TV stopped answering") }
+                if (n == 0) { kill(); throw IOException("the TV stopped answering") }
                 out.write(buf, 0, n)
             }
             return out.toString("UTF-8").replace("\r\n", "\n").trim()
@@ -107,7 +107,7 @@ class Adb(private val dir: File) : Closeable {
                     var waited = 0
                     while (!acked.tryAcquire(1, TimeUnit.SECONDS)) {
                         if (closed) throw IOException("stream closed")
-                        if (++waited >= WRITE_WAIT) { close(); throw IOException("the TV stopped taking data") }   // never wait for ever
+                        if (++waited >= WRITE_WAIT) { kill(); throw IOException("the TV stopped taking data") }   // never wait for ever
                     }
                 } catch (e: InterruptedException) {
                     throw IOException("interrupted")
@@ -147,6 +147,8 @@ class Adb(private val dir: File) : Closeable {
     private var maxData = 4096
     @Volatile private var dead = false
     @Volatile private var heard = System.nanoTime()                   // the last packet from the TV, whatever its stream
+    private val users = java.util.concurrent.atomic.AtomicInteger(1)  // whoever made it, plus each one sharing it (see connectOrShare)
+    @Volatile private var at = ""                                     // the host, once connected: the key in LIVE
 
     init {
         // one key per app, made once: on the first start TV Setup's screen, its service and its Manage process (another
@@ -188,6 +190,7 @@ class Adb(private val dir: File) : Closeable {
         sock!!.soTimeout = 0
         sock!!.keepAlive = true
         Thread(::pump, "adb-reader").apply { isDaemon = true }.start()
+        at = host; LIVE[host] = this
         // the first connection in after we asked, whichever it is (the one that asked may have been let go and another got in)
         val asked = ASKED.remove(host)
         if (asked != null && System.currentTimeMillis() - asked < 600000) Thread({
@@ -333,6 +336,7 @@ class Adb(private val dir: File) : Closeable {
         sock!!.soTimeout = 0
         sock!!.keepAlive = true
         Thread(::pump, "adb-reader").apply { isDaemon = true }.start()
+        at = host; LIVE[host] = this
     }
 
     private fun awaitApproval(host: String, port: Int) {
@@ -442,6 +446,7 @@ class Adb(private val dir: File) : Closeable {
         } catch (e: IOException) {
             if (!dead) WireLog.all.add("·", "adb connection lost: $e")
             dead = true
+            LIVE.remove(at, this)
             for (s in ArrayList(streams.values)) s.end()                 // toList() counts, then walks: a stream closing between ran out (census 1eaf9599)
         }
     }
@@ -460,7 +465,7 @@ class Adb(private val dir: File) : Closeable {
             val t0 = System.nanoTime()
             while (!s.opened.tryAcquire(1000, TimeUnit.MILLISECONDS)) {
                 val now = System.nanoTime()
-                if ((now - heard) / 1_000_000 >= answerMs && (now - t0) / 1_000_000 >= answerMs) { s.end(); close(); throw IOException("no answer from the TV") }
+                if ((now - heard) / 1_000_000 >= answerMs && (now - t0) / 1_000_000 >= answerMs) { s.end(); kill(); throw IOException("no answer from the TV") }
                 if ((now - t0) / 1_000_000 >= maxOf(answerMs, BUSY_OPEN_MS)) { s.end(); throw IOException("the TV is busy") }
             }
         } catch (e: InterruptedException) {
@@ -549,9 +554,45 @@ class Adb(private val dir: File) : Closeable {
     /** Asks the TV for a trivial answer within [ms]; a connection that died quietly is closed by the asking. */
     fun alive(ms: Long): Boolean = try { open("shell:echo", ms).use { it.readAll(ms) }; !dead } catch (e: IOException) { false }
 
-    override fun close() {
+    /** Closes it once the last one sharing it lets go (see [connectOrShare]); a connection nobody shares closes at once. */
+    override fun close() { if (users.decrementAndGet() <= 0) kill() }
+
+    /** The connection is broken (the TV stopped answering): it goes for everyone sharing it, and the next call dials again. */
+    private fun kill() {
         dead = true
+        LIVE.remove(at, this)
         closeSock(sock)
+    }
+
+    /** One more user of this live connection, or null when it is closing or gone. */
+    private fun share(): Adb? {
+        while (!dead) { val n = users.get(); if (n <= 0) return null; if (users.compareAndSet(n, n + 1)) return this }   // no getAndUpdate: API 24
+        return null
+    }
+
+    /**
+     * [connectTo] for a new user, which takes what comes back: this, or this app's live connection to the same TV when the TV
+     * serves one client at a time. Some adbd do (an RCA set, Realtek RTD284x, Android 7.1.1, found by the kevscec/tv-remote-rca
+     * fork): a second client's handshake times out, and the remote, the picture, Manage and the list's status line each dial
+     * their own. A dial that fails while another connection to that TV is alive with the same key can only be that: the TV
+     * is remembered (a file beside the key) and shares the one connection from then on, its streams side by side. TVs that
+     * take several clients keep one connection per user, so a big upload never holds up the keys.
+     */
+    @Throws(Exception::class)
+    fun connectOrShare(host: String, dial: (() -> Unit)? = null, prompt: Prompt): Adb {   // dial: a test's own
+        val one = File(dir, ONE_FILE)
+        val single = synchronized(ONE) { if (ONE.isEmpty() && one.exists()) ONE.addAll(one.readLines().filter { it.isNotBlank() }); host in ONE }
+        if (single) LIVE[host]?.share()?.let { close(); return it }
+        try {
+            if (dial != null) dial() else connectTo(host, prompt)
+            return this
+        } catch (e: Exception) {
+            val other = (if (e.message == UNANSWERED) null else LIVE[host]?.share()) ?: throw e
+            close()
+            WireLog.all.add("·", "adb $host takes one client at a time ($e): sharing the open connection")
+            synchronized(ONE) { if (ONE.add(host)) try { one.writeText(ONE.joinToString("\n") + "\n") } catch (ignored: IOException) { } }
+            return other
+        }
     }
 
     /** TLS closing writes close_notify: on the app's main thread (StrictMode, NetworkOnMainThreadException) another thread does it. */
@@ -610,6 +651,9 @@ class Adb(private val dir: File) : Closeable {
         private val ASKING = ConcurrentHashMap<String, Adb>()         // host:port -> the connection of this app whose question is on the TV
         private val PLAIN_ASKED = ConcurrentHashMap<String, Long>()   // host -> when 5555 was opened there for TV Setup (plainForSetup)
         private val ASKED = ConcurrentHashMap<String, Long>()         // host -> when this app last put its question on that TV
+        private val LIVE = ConcurrentHashMap<String, Adb>()           // host -> this app's newest live connection there (connectOrShare)
+        private val ONE = HashSet<String>()                           // TVs that take one client at a time (connectOrShare), in ONE_FILE
+        private const val ONE_FILE = "adb-one-client.txt"
         private val KEY_LOCK = Any()                                  // a file lock is per process: this keeps threads apart
         @Volatile private var holdMs = 0L
         @Volatile private var holdSet = false

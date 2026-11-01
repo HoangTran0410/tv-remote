@@ -39,13 +39,13 @@ class AdbLink(val keyDir: File, val host: String) {
             dialStart = System.nanoTime()
             dialing = a
             try {
-                a.connectTo(host) { waiting = true; WireLog.all.add("·", "adb $host asking on the TV") }
+                val got = a.connectOrShare(host) { waiting = true; WireLog.all.add("·", "adb $host asking on the TV") }   // a TV that takes one client: shared
                 WireLog.all.add("·", "adb $host connected")
                 waiting = false
                 failed = false
-                adb = a
-                dev.tvremote.core.Census.connected(host) { a.shell(it) }   // the TV's model, once, for the anonymous census (off: nothing happens)
-                return a
+                adb = got
+                dev.tvremote.core.Census.connected(host) { got.shell(it) }   // the TV's model, once, for the anonymous census (off: nothing happens)
+                return got
             } catch (e: IOException) {
                 WireLog.all.add("·", "adb $host $e")
                 if (mine == gen) failed = true

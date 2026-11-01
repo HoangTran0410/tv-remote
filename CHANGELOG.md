@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Phone and computer apps: a TV whose ADB takes one connection at a time (RCA and other Realtek TVs on Android 7) now works: the app shares one connection instead of saying ADB is off (seen in the kevscec/tv-remote-rca fork)
 - Page: no "X is not defined" error box on a slow TV: the server's answers are handled once every script of the page is read (census 91edf904, 5b47665e)
 - Apps: the task manager no longer stops an app whose accessibility service is on (a remote button mapper, a screen reader); on some Android 11 TVs that restarted the whole system
 - Optimize TV: TV Home no longer turns off the stock launcher on Skyworth / Coocaa Google TVs with more than one profile (their remote service crashed on every hotkey until the TV reset its settings); Home goes through TV Setup there instead

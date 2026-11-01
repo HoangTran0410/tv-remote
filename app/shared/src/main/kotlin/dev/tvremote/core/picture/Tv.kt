@@ -233,6 +233,12 @@ class Tv(
 
     @Volatile private var capture: List<Adb.Stream>? = null           // the sockets while the TV's sound is captured
     @Volatile private var adb: Adb? = null
+    @Volatile private var letGone: Adb? = null                        // closed once each: Stop and the session's end both let go,
+    private fun letGo() {                                             // and a second close would take a share of someone else's
+        val a = adb ?: return
+        synchronized(this) { if (letGone === a) return; letGone = a }
+        a.close()
+    }
     @Volatile private var control: Adb.Stream? = null
     @Volatile private var server: Adb.Stream? = null                  // the shell running scrcpy-server: closed, the TV ends it
     @Volatile private var carrier: Tv? = null                         // another session of this TV taking our keys: see carry()
@@ -270,9 +276,10 @@ class Tv(
         try {
             if (Trace.on) Trace.log("s.begin", host)
             status("connecting", host)
-            val a = Adb(dir)
+            val fresh = Adb(dir)
+            adb = fresh                                               // Stop can cut the dial
+            val a = fresh.connectOrShare(host) { status("allow", "") }   // a TV that takes one client: the app's open connection
             adb = a
-            a.connectTo(host) { status("allow", "") }
             if (stopped) return
             if (Trace.on) Trace.log("s.adb", host)
             // one round trip for what used to be five: the model, the Android version, the address, the jar on the TV
@@ -384,7 +391,9 @@ class Tv(
             if (capture != null) endCapture(socks)
             capture = null
             giveBackSound()
-            adb?.close()                                              // the heartbeat stops, the loop on the TV kills scrcpy-server
+            for (s in socks) try { s.close() } catch (ignored: Exception) { }
+            try { server?.close() } catch (ignored: Exception) { }    // its shell ends: the loop on the TV kills scrcpy-server now,
+            letGo()                                                   // also when the connection stays on for others sharing it
             io.shutdownNow()
         }
     }
@@ -572,11 +581,11 @@ class Tv(
         stopped = true
         synchronized(restLock) { restLock.notifyAll() }
         val c = capture
-        if (c == null) { adb?.close(); return }
+        if (c == null) { letGo(); return }
         Thread({                                                      // the session's thread ends the capture, then closes ADB
             for (s in c) try { s.close() } catch (ignored: Exception) { }
             Thread.sleep(20000)
-            adb?.close()                                              // in case it is stuck
+            letGo()                                                   // in case it is stuck
         }, "scrcpy-stop").apply { isDaemon = true }.start()
     }
 
