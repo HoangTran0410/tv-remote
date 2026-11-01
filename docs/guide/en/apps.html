@@ -4,7 +4,7 @@ The **📱 Apps** tab lists installed apps. Type in the search box or filter wit
 
 - **Open now**: recent apps, newest first, with their memory.
 - **Switch** goes back to an app, **Close** closes it.
-- **Close in bulk**: tick the apps to close (ones the TV needs can't be).
+- **Close in bulk**: tick the apps to close (ones the TV needs, and apps with an accessibility service on such as a key mapper, can't be).
 
 Tap **⋯** on a row:
 

@@ -4,7 +4,7 @@ Tab **📱 Ứng dụng** liệt kê app đã cài. Gõ tên vào ô tìm, hoặ
 
 - **Đang mở**: app gần đây, mới nhất trước, kèm RAM.
 - **Chuyển** quay lại app, **Đóng** đóng app.
-- **Đóng nhiều app**: tích các app cần đóng (app TV cần giữ không đóng được).
+- **Đóng nhiều app**: tích các app cần đóng (app TV cần giữ, và app đang bật trợ năng như app đổi phím, không đóng được).
 
 Bấm **⋯** trên một dòng:
 

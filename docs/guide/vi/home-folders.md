@@ -7,3 +7,4 @@ Gom vài ô (app, lối tắt, widget) vào một ô thư mục (hiện 4 biểu
 3. Giữ OK trên ô thư mục để đổi tên, di chuyển trên lưới hoặc xóa (app trong đó về lại lưới). Thư mục trống tự biến mất.
 
 - Khóa PIN và giới hạn giờ của app vẫn áp dụng bên trong thư mục.
+- Ẩn một app thì app ra khỏi thư mục; **Chọn app…** đưa lại.

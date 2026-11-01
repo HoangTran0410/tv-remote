@@ -377,7 +377,7 @@ The **📱 Apps** tab lists installed apps. Type in the search box or filter wit
 
 - **Open now**: recent apps, newest first, with their memory.
 - **Switch** goes back to an app, **Close** closes it.
-- **Close in bulk**: tick the apps to close (ones the TV needs can't be).
+- **Close in bulk**: tick the apps to close (ones the TV needs, and apps with an accessibility service on such as a key mapper, can't be).
 
 Tap **⋯** on a row:
 
@@ -579,11 +579,11 @@ One panel for all you can pin to the grid, the Play Next row and apps left out a
 3. Remove: hold OK on a tile → **On the home screen** → **Remove from the grid**. A shortcut stays gone, its system pin too.
 
 - Tile corner: 🔒 locked, ⏳ limit, ⏻ power-on app, its remote key.
+- Only apps hide; shortcuts and live widgets are removed.
 - Uninstall an app (such as TV Channels) and its shortcuts and live widgets leave the grid, dock, order and picker by themselves, even if it was removed while TV Home was not running.
 - The **Play Next** row is what you left half-watched in other apps, scrolling sideways. Hold OK on one: **Row position**, **Pin to the grid**, or **Don't show** that app's items.
 - To show an app's items again: hold OK on the app > **On the home screen**, or **＋ Add**.
 - Hold OK on any element (weather, the top buttons, ＋ Add) for its small menu, changes show at once. **Edit home screen** lets you pick the clock and widgets too; Back leaves it.
-- Pinned shortcuts also have **Move**, in the same order as apps.
 
 ## Folders on the grid
 
@@ -594,6 +594,7 @@ Put several tiles (apps, shortcuts, live widgets) in one folder tile (4 small ic
 3. Hold OK on the folder tile to rename, move it on the grid or delete it (its apps return to the grid). An empty folder disappears.
 
 - An app's PIN lock and time limit still apply inside a folder.
+- Hiding an app takes it out of its folder; **Choose apps…** brings it back.
 
 ## Pin a link or deep link to TV Home
 
