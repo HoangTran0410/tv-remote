@@ -1025,24 +1025,24 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "72f479fc5e46b710d40d7e11|0.28.0": {
-  "at": "2026-10-30T18:53:51+07:00",
+  "at": "2026-11-02T02:38:20+07:00",
   "n": 3,
-  "note": "local test session (ports 8769/8771, page DOM wiped by a test agent); test runs no longer report: TVS_FILE skips Census.init"
+  "note": "dev only: test port 8769 on the Mac, page swapped on disk under an open tab"
  },
  "72f479fc5e46b710d40d7e11|0.29.0": {
-  "at": "2026-10-30T18:53:51+07:00",
+  "at": "2026-11-02T02:38:20+07:00",
   "n": 1,
-  "note": "local test session (ports 8769/8771, page DOM wiped by a test agent); test runs no longer report: TVS_FILE skips Census.init"
+  "note": "dev only: test port 8769 on the Mac, page swapped on disk under an open tab"
  },
  "72f479fc5e46b710d40d7e11|0.33.1": {
-  "at": "2026-10-30T18:53:51+07:00",
+  "at": "2026-11-02T02:38:20+07:00",
   "n": 2,
-  "note": "local test session (ports 8769/8771, page DOM wiped by a test agent); test runs no longer report: TVS_FILE skips Census.init"
+  "note": "dev only: test port 8769 on the Mac, page swapped on disk under an open tab"
  },
  "72f479fc5e46b710d40d7e11|0.37.1": {
-  "at": "2026-10-30T18:53:51+07:00",
+  "at": "2026-11-02T02:38:20+07:00",
   "n": 1,
-  "note": "local test session (ports 8769/8771, page DOM wiped by a test agent); test runs no longer report: TVS_FILE skips Census.init"
+  "note": "dev only: test port 8769 on the Mac, page swapped on disk under an open tab"
  },
  "733f32fe9068490e6a8ed1f6|0.34.1": {
   "at": "2026-10-30T09:08:15+07:00",
@@ -1495,24 +1495,24 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "b5217008041ee98e6efd9bc7|0.28.0": {
-  "at": "2026-10-30T18:53:51+07:00",
+  "at": "2026-11-02T02:38:20+07:00",
   "n": 3,
-  "note": "local test session (ports 8769/8771, page DOM wiped by a test agent); test runs no longer report: TVS_FILE skips Census.init"
+  "note": "dev only: 8769, same"
  },
  "b5217008041ee98e6efd9bc7|0.29.0": {
-  "at": "2026-10-30T18:53:51+07:00",
+  "at": "2026-11-02T02:38:20+07:00",
   "n": 1,
-  "note": "local test session (ports 8769/8771, page DOM wiped by a test agent); test runs no longer report: TVS_FILE skips Census.init"
+  "note": "dev only: 8769, same"
  },
  "b5217008041ee98e6efd9bc7|0.33.1": {
-  "at": "2026-10-30T18:53:51+07:00",
+  "at": "2026-11-02T02:38:20+07:00",
   "n": 2,
-  "note": "local test session (ports 8769/8771, page DOM wiped by a test agent); test runs no longer report: TVS_FILE skips Census.init"
+  "note": "dev only: 8769, same"
  },
  "b5217008041ee98e6efd9bc7|0.37.1": {
-  "at": "2026-10-30T18:53:51+07:00",
+  "at": "2026-11-02T02:38:20+07:00",
   "n": 1,
-  "note": "local test session (ports 8769/8771, page DOM wiped by a test agent); test runs no longer report: TVS_FILE skips Census.init"
+  "note": "dev only: 8769, same"
  },
  "b6a3b10f364db6b1b1f97649|0.23.0": {
   "at": "2026-10-26T21:47:35+07:00",
@@ -1685,24 +1685,24 @@
   "note": "fixed: Guard ignores a dialog shown/dismissed after its screen is gone (GuardLogic.goneWindow)"
  },
  "cb86f676dfffbcf108630018|0.28.0": {
-  "at": "2026-10-30T18:53:52+07:00",
+  "at": "2026-11-02T02:38:20+07:00",
   "n": 3,
-  "note": "local test session (ports 8769/8771, page DOM wiped by a test agent); test runs no longer report: TVS_FILE skips Census.init"
+  "note": "dev only: 8769, same"
  },
  "cb86f676dfffbcf108630018|0.29.0": {
-  "at": "2026-10-30T18:53:52+07:00",
+  "at": "2026-11-02T02:38:20+07:00",
   "n": 1,
-  "note": "local test session (ports 8769/8771, page DOM wiped by a test agent); test runs no longer report: TVS_FILE skips Census.init"
+  "note": "dev only: 8769, same"
  },
  "cb86f676dfffbcf108630018|0.33.1": {
-  "at": "2026-10-30T18:53:52+07:00",
+  "at": "2026-11-02T02:38:20+07:00",
   "n": 2,
-  "note": "local test session (ports 8769/8771, page DOM wiped by a test agent); test runs no longer report: TVS_FILE skips Census.init"
+  "note": "dev only: 8769, same"
  },
  "cb86f676dfffbcf108630018|0.37.1": {
-  "at": "2026-10-30T18:53:52+07:00",
+  "at": "2026-11-02T02:38:20+07:00",
   "n": 1,
-  "note": "local test session (ports 8769/8771, page DOM wiped by a test agent); test runs no longer report: TVS_FILE skips Census.init"
+  "note": "dev only: 8769, same"
  },
  "cc0ca3bfdda49c7e255d18ca|0.29.0": {
   "at": "2026-10-29T17:19:50+07:00",
