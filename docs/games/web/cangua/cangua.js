@@ -224,7 +224,8 @@ function view(t, s) {
 
 // ---- the TV
 function clock(t) { const k = document.querySelector('.seat.turn .timer i'); if (k) k.style.width = Math.max(0, t.left / TURN * 100) + '%'; }
-function fit() { const k = Math.min(innerWidth / 1280, innerHeight / 720); const st = $('#stage'); st.style.transform = `scale(${k})`; st.style.left = (innerWidth - 1280 * k) / 2 + 'px'; st.style.top = (innerHeight - 720 * k) / 2 + 'px'; }
+// the window's size from clientWidth/Height: innerWidth/innerHeight grow in a TV's WebView once the 1280 px stage overflows it
+function fit() { const d = document.documentElement, w = d.clientWidth || innerWidth, h = d.clientHeight || innerHeight; const k = Math.min(w / 1280, h / 720); const st = $('#stage'); st.style.transform = `scale(${k})`; st.style.left = (w - 1280 * k) / 2 + 'px'; st.style.top = (h - 720 * k) / 2 + 'px'; }
 function draw(t) {
   if (!t.ok) {
     const e = h('div'); e.id = 'err'; e.append(h('b', '', t.pad ? W.old : W.nopad), h('span', '', t.pad ? W.oldh : '')); $('#stage').replaceChildren(e); return;
@@ -261,7 +262,7 @@ function draw(t) {
 }
 (function init() {
   const die = $('#die'); for (let i = 0; i < 9; i++) die.append(h('i'));
-  fit(); addEventListener('resize', fit);
+  fit(); addEventListener('resize', fit); addEventListener('load', fit);
   if (!table.ok) { draw(table); return; }
   paintBoard(); buildToks(); face(6);
   table.go();
