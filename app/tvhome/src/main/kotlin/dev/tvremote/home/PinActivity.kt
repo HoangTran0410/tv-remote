@@ -14,6 +14,7 @@ import dev.tvremote.home.apps.Pins
  */
 @TargetApi(26)
 class PinActivity : Activity() {
+    override fun attachBaseContext(base: android.content.Context) = super.attachBaseContext(Lang.wrap(base))   // TV Home's own language, not the TV's: the panel over an app was in the TV's
     override fun onCreate(b: Bundle?) {
         super.onCreate(b)
         val req = try { getSystemService(LauncherApps::class.java)?.getPinItemRequest(intent) } catch (e: Exception) { null }

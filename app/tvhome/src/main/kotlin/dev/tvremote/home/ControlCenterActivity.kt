@@ -12,6 +12,7 @@ import dev.tvremote.home.ui.ControlCenter
  * activity (Ghost) holding the same panel the top bar opens, so the app beneath stays visible and running; Back, or any choice, closes it.
  */
 class ControlCenterActivity : Activity() {
+    override fun attachBaseContext(base: android.content.Context) = super.attachBaseContext(Lang.wrap(base))   // TV Home's own language, not the TV's: the panel over an app was in the TV's
     override fun onCreate(b: Bundle?) {
         super.onCreate(b)
         val go = { i: Intent -> try { startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (e: Exception) { SystemSettings.open(this) } }

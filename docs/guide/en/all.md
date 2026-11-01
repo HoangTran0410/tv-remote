@@ -642,9 +642,13 @@ Two options for TV Home's look, worked out on the TV with no network.
 
 ## Quick settings (TV Home)
 
-The Settings button on the top bar opens a panel in Customize's style: Network (Wi-Fi name), Inputs (or Bluetooth when the TV has no inputs), Sleep timer, Kids mode, TV settings, Customize.
+The Settings button on the top bar opens a panel in Customize's style. Big tiles: Customize, Sleep timer.
 
-Kids mode: tap to turn on; when on, a tap (asks the PIN) picks the apps or turns it off. Needs TV Setup (greyed without it). Round buttons: Clear RAM, Turn off the TV (Screensaver, Screen off, Restart, Power off).
+Small tiles: Network (Wi-Fi name), Inputs (or Bluetooth when the TV has no inputs), Mic button (TV Remote or Default; only when the remote has a mic button), Kids mode.
+
+Kids mode: tap to turn on; when on, a tap (asks the PIN) picks the apps or turns it off. Needs TV Setup (greyed without it).
+
+Round buttons: Clear RAM, TV settings, Turn off the TV (Screensaver, Screen off, Restart, Power off).
 
 **Brightness** (sun icon): OK to change it, Left / Right in steps of 10 %, Back when done; 100 % = no tint.
 

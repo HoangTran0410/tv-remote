@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home Quick settings laid out by use: Customize and Sleep timer as big tiles, Network / Inputs / Mic button / Kids mode as small ones, TV settings a round button; the Mic button tile picks who answers the remote's mic (TV Remote or the TV's default) and shows only with a remote that has one; Quick settings and the pin / link screens follow TV Home's language
 - Voice: "mở HBO" / "open Rick Roll" opens a tile pinned on TV Home by the name on the grid (a link pin goes to the app that opens it); an app named in full wins over a tile, a tile named in full over a loose app match, and a list of at most 3 shows only when two or more targets match equally ("mở vtv3" never asks).
 - Voice: "mở cài đặt" now really opens the TV's Settings (it pressed a key the TV ignored), and "mở wifi" / "bluetooth" / "âm thanh" / "ngày giờ" / "ứng dụng" / "bộ nhớ" / "ngôn ngữ" / "bàn phím" / "phụ đề" / "nhà phát triển" / "trợ năng" (and English) open those pages; the pages are data in the signed phrases list.
 - TV Home: a pinned link's tile menu has its link (press to change it) inside On the home screen, right after Rename. The web page's Rename lists pinned links and shortcuts too (Rick Roll, a TV Channels channel), with the icon of the app that opens them.

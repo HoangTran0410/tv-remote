@@ -103,7 +103,7 @@ object ControlCenter {
         }
         return BitmapDrawable(c.resources, bmp)
     }
-    private val ICONS26 = intArrayOf(R.drawable.ic_wifi, R.drawable.ic_router, R.drawable.ic_input, R.drawable.ic_bluetooth, R.drawable.ic_timer, R.drawable.ic_lock,
+    private val ICONS26 = intArrayOf(R.drawable.ic_wifi, R.drawable.ic_mic, R.drawable.ic_router, R.drawable.ic_input, R.drawable.ic_bluetooth, R.drawable.ic_timer, R.drawable.ic_lock,
         R.drawable.ic_settings, R.drawable.ic_sliders, R.drawable.ic_clock, R.drawable.ic_eye_off, R.drawable.ic_refresh, R.drawable.ic_power)
 
     private fun inputsLine(a: Context, rows: List<Drop.Row>): String {
@@ -118,7 +118,7 @@ object ControlCenter {
      * One tile, Customize's own: a glass row ([TvGlass.rowBg], 16 dp), the icon (26), the name (15 sp) and, when it has one, a line of state
      * (12 sp). [need]: it needs TV Setup, which is missing or too old.
      */
-    private class CcTile(c: Context, val dp: (Number) -> Int, icon: Int, name: String) : LinearLayout(c) {
+    private class CcTile(c: Context, val dp: (Number) -> Int, icon: Int, name: String, val small: Boolean = false) : LinearLayout(c) {
         private val pic = ImageView(c)
         private val title = Font.on(TextView(c))
         private val sub = Font.on(TextView(c))
@@ -127,23 +127,25 @@ object ControlCenter {
         var hold: (() -> Unit)? = null                                     // long OK, when the tile has a second thing to open
 
         init {
-            orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; isFocusable = true; isClickable = true
-            setPadding(dp(14), dp(12), dp(14), dp(12))
+            // small: a switch or a status read more than pressed (network, voice, kids), four to a row, the icon over its words
+            orientation = if (small) VERTICAL else HORIZONTAL; gravity = if (small) Gravity.CENTER_HORIZONTAL else Gravity.CENTER_VERTICAL; isFocusable = true; isClickable = true
+            if (small) setPadding(dp(6), dp(10), dp(6), dp(9)) else setPadding(dp(14), dp(16), dp(14), dp(16))
             background = StateListDrawable().apply {
                 addState(intArrayOf(android.R.attr.state_focused), TvGlass.glass(c, R_TILE, TvGlass.ROW_FOCUS, Color.WHITE))
                 addState(intArrayOf(), TvGlass.glass(c, R_TILE, TvGlass.ROW_FILL, TvGlass.ROW_EDGE))
             }
-            addView(pic.apply { setImageDrawable(glyph(c, icon, 26)); imageTintList = ColorStateList.valueOf(Color.WHITE) }, LayoutParams(dp(26), dp(26)))
-            val words = LinearLayout(c).apply { orientation = VERTICAL }
-            words.addView(title.apply { text = name; textSize = 15f; setTextColor(Color.WHITE); maxLines = 1; ellipsize = TextUtils.TruncateAt.END })
-            words.addView(sub.apply { textSize = 12f; setTextColor(TvGlass.HINT); maxLines = 1; ellipsize = TextUtils.TruncateAt.END; visibility = GONE })
-            addView(words, LayoutParams(0, -2, 1f).apply { leftMargin = dp(12) })
+            addView(pic.apply { setImageDrawable(glyph(c, icon, 26)); imageTintList = ColorStateList.valueOf(Color.WHITE) }, LayoutParams(dp(if (small) 22 else 26), dp(if (small) 22 else 26)))
+            val words = LinearLayout(c).apply { orientation = VERTICAL; if (small) gravity = Gravity.CENTER_HORIZONTAL }
+            words.addView(title.apply { text = name; textSize = if (small) 12.5f else 16f; setTextColor(Color.WHITE); maxLines = 1; ellipsize = TextUtils.TruncateAt.END })
+            words.addView(sub.apply { textSize = if (small) 11f else 12f; setTextColor(TvGlass.HINT); maxLines = 1; ellipsize = TextUtils.TruncateAt.END; visibility = GONE })
+            if (small) addView(words, LayoutParams(-1, -2).apply { topMargin = dp(6) }) else addView(words, LayoutParams(0, -2, 1f).apply { leftMargin = dp(12) })
+            if (small) { title.gravity = Gravity.CENTER; sub.gravity = Gravity.CENTER }
             setOnClickListener { press() }
             setOnLongClickListener { hold?.let { if (need) press() else it() }; hold != null }
             // no pop: the white edge and lighter fill say focus; scaled, a tile at the panel's edge came out cut (the user, 2026-10-25)
         }
 
-        fun icon(res: Int) = pic.setImageDrawable(glyph(pic.context, res, 26))
+        fun icon(res: Int) = pic.setImageDrawable(glyph(pic.context, res, if (small) 22 else 26))
         /** A colour's dot in the icon's place (the tint's colours). */
         fun swatch(color: Int) { pic.imageTintList = null; pic.setImageDrawable(dot(color, dp(22), dp(2))) }
 
@@ -260,7 +262,7 @@ object ControlCenter {
         private val footer = Font.on(TextView(a)).apply { textSize = 12f; setTextColor(TvGlass.HINT); maxLines = 1; gravity = Gravity.CENTER; ellipsize = TextUtils.TruncateAt.END }
         private lateinit var net: CcTile
         private var inputTile: CcTile? = null; private var btTile: CcTile? = null
-        private lateinit var kids: CcTile; private lateinit var sleep: CcTile
+        private lateinit var kids: CcTile; private lateinit var sleep: CcTile; private var mic: CcTile? = null
         private lateinit var dim: DimBar
         private lateinit var dimRow: LinearLayout
         private lateinit var tintDot: ImageView
@@ -278,7 +280,7 @@ object ControlCenter {
         }
         private fun say(text: String, ms: Long = 0) { footer.text = text; hold = if (ms > 0) System.currentTimeMillis() + ms else 0L }
 
-        private fun tile(icon: Int, name: Int, press: () -> Unit) = CcTile(a, ::dp, icon, a.getString(name)).also { t -> t.press = { if (t.need) needSetup(t) else press() }; tiles.add(t) }
+        private fun tile(icon: Int, name: Int, small: Boolean = false, press: () -> Unit) = CcTile(a, ::dp, icon, a.getString(name), small).also { t -> t.press = { if (t.need) needSetup(t) else press() }; tiles.add(t) }
 
         /** An action TV Setup runs: greyed without it, and a tap then says how to get it. */
         private fun action(icon: Int, name: Int, run: () -> Unit) = Round(a, ::dp, icon, a.getString(name)).also { r ->
@@ -417,8 +419,9 @@ object ControlCenter {
         private fun paintCtl() {
             paintDim()
             val c = ctl
-            if (c == null) { kids.state(a.getString(R.string.cc_need_setup), true); sleep.state(a.getString(R.string.cc_need_setup), true); return }
-            kids.state(a.getString(if (c.optBoolean("kids")) R.string.cc_kids_on else if (c.optBoolean("pin")) R.string.cc_off else R.string.cc_kids_nopin))
+            if (c == null) { kids.state(a.getString(R.string.cc_need_setup), true); sleep.state(a.getString(R.string.cc_need_setup), true); mic?.state(a.getString(R.string.cc_need_setup), true); return }
+            mic?.state(if (!c.has("mic")) a.getString(R.string.cc_need_setup) else a.getString(if (c.optBoolean("mic")) R.string.cc_mic_ours else R.string.cc_mic_tv), !c.has("mic"))   // who answers the button, not On / Off (the user, 2026-11-01)   // an older TV Setup has no switch for it
+            kids.state(a.getString(if (c.optBoolean("kids")) R.string.cc_on else R.string.cc_off))   // a small tile: one word; with no PIN a press opens the card where it is set
             val left = (c.optLong("sleep_at") - System.currentTimeMillis()).let { if (it > 0) (it + 59_999) / 60_000 else 0L }
             sleep.state(if (left > 0) a.getString(R.string.cc_sleep_left, left.toString()) else a.getString(R.string.cc_off))
         }
@@ -464,23 +467,26 @@ object ControlCenter {
                 addView(Font.on(TvUi.text(a, a.getString(R.string.cc_android, Build.VERSION.RELEASE), 14f, TvGlass.HINT)).apply { maxLines = 1; setPadding(dp(12), 0, 0, 0) })
             }, LinearLayout.LayoutParams(-1, -2).apply { setMargins(dp(16), dp(12), dp(16), dp(12)) })
 
-            net = tile(R.drawable.ic_wifi, R.string.cc_net) { go(listOf(Settings.ACTION_WIFI_SETTINGS, Settings.ACTION_SETTINGS)) }
-            // Inputs only where the TV lists some (or may keep them outside the TV Input Framework); a box with none has Bluetooth in that slot
-            val known = seen ?: (Inputs.rows(a) { }.let { ins -> Seen(Inputs.showTile(ins.size, Inputs.liveApp(a) != null, Inputs.isBox()), network(a), inputsLine(a, ins)) })   // cold: asked here, once
-            if (known.inputs) { inputTile = tile(R.drawable.ic_input, R.string.inputs) { dialog.dismiss(); inputs() }; known.line?.let { inputTile?.state(it) } }
-            else if (a.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) { btTile = tile(R.drawable.ic_bluetooth, R.string.cc_bluetooth) { go(listOf(Settings.ACTION_BLUETOOTH_SETTINGS, PAIR, Settings.ACTION_SETTINGS)) }; paintBt() }   // FPT Play (Android 14) has no BLUETOOTH_SETTINGS: its Settings answers only the pairing screen
+            // by use (the user, 2026-11-01): big = pressed often (TV Home's look, the sleep timer); small = read more than pressed
+            tile(R.drawable.ic_sliders, R.string.cc_customize) { dialog.dismiss(); customize() }.state(a.getString(R.string.cc_customize_sub))
             sleep = tile(R.drawable.ic_timer, R.string.cc_sleep) {
                 val left = ((ctl?.optLong("sleep_at") ?: 0L) - System.currentTimeMillis()).coerceAtLeast(0).let { (it + 59_999) / 60_000L }   // rounded up, as the tile says it: 29.9 is "30 left", the next step is 60
                 control("sleep:" + (if (left <= 0) SLEEP_STEPS.first() else SLEEP_STEPS.firstOrNull { it > left } ?: 0))   // off -> 30 -> 60 -> 90 -> 120 -> off
             }
+            net = tile(R.drawable.ic_wifi, R.string.cc_net, true) { go(listOf(Settings.ACTION_WIFI_SETTINGS, Settings.ACTION_SETTINGS)) }
+            // Inputs only where the TV lists some (or may keep them outside the TV Input Framework); a box with none has Bluetooth in that slot
+            val known = seen ?: (Inputs.rows(a) { }.let { ins -> Seen(Inputs.showTile(ins.size, Inputs.liveApp(a) != null, Inputs.isBox()), network(a), inputsLine(a, ins)) })   // cold: asked here, once
+            if (known.inputs) { inputTile = tile(R.drawable.ic_input, R.string.inputs, true) { dialog.dismiss(); inputs() }; known.line?.let { inputTile?.state(it) } }
+            else if (a.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) { btTile = tile(R.drawable.ic_bluetooth, R.string.cc_bluetooth, true) { go(listOf(Settings.ACTION_BLUETOOTH_SETTINGS, PAIR, Settings.ACTION_SETTINGS)) }; paintBt() }   // FPT Play (Android 14) has no BLUETOOTH_SETTINGS: its Settings answers only the pairing screen
+            // the remote's mic button to TV Remote's voice (TV Setup's "mic" rule, as the phone and web switch it)
+            // only with a remote that has the button, or while it is on (to turn it off): the phone's voice needs no switch
+            if (micKey() || lastCtl?.optBoolean("mic") == true) mic = tile(R.drawable.ic_mic, R.string.cc_mic, true) { ctl?.let { c -> control(if (c.optBoolean("mic")) "mic:off" else "mic:on") } }
             // on: TV Setup's lock card (behind its PIN), where the apps a child may open are chosen and kids mode turned off; a press
             // that only asked the PIN to turn it off left no way to that list (the user, 2026-10-26). Long OK: the list, on or off
-            kids = tile(R.drawable.ic_lock, R.string.cc_kids) {
+            kids = tile(R.drawable.ic_lock, R.string.cc_kids, true) {
                 val c = ctl
                 if (c != null) control(if (c.optBoolean("kids") || !c.optBoolean("pin")) "kids:setup" else "kids:on")
             }.also { t -> t.hold = { if (ctl != null) control("kids:setup") } }
-            tile(R.drawable.ic_settings, R.string.tv_settings) { go(listOf(Settings.ACTION_SETTINGS)) }.state(a.getString(R.string.cc_open_settings))
-            tile(R.drawable.ic_sliders, R.string.cc_customize) { dialog.dismiss(); customize() }.state(a.getString(R.string.cc_customize_sub))
             dim = DimBar(a, ::dp, a.getString(R.string.cc_brightness)).apply { moved = { dimAt = System.currentTimeMillis(); dimOwed = true; ui.removeCallbacks(dimSend); ui.postDelayed(dimSend, 250) } }
             tintDot = ImageView(a)
             val tint = FrameLayout(a).apply {
@@ -511,17 +517,17 @@ object ControlCenter {
                     }
                 }, "home-cc-ram").apply { isDaemon = true }.start()
             }
+            // the TV's own Settings: kept, a step down (TV Home's look comes first, the user, 2026-11-01); needs no TV Setup
+            acts += Round(a, ::dp, R.drawable.ic_settings, a.getString(R.string.tv_settings)).also { r -> r.press = { go(listOf(Settings.ACTION_SETTINGS)) }; r.disc.setOnFocusChangeListener { v, f -> Motion.pop(v, f) } }
             acts += Round(a, ::dp, R.drawable.ic_power, a.getString(R.string.cc_power_tv)).also { r -> r.press = { powerMenu() }; r.disc.setOnFocusChangeListener { v, f -> Motion.pop(v, f) } }   // the menu has Screensaver, which needs no TV Setup
 
             val grid = LinearLayout(a).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false; setPadding(dp(12), dp(8), dp(12), dp(8)) }
-            for (i in 0 until info step 2) {
+            for ((at, n) in listOf(0 to 2, 2 to (info - 2).coerceAtLeast(1))) {   // the two big tiles, then the small ones in one row (3 or 4)
                 val row = LinearLayout(a).apply { clipChildren = false; clipToPadding = false }   // else it clips at its bounds: a focused tile came out cut at the sides
-                row.addView(tiles[i], LinearLayout.LayoutParams(0, -2, 1f))
-                if (i + 1 < info) row.addView(tiles[i + 1], LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(8) })
-                else row.addView(View(a), LinearLayout.LayoutParams(0, 1, 1f).apply { leftMargin = dp(8) })
-                grid.addView(row, LinearLayout.LayoutParams(-1, -2).apply { if (i > 0) topMargin = dp(8) })
+                for (j in 0 until n) row.addView(tiles.getOrNull(at + j) ?: View(a), LinearLayout.LayoutParams(0, if (at + j < info) -1 else 1, 1f).apply { if (j > 0) leftMargin = dp(8) })
+                grid.addView(row, LinearLayout.LayoutParams(-1, -2).apply { if (at > 0) topMargin = dp(8) })
             }
-            grid.addView(dimRow, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })   // full width under the tiles: a bar wants room, a 7th tile would leave half a row
+            grid.addView(dimRow, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })   // full width under the tiles: a bar wants room, one more row would push it over the round buttons
             // the bar keeps Left / Right, so the colour button is reached from the tile above it (and Left from the button is the bar)
             tiles.last().id = View.generateViewId(); tiles.last().nextFocusDownId = tint.id; tint.nextFocusUpId = tiles.last().id
             val at = IntArray(2).also { if (anchor != null) anchor.getLocationOnScreen(it) else { it[0] = dm.widthPixels - dp(48); it[1] = dp(48) } }   // no anchor (over another app, ControlCenterActivity): where the top bar's would be
@@ -576,3 +582,6 @@ object ControlCenter {
         return kind to name
     }
 }
+
+/** A real remote that sends a mic / search / assistant key (MicVoice.KEYS): the key layout says so; a virtual device does not count. */
+private fun micKey() = InputDevice.getDeviceIds().any { id -> InputDevice.getDevice(id)?.let { d -> !d.isVirtual && d.hasKeys(231, 219, 84).any { it } } == true }

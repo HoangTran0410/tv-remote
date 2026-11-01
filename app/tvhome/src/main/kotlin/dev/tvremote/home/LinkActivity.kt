@@ -9,6 +9,7 @@ import dev.tvremote.home.apps.LinkApps
  * TV Home's own shortcuts reach it. Nothing installed that takes the link: a word saying what to install.
  */
 class LinkActivity : android.app.Activity() {
+    override fun attachBaseContext(base: android.content.Context) = super.attachBaseContext(Lang.wrap(base))   // TV Home's own language, not the TV's: the panel over an app was in the TV's
     override fun onCreate(b: Bundle?) {
         super.onCreate(b)
         val url = intent.dataString.orEmpty()

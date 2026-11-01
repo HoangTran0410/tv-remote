@@ -1,8 +1,12 @@
 # Cài đặt nhanh (TV Home)
 
-Nút Cài đặt trên thanh trên mở bảng cùng kiểu Tùy chỉnh: Mạng (tên Wi-Fi), Nguồn vào (hoặc Bluetooth nếu TV không có nguồn vào), Hẹn giờ tắt, Khoá trẻ em, Cài đặt TV, Tùy chỉnh.
+Nút Cài đặt trên thanh trên mở bảng cùng kiểu Tùy chỉnh. Ô lớn: Tùy chỉnh, Hẹn giờ tắt.
 
-Khoá trẻ em: chạm để bật; bật rồi thì chạm (hỏi mã PIN) để chọn app hoặc tắt. Cần TV Setup. Nút tròn: Dọn RAM, Tắt TV (Màn chờ, Tắt màn hình, Khởi động lại, Tắt hẳn).
+Ô nhỏ: Mạng (tên Wi-Fi), Nguồn vào (hoặc Bluetooth nếu TV không có nguồn vào), Nút mic (TV Remote hay Mặc định; chỉ hiện khi remote có nút mic), Khoá trẻ em.
+
+Khoá trẻ em: chạm để bật; bật rồi thì chạm (hỏi mã PIN) để chọn app hoặc tắt. Cần TV Setup.
+
+Nút tròn: Dọn RAM, Cài đặt TV, Tắt TV (Màn chờ, Tắt màn hình, Khởi động lại, Tắt hẳn).
 
 **Độ sáng** (biểu tượng mặt trời): OK để chỉnh, Trái / Phải mỗi lần 10 %, Back là xong; 100 % = không phủ.
 
