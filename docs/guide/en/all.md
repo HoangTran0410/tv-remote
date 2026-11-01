@@ -734,12 +734,12 @@ These need TV Setup on the TV and ADB switched on. They run by themselves once o
 
 ## TV Channels, free TV channels
 
-An app on the TV that plays channels from iptv-org's public lists and VieON's free channels (Vietnam). No account.
+An app on the TV that plays channels from iptv-org's public lists and VieON's free channels (Vietnam), plus some stations' own public streams as backups. No account.
 
 1. **TV** tab → **TV channels** card → **Install TV Channels**.
 2. Type a channel's name and press **Open**, or say “open channel BBC News”.
 3. Arrange favorites and groups here, not with the D-pad: **TV channels** card → **Manage channels**. Saved at once; the TV updates at once. Needs a newer TV Channels.
-4. **Export** / **Import** copy favorites and groups to another TV: merge or replace. The country picker has a search and each country's number of channels.
+4. **Export** / **Import** copy favorites and groups to another TV: merge or replace.
 5. Your own m3u links (up to 5): on the TV, TV Channels → **Add an m3u link**, or **Manage channels** → **🔗 Your links**.
 6. On the TV: ▲▼ changes channel, OK shows info, OK again the list, ▶ shows what is on, ▶ again the guide. Hold OK on a channel: its guide, add it to a group, pin it to the home screen.
 
