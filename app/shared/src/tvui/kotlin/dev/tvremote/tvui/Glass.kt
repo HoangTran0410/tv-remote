@@ -94,7 +94,17 @@ class Glass(c: Context, private val dp: (Number) -> Int) : View(c) {
      * either one stretched on the way is half seen, so neither rim reads as bent. Still no redraw while they move.
      */
     fun to(content: ViewGroup, face: View, grow: Float, r: Float, glide: Boolean) {
-        if (face.width == 0) { face.post { if (face.isAttachedToWindow) to(content, face, grow, r, false) }; return }
+        waiting?.let { (v, l) -> v.removeOnLayoutChangeListener(l) }; waiting = null
+        // not laid out yet: once it has a size. A post here spun the main thread for hours on a face that stayed 0 wide (FPT, 2026-11-01)
+        if (face.width == 0) {
+            val l = object : View.OnLayoutChangeListener {
+                override fun onLayoutChange(v: View, l: Int, t: Int, r2: Int, b: Int, ol: Int, ot: Int, or: Int, ob: Int) {
+                    if (v.width == 0) return
+                    v.removeOnLayoutChangeListener(this); waiting = null; to(content, face, grow, r, false)
+                }
+            }
+            face.addOnLayoutChangeListener(l); waiting = face to l; return
+        }
         val a = cur
         if (!glide || !a.shown || a.fits(face, r)) { (if (a === this) twin else this)?.drop(); a.go(content, face, grow, r, glide); return }
         val b = (if (a === this) twin ?: Glass(context, dp).also { twin = it; content.addView(it, content.indexOfChild(this) + 1, FrameLayout.LayoutParams(0, 0)) } else this)
@@ -111,6 +121,7 @@ class Glass(c: Context, private val dp: (Number) -> Int) : View(c) {
 
     private var cur: Glass = this                                    // the pane in front: this, or the twin after a change of shape
     private var twin: Glass? = null                                  // the second pane, made at the first change of shape, next to this one
+    private var waiting: Pair<View, View.OnLayoutChangeListener>? = null   // a face not laid out yet: one at a time, the latest focus wins
 
     private fun fits(face: View, r: Float) = baseH > 0 && r == radius && Math.abs(face.width.toFloat() / face.height - baseW.toFloat() / baseH) < 0.02f
 

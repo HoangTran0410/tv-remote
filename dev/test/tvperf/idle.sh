@@ -10,3 +10,7 @@ snap() { $A "for f in /proc/$pid/task/*/stat; do cat \$f; done" | sed 's/^[0-9]*
 t0=$(snap); sleep $T; t1=$(snap)
 $A dumpsys gfxinfo dev.tvremote.home | grep -E "Total frames|Janky" | tr -s ' '
 join <(echo "$t0") <(echo "$t1") | awk '{d=$3-$2; if(d>0) print "  " $1, d*10 "ms"}' | sort -k2 -t' ' -rn
+# Home left alone draws nothing: its main thread over 5% of the time is a fault (a post loop spun it at 100% for hours, FPT, 2026-11-01)
+main=$(join <(echo "$t0") <(echo "$t1") | awk '$1=="v.tvremote.home"{print ($3-$2)*10}')
+[ "${main:-0}" -gt $(( T * 50 )) ] && { echo "FAIL: main thread ${main} ms busy in ${T} s while idle"; exit 1; }
+echo "idle ok: main thread ${main:-0} ms in ${T} s"

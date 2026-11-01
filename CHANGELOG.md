@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: fixed a loop that could keep the main thread at 100% CPU for hours (the TV turned slow and stopped answering keys) when the focus glass waited for an item that was never laid out; it now waits for that item's layout instead of retrying at once.
 - TV Home backgrounds: two new slideshows, "Famous paintings" (24 public-domain landscapes: Monet, Van Gogh, Hokusai, Turner…) and "Earth from above" (24 Google Earth View pictures, imagery owners credited). They come from the site, so TV Home needs no update.
 - Phone app: the live picture no longer stays black on phones whose decoder reports frames with size 0 (a Poco F6, issue #10); a decoder that gives no frame is made again more plainly, then Android's software one; the log names the decoder.
 - TV Home: smoother steps down the grid: the page scrolls only as far as the next row needs, eased at both ends, and the app name fades in on low-RAM TVs too (it popped in before).
