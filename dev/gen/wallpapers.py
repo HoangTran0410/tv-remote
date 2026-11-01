@@ -3,7 +3,8 @@
 and wallpapers.json (SHA-256 of both, credit, source, licence), then signs it like the launcher list (launchers.key, Ed25519).
 Pictures: NASA images (public domain; ESA / CSA credits kept) fetched from images-api.nasa.gov, photos from Unsplash and Wikimedia Commons (PHOTOS and VN below; a Commons file's author and licence are read from Commons itself;
 the ready-made themes of docs/home/themes.json show them through loop.html), and two renders made here (CC0).
-Also "links": the moving backgrounds and pages TV Home suggests (PEXELS, links(); LINKS_ONLY=1 makes only those again).
+Also "links": the moving backgrounds, slideshows (VN, ART, EARTH) and pages TV Home suggests (PEXELS, links(); LINKS_ONLY=1 makes only
+those again, SLIDES_ONLY=1 the art and earth slideshows too).
 Run again after changing WALLS; commit docs/home/ whole. Needs Pillow and a JDK."""
 import hashlib, io, json, os, subprocess, urllib.request
 from PIL import Image, ImageDraw, ImageFilter
@@ -97,9 +98,22 @@ def commons(name):
     return Image.open(f).convert("RGB"), author, "https://commons.wikimedia.org/wiki/File:" + urllib.parse.quote(name.replace(" ", "_")), lic
 
 
+def earth(i):
+    """(picture, credit, page, licence) of a Google Earth View picture (1800x1200): imagery owners from its own data, the place on Google Maps."""
+    import re
+    f = os.path.join(CACHE, "earth-%d.jpg" % i)
+    m = json.loads(get("https://www.gstatic.com/prettyearth/assets/data/v3/%d.json" % i))
+    os.makedirs(CACHE, exist_ok=True)
+    if not os.path.exists(f):
+        open(f, "wb").write(get("https://www.gstatic.com/prettyearth/assets/full/%d.jpg" % i))
+    owners = re.sub(r"^©\s*\d{4}\s*", "", m["attribution"]).strip()
+    return (Image.open(f).convert("RGB"), "Google Earth, " + owners, "https://www.google.com/maps/@%s,%s,12z/data=!3m1!1e3" % (m["lat"], m["lng"]),
+            "Google Earth View (attribution kept)")
+
+
 def photo(src):
-    """An Unsplash U(...) or a Commons file name."""
-    return unsplash(src) if isinstance(src, dict) else commons(src)
+    """An Unsplash U(...), an Earth View number or a Commons file name."""
+    return unsplash(src) if isinstance(src, dict) else earth(src) if isinstance(src, int) else commons(src)
 
 
 def fetch(nid):
@@ -143,24 +157,90 @@ def save(im, path, **k):
     return hashlib.sha256(b.getvalue()).hexdigest(), len(b.getvalue())
 
 
-def vn():
-    """docs/home/vn-*.jpg (1920x1080), vn-t.jpg (the theme's collage thumb) and vn.json (the list TV Home and loop.html read)."""
+def slides(s, lst, collage, extra=()):
+    """docs/home/<s>-*.jpg (1920x1080), <s>-t.jpg (a 2x2 collage of the ids in `collage`) and <s>.json (the list TV Home and loop.html read)."""
     items = []
-    for i, name, vi, en, (ax, ay) in VN:
+    for i, name, vi, en, (ax, ay) in lst:
         im, author, page, lic = photo(name)
         im = fit(im, ay, ax)
-        _, n = save(im, os.path.join(OUT, "vn-" + i + ".jpg"), quality=82)
-        save(im.resize((320, 180), Image.LANCZOS), os.path.join(OUT, "vn-" + i + "-t.jpg"), quality=72)   # the themes page's slideshow card cycles these
-        items.append({"file": "vn-" + i + ".jpg", "vi": vi, "en": en, "credit": author, "source": page})
-        print("vn", i, n // 1024, "KB", author, lic)
-    _, author, page, _ = photo(PHOTOS[0][1])   # the Rice terraces theme's photo rides along
-    items.append({"file": "terraces.jpg", "vi": PHOTOS[0][2]["vi"], "en": PHOTOS[0][2]["en"], "credit": author, "source": page})
+        _, n = save(im, os.path.join(OUT, s + "-" + i + ".jpg"), quality=82)
+        save(im.resize((320, 180), Image.LANCZOS), os.path.join(OUT, s + "-" + i + "-t.jpg"), quality=72)   # the themes page's slideshow card cycles these
+        items.append({"file": s + "-" + i + ".jpg", "vi": vi, "en": en, "credit": author, "source": page})
+        print(s, i, n // 1024, "KB", author, lic)
+    items += extra
     col = Image.new("RGB", (320, 180))
-    for k, f in enumerate(["vn-halong", "vn-hoian", "vn-danang", "vn-mucangchai"]):
-        col.paste(Image.open(os.path.join(OUT, f + ".jpg")).resize((160, 90), Image.LANCZOS), ((k % 2) * 160, (k // 2) * 90))
-    save(col, os.path.join(OUT, "vn-t.jpg"), quality=72)
-    json.dump({"v": 1, "slides": items}, open(os.path.join(OUT, "vn.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    open(os.path.join(OUT, "vn.json"), "a").write("\n")
+    for k, f in enumerate(collage):
+        col.paste(Image.open(os.path.join(OUT, s + "-" + f + ".jpg")).resize((160, 90), Image.LANCZOS), ((k % 2) * 160, (k // 2) * 90))
+    save(col, os.path.join(OUT, s + "-t.jpg"), quality=72)
+    json.dump({"v": 1, "slides": items}, open(os.path.join(OUT, s + ".json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    open(os.path.join(OUT, s + ".json"), "a").write("\n")
+
+
+def vn():
+    _, author, page, _ = photo(PHOTOS[0][1])   # the Rice terraces theme's photo rides along
+    slides("vn", VN, ["halong", "hoian", "danang", "mucangchai"],
+           [{"file": "terraces.jpg", "vi": PHOTOS[0][2]["vi"], "en": PHOTOS[0][2]["en"], "credit": author, "source": page}])
+
+
+# Two more slideshows in the gallery's links (not themes): "art", famous landscapes from Commons, public domain (the painter is the credit);
+# "earth", Google Earth View (the user, 2026-11-01: "like Bing images"; Google's pictures, shown as its own Chrome tab does, with the imagery
+# owners kept). Calm, wide pictures picked by eye: no airports, cities or cut-off faces. Slideshow.MAX is 24.
+ART = [
+    ("wheat", "Vincent van Gogh - Wheat Field with Cypresses - Google Art Project.jpg", "Cánh đồng lúa mì và cây bách", "Wheat Field with Cypresses", (.5, .5)),
+    ("lilies", "Claude Monet - The Water Lilies - Setting Sun - Google Art Project.jpg", "Hoa súng lúc hoàng hôn", "Water Lilies, Setting Sun", (.5, .5)),
+    ("impression", "Monet - Impression, Sunrise.jpg", "Ấn tượng, mặt trời mọc", "Impression, Sunrise", (.5, .5)),
+    ("magpie", "Claude Monet - The Magpie - Google Art Project.jpg", "Chim ác là trên tuyết", "The Magpie", (.5, .5)),
+    ("poppies", "Poppy Fields near Argenteuil MET DT1034.jpg", "Đồng hoa anh túc", "Poppy Fields near Argenteuil", (.5, .5)),
+    ("oxbow", "Cole Thomas The Oxbow (The Connecticut River near Northampton 1836).jpg", "Khúc quanh sông Connecticut", "The Oxbow", (.5, .5)),
+    ("sierra", "Albert Bierstadt - Among the Sierra Nevada, California - Google Art Project.jpg", "Giữa núi Sierra Nevada", "Among the Sierra Nevada", (.5, .5)),
+    ("twilight", "Frederic Edwin Church - Twilight in the Wilderness.jpg", "Hoàng hôn nơi hoang dã", "Twilight in the Wilderness", (.5, .5)),
+    ("wave", "The Great Wave off Kanagawa.jpg", "Sóng lớn ngoài khơi Kanagawa", "The Great Wave off Kanagawa", (.5, .5)),
+    ("temeraire", "The Fighting Temeraire, JMW Turner, National Gallery.jpg", "Chiến hạm Temeraire", "The Fighting Temeraire", (.5, .5)),
+    ("venice", "Joseph Mallord William Turner - Venice, The Mouth of the Grand Canal - Google Art Project.jpg", "Venice, cửa kênh Grand", "Venice, the Grand Canal", (.5, .5)),
+    ("haywain", "John Constable - The Hay Wain (1821).jpg", "Xe chở cỏ khô", "The Hay Wain", (.5, .5)),
+    ("moonrise", "Caspar David Friedrich - Mondaufgang am Meer - Google Art Project.jpg", "Trăng lên bên biển", "Moonrise by the Sea", (.5, .5)),
+    ("dnieper", "Kuindzhi Moonlit night on the Dnieper 1880 grm x2.jpg", "Đêm trăng trên sông Dnieper", "Moonlit Night on the Dnieper", (.5, .5)),
+    ("ninth-wave", "Aivazovsky, Ivan - The Ninth Wave.jpg", "Con sóng thứ chín", "The Ninth Wave", (.5, .5)),
+    ("pines", "Shishkin, Ivan - Morning in a Pine Forest.jpg", "Buổi sáng trong rừng thông", "Morning in a Pine Forest", (.5, .5)),
+    ("levitan", "Isaac Levitan - Au-dessus du repos éternel.jpg", "Trên chốn bình yên", "Above Eternal Peace", (.5, .5)),
+    ("port-marly", "Flood at Port-Marly A18691.jpg", "Nước lên ở Port-Marly", "Flood at Port-Marly", (.5, .5)),
+    ("montmartre", "Camille Pissarro - Boulevard Montmartre at Night - c 1897 - National Gallery UK.jpg", "Đại lộ Montmartre về đêm", "Boulevard Montmartre at Night", (.5, .5)),
+    ("asnieres", "Baigneurs a Asnieres.jpg", "Tắm sông ở Asnières", "Bathers at Asnières", (.5, .5)),
+    ("starry", "Vincent van Gogh - Starry Night - Google Art Project.jpg", "Đêm sao trên sông Rhône", "Starry Night Over the Rhône", (.5, .5)),
+    ("almond", "Vincent van Gogh - Almond blossom - Google Art Project.jpg", "Hoa hạnh nhân", "Almond Blossom", (.5, .5)),
+    ("keitele", "Akseli Gallen-Kallela - Lake Keitele, 1905.JPG", "Hồ Keitele", "Lake Keitele", (.5, .5)),
+    ("summer", "Arthur Streeton - Golden summer, Eaglemont - Google Art Project.jpg", "Mùa hè vàng", "Golden Summer, Eaglemont", (.5, .5)),
+]
+EARTH = [
+    ("1527", 1527, "Santa Cruz, Argentina", "Santa Cruz, Argentina", (.5, .5)),
+    ("5037", 5037, "Glen Arbor, Michigan, Mỹ", "Glen Arbor, Michigan, USA", (.5, .5)),
+    ("2278", 2278, "Nouadhibou, Mauritania", "Nouadhibou, Mauritania", (.5, .5)),
+    ("6052", 6052, "Kyzylorda, Kazakhstan", "Kyzylorda, Kazakhstan", (.5, .5)),
+    ("1557", 1557, "Buenos Aires, Argentina", "Buenos Aires, Argentina", (.5, .5)),
+    ("6213", 6213, "Quần đảo Cook", "Cook Islands", (.5, .5)),
+    ("1014", 1014, "Sơn Nam, Tây Tạng", "Shannan, Tibet", (.5, .5)),
+    ("6149", 6149, "Đảo san hô Enewetak, Quần đảo Marshall", "Enewetak Atoll, Marshall Islands", (.5, .5)),
+    ("1849", 1849, "Biển Đỏ, Sudan", "Red Sea, Sudan", (.5, .5)),
+    ("6465", 6465, "Potosí, Bolivia", "Potosí, Bolivia", (.5, .5)),
+    ("6233", 6233, "Tuamotu, Polynesia thuộc Pháp", "Tuamotu, French Polynesia", (.5, .5)),
+    ("6189", 6189, "Đảo san hô Jaluit, Quần đảo Marshall", "Jaluit Atoll, Marshall Islands", (.5, .5)),
+    ("6041", 6041, "Bờ biển Malaysia", "Malaysian coast", (.5, .5)),
+    ("6255", 6255, "Ajdabiya, Libya", "Ajdabiya, Libya", (.5, .5)),
+    ("1801", 1801, "Đảo Sark, Guernsey", "Sark, Guernsey", (.5, .5)),
+    ("2041", 2041, "Amman, Jordan", "Amman, Jordan", (.5, .5)),
+    ("7008", 7008, "Madagascar", "Madagascar", (.5, .5)),
+    ("1724", 1724, "Al Jahra, Kuwait", "Al Jahra, Kuwait", (.5, .5)),
+    ("2243", 2243, "Cuba", "Cuba", (.5, .5)),
+    ("2103", 2103, "Kasai, CHDC Congo", "Kasai, DR Congo", (.5, .5)),
+    ("6063", 6063, "Bahamas", "Bahamas", (.5, .5)),
+    ("1345", 1345, "Şanlıurfa, Thổ Nhĩ Kỳ", "Şanlıurfa, Türkiye", (.5, .5)),
+    ("2443", 2443, "Ruộng muối Arles, Pháp", "Salt fields, Arles, France", (.5, .5)),
+    ("5296", 5296, "Vrataruša, Croatia", "Vrataruša, Croatia", (.5, .5)),
+]
+
+
+def art(): slides("art", ART, ["wheat", "impression", "wave", "starry"])
+def earth_slides(): slides("earth", EARTH, ["2278", "6213", "1849", "2243"])
 
 # Moving backgrounds and pages TV Home suggests beside the pictures (wallpapers.json "links": id, kind video | slides | page, names,
 # url = the "wurl" it sets, thumb on the site pinned by SHA-256). Videos: Pexels License, 1920x1080, calm and small (a weak box
@@ -206,10 +286,13 @@ def links():
         out.append({"id": i, "kind": "video", "name": names, "url": SITE + "loop.html?v=" + quote(mp4, safe="") + "&p=" + quote(SITE + t, safe=""),
                     "thumb": t, "thumb_sha256": tsha, "fade": i not in LOOPS, "credit": "Pexels", "source": "https://www.pexels.com/video/%d/" % vid, "license": "Pexels License"})
         print("link", i)
-    vt = open(os.path.join(OUT, "vn-t.jpg"), "rb").read()
-    out.insert(0, {"id": "vn", "kind": "slides", "name": {"vi": "Việt Nam", "en": "Việt Nam", "ru": "Вьетнам"},
-                   "url": SITE + "loop.html?s=vn", "thumb": "vn-t.jpg", "thumb_sha256": hashlib.sha256(vt).hexdigest(), "credit": "Unsplash, Wikimedia Commons",
-                   "source": SITE + "vn.json", "license": "Unsplash License, CC BY-SA"})
+    for k, (s, name, credit, lic) in enumerate([
+            ("vn", {"vi": "Việt Nam", "en": "Việt Nam", "ru": "Вьетнам"}, "Unsplash, Wikimedia Commons", "Unsplash License, CC BY-SA"),
+            ("art", {"vi": "Tranh nổi tiếng", "en": "Famous paintings", "ru": "Известные картины"}, "Wikimedia Commons", "Public domain"),
+            ("earth", {"vi": "Trái Đất nhìn từ trên cao", "en": "Earth from above", "ru": "Земля сверху"}, "Google Earth View", "Google Earth (attribution kept)")]):
+        vt = open(os.path.join(OUT, s + "-t.jpg"), "rb").read()
+        out.insert(k, {"id": s, "kind": "slides", "name": name, "url": SITE + "loop.html?s=" + s, "thumb": s + "-t.jpg",
+                       "thumb_sha256": hashlib.sha256(vt).hexdigest(), "credit": credit, "source": SITE + s + ".json", "license": lic})
     out.append({"id": "earth-wind", "kind": "page", "name": {"vi": "Gió toàn cầu", "en": "Earth winds", "ru": "Ветра Земли"},
                 "url": "https://earth.nullschool.net/#current/wind/surface/level/orthographic=107,16,600", "credit": "Cameron Beccario",
                 "source": "https://earth.nullschool.net/about.html", "license": "", "heavy": True})
@@ -220,7 +303,8 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     if os.environ.get("VN_ONLY"): return vn()          # only the Vietnam slideshow; the gallery list stays as signed
     lst = os.path.join(OUT, "wallpapers.json")
-    if os.environ.get("LINKS_ONLY"):                   # only the suggested videos and pages: the pictures stay as they are
+    if os.environ.get("SLIDES_ONLY"): art(); earth_slides()   # the two gallery slideshows, then their links below
+    if os.environ.get("LINKS_ONLY") or os.environ.get("SLIDES_ONLY"):   # only the suggested videos and pages: the pictures stay as they are
         d = json.load(open(lst, encoding="utf-8")); d["links"] = links()
         return write(lst, d)
     items = []
@@ -241,8 +325,8 @@ def main():
         items.append({"id": i, "name": words, "file": i + ".jpg", "sha256": sha, "bytes": n, "thumb": i + "-t.jpg", "thumb_sha256": tsha,
                       "credit": author, "source": page, "license": lic})
         print(i, n // 1024, "KB", author, lic)
+    vn(); art(); earth_slides()                        # before links(): it pins their collage thumbs
     write(lst, {"v": 1, "walls": items, "links": links()})
-    vn()
 
 
 def write(lst, d):

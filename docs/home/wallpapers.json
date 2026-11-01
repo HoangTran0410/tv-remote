@@ -319,6 +319,36 @@
       "license": "Unsplash License, CC BY-SA"
     },
     {
+      "id": "art",
+      "kind": "slides",
+      "name": {
+        "vi": "Tranh nổi tiếng",
+        "en": "Famous paintings",
+        "ru": "Известные картины"
+      },
+      "url": "https://tvremote.pages.dev/home/loop.html?s=art",
+      "thumb": "art-t.jpg",
+      "thumb_sha256": "cb7406bd07c4aa6fa25f166026af28fbaf85f31e09e77de8d55bd373cc456e7f",
+      "credit": "Wikimedia Commons",
+      "source": "https://tvremote.pages.dev/home/art.json",
+      "license": "Public domain"
+    },
+    {
+      "id": "earth",
+      "kind": "slides",
+      "name": {
+        "vi": "Trái Đất nhìn từ trên cao",
+        "en": "Earth from above",
+        "ru": "Земля сверху"
+      },
+      "url": "https://tvremote.pages.dev/home/loop.html?s=earth",
+      "thumb": "earth-t.jpg",
+      "thumb_sha256": "7c72f6e5750883251445541e2d5e645cfa445ee15e309f76c791d18ed0bb7cab",
+      "credit": "Google Earth View",
+      "source": "https://tvremote.pages.dev/home/earth.json",
+      "license": "Google Earth (attribution kept)"
+    },
+    {
       "id": "fireplace",
       "kind": "video",
       "name": {

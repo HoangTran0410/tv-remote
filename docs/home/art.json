@@ -1,0 +1,173 @@
+{
+ "v": 1,
+ "slides": [
+  {
+   "file": "art-wheat.jpg",
+   "vi": "Cánh đồng lúa mì và cây bách",
+   "en": "Wheat Field with Cypresses",
+   "credit": "Vincent van Gogh",
+   "source": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_Wheat_Field_with_Cypresses_-_Google_Art_Project.jpg"
+  },
+  {
+   "file": "art-lilies.jpg",
+   "vi": "Hoa súng lúc hoàng hôn",
+   "en": "Water Lilies, Setting Sun",
+   "credit": "Claude Monet",
+   "source": "https://commons.wikimedia.org/wiki/File:Claude_Monet_-_The_Water_Lilies_-_Setting_Sun_-_Google_Art_Project.jpg"
+  },
+  {
+   "file": "art-impression.jpg",
+   "vi": "Ấn tượng, mặt trời mọc",
+   "en": "Impression, Sunrise",
+   "credit": "Claude Monet",
+   "source": "https://commons.wikimedia.org/wiki/File:Monet_-_Impression%2C_Sunrise.jpg"
+  },
+  {
+   "file": "art-magpie.jpg",
+   "vi": "Chim ác là trên tuyết",
+   "en": "The Magpie",
+   "credit": "Claude Monet",
+   "source": "https://commons.wikimedia.org/wiki/File:Claude_Monet_-_The_Magpie_-_Google_Art_Project.jpg"
+  },
+  {
+   "file": "art-poppies.jpg",
+   "vi": "Đồng hoa anh túc",
+   "en": "Poppy Fields near Argenteuil",
+   "credit": "Claude Monet",
+   "source": "https://commons.wikimedia.org/wiki/File:Poppy_Fields_near_Argenteuil_MET_DT1034.jpg"
+  },
+  {
+   "file": "art-oxbow.jpg",
+   "vi": "Khúc quanh sông Connecticut",
+   "en": "The Oxbow",
+   "credit": "Thomas Cole",
+   "source": "https://commons.wikimedia.org/wiki/File:Cole_Thomas_The_Oxbow_%28The_Connecticut_River_near_Northampton_1836%29.jpg"
+  },
+  {
+   "file": "art-sierra.jpg",
+   "vi": "Giữa núi Sierra Nevada",
+   "en": "Among the Sierra Nevada",
+   "credit": "Albert Bierstadt",
+   "source": "https://commons.wikimedia.org/wiki/File:Albert_Bierstadt_-_Among_the_Sierra_Nevada%2C_California_-_Google_Art_Project.jpg"
+  },
+  {
+   "file": "art-twilight.jpg",
+   "vi": "Hoàng hôn nơi hoang dã",
+   "en": "Twilight in the Wilderness",
+   "credit": "Frederic Edwin Church",
+   "source": "https://commons.wikimedia.org/wiki/File:Frederic_Edwin_Church_-_Twilight_in_the_Wilderness.jpg"
+  },
+  {
+   "file": "art-wave.jpg",
+   "vi": "Sóng lớn ngoài khơi Kanagawa",
+   "en": "The Great Wave off Kanagawa",
+   "credit": "After Katsushika Hokusai",
+   "source": "https://commons.wikimedia.org/wiki/File:The_Great_Wave_off_Kanagawa.jpg"
+  },
+  {
+   "file": "art-temeraire.jpg",
+   "vi": "Chiến hạm Temeraire",
+   "en": "The Fighting Temeraire",
+   "credit": "J. M. W. Turner",
+   "source": "https://commons.wikimedia.org/wiki/File:The_Fighting_Temeraire%2C_JMW_Turner%2C_National_Gallery.jpg"
+  },
+  {
+   "file": "art-venice.jpg",
+   "vi": "Venice, cửa kênh Grand",
+   "en": "Venice, the Grand Canal",
+   "credit": "J. M. W. Turner",
+   "source": "https://commons.wikimedia.org/wiki/File:Joseph_Mallord_William_Turner_-_Venice%2C_The_Mouth_of_the_Grand_Canal_-_Google_Art_Project.jpg"
+  },
+  {
+   "file": "art-haywain.jpg",
+   "vi": "Xe chở cỏ khô",
+   "en": "The Hay Wain",
+   "credit": "John Constable",
+   "source": "https://commons.wikimedia.org/wiki/File:John_Constable_-_The_Hay_Wain_%281821%29.jpg"
+  },
+  {
+   "file": "art-moonrise.jpg",
+   "vi": "Trăng lên bên biển",
+   "en": "Moonrise by the Sea",
+   "credit": "Caspar David Friedrich",
+   "source": "https://commons.wikimedia.org/wiki/File:Caspar_David_Friedrich_-_Mondaufgang_am_Meer_-_Google_Art_Project.jpg"
+  },
+  {
+   "file": "art-dnieper.jpg",
+   "vi": "Đêm trăng trên sông Dnieper",
+   "en": "Moonlit Night on the Dnieper",
+   "credit": "Arkhip Kuindzhi",
+   "source": "https://commons.wikimedia.org/wiki/File:Kuindzhi_Moonlit_night_on_the_Dnieper_1880_grm_x2.jpg"
+  },
+  {
+   "file": "art-ninth-wave.jpg",
+   "vi": "Con sóng thứ chín",
+   "en": "The Ninth Wave",
+   "credit": "Ivan Aivazovsky",
+   "source": "https://commons.wikimedia.org/wiki/File:Aivazovsky%2C_Ivan_-_The_Ninth_Wave.jpg"
+  },
+  {
+   "file": "art-pines.jpg",
+   "vi": "Buổi sáng trong rừng thông",
+   "en": "Morning in a Pine Forest",
+   "credit": "Ivan Shishkin / Konstantin Savitsky",
+   "source": "https://commons.wikimedia.org/wiki/File:Shishkin%2C_Ivan_-_Morning_in_a_Pine_Forest.jpg"
+  },
+  {
+   "file": "art-levitan.jpg",
+   "vi": "Trên chốn bình yên",
+   "en": "Above Eternal Peace",
+   "credit": "Isaac Levitan",
+   "source": "https://commons.wikimedia.org/wiki/File:Isaac_Levitan_-_Au-dessus_du_repos_%C3%A9ternel.jpg"
+  },
+  {
+   "file": "art-port-marly.jpg",
+   "vi": "Nước lên ở Port-Marly",
+   "en": "Flood at Port-Marly",
+   "credit": "Alfred Sisley",
+   "source": "https://commons.wikimedia.org/wiki/File:Flood_at_Port-Marly_A18691.jpg"
+  },
+  {
+   "file": "art-montmartre.jpg",
+   "vi": "Đại lộ Montmartre về đêm",
+   "en": "Boulevard Montmartre at Night",
+   "credit": "Camille Pissarro",
+   "source": "https://commons.wikimedia.org/wiki/File:Camille_Pissarro_-_Boulevard_Montmartre_at_Night_-_c_1897_-_National_Gallery_UK.jpg"
+  },
+  {
+   "file": "art-asnieres.jpg",
+   "vi": "Tắm sông ở Asnières",
+   "en": "Bathers at Asnières",
+   "credit": "Georges Seurat",
+   "source": "https://commons.wikimedia.org/wiki/File:Baigneurs_a_Asnieres.jpg"
+  },
+  {
+   "file": "art-starry.jpg",
+   "vi": "Đêm sao trên sông Rhône",
+   "en": "Starry Night Over the Rhône",
+   "credit": "Vincent van Gogh",
+   "source": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg"
+  },
+  {
+   "file": "art-almond.jpg",
+   "vi": "Hoa hạnh nhân",
+   "en": "Almond Blossom",
+   "credit": "Vincent van Gogh",
+   "source": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_Almond_blossom_-_Google_Art_Project.jpg"
+  },
+  {
+   "file": "art-keitele.jpg",
+   "vi": "Hồ Keitele",
+   "en": "Lake Keitele",
+   "credit": "Akseli Gallen-Kallela",
+   "source": "https://commons.wikimedia.org/wiki/File:Akseli_Gallen-Kallela_-_Lake_Keitele%2C_1905.JPG"
+  },
+  {
+   "file": "art-summer.jpg",
+   "vi": "Mùa hè vàng",
+   "en": "Golden Summer, Eaglemont",
+   "credit": "Arthur Streeton",
+   "source": "https://commons.wikimedia.org/wiki/File:Arthur_Streeton_-_Golden_summer%2C_Eaglemont_-_Google_Art_Project.jpg"
+  }
+ ]
+}
