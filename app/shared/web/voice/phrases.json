@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "rev": 3,
+  "rev": 5,
   "about": "Words of the spoken commands (Voice.kt, js/voice.js). What each KEY / verb DOES is code; the words are here. Accents and case do not matter (folded), 'tivi' and 'ti vi' read as 'tv'. Signed: dev/sign/sign_voice.py.",
   "never_close": [
     "dev.tvremote.setup",
@@ -375,15 +375,6 @@
           "danh thuc tv",
           "tv day"
         ],
-        "SETTINGS": [
-          "cai dat",
-          "mo cai dat",
-          "vao cai dat",
-          "cai dat he thong",
-          "mo cai dat he thong",
-          "setting",
-          "mo setting"
-        ],
         "OK": [
           "ok",
           "chon",
@@ -550,7 +541,70 @@
         "tren",
         "trong",
         "o"
-      ]
+      ],
+      "settings": {
+        "main": [
+          "cai dat",
+          "mo cai dat",
+          "vao cai dat",
+          "cai dat he thong",
+          "mo cai dat he thong",
+          "setting",
+          "mo setting"
+        ],
+        "wifi": [
+          "wifi",
+          "wi fi",
+          "mang",
+          "cai dat wifi",
+          "ket noi mang",
+          "mang internet"
+        ],
+        "bluetooth": [
+          "bluetooth",
+          "blu tut",
+          "ghep noi",
+          "ket noi tay cam",
+          "ket noi loa",
+          "phu kien",
+          "tay cam"
+        ],
+        "sound": [
+          "am thanh",
+          "cai dat am thanh"
+        ],
+        "date": [
+          "ngay gio",
+          "gio",
+          "cai dat gio"
+        ],
+        "apps": [
+          "ung dung",
+          "quan ly ung dung"
+        ],
+        "storage": [
+          "bo nho",
+          "dung luong"
+        ],
+        "language": [
+          "ngon ngu"
+        ],
+        "keyboard": [
+          "ban phim"
+        ],
+        "captions": [
+          "phu de"
+        ],
+        "developer": [
+          "nha phat trien",
+          "tuy chon nha phat trien",
+          "developer"
+        ],
+        "accessibility": [
+          "tro nang",
+          "ho tro tiep can"
+        ]
+      }
     },
     "en": {
       "fillers": [
@@ -653,13 +707,6 @@
           "wake tv",
           "switch on",
           "switch on the tv"
-        ],
-        "SETTINGS": [
-          "settings",
-          "open settings",
-          "go to settings",
-          "show settings",
-          "system settings"
         ],
         "OK": [
           "select",
@@ -821,7 +868,73 @@
       "connect": [
         "on",
         "in"
-      ]
+      ],
+      "settings": {
+        "main": [
+          "settings",
+          "open settings",
+          "go to settings",
+          "show settings",
+          "system settings"
+        ],
+        "wifi": [
+          "wifi",
+          "wi fi",
+          "wifi settings",
+          "network",
+          "network settings",
+          "internet settings"
+        ],
+        "bluetooth": [
+          "bluetooth",
+          "bluetooth settings",
+          "pair",
+          "pair a controller",
+          "pair a remote",
+          "connect a controller",
+          "accessories"
+        ],
+        "sound": [
+          "sound",
+          "sound settings",
+          "audio settings"
+        ],
+        "date": [
+          "date and time",
+          "time settings",
+          "clock settings"
+        ],
+        "apps": [
+          "apps settings",
+          "app settings",
+          "manage apps"
+        ],
+        "storage": [
+          "storage",
+          "storage settings"
+        ],
+        "language": [
+          "language",
+          "language settings"
+        ],
+        "keyboard": [
+          "keyboard",
+          "keyboard settings"
+        ],
+        "captions": [
+          "captions",
+          "subtitle settings",
+          "caption settings"
+        ],
+        "developer": [
+          "developer options",
+          "developer settings"
+        ],
+        "accessibility": [
+          "accessibility",
+          "accessibility settings"
+        ]
+      }
     }
   },
   "spoken": {
@@ -1033,5 +1146,44 @@
         "nhăm"
       ]
     }
+  },
+  "settings": {
+    "main": [
+      "android.settings.SETTINGS"
+    ],
+    "wifi": [
+      "android.settings.WIFI_SETTINGS"
+    ],
+    "bluetooth": [
+      "com.google.android.intent.action.CONNECT_INPUT",
+      "android.settings.BLUETOOTH_SETTINGS"
+    ],
+    "sound": [
+      "android.settings.SOUND_SETTINGS"
+    ],
+    "date": [
+      "android.settings.DATE_SETTINGS"
+    ],
+    "apps": [
+      "android.settings.APPLICATION_SETTINGS"
+    ],
+    "storage": [
+      "android.settings.INTERNAL_STORAGE_SETTINGS"
+    ],
+    "language": [
+      "android.settings.LOCALE_SETTINGS"
+    ],
+    "keyboard": [
+      "android.settings.INPUT_METHOD_SETTINGS"
+    ],
+    "captions": [
+      "android.settings.CAPTIONING_SETTINGS"
+    ],
+    "developer": [
+      "android.settings.APPLICATION_DEVELOPMENT_SETTINGS"
+    ],
+    "accessibility": [
+      "android.settings.ACCESSIBILITY_SETTINGS"
+    ]
   }
 }

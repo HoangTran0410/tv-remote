@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Voice: "mở HBO" / "open Rick Roll" opens a tile pinned on TV Home by the name on the grid (a link pin goes to the app that opens it); an app named in full wins over a tile, a tile named in full over a loose app match, and a list of at most 3 shows only when two or more targets match equally ("mở vtv3" never asks).
+- Voice: "mở cài đặt" now really opens the TV's Settings (it pressed a key the TV ignored), and "mở wifi" / "bluetooth" / "âm thanh" / "ngày giờ" / "ứng dụng" / "bộ nhớ" / "ngôn ngữ" / "bàn phím" / "phụ đề" / "nhà phát triển" / "trợ năng" (and English) open those pages; the pages are data in the signed phrases list.
 - TV Home: a pinned link's tile menu has its link (press to change it) inside On the home screen, right after Rename. The web page's Rename lists pinned links and shortcuts too (Rick Roll, a TV Channels channel), with the icon of the app that opens them.
 - Voice search in an app that is off or missing (Google's YouTube on FPT boxes) goes to the app that opens its links instead (TizenTube, SmartTube), not to an error or a chooser.
 - TV Home > Customize > Wallpaper (and the web page's): "Your photos" is the first part, the site's live pages (Global wind) sit beside Bing under Online, and the site's list of suggestions is asked again after an hour instead of a day, so new slideshows show up the same day.

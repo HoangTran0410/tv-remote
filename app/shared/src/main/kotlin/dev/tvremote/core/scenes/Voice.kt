@@ -16,7 +16,16 @@ object Voice {
         data class Close(val pkg: String, val name: String) : Command()     // am force-stop: needs ADB; never TV Setup / TV Home (phrases.json "never_close")
         data class Timer(val minutes: Int) : Command()
         data class Scene(val id: String) : Command()
+        /** A tile pinned on TV Home's grid, by the name the person sees ([PinRef]): TV Home opens it ([link]: aimed at [app]). */
+        data class Pin(val key: String, val name: String, val app: String, val link: String?) : Command()
+        /** Two or more targets (apps, pins) matched the words equally well: at most [MAX_CHOICES] to pick from. Never made for a clear request. */
+        /** A settings page by the list's id ("wifi", "bluetooth"): [actions] are tried in order until one starts, then the TV's settings. */
+        data class Setting(val id: String, val actions: List<String>) : Command()
+        data class Choice(val options: List<Command>) : Command()
     }
+    /** A pinned tile as TV Home reports it ("pinned" in its config): [key] `pin:...`, [title] as the grid shows it, [app] what opens it, [link] of TV Home's own link pins. */
+    data class PinRef(val key: String, val title: String, val app: String = "", val link: String? = null)
+    const val MAX_CHOICES = 3
 
     /** Lower case, no accents, no punctuation: "Mở YouTube!" and "mo youtube" read the same. */
     fun fold(s: String): String = Normalizer.normalize(s, Normalizer.Form.NFD).replace(MARKS, "").replace('đ', 'd').replace('Đ', 'd')
@@ -90,10 +99,36 @@ object Voice {
         return Command.Search(target.first, target.second, spelled(text, x), url)
     }
 
+    /**
+     * What [want] names among the installed apps and the pins, best match only. Quality: 0 the whole name, 1 a start of it, 2 [want] inside the name,
+     * 3 the name inside [want]. One target at the best quality: it. A pin named like an app that matched too: the app. Several at the same quality:
+     * a [Command.Choice] of up to [MAX_CHOICES]; this is the only place a list can come from.
+     */
+    private fun best(want: String, apps: Map<String, String>, pins: List<PinRef>, exactOnly: Boolean, withApps: Boolean = true): Command? {
+        fun quality(n: String): Int? = when {
+            n.isEmpty() -> null
+            n == want -> 0
+            exactOnly -> null
+            n.startsWith(want) || want.startsWith("$n ") -> 1
+            want.length >= 3 && n.contains(want) -> 2
+            n.length >= 3 && want.contains(n) -> 3
+            else -> null
+        }
+        val hits = ArrayList<Pair<Int, Command>>()
+        if (withApps) for ((pkg, name) in apps) quality(fold(name))?.let { hits.add(it to Command.App(pkg, name)) }
+        for (p in pins) quality(fold(p.title))?.let { hits.add(it to Command.Pin(p.key, p.title, p.app, p.link)) }
+        val top = hits.minOfOrNull { it.first } ?: return null
+        var at = hits.filter { it.first == top }.map { it.second }
+        val appNames = at.filterIsInstance<Command.App>().map { fold(it.name) }.toSet()
+        at = at.filter { it !is Command.Pin || fold(it.name) !in appNames }                // a pin named like an app is that app's twin: the app
+        at = at.distinctBy { if (it is Command.App) it.pkg else (it as Command.Pin).key }.sortedWith(compareBy({ names1(it).length }, { names1(it) }))   // the shortest name first (the closest), and the same order on every client
+        return if (at.size == 1) at[0] else Command.Choice(at.take(MAX_CHOICES))
+    }
+
     private fun channelName(w: String) = w.replace(Regex("([a-z]) (\\d)"), "\$1\$2")
 
-    /** [apps]: package to name; [scenes]: id to name. Null means: ask the TV's Assistant. */
-    fun parse(text: String, apps: Map<String, String>, scenes: Map<String, String>): Command? {
+    /** [apps]: package to name; [scenes]: id to name; [pins]: TV Home's pinned tiles. Null means: ask the TV's Assistant. */
+    fun parse(text: String, apps: Map<String, String>, scenes: Map<String, String>, pins: List<PinRef> = emptyList()): Command? {
         val raw = fold(text)
         if (raw.isEmpty()) return null
         scenes.entries.firstOrNull { (_, n) -> fold(n) == raw || fold("canh $n") == raw || fold("scene $n") == raw }?.let { return Command.Scene(it.key) }
@@ -115,11 +150,14 @@ object Voice {
         val verb = ph.open.matchEntire(s)?.groupValues?.get(1)
         val want = verb ?: s
         app(want, apps, ph, false)?.let { return Command.App(it.first, it.second) }
+        // a name said in full: an installed app (after "open" only: a bare word is not asked to open anything), else a pin; this before the channels, a tile the person named "VTV3" is theirs
+        best(want, apps, pins, true, withApps = verb != null)?.let { return it }
+        ph.settingWords[want]?.let { id -> return Command.Setting(id, ph.settings[id].orEmpty()) }   // after the apps: an app named "Wifi" is the app
         // before the apps by name: "mở kênh vtv1" is a channel, not an app called "kenh vtv1"
         ph.channel.matchEntire(s)?.let { m -> val n = m.groupValues[1]; return Command.Channel(if (ph.channelNames.matches(n)) channelName(n) else n) }
         if (ph.channelNames.matches(want)) return Command.Channel(channelName(want))
         ph.tuneRe.matchEntire(s)?.let { return Command.Channel(it.groupValues[1]) }
-        if (verb != null) app(verb, apps, ph, true)?.let { return Command.App(it.first, it.second) }
+        if (verb != null) best(verb, apps, pins, false)?.let { return it }
         return null
     }
 
@@ -128,10 +166,12 @@ object Voice {
      * on a pause in the partial text, without waiting for the recognizer's end ("mở you" finds YouTube loosely, so it never counts).
      */
     fun whole(text: String, cmd: Command?): Boolean {
-        if (cmd !is Command.App) return false
+        if (cmd !is Command.App && cmd !is Command.Pin) return false
         val ph = phrases ?: return false
         val s = strip(norm(text), ph)
         val want = ph.open.matchEntire(s)?.groupValues?.get(1) ?: s
+        if (cmd is Command.Pin) return norm(cmd.name) == want
+        cmd as Command.App
         return ph.apps.any { want in it.names && cmd.pkg in it.pkgs } || norm(cmd.name) == want
     }
 
@@ -146,6 +186,11 @@ object Voice {
         "WAKE" to "talk.k_wake", "SETTINGS" to "talk.k_settings", "OK" to "talk.k_ok", "UP" to "talk.k_up", "DOWN" to "talk.k_down", "LEFT" to "talk.k_left", "RIGHT" to "talk.k_right", "MENU" to "talk.k_menu", "VOL_UP" to "talk.k_vol_up", "VOL_DOWN" to "talk.k_vol_down")
     private val KEY_N = mapOf("VOL_UP" to "talk.k_vol_up_n", "VOL_DOWN" to "talk.k_vol_down_n")
 
+    // whole ids as above; a page the list adds with no words here is said as "settings"
+    val SETTING_SAY = mapOf("main" to "talk.s_settings", "wifi" to "talk.s_wifi", "bluetooth" to "talk.s_bluetooth", "sound" to "talk.s_sound", "date" to "talk.s_date", "apps" to "talk.s_apps",
+        "storage" to "talk.s_storage", "language" to "talk.s_language", "keyboard" to "talk.s_keyboard", "captions" to "talk.s_captions", "developer" to "talk.s_developer",
+        "accessibility" to "talk.s_accessibility")
+
     fun say(c: Command): Say = when (c) {
         is Command.Key -> if (c.times > 1) Say(KEY_N[c.key] ?: "talk.k_vol_up_n", mapOf("n" to c.times.toString())) else KEY_SAY[c.key]?.let { Say(it) } ?: Say("talk.key", mapOf("key" to c.key.lowercase().replace('_', ' ')))
         is Command.App -> Say("talk.open_app", mapOf("name" to c.name))
@@ -154,12 +199,20 @@ object Voice {
         is Command.Close -> Say("talk.close_app", mapOf("name" to c.name))
         is Command.Timer -> if (c.minutes == 0) Say("talk.timer_off") else Say("talk.timer", mapOf("n" to c.minutes.toString()))
         is Command.Scene -> Say("talk.scene")
+        is Command.Setting -> Say(SETTING_SAY[c.id] ?: "talk.s_settings")
+        is Command.Pin -> Say("talk.open_app", mapOf("name" to c.name))
+        is Command.Choice -> Say("talk.pick_one", mapOf("names" to names(c)))
     }
 
+    private fun names1(c: Command): String = when (c) { is Command.App -> c.name; is Command.Pin -> c.name; else -> "" }
+
+    /** The names of a [Command.Choice]'s options, "A · B · C". */
+    fun names(c: Command.Choice): String = c.options.joinToString(" · ") { names1(it) }
+
     /** [parse] plus its words ([adb] false: no ADB link, so closing an app is said to need it); null for nothing heard. A scene is named from [scenes]. Pure: the preview calls it on every partial result. */
-    fun preview(text: String, apps: Map<String, String>, scenes: Map<String, String>, adb: Boolean = true): Plan? {
+    fun preview(text: String, apps: Map<String, String>, scenes: Map<String, String>, adb: Boolean = true, pins: List<PinRef> = emptyList()): Plan? {
         if (fold(text).isEmpty()) return null
-        val c = parse(text, apps, scenes) ?: return Plan(null, Say("talk.ask", mapOf("sentence" to text.trim())))
+        val c = parse(text, apps, scenes, pins) ?: return Plan(null, Say("talk.ask", mapOf("sentence" to text.trim())))
         val say = if (c is Command.Scene) Say("talk.scene", mapOf("name" to (scenes[c.id] ?: ""))) else if (c is Command.Close && !adb) Say("talk.close_needs_adb", mapOf("name" to c.name)) else say(c)
         return Plan(c, say)
     }

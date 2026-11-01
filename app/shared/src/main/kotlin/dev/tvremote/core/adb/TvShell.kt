@@ -50,6 +50,18 @@ object TvShell {
             "if [ \$r = none ] && cmd package query-activities --brief -a android.intent.action.SEARCH 2>/dev/null | grep -q \"^ *\$p/\"; then " +
             "am start -a android.intent.action.SEARCH -p \$p --es query " + Adb.q(s) + " 2>&1 | grep -q Error || r=search; fi; echo \$r"
     }
+    /** The only intent actions a voice command starts: a Settings screen, or Google's pairing screen (the list's "settings"; sign_voice.py checks the same). */
+    private val SETTING_ACTION = Regex("^(?:android\\.settings\\.[A-Z_]+|com\\.google\\.android\\.intent\\.action\\.CONNECT_INPUT)$")
+
+    /**
+     * Shell: starts the first of [actions] this TV has a screen for (a TV answers "Error" for one it lacks; the Bluetooth page differs per brand), else the
+     * TV's settings. Prints "ok" or "fallback". An action is checked here, so a caller can never start anything else with it.
+     */
+    fun setting(actions: List<String>): String {
+        require(actions.isNotEmpty() && actions.all { SETTING_ACTION.matches(it) }) { "not a settings page" }
+        return "for a in " + actions.joinToString(" ") + "; do o=\$(am start -a \$a 2>&1); case \"\$o\" in *Error*|*xception*) ;; *) echo ok; exit 0;; esac; done; " +
+            "am start -a android.settings.SETTINGS >/dev/null 2>&1; echo fallback"
+    }
     /**
      * Whichever app opens YouTube's links and not every link: Google's YouTube, Cobalt (YouTube for set-top boxes: an FPT Play box switches
      * Google's off and ships it), SmartTube, ... found by asking the TV, so no list to keep. Browsers and Downloader take any link: left out

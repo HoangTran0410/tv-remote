@@ -37,6 +37,10 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
         if (!post) return null
         return when (what) {
             "app" -> { open(r.json().optString("link")); HttpServer.Response.json(JSONObject().put("ok", true).put("via", "adb")) }
+            "setting" -> {                                            // voice: a Settings page by its id; the actions come from the signed list, never from the client
+                val acts = dev.tvremote.core.scenes.Voice.phrases?.settings?.get(r.json().optString("id")) ?: throw IllegalArgumentException("unknown settings page")
+                HttpServer.Response.json(JSONObject().put("ok", true).put("via", sh(TvShell.setting(acts)).trim()))
+            }
             "privacy/scan" -> HttpServer.Response.json(privacy.start())
             "privacy/stop" -> HttpServer.Response.json(privacy.stop())
             "privacy/revoke", "privacy/grant" -> HttpServer.Response.json(privacyPerms(r.json().optString("pkg"), what.endsWith("revoke")))
@@ -138,6 +142,7 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
     private fun open(what: String) {
         val w = what.trim()
         if (w == "settings") { if (sh("am start -a android.settings.SETTINGS 2>&1").contains("Error")) throw IllegalArgumentException("the TV did not open its settings") }
+        else if (w.startsWith("pin:")) dev.tvremote.core.ontv.Home.openPin({ sh(it) }, w)     // a tile on TV Home's grid (voice: "mở <its name>")
         else if (PKG.matcher(w).matches()) app(w, "launch")
         else openLink(w)
     }

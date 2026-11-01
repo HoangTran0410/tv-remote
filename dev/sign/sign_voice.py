@@ -69,6 +69,25 @@ def check():
             if not all(ch in sp.get("letters", {}) for ch in w):
                 fail("spoken.%s.spell: '%s' has a letter not in letters" % (l, w))
         strs(sp.get("numbers", ["x"]), "spoken.%s.numbers" % l)
+    acts = d.get("settings", {})                             # Settings pages: id -> the intent actions tried in order (Voice.Command.Setting)
+    for i, al in acts.items():
+        strs(al, "settings." + i)
+        for a in al:                                         # the only actions the TV is ever asked to start: a settings screen or the pairing screen
+            if not re.fullmatch(r"android\.settings\.[A-Z_]+|com\.google\.android\.intent\.action\.CONNECT_INPUT", a):
+                fail("settings.%s: action %s is not a settings page" % (i, a))
+    for l, b in d["lang"].items():
+        for i, ps in b.get("settings", {}).items():
+            if i not in acts:
+                fail("%s.settings.%s: no actions for it in settings" % (l, i))
+            strs(ps, "%s.settings.%s" % (l, i))
+    taken = {}
+    for l, b in d["lang"].items():                           # one phrase, one page; and none that is also a key ("cai dat" is the SETTINGS key)
+        for i, ps in b.get("settings", {}).items():
+            for w in ps:
+                if w != w.lower() or taken.setdefault(w, i) != i:
+                    fail("'%s' is both settings.%s and settings.%s (or not lower case)" % (w, i, taken[w]))
+                if any(w in b2["keys"].get(k, []) for b2 in d["lang"].values() for k in b2["keys"]):
+                    fail("'%s' is a key phrase already" % w)
     seen = {}
     for l, b in d["lang"].items():                           # one phrase, one key
         for k, v in b["keys"].items():

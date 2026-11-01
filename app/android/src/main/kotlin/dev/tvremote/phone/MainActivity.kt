@@ -179,6 +179,8 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
     internal val talk by lazy { Talk(this) }                          // Quick talk: hold to talk (Talk.kt)
     internal var appNames: Map<String, String> = emptyMap()           // the TV's apps by package, for "open <app>" spoken (Automation.kt)
     internal var appNamesFor: String? = null
+    internal var voicePins: List<dev.tvremote.core.scenes.Voice.PinRef> = emptyList()           // TV Home's pinned tiles, for "open <its name>" (Automation.kt); asked again after 5 minutes
+    internal var voicePinsAt = 0L
     internal lateinit var waiting: FrameLayout                         // covers the remote while a TV is being connected: nothing on it works yet
     internal lateinit var waitName: TextView
     internal lateinit var waitStep: TextView

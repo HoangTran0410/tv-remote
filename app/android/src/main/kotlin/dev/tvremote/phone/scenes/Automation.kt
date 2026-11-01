@@ -134,15 +134,17 @@ internal fun MainActivity.runScene(sc: JSONObject) {
 /** Carries out a sentence here when it can (Voice.kt); otherwise the TV's search / Assistant gets it, as before. */
 internal fun MainActivity.voice(sentence: String) {
     val scenes = SceneStore.list(this).associate { it.optString("id") to it.optString("name") }
-    Voice.parse(sentence, appNames, scenes)?.let { doVoice(it); return }
+    Voice.parse(sentence, appNames, scenes, voicePins)?.let { doVoice(it); return }
     val tv = tv
     val ip = host
-    if (appNamesFor != ip && ip != null && tv != null && tv.ready() && Voice.wantsApp(sentence)) {
-        warmAppNames { Voice.parse(sentence, appNames, scenes)?.let { doVoice(it) } ?: ask(sentence) }   // "open <app>": the names of this TV's apps, asked once per TV
+    if ((appNamesFor != ip || System.currentTimeMillis() - voicePinsAt > 300_000) && ip != null && tv != null && tv.ready() && Voice.wantsApp(sentence)) {
+        warmAppNames { Voice.parse(sentence, appNames, scenes, voicePins)?.let { doVoice(it) } ?: ask(sentence) }   // "open <app>": the names of this TV's apps, asked once per TV
         return
     }
     ask(sentence)
 }
+
+private fun friendlyPin(e: Exception): String = e.message ?: ""
 
 private fun MainActivity.doVoice(c: Voice.Command) {
     when (c) {
@@ -182,6 +184,19 @@ private fun MainActivity.doVoice(c: Voice.Command) {
             }.start()
             else basic?.launch(link)
         }
+        is Voice.Command.Setting -> {
+            val tv = tv
+            if (tv == null || !tv.ready()) { needsAdb(); return }              // a settings page is started by ADB
+            toast(T(Voice.say(c).id))
+            Thread { try { tv.shell(dev.tvremote.core.adb.TvShell.setting(c.actions)) } catch (e: Exception) { ui.post { toast(e.message ?: "") } } }.start()
+        }
+        is Voice.Command.Pin -> {                                         // a tile on TV Home's grid: its link aimed at the app that opens it, else TV Home opens it
+            val tv = tv
+            if (tv == null || !tv.ready()) { needsAdb(); return }
+            toast(T("automation.opening", "name" to c.name))
+            Thread { try { dev.tvremote.core.ontv.Home.openPin({ tv.shell(it) }, c.key) } catch (e: Exception) { ui.post { toast(friendlyPin(e)) } } }.start()
+        }
+        is Voice.Command.Choice -> menu(T("talk.pick_title"), -1, c.options.map { o -> Triple(if (o is Voice.Command.App) o.name else (o as Voice.Command.Pin).name, "") { doVoice(o) } })   // 2+ equal matches only (Voice.best): at most 3
         is Voice.Command.Key -> {
             val code = Scenes.KEYS[c.key] ?: return
             for (i in 0 until c.times) ui.postDelayed({ press(code, false) }, i * 150L)

@@ -21,6 +21,7 @@ class VoiceTest {
 
     /** tests/voice_cases.json is read by voice.test.js too: the page and the phone must understand the same sentences. */
     private fun show(c: Command?): String = when (c) {
+        is Command.Pin -> "pin:${c.key}"; is Command.Setting -> "setting:${c.id}"; is Command.Choice -> "choice:" + c.options.joinToString("|") { show(it) }
         null -> "null"; is Command.Key -> "key:${c.key}:${c.times}"; is Command.App -> "app:${c.pkg}"; is Command.Close -> "close:${c.pkg}"
         is Command.Channel -> "channel:${c.name}"; is Command.Timer -> "timer:${c.minutes}"; is Command.Scene -> "scene:${c.id}"
         is Command.Search -> "search:${c.pkg}:${c.query}"
@@ -29,9 +30,11 @@ class VoiceTest {
         val t = JSONObject(File("tests/voice_cases.json").readText())
         val a = t.getJSONObject("apps").let { o -> o.keys().asSequence().associateWith { o.getString(it) } }
         val sc = t.getJSONObject("scenes").let { o -> o.keys().asSequence().associateWith { o.getString(it) } }
+        val pj = t.getJSONArray("pins")
+        val pins = (0 until pj.length()).map { pj.getJSONObject(it) }.map { Voice.PinRef(it.getString("key"), it.getString("title"), it.optString("app"), it.optString("link").ifEmpty { null }) }
         val cases = t.getJSONArray("cases")
         assertTrue(cases.length() >= 40)
-        for (i in 0 until cases.length()) { val c = cases.getJSONArray(i); assertEquals(c.getString(0), c.getString(1), show(Voice.parse(c.getString(0), a, sc))) }
+        for (i in 0 until cases.length()) { val c = cases.getJSONArray(i); assertEquals(c.getString(0), c.getString(1), show(Voice.parse(c.getString(0), a, sc, pins))) }
     }
 
     @Test fun closeNeedsAdbSaidInThePreview() {
@@ -113,7 +116,7 @@ class VoiceTest {
         fun say(t: String) = Voice.preview(t, apps, scenes)!!.say
         assertEquals(Voice.Say("talk.k_mute"), say("tắt tiếng"))
         assertEquals(Voice.Say("talk.k_home"), say("ra màn hình chính"))
-        assertEquals(Voice.Say("talk.k_settings"), say("mở cài đặt"))
+        assertEquals(Voice.Say("talk.s_settings"), say("mở cài đặt"))
         assertEquals(Voice.Say("talk.k_vol_up_n", mapOf("n" to "3")), say("tăng âm lượng"))
         assertEquals(Voice.Say("talk.k_vol_down_n", mapOf("n" to "5")), say("giảm âm lượng 5"))
         assertEquals(Voice.Say("talk.open_app", mapOf("name" to "YouTube")), say("mở youtube"))

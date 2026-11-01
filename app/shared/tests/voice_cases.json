@@ -8,7 +8,11 @@
   "dev.tvremote.channels": "TV Channels",
   "dev.tvremote.home": "TV Home",
   "dev.tvremote.setup": "TV Setup",
-  "com.android.vending": "Google Play Store"
+  "com.android.vending": "Google Play Store",
+  "tv.demo.musica": "Musica",
+  "tv.demo.musicbox": "Music Box",
+  "tv.demo.musicpro": "Music Pro",
+  "tv.demo.musicx": "Music X"
  },
  "scenes": {
   "s1": "Đi ngủ",
@@ -97,11 +101,11 @@
   ],
   [
    "mở cài đặt",
-   "key:SETTINGS:1"
+   "setting:main"
   ],
   [
    "open settings",
-   "key:SETTINGS:1"
+   "setting:main"
   ],
   [
    "ok",
@@ -354,6 +358,151 @@
   [
    "play something on the sofa",
    "null"
+  ],
+  [
+   "mở Rick Roll",
+   "pin:pin:dev.tvremote.home/l1"
+  ],
+  [
+   "open disney",
+   "pin:pin:com.demo.tv/disney"
+  ],
+  [
+   "mở disney plus",
+   "pin:pin:com.demo.tv/disneyplus"
+  ],
+  [
+   "mở netflix",
+   "app:com.netflix.ninja"
+  ],
+  [
+   "mở vtv3",
+   "channel:vtv3"
+  ],
+  [
+   "mở music box",
+   "app:tv.demo.musicbox"
+  ],
+  [
+   "mở mus",
+   "choice:app:tv.demo.musica|app:tv.demo.musicx|app:tv.demo.musicbox"
+  ],
+  [
+   "mở tin",
+   "choice:pin:pin:com.demo.tv/news|pin:pin:com.demo.tv/news2"
+  ],
+  [
+   "mở tin tức",
+   "pin:pin:com.demo.tv/news"
+  ],
+  [
+   "mở rick",
+   "pin:pin:dev.tvremote.home/l1"
+  ],
+  [
+   "rick roll",
+   "pin:pin:dev.tvremote.home/l1"
+  ],
+  [
+   "mở wifi",
+   "setting:wifi"
+  ],
+  [
+   "wifi",
+   "setting:wifi"
+  ],
+  [
+   "open wifi settings",
+   "setting:wifi"
+  ],
+  [
+   "mở cài đặt âm thanh",
+   "setting:sound"
+  ],
+  [
+   "mở bluetooth",
+   "setting:bluetooth"
+  ],
+  [
+   "kết nối tay cầm",
+   "setting:bluetooth"
+  ],
+  [
+   "pair a controller",
+   "setting:bluetooth"
+  ],
+  [
+   "mở tùy chọn nhà phát triển",
+   "setting:developer"
+  ],
+  [
+   "bật ngôn ngữ",
+   "setting:language"
+  ],
+  [
+   "mở cài đặt",
+   "setting:main"
+  ],
+  [
+   "tắt tiếng",
+   "key:MUTE:1"
+  ],
+  [
+   "mở wifi trên youtube",
+   "search:com.google.android.youtube.tv:wifi"
+  ],
+  [
+   "mở bộ nhớ",
+   "setting:storage"
+  ],
+  [
+   "mở ứng dụng",
+   "setting:apps"
+  ],
+  [
+   "open settings",
+   "setting:main"
+  ],
+  [
+   "vào cài đặt",
+   "setting:main"
+  ],
+  [
+   "mở cài đặt hệ thống",
+   "setting:main"
   ]
+ ],
+ "pins": [
+  {
+   "key": "pin:dev.tvremote.home/l1",
+   "title": "Rick Roll",
+   "app": "com.google.android.youtube.tv",
+   "link": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+  },
+  {
+   "key": "pin:com.demo.tv/disney",
+   "title": "Disney",
+   "app": "com.demo.tv"
+  },
+  {
+   "key": "pin:com.demo.tv/disneyplus",
+   "title": "Disney Plus",
+   "app": "com.demo.tv"
+  },
+  {
+   "key": "pin:com.demo.tv/netflix",
+   "title": "Netflix",
+   "app": "com.demo.tv"
+  },
+  {
+   "key": "pin:com.demo.tv/news",
+   "title": "Tin tức",
+   "app": "com.demo.tv"
+  },
+  {
+   "key": "pin:com.demo.tv/news2",
+   "title": "Tin thể thao",
+   "app": "com.demo.tv"
+  }
  ]
 }

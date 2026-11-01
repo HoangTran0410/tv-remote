@@ -219,7 +219,7 @@ internal class Talk(private val a: MainActivity) {
         end()
         if (sentence.isBlank()) { say(T("talk.heard_nothing")); return }
         liveText("“${sentence.trim()}”", true)
-        Voice.preview(sentence, a.appNames, scenes, a.tv?.ready() == true)?.let { listPlans(listOf(it), true) }
+        Voice.preview(sentence, a.appNames, scenes, a.tv?.ready() == true, a.voicePins)?.let { listPlans(listOf(it), true) }
         state?.text = T("talk.sent", "sentence" to sentence.trim())
         a.buzz()
         a.voice(sentence)
@@ -244,7 +244,7 @@ internal class Talk(private val a: MainActivity) {
 
     private fun show() {
         if (lastPartial.isBlank()) liveText(T("talk.listening"), false) else liveText(lastPartial, true)
-        val ps = alternatives.distinct().take(3).mapNotNull { Voice.preview(it, a.appNames, scenes, a.tv?.ready() == true) }.distinctBy { it.say }
+        val ps = alternatives.distinct().take(3).mapNotNull { Voice.preview(it, a.appNames, scenes, a.tv?.ready() == true, a.voicePins) }.distinctBy { it.say }
         listPlans(ps, false)
     }
 
@@ -380,11 +380,12 @@ internal class Talk(private val a: MainActivity) {
 internal fun MainActivity.warmAppNames(then: (() -> Unit)? = null) {
     val ip = host
     val tv = tv
-    if (appNamesFor == ip || ip == null || tv == null || !tv.ready()) { then?.invoke(); return }
+    if ((appNamesFor == ip && System.currentTimeMillis() - voicePinsAt < 300_000) || ip == null || tv == null || !tv.ready()) { then?.invoke(); return }
     Thread {
         val link = dev.tvremote.core.adb.AdbLink(filesDir, ip)
         val names = try { dev.tvremote.core.ontv.RemoteLabels(link, { assets.open("tvr-helper.jar").use { it.readBytes() } }).names() } catch (e: Exception) { emptyMap() } finally { link.close() }
-        ui.post { if (!isFinishing && host == ip) { appNames = names; appNamesFor = ip }; then?.invoke() }
+        val pins = try { dev.tvremote.core.ontv.Home.ownPins { tv.shell(it) } } catch (e: Exception) { emptyList() }   // TV Home's pinned tiles, said by name like apps
+        ui.post { if (!isFinishing && host == ip) { appNames = names; appNamesFor = ip; voicePins = pins; voicePinsAt = System.currentTimeMillis() }; then?.invoke() }
     }.start()
 }
 

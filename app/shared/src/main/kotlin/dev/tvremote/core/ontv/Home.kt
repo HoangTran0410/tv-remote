@@ -39,6 +39,27 @@ object Home {
         val m = Regex("data=\"([A-Za-z0-9+/=]+)\"").find(sh("am broadcast --include-stopped-packages -n ${HomeConfig.RECEIVER} 2>&1")) ?: return emptyMap()
         return names(JSONObject(String(B64.decode(m.groupValues[1]), Charsets.UTF_8)).optJSONObject("config"))
     }
+
+    /** The tiles pinned on TV Home's grid (its "pinned"), for the voice to open by name; empty without TV Home or a TV Home that does not report them. */
+    fun ownPins(sh: (String) -> String): List<dev.tvremote.core.scenes.Voice.PinRef> {
+        val m = Regex("data=\"([A-Za-z0-9+/=]+)\"").find(sh("am broadcast --include-stopped-packages -n ${HomeConfig.RECEIVER} 2>&1")) ?: return emptyList()
+        return pins(JSONObject(String(B64.decode(m.groupValues[1]), Charsets.UTF_8)).optJSONObject("config"))
+    }
+    fun pins(config: JSONObject?): List<dev.tvremote.core.scenes.Voice.PinRef> {
+        val a = config?.optJSONArray("pinned") ?: return emptyList()
+        return (0 until a.length()).mapNotNull { a.optJSONObject(it) }.filter { it.optString("key").startsWith("pin:") && it.optString("title").isNotBlank() }
+            .map { dev.tvremote.core.scenes.Voice.PinRef(it.getString("key"), it.getString("title"), it.optString("app"), it.optString("link").ifBlank { null }) }
+    }
+
+    /** Asks TV Home (its OpenActivity, which opens only what is on its grid) to open the pinned tile [key]: only the home screen may start a shortcut. */
+    @Throws(IOException::class)
+    fun openPin(sh: (String) -> String, key: String) {
+        if (!PIN_KEY.matches(key)) throw IOException("pin_bad_link")
+        val r = sh("am start -n ${HomeConfig.PKG}/.OpenActivity --es t " + Adb.q(key) + " 2>&1")
+        if (r.contains("Error")) throw IOException("home:missing")
+    }
+    private val PIN_KEY = Regex("^pin:[A-Za-z][\\w.]*/[\\w.:@+=,~-]{1,200}$")
+
     fun names(config: JSONObject?): Map<String, String> {
         val n = config?.optJSONObject("names") ?: return emptyMap()
         return n.keys().asSequence().mapNotNull { k -> n.optString(k).trim().takeIf { it.isNotEmpty() }?.let { k to it } }.toMap()

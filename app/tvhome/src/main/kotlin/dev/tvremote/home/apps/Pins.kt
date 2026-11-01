@@ -345,7 +345,11 @@ object Pins {
 
     /** The tiles pinned now, [{key, title, app, link?}]: the clients rename them and voice opens them by name (link: a pinned link's, [linkOf]). */
     private fun pinned(c: Context): JSONArray = JSONArray().also { out ->
-        for (a in list(c)) out.put(JSONObject().put("key", a.pkg).put("title", a.label).put("app", appOf(c, a) ?: "")
-            .also { o -> ownIdOf(c, a)?.let { linkOf(c, it) }?.let { o.put("link", it) } })
+        for (a in list(c)) {
+            val link = ownIdOf(c, a)?.let { linkOf(c, it) }
+            // a link's app is the one that would open it now (LinkActivity's pick): the one saved at pin time may be gone (TizenTube reinstalled)
+            val app = link?.let { LinkApps.preview(c, it).apps.firstOrNull()?.pkg } ?: appOf(c, a) ?: ""
+            out.put(JSONObject().put("key", a.pkg).put("title", a.label).put("app", app).also { o -> if (link != null) o.put("link", link) })
+        }
     }
 }

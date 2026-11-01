@@ -46,6 +46,11 @@ class Phrases(json: String) {
     val tuneRe = Regex("^(?:" + alt(tune) + ") (.+)$")
     val channel = Regex("^(?:(?:" + alt(all("channel", "verbs")) + ") )?(?:" + alt(all("channel", "words")) + ") (.+)$")
     val channelNames = Regex("^(?:" + (0 until (o.optJSONArray("channel_names")?.length() ?: 0)).joinToString("|") { o.getJSONArray("channel_names").getString(it) } + ")$")
+    /** Settings pages by id: the intent actions to try in order (the list's "settings"); [settingWords]: the folded phrase of any language -> that id. Data only: a new page is a new line in the list. */
+    val settings: Map<String, List<String>> = o.optJSONObject("settings")?.let { m -> m.keys().asSequence().associateWith { k -> m.getJSONArray(k).let { a -> (0 until a.length()).map { a.getString(it) } } } } ?: emptyMap()
+    val settingWords: Map<String, String> = HashMap<String, String>().also { m ->
+        for (l in langs) { val k = l.optJSONObject("settings") ?: continue; for (id in k.keys()) if (id in settings) for (p in words(k.getJSONArray(id))) m[p] = id }
+    }
     val neverClose: Set<String> = o.optJSONArray("never_close")?.let { a -> (0 until a.length()).map { a.getString(it) }.toSet() } ?: emptySet()
     val apps: List<Alias> = o.getJSONArray("apps").let { a ->
         (0 until a.length()).map { a.getJSONObject(it) }.map { x ->

@@ -603,10 +603,28 @@ $('#scenefile').addEventListener('change', async (e) => {
 });
 
 // voice and the "Ask the TV" box: what the remote can do by itself (voice.js), before the TV's Assistant is asked
+const SETTING_SAY = { main: 'talk.s_settings', wifi: 'talk.s_wifi', bluetooth: 'talk.s_bluetooth', sound: 'talk.s_sound', date: 'talk.s_date', apps: 'talk.s_apps', storage: 'talk.s_storage', language: 'talk.s_language',
+  keyboard: 'talk.s_keyboard', captions: 'talk.s_captions', developer: 'talk.s_developer', accessibility: 'talk.s_accessibility' };   // whole ids (tests/i18n.test.js reads them)
 async function doCommand(c) {
   if (c.kind === 'scene') return runScene(c.scene);
   if (c.kind === 'app') return openOnTv(c.pkg, c.name);
   if (c.kind === 'channel') return chanOpen(c.name);
+  if (c.kind === 'setting') {                                         // a Settings page: the server tries the list's actions for this id (TvShell.setting)
+    if (needAdb()) return;
+    const r = await api('/api/setting', { id: c.id });
+    if (r) toast(T(SETTING_SAY[c.id] || 'talk.s_settings'));
+    return;
+  }
+  if (c.kind === 'pin') {                                             // TV Home opens it as a press on the tile (OpenActivity): a link pin's app is picked then, the one saved at pin time may be gone
+    if (needAdb()) return;
+    const r = await api('/api/app', { link: c.key });
+    if (r) toast(T('remote.opened_name', { name: c.name }));
+    return;
+  }
+  if (c.kind === 'choice') {                                          // only when the words fit 2+ targets equally (voice.js best()): at most 3 buttons
+    menuDlg(T('talk.pick_title'), -1, c.options.map((o) => [o.name, '', () => doCommand(o)]), -1, true);
+    return;
+  }
   if (c.kind === 'search') {                                          // "mở vtv3 trên fpt play": the query inside that app, else only the app
     const r = await api('/api/search', { query: c.query, pkg: c.pkg, url: c.url || '' });
     if (r) toast(T(r.to === 'open' ? 'auto.search_in_none' : 'auto.search_in', { name: c.name, q: c.query }));
@@ -624,11 +642,22 @@ async function doCommand(c) {
     { const key = (STEP_KEYS.find((k) => k[0] === c.key) || [0, c.key])[1]; toast(c.times > 1 ? T('auto.pressed_times', { key, times: c.times }) : T('auto.pressed', { key })); }
   }
 }
+// TV Home's pinned tiles ({key, title, app, link}) for "mở <name>": asked once per TV and kept 5 minutes; none without TV Home, ADB or a TV Home that reports them
+let PINS = [], pinsAt = 0, pinsHost = null;
+const voicePins = () => PINS;
+async function loadVoicePins() {
+  const host = curHost || '-';
+  if (pinsHost === host && Date.now() - pinsAt < 300000) return;
+  pinsHost = host; pinsAt = Date.now(); PINS = [];
+  if (ADB.state !== 'ready') { pinsAt = 0; return; }
+  const h = await api('/api/home', null, true);
+  if (host === (curHost || '-')) PINS = ((h && h.installed && h.config && h.config.pinned) || []).filter((x) => x && x.key && x.title);
+}
 const voiceApps = () => [...META.entries()].filter(([, m]) => m && m.label).map(([pkg, m]) => ({ pkg, name: m.label }));
 
 setInterval(() => { if (currentTab === 'auto' && !document.hidden && !stopped && ADB.state === 'ready') loadRules(null, true); }, 20000);
 let autoLoaded = false;
-onTvChange(() => { autoLoaded = sceneNamesAsked = false; RULES = null; SCENES = []; renderScenes(); });
+onTvChange(() => { PINS = []; pinsAt = 0; autoLoaded = sceneNamesAsked = false; RULES = null; SCENES = []; renderScenes(); });
 function autoTab() {
   if (NATIVE()) { loadScenes(); return; }                             // LG / Samsung: scenes only, by their remote link
   if (ADB.state !== 'ready') return; autoLoaded = true; loadRules(null, true); loadScenes(); loadPickApps(); welcomeLoad(); }

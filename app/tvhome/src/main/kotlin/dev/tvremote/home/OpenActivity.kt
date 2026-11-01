@@ -12,7 +12,7 @@ class OpenActivity : android.app.Activity() {
         super.onCreate(b)
         val t = intent.getStringExtra("t").orEmpty()
         val conf = Store.get(this)
-        val known = HomeConfig.keyApps(conf.optJSONObject("keyapps")).values + conf.optString("autoapp") + Store.list(this, "tiles")
+        val known = HomeConfig.keyApps(conf.optJSONObject("keyapps")).values + conf.optString("autoapp") + Store.list(this, "tiles") + dev.tvremote.home.apps.Pins.list(this).map { it.pkg }   // a pinned shortcut is on the grid even when "tiles" does not list it (voice opens one by its name)
         if (t in known) Targets.open(this, t)
         finish()
     }

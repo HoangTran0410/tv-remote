@@ -12,6 +12,7 @@ const PACKED = path.join(ROOT, 'app', 'shared', 'web', 'voice', 'phrases.json');
 const LIST = JSON.parse(fs.readFileSync(PACKED, 'utf8'));
 const TABLE = JSON.parse(fs.readFileSync(path.join(__dirname, 'voice_cases.json'), 'utf8'));
 const APPS = Object.entries(TABLE.apps).map(([pkg, name]) => ({ pkg, name }));
+const PINS = TABLE.pins;
 const SCENES = Object.entries(TABLE.scenes).map(([id, name]) => ({ id, name }));
 const cmd = (t, apps = [
   { pkg: 'com.google.android.youtube.tv', name: 'YouTube' },
@@ -20,11 +21,11 @@ const cmd = (t, apps = [
   { pkg: 'org.videolan.vlc', name: 'VLC' },
 ]) => voiceCommand(t, apps, SCENES, LIST);
 const show = (c) => !c ? 'null' : c.kind === 'key' ? `key:${c.key}:${c.times}` : c.kind === 'app' ? `app:${c.pkg}` : c.kind === 'close' ? `close:${c.pkg}`
-  : c.kind === 'channel' ? `channel:${c.name}` : c.kind === 'timer' ? `timer:${c.min}` : c.kind === 'search' ? `search:${c.pkg}:${c.query}` : `scene:${c.scene.id}`;
+  : c.kind === 'channel' ? `channel:${c.name}` : c.kind === 'timer' ? `timer:${c.min}` : c.kind === 'search' ? `search:${c.pkg}:${c.query}` : c.kind === 'setting' ? `setting:${c.id}` : c.kind === 'pin' ? `pin:${c.key}` : c.kind === 'choice' ? 'choice:' + c.options.map(show).join('|') : `scene:${c.scene.id}`;
 
 test('the sentence table (shared with VoiceTest.kt)', () => {
   assert.ok(TABLE.cases.length >= 40);
-  for (const [text, want] of TABLE.cases) assert.equal(show(voiceCommand(text, APPS, SCENES, LIST)), want, text);
+  for (const [text, want] of TABLE.cases) assert.equal(show(voiceCommand(text, APPS, SCENES, LIST, PINS)), want, text);
 });
 
 test('the packed list is the site\'s list, signed by the project\'s key', () => {

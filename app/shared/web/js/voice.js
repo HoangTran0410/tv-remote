@@ -14,6 +14,11 @@
   // The words are data: the app serves the signed list (docs/voice/phrases.json, the same one Voice.kt reads) at voice/phrases.json.
   // What a key or a verb does is code here and in Voice.kt. Compiled once per list.
   const compiled = new WeakMap();
+  function settingWords(langs, ids) {
+    const m = new Map();
+    for (const l of langs) for (const [id, ps] of Object.entries(l.settings || {})) if (id in ids) for (const p of ps) { const w = norm(p); if (w) m.set(w, id); }
+    return m;
+  }
   function compile(list) {
     if (compiled.has(list)) return compiled.get(list);
     const langs = Object.values(list.lang);
@@ -36,6 +41,7 @@
       channelNames: new RegExp('^(?:' + (list.channel_names || []).join('|') + ')$'),
       neverClose: new Set(list.never_close || []),
       apps: (list.apps || []).map((a) => ({ label: a.label, pkgs: a.pkgs || [], names: new Set(words(a.names)), search: a.search || null })),
+      settings: list.settings || {}, settingWords: settingWords(langs, list.settings || {}),     // a Settings page by the list's id: "wifi", "bluetooth"
       connect: all('connect').length ? new RegExp('^(.+) (?:' + alt(all('connect')) + ') (.+)$') : null,   // "X on Y": X and Y, split at the last connector
     };
     compiled.set(list, c);
@@ -89,10 +95,31 @@
     const query = spelled(text, m[1]), alias = c.apps.find((a) => a.names.has(m[2]));
     return { kind: 'search', pkg: target.pkg, name: target.name, query, url: alias && alias.search ? alias.search.replace('{q}', encodeURIComponent(query)) : null };
   }
+  // what [want] names among the installed apps and the pins ([{key, title, app, link}]), best match only. Quality: 0 the whole name, 1 a start of it,
+  // 2 [want] inside the name, 3 the name inside [want]. One target at the best quality: it. A pin named like an app that matched too: the app.
+  // Several at the same quality: a 'choice' of up to MAX_CHOICES; this is the only place a list can come from (Voice.kt best()).
+  const MAX_CHOICES = 3;
+  function best(want, apps, pins, exactOnly, withApps) {
+    const quality = (n) => !n ? null : n === want ? 0 : exactOnly ? null : (n.startsWith(want) || want.startsWith(n + ' ')) ? 1
+      : want.length >= 3 && n.includes(want) ? 2 : n.length >= 3 && want.includes(n) ? 3 : null;
+    const hits = [];
+    if (withApps) for (const a of apps || []) { const q = quality(fold(a.name)); if (q != null) hits.push([q, { kind: 'app', pkg: a.pkg, name: a.name }]); }
+    for (const p of pins || []) { const q = quality(fold(p.title)); if (q != null) hits.push([q, { kind: 'pin', key: p.key, name: p.title, app: p.app || '', link: p.link || null }]); }
+    if (!hits.length) return null;
+    const top = Math.min(...hits.map((h) => h[0]));
+    let at = hits.filter((h) => h[0] === top).map((h) => h[1]);
+    const appNames = new Set(at.filter((x) => x.kind === 'app').map((x) => fold(x.name)));
+    at = at.filter((x) => x.kind !== 'pin' || !appNames.has(fold(x.name)));   // a pin named like an app that matched too is that app's twin: the app
+    const seen = new Set();
+    at = at.filter((x) => { const id = x.kind + ':' + (x.pkg || x.key); if (seen.has(id)) return false; seen.add(id); return true; });
+    at.sort((x, y) => x.name.length - y.name.length || (x.name < y.name ? -1 : x.name > y.name ? 1 : 0));   // the shortest name first (the closest), the same order as Voice.kt
+    return at.length === 1 ? at[0] : { kind: 'choice', options: at.slice(0, MAX_CHOICES) };
+  }
   const chName = (w) => w.replace(/([a-z]) (\d)/g, '$1$2');
 
-  // apps: [{pkg, name}]; scenes: [{id, name}]; list: the phrases (default: the app's, read once). Returns what to do, or null for "ask the Assistant".
-  function voiceCommand(text, apps, scenes, list) {
+  // apps: [{pkg, name}]; scenes: [{id, name}]; list: the phrases (default: the app's, read once); pins: TV Home's pinned tiles [{key, title, app, link}].
+  // Returns what to do, or null for "ask the Assistant".
+  function voiceCommand(text, apps, scenes, list, pins) {
     const raw = fold(text);
     if (!raw) return null;
     const scene = (scenes || []).find((x) => fold(x.name) === raw || fold('canh ' + x.name) === raw || fold('scene ' + x.name) === raw);
@@ -115,13 +142,17 @@
     const o = c.open.exec(s), verb = o ? o[1] : null, want = verb == null ? s : verb;
     let hit = findApp(want, apps, c, false);
     if (hit) return { kind: 'app', pkg: hit.pkg, name: hit.name };
+    // a name said in full: an installed app (after "open" only: a bare word is not asked to open anything), else a pin; this before the channels, a tile the person named "VTV3" is theirs
+    const whole = best(want, apps, pins, true, verb != null);
+    if (whole) return whole;
+    if (c.settingWords.has(want)) { const id = c.settingWords.get(want); return { kind: 'setting', id, actions: c.settings[id] }; }   // after the apps: an app named "Wifi" is the app
     // before the apps by name: "mở kênh vtv1" is a channel, not an app called "kenh vtv1"
     m = c.channel.exec(s);
     if (m) return { kind: 'channel', name: c.channelNames.test(m[1]) ? chName(m[1]) : m[1] };
     if (c.channelNames.test(want)) return { kind: 'channel', name: chName(want) };
     m = c.tune.exec(s);
     if (m) return { kind: 'channel', name: m[1] };
-    if (verb != null && (hit = findApp(verb, apps, c, true))) return { kind: 'app', pkg: hit.pkg, name: hit.name };
+    if (verb != null) return best(verb, apps, pins, false, true);
     return null;
   }
 
@@ -148,5 +179,6 @@
   root.fold = fold;
   root.channelLink = channelLink;
   root.voiceCommand = voiceCommand;
+  root.voiceWantsApp = wantsApp;
   if (typeof module !== 'undefined') module.exports = { fold, norm, voiceCommand, wantsApp, channelLink };
 })(typeof window !== 'undefined' ? window : globalThis);

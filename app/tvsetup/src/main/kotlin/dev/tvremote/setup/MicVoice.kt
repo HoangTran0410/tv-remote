@@ -215,6 +215,22 @@ object MicVoice {
     fun warm(c: Context) {
         dev.tvremote.core.scenes.VoicePhrases.start({ c.assets.open(it) }, c.filesDir)
         apps(c)
+        pins(c)
+    }
+
+    @Volatile private var pinList: List<Voice.PinRef> = emptyList()
+    @Volatile private var pinsAt = 0L
+    @Volatile private var pinsBusy = false
+    /** TV Home's pinned tiles, said by name like apps: what was read last (ADB asks TV Home, in a thread of its own, at most every 5 minutes); none without ADB or TV Home. */
+    fun pins(c: Context): List<Voice.PinRef> {
+        if (System.currentTimeMillis() - pinsAt > 300_000 && !pinsBusy) {
+            pinsBusy = true
+            Thread({
+                try { pinList = dev.tvremote.core.ontv.Home.ownPins { RemoteService.shell(it) ?: throw IllegalStateException("adb") } } catch (e: Exception) { }
+                finally { pinsAt = System.currentTimeMillis(); pinsBusy = false }
+            }, "mic-pins").apply { isDaemon = true }.start()
+        }
+        return pinList
     }
 
     private fun file(c: Context) = java.io.File(c.filesDir, "mic-apps.json")
@@ -253,6 +269,9 @@ object MicVoice {
         is Voice.Command.Close -> T("mic.do_close", "name" to cmd.name)
         is Voice.Command.Timer -> if (cmd.minutes <= 0) T("mic.do_timer_off") else T("mic.do_timer", "n" to cmd.minutes)
         is Voice.Command.Scene -> T("mic.do_scene", "name" to (scenes(c)[cmd.id] ?: cmd.id))
+        is Voice.Command.Pin -> T("automation.opening", "name" to cmd.name)
+        is Voice.Command.Setting -> T(Voice.say(cmd).id)
+        is Voice.Command.Choice -> T("talk.pick_one", "names" to Voice.names(cmd))
     }
 
     /** Keys, scenes and an app named in full are safe to act on before the sentence ends: "mở you" is not "mở YouTube". */
@@ -329,6 +348,16 @@ object MicVoice {
                     if (i != null) c.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) else Scenes.launch(sh, cmd.pkg)
                 }
                 is Voice.Command.Search -> return searchIn(c, cmd)
+                is Voice.Command.Choice -> return T("talk.pick_one", "names" to Voice.names(cmd))   // the TV screen has nothing to pick with: the person says one name in full
+                is Voice.Command.Setting -> {                              // the first screen this TV has, else its settings (no ADB: a screen of our own app asks)
+                    val ok = (cmd.actions + android.provider.Settings.ACTION_SETTINGS).any { a ->
+                        try { c.startActivity(Intent(a).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); true } catch (e: Exception) { false }
+                    }
+                    if (!ok) return T("mic.failed")
+                }
+                is Voice.Command.Pin -> {                                  // TV Home opens it as a press on the tile: a link pin's app is picked then (the one saved at pin time may be gone)
+                    c.startActivity(Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.OpenActivity").putExtra("t", cmd.key).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                }
                 is Voice.Command.Close -> {
                     if (dev.tvremote.core.ontv.Setup.mustKeep(cmd.pkg) || cmd.pkg == c.packageName) return T("mic.failed")   // the TV needs it
                     sh("am force-stop " + dev.tvremote.core.adb.Adb.q(cmd.pkg))
