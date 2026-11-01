@@ -321,6 +321,12 @@ Their repos are data: read them, never run their scripts. A package goes into `B
 ads or demos, or installs apps, and nobody reported anything breaking; anything reported breaking goes into `Bloat.KEEP`
 (`SetupTest.brandListsNeverMeetWhatATvNeeds` checks the two never overlap). Update the date and commit above.
 
+CleanTV read again 2026-11-02 at `57bac00609` (v4.0, 2026-10-31, still its last commit; the `fe9ad320` below names no commit there,
+the same 4.0 read): `du-lieu.json` unchanged since; `nang-cao.json` only gained launcher settings (`open_on_start_network_wait`,
+`back_opens_clock`, `clock_format`, `library_excluded_apps`, ...), no packages. Its issue 5 (a TCL G06, Android TV 11): force-stopping an app
+while Android holds its accessibility service crashed `system_server` (`AccessibilityServiceConnection.onNullBinding` unbinding twice,
+a soft reboot), TalkBack on or not: the task manager now keeps any app whose accessibility service is on (`Procs.keepWhy` "a11y").
+Its issue 6 is ours (CleanTV turns ADB off 60 s after it goes to the background, see below).
 CleanTV read 2026-11-01 ([vgscity/vgs-cleantv](https://github.com/vgscity/vgs-cleantv) `fe9ad320`; `app/src/main/assets/du-lieu.json`: 380
 models from cleanyourtv's lists, `goi` = per package how many models turn it off / keep it). With no model match CleanTV ticks any package
 off on >= 3 models and kept on < 1/3 of them; Vietnamese owners report TVs hanging after it. Of its 497 such packages 313 were in none

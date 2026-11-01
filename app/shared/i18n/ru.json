@@ -921,6 +921,7 @@
  "health.keep_us": "TV Remote нужно это приложение",
  "health.keep_home": "Главный экран ТВ",
  "health.keep_keyboard": "Клавиатура ТВ",
+ "health.keep_a11y": "Включено в специальных возможностях",
  "health.keep_android": "Часть Android",
  "health.stop_ask": "Остановить {name}? Оно на экране ТВ.",
  "health.stop": "Остановить",

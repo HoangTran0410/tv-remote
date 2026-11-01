@@ -4,7 +4,7 @@
 // keyboard...) with its memory, and Android's own folded away: what the Health tab used to show.
 let recentsAgain = false, recentsSysOpen = false, recentsOpen = new Map(), recentsMb = new Map(), recentsBg = [], recentsAt = 0, recentsBusy = false;
 const procState = () => ({ front: T('health.proc_front'), bg: T('health.proc_bg'), home: T('health.proc_home'), cached: T('health.proc_idle'), system: T('health.proc_system') });
-const procKeep = () => ({ us: T('health.keep_us'), home: T('health.keep_home'), keyboard: T('health.keep_keyboard'), system: T('health.keep_android') });
+const procKeep = () => ({ us: T('health.keep_us'), home: T('health.keep_home'), keyboard: T('health.keep_keyboard'), a11y: T('health.keep_a11y'), system: T('health.keep_android') });
 const recentsAgo = (s) => s < 60 ? T('recents.just_now') : s < 3600 ? T('recents.min_ago', { n: Math.round(s / 60) }) : s < 86400 ? T('recents.h_ago', { n: Math.round(s / 3600) }) : T('recents.d_ago', { n: Math.round(s / 86400) });
 /** The open apps again (cheap); their memory too while the chip is picked (dumpsys meminfo: a second or more, so after). */
 async function recentsNow(now) {

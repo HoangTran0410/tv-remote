@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Apps: the task manager no longer stops an app whose accessibility service is on (a remote button mapper, a screen reader); on some Android 11 TVs that restarted the whole system
 - Optimize TV: TV Home no longer turns off the stock launcher on Skyworth / Coocaa Google TVs with more than one profile (their remote service crashed on every hotkey until the TV reset its settings); Home goes through TV Setup there instead
 - Optimize TV: six more brand apps suggested (Vu / Hisense viewing data, Zeasn ads, Coocaa promo messages, an HTC app store, a Vestel app watcher, Sony's partner tab), from cleanyourtv's newest lists
 - TV Home: + Add opens in about a third of the time (FPT box: 150-230 ms to 55-70 ms: it no longer works out which app opens each pinned link, and the channel apps' list is kept until apps change); a folder opens with a short fade and grow

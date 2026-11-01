@@ -83,7 +83,8 @@ Total PSS by OOM adjustment:
 Total PSS by category:
 """
         val keep = Procs.keepNow("com.google.android.apps.tv.launcherx/.home.HomeActivity\ncom.google.android.inputmethod.latin/com.android.inputmethod.latin.LatinIME\n" +
-            "package:com.netflix.ninja\npackage:com.spotify.tv.android\n" +
+            "flar2.homebutton/.HomeService:dev.tvremote.setup.keys/dev.tvremote.keys.KeysService\n" +
+            "package:flar2.homebutton\npackage:com.netflix.ninja\npackage:com.spotify.tv.android\n" +
             "com.google.android.youtube.tv/com.google.android.apps.youtube.tv.activity.ShellActivity\ncom.netflix.ninja/.MainActivity")
         assertEquals(listOf(
             Proc("com.google.android.apps.tv.launcherx", 82, "home", "home"),   // its coreservices process counts for it
@@ -98,6 +99,8 @@ Total PSS by category:
         ), Procs.procsOf(sample, keep))
         assertEquals("us", Procs.keepWhy("dev.tvremote.setup", keep))
         assertEquals("us", Procs.keepWhy("dev.tvremote.setup.keys", keep))
+        assertEquals("a11y", Procs.keepWhy("flar2.homebutton", keep))       // installed by the person, but its accessibility service is on
+        assertEquals(emptySet<String>(), Procs.keepNow("a/.H\nb/.K\nnull\npackage:c").a11y)
         assertEquals("us", Procs.keepWhy("com.tailscale.ipn", keep))
         for (p in listOf("dev.tvremote.channels", "dev.tvremote.games", "dev.tvremote.phone")) assertNotEquals("us", Procs.keepWhy(p, keep), p)   // ordinary apps
         assertEquals(emptyList<Proc>(), Procs.procsOf("nothing", keep))

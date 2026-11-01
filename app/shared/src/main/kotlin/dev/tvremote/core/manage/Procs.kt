@@ -18,30 +18,34 @@ internal object Procs {
         return by.entries.filter { it.value >= 5 }.sortedByDescending { it.value }.take(25).map { it.key to it.value }
     }
 
-    /** The home screen and the keyboard in use, the apps the user installed and the ones with a tile, as [keepNow] reads them. */
+    /** The home screen, the keyboard and the accessibility services in use, the apps the user installed and the ones with a tile, as [keepNow] reads them. */
     const val KEEP_NOW = "{ " + dev.tvremote.core.ontv.LauncherSwap.RESOLVE_HOME + "; } | tail -1; " +
-        "settings get secure default_input_method; pm list packages -3; for c in LEANBACK_LAUNCHER LAUNCHER; do " +
+        "settings get secure default_input_method; settings get secure enabled_accessibility_services; pm list packages -3; for c in LEANBACK_LAUNCHER LAUNCHER; do " +
         "cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.\$c 2>/dev/null; done"
 
     /**
      * What may be stopped on this TV: the apps a person installed or can open from a tile (YouTube is a system app on most
-     * TVs), but never its home screen or keyboard (they differ per TV). Everything else of the system's stays.
+     * TVs), but never its home screen, keyboard or an app whose accessibility service is on (a remote mapper, a screen reader: a
+     * force-stop while Android holds its service crashed system_server on a TCL, Android 11, a soft reboot; CleanTV issue 5).
+     * Everything else of the system's stays.
      */
-    internal data class Keep(val home: String, val keyboard: String, val people: Set<String>)
+    internal data class Keep(val home: String, val keyboard: String, val people: Set<String>, val a11y: Set<String> = emptySet())
 
     /** [Keep] from the output of [KEEP_NOW]. */
     internal fun keepNow(out: String): Keep {
         val lines = out.split("\n").map { it.trim() }
         val pkg = { i: Int -> lines.getOrElse(i) { "" }.substringBefore('/') }
-        val people = lines.drop(2).mapNotNull { if (it.startsWith("package:")) it.substring(8) else if (it.contains('/')) it.substringBefore('/') else null }
-        return Keep(pkg(0), pkg(1), people.toSet())
+        val a11y = lines.getOrElse(2) { "" }.split(':').filter { it.contains('/') }.map { it.substringBefore('/') }.toSet()   // "null" when none
+        val people = lines.drop(3).mapNotNull { if (it.startsWith("package:")) it.substring(8) else if (it.contains('/')) it.substringBefore('/') else null }
+        return Keep(pkg(0), pkg(1), people.toSet(), a11y)
     }
 
-    /** Why [pkg] may not be stopped ("us", "home", "keyboard", "system"), or null when it may. */
+    /** Why [pkg] may not be stopped ("us", "home", "keyboard", "a11y", "system"), or null when it may. */
     internal fun keepWhy(pkg: String, k: Keep): String? = when {
         pkg.startsWith("dev.tvremote.setup") || pkg == "com.tailscale.ipn" -> "us"   // TV Setup (+ its keys add-on), and the way to the TV from outside; TV Home is "home" below while it is the home screen
         pkg == k.home -> "home"
         pkg == k.keyboard -> "keyboard"
+        pkg in k.a11y -> "a11y"
         Setup.PROTECTED.matches(pkg) || pkg !in k.people -> "system"   // and Android's shared processes (android.process.acore)
         else -> null
     }

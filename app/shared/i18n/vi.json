@@ -891,6 +891,7 @@
  "health.keep_us": "TV Remote cần app này",
  "health.keep_home": "Màn hình chính của TV",
  "health.keep_keyboard": "Bàn phím của TV",
+ "health.keep_a11y": "Đang bật trong Hỗ trợ tiếp cận",
  "health.keep_android": "Một phần của Android",
  "health.stop_ask": "Dừng {name}? App đang hiện trên TV.",
  "health.stop": "Dừng",

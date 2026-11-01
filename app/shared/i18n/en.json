@@ -939,6 +939,7 @@
  "health.keep_us": "TV Remote needs this app",
  "health.keep_home": "The TV's home screen",
  "health.keep_keyboard": "The TV's keyboard",
+ "health.keep_a11y": "On in Accessibility",
  "health.keep_android": "A part of Android",
  "health.stop_ask": "Stop {name}? It is on the TV's screen.",
  "health.stop": "Stop",

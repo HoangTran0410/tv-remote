@@ -939,6 +939,7 @@
   "health.keep_us": "TV Remote a besoin de cette application",
   "health.keep_home": "L’écran d’accueil de la TV",
   "health.keep_keyboard": "Le clavier de la TV",
+  "health.keep_a11y": "Activé dans Accessibilité",
   "health.keep_android": "Un composant d’Android",
   "health.stop_ask": "Arrêter {name} ? Elle est affichée à l’écran de la TV.",
   "health.stop": "Arrêter",
