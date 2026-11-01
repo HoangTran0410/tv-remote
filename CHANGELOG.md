@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Web page: no more "Node.contains must be an instance of Node" error in Safari when the page scrolls with a ⋯ menu open
 - TV Home: a YouTube pin whose picture could not be fetched asks once more after 1.5 s, and pinning the same link again gives a tile without a picture its picture
 - Voice: a tile pinned to TV Home a moment ago opens by its name at once (TV Home's pins are asked again on each mic press, not every 5 minutes)
 - TV Channels: Vietnamese stations' own public streams as backups (VTV5 regions, Cần Thơ, Đồng Tháp, Lâm Đồng, Quảng Ninh) and as new channels (Lào Cai, VOV5, VOV traffic Hà Nội and TP.HCM, Cần Thơ Radio 2); refreshing the list reads the site's provider list again

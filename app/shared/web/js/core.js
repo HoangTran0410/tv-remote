@@ -148,6 +148,7 @@ async function call(path, data, quiet, ms) {
 // A small menu under a button (⋯ on each app): items are [icon, words, fn, class]; null items are left out. A click elsewhere,
 // Esc or scrolling closes it; the same button again too.
 let popEl = null;
+const within = (box, x) => x instanceof Node && box.contains(x);   // Safari throws on contains(window) (a scroll's target can be the window / visual viewport)
 function closePop() { if (popEl) { popEl.remove(); popEl = null; } }
 function popover(anchor, items) {
   const again = popEl && popEl.anchor === anchor; closePop(); if (again) return;
@@ -160,9 +161,9 @@ function popover(anchor, items) {
   m.style.top = sy + (r.bottom + h + 8 > innerHeight && r.top > h + 8 ? r.top - h - 4 : r.bottom + 4) + 'px';
   m.querySelector('button').focus({ preventScroll: true });
 }
-document.addEventListener('click', (e) => { if (popEl && !popEl.contains(e.target) && !popEl.anchor.contains(e.target)) closePop(); }, true);
+document.addEventListener('click', (e) => { if (popEl && !within(popEl, e.target) && !within(popEl.anchor, e.target)) closePop(); }, true);
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && popEl) { const a = popEl.anchor; closePop(); a.focus(); } });
-addEventListener('scroll', (e) => { if (popEl && !popEl.contains(e.target)) closePop(); }, true);
+addEventListener('scroll', (e) => { if (popEl && !within(popEl, e.target)) closePop(); }, true);
 addEventListener('resize', closePop);
 
 // A phone or computer can be newer than TV Setup on the TV. What needs which TV Setup is SetupNeed.kt's table; any call that
