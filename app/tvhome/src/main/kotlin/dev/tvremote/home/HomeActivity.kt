@@ -153,6 +153,7 @@ class HomeActivity : Activity() {
     private var topAt: View? = null; private var topVia: View? = null   // the tile left by Up and the widget it went to: Down from that widget lands back on it
     private var stepping = false
     internal companion object {
+        val EASE = PathInterpolator(0.3f, 0f, 0.2f, 1f)               // the page's scroll: eased in and out
         var reopen = false                                            // across recreate(): the panel was open when the language changed
         const val SETUP_CODE = "2397346"                              // TV Setup's Downloader code (README, the site)
         const val BT_CONNECT = "android.permission.BLUETOOTH_CONNECT"
@@ -740,7 +741,8 @@ class HomeActivity : Activity() {
         scrollAnim?.cancel()
         if (!Motion.on) { scroll.scrollTo(0, y); return }
         if (scroll.scrollY == y) return
-        scrollAnim = ObjectAnimator.ofInt(scroll, "scrollY", scroll.scrollY, y).apply { duration = 420; interpolator = Motion.glide; start() }
+        // eased at both ends: glide's fast start read as a jerk on every step down (the user, 2026-11-01, against CleanTV's Home)
+        scrollAnim = ObjectAnimator.ofInt(scroll, "scrollY", scroll.scrollY, y).apply { duration = Motion.ms(360); interpolator = EASE; start() }
     }
 
     /** Home pressed while already home, or Back: to the top, on the first tile. */
@@ -1465,14 +1467,17 @@ class HomeActivity : Activity() {
         }
     }
 
-    /** [v] in view: the first row takes the page up with it; a row that is cut off comes to the upper third; one in full view stays put. */
+    /**
+     * [v] in view: the first row takes the page up with it; a row cut off by the screen's edge scrolls only as far
+     * as it needs (a row a step, as CleanTV's Home: the upper third made each step down a long jump); one in full view stays put.
+     */
     private fun reveal(v: View) {
         if (grid.indexOfChild(v.parent as? View) <= 0) { scrollToY(0); return }
         var y = 0; var p: View? = v
         while (p != null && p !== scroll) { y += p.top; p = p.parent as? View }
         val margin = dp(40)
-        if (y - margin < scroll.scrollY || y + v.height + margin > scroll.scrollY + scroll.height)
-            scrollToY(maxOf(0, y - scroll.height / 3))
+        if (y - margin < scroll.scrollY) scrollToY(maxOf(0, y - margin))
+        else if (y + v.height + margin > scroll.scrollY + scroll.height) scrollToY(y + v.height + margin - scroll.height)
     }
 
     private fun shadeK() = conf.optInt("shade", HomeConfig.SHADE_DEFAULT).toFloat() / HomeConfig.SHADE_DEFAULT   // Backdrop.shade's: 1 the usual veil

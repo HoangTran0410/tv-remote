@@ -131,6 +131,8 @@ Use the steps already in use: **4 · 6 · 8 · 10 · 12 · 14 · 16 · 20 · 24 
 | Small card / tile scale | 120 (Channels, Setup), 200 (Games pill), 420 / 220 (`Motion.pop`) | default / spring |
 | Overlay / hint fade | 150 | glide (`HomeActivity.kt:478-485`) |
 | Page in | 240 (420 sliding) | glide (`:314`) |
+| Page scroll (TV Home) | 360; only as far as the focused row needs (40 dp from the edge), never a jump to the upper third | `HomeActivity.EASE` (eased in and out: glide's fast start read as a jerk) |
+| App name under a tile | 220 in / 120 out, fades and slides down from `-lift/3`, in *calm* too (one small text, no layer) | glide (`TvTile.focus`) |
 
 Durations go through `Motion.ms(t)` (Home) / `ms(t)` (Games) so *calm* shortens them; with motion off, set the end state at once.
 

@@ -113,10 +113,13 @@ open class TvTile(c: Context, w: Int, dp: (Number) -> Int, hPct: Int = 56) : Lin
         val t = Motion.ms(if (on) 520L else 300L)
         val ip = if (on) Motion.spring else Motion.glide
         card.translationX = 0f; card.translationY = 0f
-        if (Motion.calm) {                                            // one animator, not five: the rest is set at once
-            card.translationZ = 0f; content.scaleX = 1f; content.scaleY = 1f; shine.alpha = 0f; name.translationY = 0f
-            ring.alpha = if (on && !glassy) 1f else 0f; name.alpha = if (on) 1f else nameRest
+        if (Motion.calm) {                                            // two animators, not five: the rest is set at once
+            card.translationZ = 0f; content.scaleX = 1f; content.scaleY = 1f; shine.alpha = 0f
+            ring.alpha = if (on && !glassy) 1f else 0f
             card.animate().scaleX(s).scaleY(s).setDuration(t).setInterpolator(ip).withLayer().start()
+            // the name still fades and slides in (one small text, no layer): popping in read as rough next to CleanTV's Home (the user, 2026-11-01)
+            if (on && nameRest == 0f) { name.alpha = 0f; name.translationY = -lift / 3 }
+            name.animate().alpha(if (on) 1f else nameRest).translationY(0f).setDuration(if (on) 220L else 120L).setInterpolator(Motion.glide).start()
             return
         }
         // the shadow at once, only the size glides: animating translationZ re-made the shadow every frame, on a BRAVIA (MT5891,
