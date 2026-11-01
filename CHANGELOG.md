@@ -4,6 +4,10 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- Phone picture: no more black picture restarting every 5 s with TV boxes whose encoder does not say "no frame is held" (an A95X F3 Air, #16): the app adds that to the stream's header, so the phone's decoder shows each frame at once; a picture that keeps dying right after it starts stops after 3 tries instead of looping
+
 ## 0.40.3 - 2026-11-02
 
 Web 0.40.3 · Phone app 0.37.3 · TV app 0.38.3 · TV Home 0.24.3 · TV Channels 0.18.2 · TV Games 0.17.1 · TV Apps 0.3.1
