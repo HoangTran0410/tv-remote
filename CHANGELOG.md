@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Setup: Manage on the TV no longer says "Controller connected" and loses the remote on boxes whose IR remote calls itself a gamepad (FPT); the page leaves the Gamepad API alone on the TV
 - TV Home: live widgets and shortcuts no longer offer "Hide" (they showed nowhere after it, not even under + Add, and + Add counted them as apps); one hidden before comes back on the grid; they keep "Remove from the home screen"
 - TV Home: channel avatars in "Pin from YouTube" and on their pinned tiles are drawn larger (round logos were a small dot)
 - Voice: "open the app X" / "mở ứng dụng X" opens the installed app whose name is closest, a few letters off or split differently ("Việt MyTV" opens VietMITV); without the word "app" names still match strictly

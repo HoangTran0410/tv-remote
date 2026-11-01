@@ -45,6 +45,10 @@ function padStart() {
   if (!padTimer) padTimer = setInterval(padPoll, 40);
 }
 function padStop() { if (padTimer) clearInterval(padTimer); padTimer = null; padSeen = false; padSt.down = {}; padSt.last = {}; }
-window.addEventListener('gamepadconnected', padStart);
-window.addEventListener('gamepaddisconnected', () => { if (!(navigator.getGamepads ? [...navigator.getGamepads()] : []).some(Boolean)) padStop(); });
-if (navigator.getGamepads && [...navigator.getGamepads()].some(Boolean)) padStart();   // a pad already seen before this page opened
+// Not on the TV itself (Manage on the TV): a pad there already drives the TV, and once a page reads the Gamepad API the WebView keeps
+// every key of a device that calls itself a gamepad for it; an FPT box's IR remote does (KEYBOARD | DPAD | GAMEPAD): the remote went dead.
+if (!window.ONTV) {
+  window.addEventListener('gamepadconnected', padStart);
+  window.addEventListener('gamepaddisconnected', () => { if (!(navigator.getGamepads ? [...navigator.getGamepads()] : []).some(Boolean)) padStop(); });
+  if (navigator.getGamepads && [...navigator.getGamepads()].some(Boolean)) padStart();   // a pad already seen before this page opened
+}
