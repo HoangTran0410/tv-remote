@@ -121,6 +121,7 @@ class HomeActivity : Activity() {
     private var apps: List<App> = emptyList()
     /** The apps with their pictures as the grid has them: the picker shows these instead of loading every banner again (~230 ms). */
     internal fun loaded(): List<App> = apps
+    internal fun pinned(): List<App> = pins                          // shortcuts pinned through Android: on the grid, not in [apps]
     @Volatile private var pins: List<App> = emptyList()                // shortcuts other apps pinned here ([Pins])
     private var conf = JSONObject()
     private var wallShown = ""

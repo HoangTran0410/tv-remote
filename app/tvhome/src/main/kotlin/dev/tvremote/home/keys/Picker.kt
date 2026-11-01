@@ -339,9 +339,10 @@ object Picker {
             if (mode == Mode.TARGET && actions) got.add(Item(Target.CONTROL, a.getString(R.string.cc_title), null, a.getString(R.string.pk_over_apps), 0, R.drawable.ic_settings))   // a key's action: the Control Center over any app
             for (p in apps) got.add(Item(p.pkg, p.label, p, if (p.pkg in hidden && mode == Mode.GRID) a.getString(R.string.pk_hidden) else "", 0))
             if (mode == Mode.CHOOSE) { allKeys = apps.map { it.pkg }; chosen.clear(); if (pick == null) chosen.addAll(apps.map { it.pkg }.filter { it !in hidden }); a.runOnUiThread { labels() }
-                if (pick != null) {                                    // a folder can hold what is on the grid besides apps: shortcuts and live widgets (their keys stay in "tiles")
-                    val inTiles = Store.list(a, "tiles").toSet()
-                    val onGrid = (a as? dev.tvremote.home.HomeActivity)?.loaded()?.filter { it.grid && !it.folder && it.pkg in inTiles }.orEmpty()
+                if (pick != null) {                                    // a folder can hold what is on the grid besides apps: shortcuts and live widgets
+                    // all of them, also a shortcut pinned through Android that is not in "tiles" yet (YouTube, channels): Folders.keep puts it there
+                    val home = a as? dev.tvremote.home.HomeActivity
+                    val onGrid = (home?.loaded().orEmpty() + home?.pinned().orEmpty()).filter { it.grid && !it.folder }.distinctBy { it.pkg }
                     val live = LiveWidgets.available(a).associateBy { it.key }
                     val names = apps.associate { it.pkg to it.label }
                     for (p in onGrid) if (p.live) live[p.pkg]?.let { t -> got.add(Item(t.key, t.title.ifEmpty { p.label }, null, a.getString(R.string.pk_live_tag), 3, LiveWidgets.iconRes(a, t))) }
