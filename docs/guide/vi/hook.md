@@ -41,6 +41,7 @@ http://192.168.1.20:8765/api/hook?k=3f9a1c7e5b2d4a60b8c1d9e7f2a4b6c8&key=HOME
 | `notify=Có khách&title=Chuông cửa` | Hiện thẻ tin nhắn trên màn hình TV (title= và seconds= 1 đến 60 là tuỳ chọn). Cần TV Setup. |
 | `volume=20` / `up` / `down` / `mute` | Đặt âm lượng (0 đến 100) hoặc tăng, giảm, tắt tiếng. |
 | `power=on` / `off` / `toggle` | Bật, tắt hay đổi trạng thái. |
+| `minutes=15&for=com.google.android.youtube.tv` | Cho thêm phút xem hôm nay (1 đến 240) cho app đã đặt giới hạn; bỏ `for=` là cộng vào tổng giờ TV mỗi ngày. Hợp với web học bài: làm đạt thì gọi link. Cần TV Setup. |
 | `/api/hook/state` | Chỉ đọc: TV đang bật không, đang chạy gì. |
 
 Home Assistant gửi mã qua header `x-tvr-hook`, không lộ trong log.

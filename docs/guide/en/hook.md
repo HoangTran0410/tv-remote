@@ -41,6 +41,7 @@ Change the end of the link to do something else (a space is `%20`):
 | `notify=Someone%20at%20the%20door&title=Doorbell` | Shows a message card on the TV screen (title= and seconds= 1 to 60 are optional). Needs TV Setup. |
 | `volume=20` / `up` / `down` / `mute` | Sets volume (0 to 100), or up, down, mute. |
 | `power=on` / `off` / `toggle` | On, off or toggle. |
+| `minutes=15&for=com.google.android.youtube.tv` | More minutes today (1 to 240) for an app with a limit; without `for=` they add to the daily TV time. For a learning site: call the link when the quiz is passed. Needs TV Setup. |
 | `/api/hook/state` | Read only: is the TV on, what is playing. |
 
 Home Assistant sends the token in the `x-tvr-hook` header, out of the logs.

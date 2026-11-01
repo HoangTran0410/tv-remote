@@ -10,7 +10,8 @@ import java.util.Locale
 /**
  * The home-network hook for Home Assistant and iPhone Shortcuts (Siri): `/api/hook?k=<token>&key=HOME`, one action per call,
  * and `/api/hook/state` for a small JSON. It has a token of its own, separate from the pairing code and the computer app's key:
- * a leaked link can press the TV's buttons and nothing else (no files, no apps installed, no picture), and "new token" cuts it off.
+ * a leaked link can press the TV's buttons and add minutes to today's limits, nothing else (no files, no apps installed, no picture,
+ * no rule loosened for good), and "new token" cuts it off.
  * Off until the owner turns it on in Settings. Not for the Internet: away from home, use Tailscale like everything else.
  *
  * Nothing here knows how a key is pressed: each call becomes the request the page itself would have sent (`/api/key`...), and
@@ -99,7 +100,7 @@ class Hook(
     private fun act(r: HttpServer.Request): HttpServer.Response {
         val p = params(r)
         val named = ACTIONS.filter { p.optString(it).isNotEmpty() }
-        if (named.size != 1) throw IllegalArgumentException(if (named.isEmpty()) "say what to do: key, scene, app, text, notify, volume or power" else "one thing per call: " + named.joinToString(", "))
+        if (named.size != 1) throw IllegalArgumentException(if (named.isEmpty()) "say what to do: key, scene, app, text, notify, volume, power or minutes" else "one thing per call: " + named.joinToString(", "))
         val out = perform(named[0], p.optString(named[0]), p, run)
         return if (out.status in 200..299) HttpServer.Response.json(JSONObject().put("ok", true)) else out
     }
@@ -136,6 +137,13 @@ class Hook(
                 send(via, "/api/notify", m)
             }
             "volume" -> volume(via, v)
+            "minutes" -> {                                         // more time today, earned elsewhere (a quiz passed: GitHub #14); TV Setup's limits, so the next day starts over
+                val n = v.toIntOrNull()?.takeIf { it in 1..MAX_MINUTES } ?: throw IllegalArgumentException("minutes: 1 to $MAX_MINUTES")
+                val pkg = extra?.optString("for")?.trim().orEmpty()
+                if (pkg.isNotEmpty() && !PKG.matches(pkg)) throw IllegalArgumentException("for: a package name, like com.google.android.youtube.tv")
+                send(via, "/api/rules", if (pkg.isEmpty()) JSONObject().put("do", "total_extra").put("minutes", n)
+                    else JSONObject().put("do", "extra").put("pkg", pkg).put("minutes", n))
+            }
             else -> power(via, v)
         }
     }
@@ -194,8 +202,9 @@ class Hook(
     }
 
     companion object {
-        private val ACTIONS = listOf("key", "scene", "app", "text", "notify", "volume", "power")
-        private val EXTRA = listOf("title", "seconds")                // options of notify, not actions of their own
+        private val ACTIONS = listOf("key", "scene", "app", "text", "notify", "volume", "power", "minutes")
+        private val EXTRA = listOf("title", "seconds", "for")         // options of notify and minutes, not actions of their own
+        const val MAX_MINUTES = 240                                   // one call; a parent's own "+30" has no cap
         private val PKG = Regex("[A-Za-z0-9_.]{1,200}")
         private const val MAX_FAILS = 5                               // wrong tokens from one address in a minute: then a minute of 429
         private const val WINDOW = 60_000L

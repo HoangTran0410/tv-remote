@@ -89,6 +89,18 @@ class HookTest {
         assertEquals(2, sent.size)
     }
 
+    @Test fun minutesAddToTodaysLimits() {
+        assertEquals(200, get("/api/hook", "k" to "t0ken", "minutes" to "15", "for" to "com.google.android.youtube.tv")!!.status)
+        assertEquals(200, get("/api/hook", "k" to "t0ken", "minutes" to "30")!!.status)
+        assertEquals(listOf("/api/rules", "/api/rules"), sent.map { it.first })
+        JSONObject(sent[0].second).let { assertEquals("extra", it.getString("do")); assertEquals("com.google.android.youtube.tv", it.getString("pkg")); assertEquals(15, it.getInt("minutes")) }
+        JSONObject(sent[1].second).let { assertEquals("total_extra", it.getString("do")); assertEquals(30, it.getInt("minutes")); assertTrue(!it.has("pkg")) }
+        assertEquals(400, get("/api/hook", "k" to "t0ken", "minutes" to "0")!!.status)
+        assertEquals(400, get("/api/hook", "k" to "t0ken", "minutes" to "9999")!!.status)
+        assertEquals(400, get("/api/hook", "k" to "t0ken", "minutes" to "5", "for" to "a b")!!.status)
+        assertEquals(2, sent.size)
+    }
+
     @Test fun stateSaysLittle() {
         val o = JSONObject(String(get("/api/hook/state", "k" to "t0ken")!!.body))
         assertEquals(true, o.getBoolean("on")); assertEquals(7, o.getJSONObject("volume").getInt("level")); assertEquals("com.netflix.ninja", o.getString("app"))
