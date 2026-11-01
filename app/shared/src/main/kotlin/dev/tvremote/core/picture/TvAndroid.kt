@@ -9,6 +9,7 @@ import android.os.HandlerThread
 import android.os.SystemClock
 import android.util.Log
 import android.view.Surface
+import dev.tvremote.core.WireLog
 import dev.tvremote.core.ontv.Tailscale
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -29,7 +30,7 @@ fun Tv(
         override fun audio(config: Boolean, data: ByteArray) = out.feed(config, data)
         override fun end() = out.release()
     } else null
-    val screen = surface?.let { SurfaceScreen(it) }
+    val screen = surface?.let { SurfaceScreen(it, host) }
     val tv = Tv(app.filesDir, { app.assets.open("scrcpy-server.jar").use { it.readBytes() } }, host, screen,
         quality, maxSide, wake, listener, sink, audio, hear, wantControl, audioShare, audioBitRate, fps, bitRate, encoder, hand, quiet)
     screen?.askKey = { Thread { try { tv.resetVideo() } catch (ignored: Exception) { } }.start() }   // off the reading thread
@@ -44,8 +45,10 @@ private const val TAG = "TvrPic"
  * right behind it. [LiveGate] (LiveDecode.kt) decides, this carries it out. If the decoder falls too far behind it is made
  * again and the TV is asked ([askKey]) for a key frame. Debug: `adb shell setprop log.tag.TvrPic DEBUG` (a line a second:
  * frames in and out, age at the decoder's output; VERBOSE: one line per frame), then restart the picture.
+ * A decoder that takes frames and gives none back (a black picture: a Poco F6, issue #10, while a Poco X7 Pro showed the same
+ * TV) is made again more plainly ([mode]: without the vendor keys, then Android's software decoder); the log says each step.
  */
-private class SurfaceScreen(private val surface: Surface) : Tv.Screen {
+private class SurfaceScreen(private val surface: Surface, private val host: String) : Tv.Screen {
     /** how the TV is asked for a key frame (scrcpy: reset video); set by [Tv] right after the session exists */
     @Volatile var askKey: (() -> Unit)? = null
 
@@ -61,28 +64,32 @@ private class SurfaceScreen(private val surface: Surface) : Tv.Screen {
     private var h = 0
     private var config: ByteArray? = null                             // the last codec config, fed again to a decoder made again
     @Volatile private var away = false                                // no surface to draw on: see pause()
+    private var mode = 0                                              // 0 tuned + vendor keys, 1 no keys at all, 2 Android's software decoder
+    @Volatile private var outs = 0                                    // frames out at this [mode] (any size); not reset by a catch-up,
+    private var ins = 0                                               // which a decoder giving nothing triggers itself
 
     override fun start(w: Int, h: Int) {
         release()
         this.w = w; this.h = h
-        gate.clear()
+        gate.clear(); ins = 0; outs = 0
         if (!away) open()                                             // away: made on resume(), at this size
     }
 
     @Synchronized private fun open() {
         // vendor keys first; a decoder that refuses them is made again without
-        val d = try { build(vendor = true) } catch (e: Exception) { Log.w(TAG, "decoder without vendor keys: $e"); build(vendor = false) }
+        val d = if (mode > 0) build(vendor = false) else try { build(vendor = true) } catch (e: Exception) { Log.w(TAG, "decoder without vendor keys: $e"); build(vendor = false) }
         dec = d
         broken = false
+        WireLog.all.add("·", "picture $host decoder ${d.codec.name}" + if (mode > 0) " (plain $mode)" else "")
     }
 
     private fun build(vendor: Boolean): Dec {
-        val c = MediaCodec.createDecoderByType("video/avc")
+        val c = if (mode >= 2) soft() else MediaCodec.createDecoderByType("video/avc")
         val t = HandlerThread("tvr-decode")
         try {
             val lowOk = Build.VERSION.SDK_INT >= 30 && c.codecInfo.getCapabilitiesForType("video/avc")
                 .isFeatureSupported(MediaCodecInfo.CodecCapabilities.FEATURE_LowLatency)
-            val keys = LiveDecode.tuning(Build.VERSION.SDK_INT, lowOk, vendor)
+            val keys = if (mode > 0) emptyMap() else LiveDecode.tuning(Build.VERSION.SDK_INT, lowOk, vendor)
             val f = MediaFormat.createVideoFormat("video/avc", w, h)
             f.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, 2 shl 20)
             for ((k, v) in keys) f.setInteger(k, v)
@@ -91,7 +98,10 @@ private class SurfaceScreen(private val surface: Surface) : Tv.Screen {
             val cb = object : MediaCodec.Callback() {
                 override fun onInputBufferAvailable(codec: MediaCodec, index: Int) { d.inputs.add(index) }
                 override fun onOutputBufferAvailable(codec: MediaCodec, index: Int, info: MediaCodec.BufferInfo) = shown(d, index, info)
-                override fun onError(codec: MediaCodec, e: MediaCodec.CodecException) { Log.w(TAG, "decoder error: $e"); if (dec === d) broken = true }
+                override fun onError(codec: MediaCodec, e: MediaCodec.CodecException) {
+                    Log.w(TAG, "decoder error: $e"); WireLog.all.add("·", "picture $host decoder error ${e.diagnosticInfo}")
+                    if (dec === d) broken = true
+                }
                 override fun onOutputFormatChanged(codec: MediaCodec, format: MediaFormat) {}
             }
             if (Build.VERSION.SDK_INT >= 23) c.setCallback(cb, Handler(t.looper)) else c.setCallback(cb)   // Android 5: no handler argument, the caller's looper or the main one
@@ -106,9 +116,17 @@ private class SurfaceScreen(private val surface: Surface) : Tv.Screen {
         }
     }
 
+    /** Android's own H.264 decoder by name (Codec2 from Android 10, OMX before), else whichever the type gives. */
+    private fun soft(): MediaCodec {
+        for (n in arrayOf("c2.android.avc.decoder", "OMX.google.h264.decoder")) try { return MediaCodec.createByCodecName(n) } catch (ignored: Exception) { }
+        return MediaCodec.createDecoderByType("video/avc")
+    }
+
     /** A frame came out (on the decoder's thread): drawn now, unless it is late and newer ones are right behind it. */
     private fun shown(d: Dec, index: Int, info: MediaCodec.BufferInfo) {
-        if (d !== dec || info.size == 0) { try { d.codec.releaseOutputBuffer(index, false) } catch (ignored: Exception) { }; return }
+        // a frame drawn on a Surface may report size 0 (only its pixels matter): skipping those left a picture all black
+        if (d !== dec || info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) { try { d.codec.releaseOutputBuffer(index, false) } catch (ignored: Exception) { }; return }
+        outs++
         val now = SystemClock.elapsedRealtime()
         val (age, draw) = gate.out(info.presentationTimeUs, now)
         try { d.codec.releaseOutputBuffer(index, draw) } catch (ignored: IllegalStateException) { return }
@@ -137,7 +155,7 @@ private class SurfaceScreen(private val surface: Surface) : Tv.Screen {
             if (now - t0 > 10000) return false                        // stuck: the session ends
         }
         if (!queue(d, idx, data, pts, config)) return true
-        if (!config) { gate.fed(pts, now); stats.fed() }
+        if (!config) { gate.fed(pts, now); stats.fed(); if (++ins >= 30 && outs == 0 && mode < 2) plainer() }
         return true
     }
 
@@ -149,6 +167,13 @@ private class SurfaceScreen(private val surface: Surface) : Tv.Screen {
         true
     } catch (e: RuntimeException) {
         Log.w(TAG, "queue failed: $e"); broken = true; false
+    }
+
+    /** 30 frames in, none out: the next plainer decoder, fed the config, and the TV asked for a key frame. */
+    private fun plainer() {
+        mode++; ins = 0; outs = 0
+        WireLog.all.add("·", "picture $host no frame out of ${dec?.codec?.name}: trying a plainer decoder")
+        catchUp(SystemClock.elapsedRealtime())
     }
 
     /** The decoder is far behind (or failed): made again, frames skipped up to the next key frame, which the TV is asked for. */
