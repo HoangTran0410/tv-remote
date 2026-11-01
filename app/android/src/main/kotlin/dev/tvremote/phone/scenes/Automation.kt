@@ -154,6 +154,16 @@ private fun MainActivity.doVoice(c: Voice.Command) {
             if (tv != null && tv.ready()) Thread { try { Scenes.launch({ tv.shell(it) }, c.pkg) } catch (e: Exception) { ui.post { toast(e.message ?: "") } } }.start()
             else basic?.launch(c.pkg)
         }
+        is Voice.Command.Search -> {
+            toast(T("auto.search_in", "name" to c.name, "q" to c.query))
+            val tv = tv
+            // over ADB: the app's link, its own SEARCH, else only the app (said); without ADB the remote protocol can send the link or the app
+            if (tv != null && tv.ready()) Thread {
+                val to = tv.searchIn(c.pkg, c.url, c.query)
+                if (to == null || to == "none") ui.post { toast(T("auto.search_in_none", "name" to c.name)) }
+            }.start()
+            else { basic?.launch(c.url ?: c.pkg); if (c.url == null) toast(T("auto.search_in_none", "name" to c.name)) }
+        }
         is Voice.Command.Close -> {
             val tv = tv
             if (tv == null || !tv.ready()) { needsAdb(); return }              // am force-stop is ADB's; the keys-only link cannot

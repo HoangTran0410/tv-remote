@@ -314,6 +314,46 @@
   [
    "đi",
    "null"
+  ],
+  [
+   "mở vtv3 trên fpt play",
+   "search:com.fptplay.tv:vtv3"
+  ],
+  [
+   "Mở Sơn Tùng trên YouTube",
+   "search:com.google.android.youtube.tv:Sơn Tùng"
+  ],
+  [
+   "open cats in youtube please",
+   "search:com.google.android.youtube.tv:cats"
+  ],
+  [
+   "cho tôi xem phim hành động trong netflix",
+   "search:com.netflix.ninja:phim hành động"
+  ],
+  [
+   "tom and jerry on netflix",
+   "search:com.netflix.ninja:tom and jerry"
+  ],
+  [
+   "turn on netflix",
+   "app:com.netflix.ninja"
+  ],
+  [
+   "mở fpt play",
+   "app:com.fptplay.tv"
+  ],
+  [
+   "mở youtube trên youtube",
+   "app:com.google.android.youtube.tv"
+  ],
+  [
+   "mở vtv3 ở nhà",
+   "null"
+  ],
+  [
+   "play something on the sofa",
+   "null"
   ]
  ]
 }

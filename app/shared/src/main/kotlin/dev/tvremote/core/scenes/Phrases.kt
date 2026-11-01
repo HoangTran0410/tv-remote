@@ -12,7 +12,7 @@ import java.io.InputStream
  * Everything is folded (no accents, no case) and "tivi" / "ti vi" read as "tv", so a list is written the way people write.
  */
 class Phrases(json: String) {
-    class Alias(val label: String, val pkgs: List<String>, val names: Set<String>)
+    class Alias(val label: String, val pkgs: List<String>, val names: Set<String>, val search: String? = null)   // search: a link with {q}, the app's own web search
 
     private val o = JSONObject(json)
     val rev: Int = o.getInt("rev")
@@ -41,6 +41,8 @@ class Phrases(json: String) {
     private val noise = alt(all("open", "noise"))
     val open = Regex("^(?:" + alt(all("open", "verbs") + tune) + ")(?: (?:$noise))? (.+)$")
     val close = Regex("^(?:" + alt(all("close", "verbs")) + ") (?:(?:$noise) )?(.+)$")
+    /** "X <connector> Y" ("vtv3 trên fpt play"): X and Y, split at the last connector word; null before the list has any. */
+    val connect: Regex? = all("connect").takeIf { it.isNotEmpty() }?.let { Regex("^(.+) (?:" + alt(it) + ") (.+)$") }
     val tuneRe = Regex("^(?:" + alt(tune) + ") (.+)$")
     val channel = Regex("^(?:(?:" + alt(all("channel", "verbs")) + ") )?(?:" + alt(all("channel", "words")) + ") (.+)$")
     val channelNames = Regex("^(?:" + (0 until (o.optJSONArray("channel_names")?.length() ?: 0)).joinToString("|") { o.getJSONArray("channel_names").getString(it) } + ")$")
@@ -48,7 +50,7 @@ class Phrases(json: String) {
     val apps: List<Alias> = o.getJSONArray("apps").let { a ->
         (0 until a.length()).map { a.getJSONObject(it) }.map { x ->
             val p = x.optJSONArray("pkgs")
-            Alias(x.getString("label"), if (p == null) emptyList() else (0 until p.length()).map { p.getString(it) }, words(x.getJSONArray("names")).toSet())
+            Alias(x.getString("label"), if (p == null) emptyList() else (0 until p.length()).map { p.getString(it) }, words(x.getJSONArray("names")).toSet(), x.optString("search").ifEmpty { null })
         }
     }
     /**

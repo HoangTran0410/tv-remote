@@ -192,6 +192,12 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
                 "notify" -> { Notify.send({ sh(it) }, r.json()); HttpServer.Response.json(JSONObject().put("ok", true)) }
                 "share" -> HttpServer.Response.json(Invite.share({ sh(it) }, link.host, r.json().optString("scope"), r.json().optBoolean("again")))   // a QR another phone scans (Invite.kt)
                 "search" -> {
+                    val d = r.json()
+                    if (d.optString("pkg").isNotEmpty()) {            // "mở X trên <app>": X inside that app, else the app opened alone
+                        val to = sh(TvShell.searchIn(d.optString("pkg"), d.optString("url").ifEmpty { null }, d.optString("query"))).trim()
+                        if (to == "none") Scenes.launch({ sh(it) }, d.optString("pkg"))
+                        return HttpServer.Response.json(JSONObject().put("to", if (to == "none") "open" else "app"))
+                    }
                     val to = sh(TvShell.search(r.json().optString("query"))).trim()
                     if (to != "yt" && to != "gs") throw IllegalArgumentException("this TV has no YouTube and no Google search")
                     HttpServer.Response.json(JSONObject().put("to", if (to == "yt") "youtube" else "assistant"))

@@ -11,7 +11,7 @@ function qkLabel(c, apps, t) {
   const k = Target.kind(t);
   if (k === 'action') return T('home.qk_cc');
   if (k === 'tile') { const x = (c.tilesAvail || []).find((y) => y.key === t); return (x && x.title) || Target.id(t); }
-  if (k === 'pin') { const x = (c.pinsAvail || []).find((y) => y.key === t); return (x && x.title) || Target.id(t); }
+  if (k === 'pin') { const x = (c.pinned || []).find((y) => y.key === t) || (c.pinsAvail || []).find((y) => y.key === t); return (x && x.title) || Target.id(t); }   // pinned: what is on the grid now (TV Home's own links too)
   const a = (apps || []).find((y) => y.pkg === t);
   return (a && a.label) || (k === 'app' ? appName(t) : t);
 }
@@ -23,7 +23,8 @@ function qkLogo(c, t) {
     const x = (c.tilesAvail || []).find((y) => y.key === t), word = k === 'action' ? T('home.qk_cc') : (x && x.title) || Target.id(t);
     return el('div', { className: 'appicon placeholder qklive', textContent: (word.match(/\p{L}|\p{N}/u) || ['?'])[0].toUpperCase() });
   }
-  const pkg = Target.pkg(t), icon = appIcon(pkg);
+  const own = k === 'pin' && ((c.pinned || []).find((y) => y.key === t) || {}).app;   // TV Home's own link: the app that opens it, not TV Home
+  const pkg = own || Target.pkg(t), icon = appIcon(pkg);
   onMeta(pkg, (m) => icon.fill(m));
   return icon;
 }

@@ -58,7 +58,7 @@ function chooseApp(title, pkgs, now, how = {}) {   // [how]: {label(p), icon(p)}
     const named = (p) => nameOf(p) !== p;                             // a bare package name goes last
     const tiles = pkgs.slice().sort((a, b) => named(b) - named(a) || nameOf(a).localeCompare(nameOf(b))).map((p) => {
       const icon = how.icon ? how.icon(p) : appIcon(p), name = el('span', { textContent: nameOf(p) });
-      if (!how.icon) onMeta(p, (m) => { icon.fill(m); put(name, 'textContent', appName(p)); });
+      if (!how.icon || (Target.kind(p) === 'app' && icon.fill)) onMeta(p, (m) => { icon.fill(m); put(name, 'textContent', nameOf(p)); });   // a mixed list: its apps still get their icons
       const b = el('button', { type: 'button', className: 'tile' + (p === now ? ' on' : ''), title: p, onclick: () => { picked = p; d.close(); } }, icon, name);
       b.pkg = p; return b;
     });

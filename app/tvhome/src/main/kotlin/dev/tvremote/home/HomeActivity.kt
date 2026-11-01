@@ -1948,11 +1948,6 @@ class HomeActivity : Activity() {
                 if (hs.any { it.pkg == now }) hs.first { it.pkg == now }.label else getString(R.string.yt_auto, hs.first().label)
             } })
         }
-        val link = Pins.ownIdOf(this, a)?.let { Pins.linkOf(this, it) }
-        if (link != null) rows.add(TvGlass.Item(R.drawable.ic_link, link.removePrefix("https://").removePrefix("http://").removeSuffix("/"), "", false, false) { ui.post { linkEdit(a, link) } }.also { r ->
-            // where it goes, and a press changes it (only delete + add again did); the app that opens it is the row above
-            r.live = { if (LinkApps.preview(this, link).apps.isEmpty()) getString(R.string.link_none) else getString(R.string.link_edit) }
-        })
         subs(a, st).forEachIndexed { i, s -> rows.add(TvGlass.Item(s.icon, getString(s.title), s.hint, true, true) { sub(a, st, i) }) }
         rows.add(TvGlass.Item(R.drawable.ic_sliders, getString(R.string.customize)) { customize() })
         p.page(a.label, rows, at)
@@ -2004,6 +1999,11 @@ class HomeActivity : Activity() {
         if (!a.folder && !dockedPin && a.pkg != packageName && HomeConfig.folderMember(a.pkg) && (!a.grid || a.pkg in Store.list(this, "tiles"))) home.add(item(R.drawable.ic_apps, if (inFolder == null) R.string.folder_put else R.string.folder_other) { ui.post { folderPicker(a.pkg, inFolder) } })
         if (dockedPin) home.add(item(R.drawable.ic_close, R.string.unpin) { Pins.remove(this, a); pins = pins.filter { it !== a }; shownKey = ""; show() })
         if (!a.live) home.add(item(R.drawable.ic_pen, R.string.rename) { ui.post { rename(a) } })
+        val link = Pins.ownIdOf(this, a)?.let { Pins.linkOf(this, it) }
+        if (link != null) home.add(TvGlass.Item(R.drawable.ic_link, link.removePrefix("https://").removePrefix("http://").removeSuffix("/"), "", false, false) { ui.post { linkEdit(a, link) } }.also { r ->
+            // where it goes, and a press changes it; next to Rename, where people look for both (the user, 2026-11-01)
+            r.live = { if (LinkApps.preview(this, link).apps.isEmpty()) getString(R.string.link_none) else getString(R.string.link_edit) }
+        })
         val rowOff = a.pkg in Store.rowsOff(this)
         if (!a.live && a.pin == null && conf.optBoolean("showWatch", true) && (rowOff || a.pkg == rowToggled || watch.any { it.first.pkg == a.pkg })) {   // its Play Next items, hidden or brought back where people look for them (found only under + Add, the user, 2026-10-27)
             val me = home.size

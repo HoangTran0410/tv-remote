@@ -724,23 +724,30 @@ object Customize {
                 if (list.isEmpty()) return
                 section(a.getString(title)); wallRows(list); more()
             }
-            part(R.string.wall_h_online, online)
+            // the person's own photos first (the + cell is always there), then the pages (Bing, a page of their own, the site's live pages), then the site's pictures and videos
+            section(a.getString(R.string.wall_h_photos)); wallRows(listOf(ADD) + photos)
+            val onBox = LinearLayout(a).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false }
+            col.addView(onBox, LinearLayout.LayoutParams(-1, -2))
             // the site's suggestions (Suggest): drawn from the list kept, again when a newer one comes while the page is open
             val sugBox = LinearLayout(a).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false }
             col.addView(sugBox, LinearLayout.LayoutParams(-1, -2))
             fun sugFill() {
-                val list = Suggest.items.map { it.key }
-                tiles.removeAll { it.first.startsWith(Suggest.PREFIX) }; sugBox.removeAllViews()
-                if (list.isEmpty()) return
-                val was = col; col = sugBox
-                section(a.getString(R.string.wall_h_suggest)); wallRows(list)
-                col.addView(label(a.getString(R.string.sug_note), 12f, DIM), LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(8) })
+                val pages = Suggest.items.filter { it.kind == "page" }.map { it.key }          // a page is a web page: beside Bing, not among the pictures
+                val list = Suggest.items.filter { it.kind != "page" }.map { it.key }
+                tiles.removeAll { it.first.startsWith(Suggest.PREFIX) || it.first in online }; onBox.removeAllViews(); sugBox.removeAllViews()
+                val was = col
+                col = onBox
+                if (online.isNotEmpty() || pages.isNotEmpty()) { section(a.getString(R.string.wall_h_online)); wallRows(online + pages) }
+                col = sugBox
+                if (list.isNotEmpty()) {
+                    section(a.getString(R.string.wall_h_suggest)); wallRows(list)
+                    col.addView(label(a.getString(R.string.sug_note), 12f, DIM), LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(8) })
+                }
                 col = was; markAll()
             }
-            Suggest.onChange = { a.runOnUiThread { if (a.isDestroyed) return@runOnUiThread; if (!dialog.isShowing || sugBox.findFocus() == null) sugFill() } }   // never under the person's focus
-            Suggest.load(a)                                                   // the kept list first: a fresh process has none in memory yet
+            Suggest.onChange = { a.runOnUiThread { if (a.isDestroyed) return@runOnUiThread; if (!dialog.isShowing || (sugBox.findFocus() == null && onBox.findFocus() == null)) sugFill() } }   // never under the person's focus
+            Suggest.load(a, 3600_000L)                                        // the kept list first (a fresh process has none); a list an hour old is asked again, as Themes: a day's wait hid new slideshows
             sugFill()
-            section(a.getString(R.string.wall_h_photos)); wallRows(listOf(ADD) + photos)         // always there: with no photo yet, the grid is the + cell alone
             part(R.string.wall_h_videos, videos) {
                 // a video or GIF background (HomeConfig vfps / vres; no sound: a wall is a picture, the user 2026-10-27): frame rate and size for the NEXT upload, which is made on a phone through the QR above
                 col.addView(View(a), LinearLayout.LayoutParams(1, dp(10)))

@@ -280,8 +280,14 @@ class Server(private val repo: File, private val keys: File, private val pass: P
             return Response.json(JSONObject().put("to", "youtube"))
         }
         if (!native(s) && post && r.path == "/api/search" && !adbReady(s)) {   // no ADB yet: YouTube's results through the remote link
-            val q = r.json().optString("query").trim().take(200)
+            val d = r.json()
+            val q = d.optString("query").trim().take(200)
             if (q.isEmpty()) throw IllegalArgumentException("empty query")
+            val url = d.optString("url")
+            if (d.optString("pkg").isNotEmpty()) {                 // in an app: its link when it has one, else the app alone
+                s.need().launch(if (url.startsWith("https://")) url else d.optString("pkg"))
+                return Response.json(JSONObject().put("to", if (url.startsWith("https://")) "app" else "open"))
+            }
             s.need().launch(TvShell.youtube(q))
             return Response.json(JSONObject().put("to", "youtube"))
         }

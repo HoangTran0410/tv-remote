@@ -252,7 +252,8 @@ async function homeOpen() {
     if (v !== null && v !== undefined) send({ names: { ...(r.config.names || {}), [p]: String(v).trim() } });
   };
   const addName = el('button', { type: 'button', className: 'small', textContent: T('home.rename_add'), onclick: async () => {
-    const p = await chooseApp(T('home.pick_rename'), apps()); if (p) setName(p);
+    const pins = (r.config.pinned || []).map((x) => x.key);         // the pinned links and shortcuts too (a TV Home that reports them)
+    const p = await chooseApp(T('home.pick_rename'), [...apps(), ...pins], null, { label: appLabel, icon: (k) => Target.kind(k) === 'pin' ? qkLogo(r.config, k) : appIcon(k) }); if (p) setName(p);
   } });
   const namesHead = el('div', { className: 'card-head' }, el('h3', { textContent: T('home.names') }), addName);
   const orderHead = el('h3', { textContent: T('home.order') }), orderBox = el('div', { className: 'group' });
@@ -525,10 +526,10 @@ async function homeOpen() {
   const gal = el('div', { className: 'homegal' }), credit = el('p', { className: 'note', textContent: T('home.gal_note') });
   const galHead = el('h3', { textContent: T('home.gallery') });
   // the site's moving backgrounds and pages (wallpapers.json "links"): each sets the web wall to its address, as TV Home's own "Suggested"
-  const sugHead = el('h3', { textContent: T('home.wh_suggest') }), sugBox = el('div', { className: 'homegal' }), sugNote = el('p', { className: 'note', textContent: T('home.sug_note') });
-  sugHead.hidden = sugBox.hidden = sugNote.hidden = true;
-  const markSug = (c) => { for (const b of sugBox.children) { const on = c.wall === 'web' && c.wurl === b.dataset.url; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); } };
-  homeGallery(gal, credit, galHead, (n) => { r = n; homeNow = n; draw(); }, { box: sugBox, head: sugHead, note: sugNote, pick: (u, fade) => send({ wall: 'web', wurl: u, wmode: 'live', wfade: fade }), mark: () => markSug(r.config) });
+  const sugHead = el('h3', { textContent: T('home.wh_suggest') }), sugBox = el('div', { className: 'homegal' }), pageBox = el('div', { className: 'homegal' }), sugNote = el('p', { className: 'note', textContent: T('home.sug_note') });
+  sugHead.hidden = sugBox.hidden = sugNote.hidden = pageBox.hidden = true;
+  const markSug = (c) => { for (const b of [...pageBox.children, ...sugBox.children]) { const on = c.wall === 'web' && c.wurl === b.dataset.url; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); } };
+  homeGallery(gal, credit, galHead, (n) => { r = n; homeNow = n; draw(); }, { box: sugBox, pages: pageBox, head: sugHead, note: sugNote, pick: (u, fade) => send({ wall: 'web', wurl: u, wmode: 'live', wfade: fade }), mark: () => markSug(r.config) });
 
   // "Add to home screen": a picker of the apps (hidden ones too), their shortcuts and the live widgets; a press puts one on the grid or
   // takes it off and the list stays open. Shortcuts and live widgets are in config "tiles" (the order they have on the grid), an app is
@@ -1011,8 +1012,8 @@ async function homeOpen() {
   const GROUPS = [
     ['themes', 'star', 45, 'home.themes', [themeHint, themeMineHead, themeMine, themeLine, themeNote, themeReadyHead, themeReady, themeCommHead, themeComm]],
     ['bg', 'image', 330, 'home.wall', [everyHead, every, everyNote, shadeHead, shade, shadeNote, fitHead, fit, fitNote, fadeRow, fadeNote,
-      hOnline, wOnline, sugHead, sugBox, sugNote, webHead, webLine, webModeHead, webMode, webEveryHead, webEvery, webKeep, webModeNote,
-      hPhotos, photoAct, wPhotos, holdNote, galHead, gal, credit,
+      hPhotos, photoAct, wPhotos, holdNote, galHead, gal, credit,                       // the person's own first, as TV Home's own screen
+      hOnline, wOnline, pageBox, webHead, webLine, webModeHead, webMode, webEveryHead, webEvery, webKeep, webModeNote, sugHead, sugBox, sugNote,
       hVideos, videoAct, vstate, vperf, wVideos, vFold, vnote, file, vfile,
       hScenes, wScenes, hColours, walls, ownHead, ownStops, ownDirHead, ownDir, ownNote]],
     ['look', 'sparkle', 180, 'home.g_look', [sect('home.sec_show', focusHead, focus, motionHead, motion, check(anim, 'home.anim'), check(clock, 'home.clock24')),
@@ -1144,15 +1145,18 @@ async function homeGallery(box, credit, head, done, sug) {
   const lang = (document.documentElement.lang || 'en').slice(0, 2);
   const links = (g && g.links) || [];
   if (sug && links.length) {
-    sug.box.replaceChildren(...links.map((l) => {
+    const tile = (l) => {
       const face = l.thumb ? el('img', { src: l.thumb, alt: '', loading: 'lazy' }) : el('i', { className: 'mi', innerHTML: '<svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg>' });
       const tag = l.kind === 'video' ? T('home.sug_video') : l.kind === 'page' ? T('home.sug_page') : '';
       const b = el('button', { type: 'button', title: [l.name[lang] || l.name.en, l.credit, l.license].filter(Boolean).join(' · '), onclick: () => sug.pick(l.url, !!l.fade) },
         face, el('span', { textContent: l.name[lang] || l.name.en }), ...(tag ? [el('small', { className: 'badge', textContent: tag })] : []));
       b.dataset.url = l.url;
       return b;
-    }));
-    sug.head.hidden = sug.box.hidden = sug.note.hidden = false; sug.mark();
+    };
+    const pages = links.filter((l) => l.kind === 'page'), rest = links.filter((l) => l.kind !== 'page');   // a page sits beside Bing, in Online
+    sug.pages.replaceChildren(...pages.map(tile)); sug.pages.hidden = !pages.length;
+    sug.box.replaceChildren(...rest.map(tile));
+    sug.head.hidden = sug.box.hidden = sug.note.hidden = !rest.length; sug.mark();
   }
   if (!g || !g.walls || !g.walls.length) { box.hidden = credit.hidden = head.hidden = true; return; }   // no list (offline): no empty heading either
   const note = (w) => T('home.credit', { name: w.name[lang] || w.name.en, credit: w.credit, license: w.license, kb: w.kb });

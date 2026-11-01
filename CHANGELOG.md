@@ -6,6 +6,10 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: a pinned link's tile menu has its link (press to change it) inside On the home screen, right after Rename. The web page's Rename lists pinned links and shortcuts too (Rick Roll, a TV Channels channel), with the icon of the app that opens them.
+- Voice search in an app that is off or missing (Google's YouTube on FPT boxes) goes to the app that opens its links instead (TizenTube, SmartTube), not to an error or a chooser.
+- TV Home > Customize > Wallpaper (and the web page's): "Your photos" is the first part, the site's live pages (Global wind) sit beside Bing under Online, and the site's list of suggestions is asked again after an hour instead of a day, so new slideshows show up the same day.
+- Voice: "open X on Y" ("mở vtv3 trên fpt play", "open cats on YouTube") searches X inside the app Y, by voice and by the Ask the TV box, on the phone, computer, TV web page and the TV mic button. The app's web search link comes from the signed voice list (FPT Play, YouTube), else the app's own search screen, else the app is only opened and it says so; nothing is pressed on the results. The list gained the words that join them (on, in, trên, trong, ở).
 - Home Assistant · Shortcuts link: `minutes=15&for=<app>` gives more time today to an app with a limit (or to the daily TV time without `for=`), so a learning site can unlock YouTube once a quiz is passed (#14).
 - TV mic button: a sentence that is no command now searches (YouTube, else the TV's own search) instead of ending on "Did not understand"; an app said by its full name opens on the first pause, without waiting for the recognizer's end. The search from the phone and the page skips a YouTube that is installed but switched off (FPT boxes), so it reaches the TV's search.
 - TV mic button: on Google TV boxes that hand the mic button to the Assistant before any app sees it (FPT Play box), "Mic button" now makes TV Remote the TV's assistant while it is on, and gives Google's back when it goes off.

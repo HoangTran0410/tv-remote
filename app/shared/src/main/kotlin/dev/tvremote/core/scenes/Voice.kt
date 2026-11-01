@@ -10,6 +10,8 @@ object Voice {
     sealed class Command {
         data class Key(val key: String, val times: Int) : Command()
         data class App(val pkg: String, val name: String) : Command()
+        /** "mở vtv3 trên fpt play": [query] searched inside the app; [url] its web search for it (the alias's "search" with {q} filled), null: the app's own SEARCH or just opening it. */
+        data class Search(val pkg: String, val name: String, val query: String, val url: String?) : Command()
         data class Channel(val name: String) : Command()                  // a TV channel by name: TV Channels finds it itself
         data class Close(val pkg: String, val name: String) : Command()     // am force-stop: needs ADB; never TV Setup / TV Home (phrases.json "never_close")
         data class Timer(val minutes: Int) : Command()
@@ -66,6 +68,28 @@ object Voice {
         return if (loose) fuzzy(want) else null
     }
 
+    /** The words of [text] that [x] (folded) came from, with their accents ("sơn tùng"), else [x]: a search is better with the person's own spelling. */
+    private fun spelled(text: String, x: String): String {
+        val ws = x.split(' ')
+        val toks = text.trim().split(Regex("\\s+")).map { it.replace(Regex("[^\\p{L}\\p{N}]"), "") }.filter { it.isNotEmpty() }
+        val f = toks.map { fold(it) }
+        for (i in 0..f.size - ws.size) if (f.subList(i, i + ws.size) == ws) return toks.subList(i, i + ws.size).joinToString(" ")
+        return x
+    }
+
+    /** "<open verb>? X <connector> Y" with Y an app (an alias, or an installed name in full) and X more than that app: X is looked up inside Y. */
+    private fun search(text: String, s: String, apps: Map<String, String>, ph: Phrases): Command.Search? {
+        val re = ph.connect ?: return null
+        val rest = ph.open.matchEntire(s)?.groupValues?.get(1) ?: s
+        val m = re.matchEntire(rest) ?: return null
+        val x = m.groupValues[1]; val y = m.groupValues[2]
+        fun known(w: String) = app(w, apps, ph, false) ?: apps.entries.firstOrNull { fold(it.value) == w }?.let { it.key to it.value }
+        val target = known(y) ?: return null
+        if (known(x)?.first == target.first) return null                  // "mở youtube trên youtube"
+        val url = ph.apps.firstOrNull { y in it.names }?.search?.replace("{q}", java.net.URLEncoder.encode(spelled(text, x), "UTF-8").replace("+", "%20"))
+        return Command.Search(target.first, target.second, spelled(text, x), url)
+    }
+
     private fun channelName(w: String) = w.replace(Regex("([a-z]) (\\d)"), "\$1\$2")
 
     /** [apps]: package to name; [scenes]: id to name. Null means: ask the TV's Assistant. */
@@ -87,6 +111,7 @@ object Voice {
             val hit = app(m.groupValues[1], apps, ph, true)
             if (hit != null && hit.first !in ph.neverClose) return Command.Close(hit.first, hit.second)
         }
+        search(text, s, apps, ph)?.let { return it }
         val verb = ph.open.matchEntire(s)?.groupValues?.get(1)
         val want = verb ?: s
         app(want, apps, ph, false)?.let { return Command.App(it.first, it.second) }
@@ -125,6 +150,7 @@ object Voice {
         is Command.Key -> if (c.times > 1) Say(KEY_N[c.key] ?: "talk.k_vol_up_n", mapOf("n" to c.times.toString())) else KEY_SAY[c.key]?.let { Say(it) } ?: Say("talk.key", mapOf("key" to c.key.lowercase().replace('_', ' ')))
         is Command.App -> Say("talk.open_app", mapOf("name" to c.name))
         is Command.Channel -> Say("talk.channel", mapOf("name" to c.name))
+        is Command.Search -> Say("talk.search_in", mapOf("name" to c.name, "q" to c.query))
         is Command.Close -> Say("talk.close_app", mapOf("name" to c.name))
         is Command.Timer -> if (c.minutes == 0) Say("talk.timer_off") else Say("talk.timer", mapOf("n" to c.minutes.toString()))
         is Command.Scene -> Say("talk.scene")

@@ -880,6 +880,16 @@ class Tv(
         return try { a.shell(TvShell.search(query)).trim().takeIf { it == "yt" || it == "gs" } } catch (e: Exception) { null }
     }
 
+    /** Looks [query] up inside the app [pkg] ([TvShell.searchIn]); blocks. "url", "search", or "none" (then the app is only opened: [Scenes.launch]); null: no link. */
+    fun searchIn(pkg: String, url: String?, query: String): String? {
+        val a = adb ?: return null
+        return try {
+            val to = a.shell(TvShell.searchIn(pkg, url, query)).trim()
+            if (to == "none") dev.tvremote.core.scenes.Scenes.launch({ a.shell(it) }, pkg)
+            to
+        } catch (e: Exception) { null }
+    }
+
     /** Opens the TV's Settings. The settings key of a remote does nothing on many TVs, the app itself always opens. */
     /**
      * For keys that should open something ([OPENERS]; 176 opens the TV's settings): presses the key and says whether the TV's front

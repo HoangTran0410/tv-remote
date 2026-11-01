@@ -35,7 +35,8 @@
       channel: new RegExp('^(?:(?:' + alt(all('channel', 'verbs')) + ') )?(?:' + alt(all('channel', 'words')) + ') (.+)$'),
       channelNames: new RegExp('^(?:' + (list.channel_names || []).join('|') + ')$'),
       neverClose: new Set(list.never_close || []),
-      apps: (list.apps || []).map((a) => ({ label: a.label, pkgs: a.pkgs || [], names: new Set(words(a.names)) })),
+      apps: (list.apps || []).map((a) => ({ label: a.label, pkgs: a.pkgs || [], names: new Set(words(a.names)), search: a.search || null })),
+      connect: all('connect').length ? new RegExp('^(.+) (?:' + alt(all('connect')) + ') (.+)$') : null,   // "X on Y": X and Y, split at the last connector
     };
     compiled.set(list, c);
     return c;
@@ -68,6 +69,26 @@
     }
     return loose ? fuzzy(want) : null;
   }
+  // the words of [text] that [x] (folded) came from, with their accents ("sơn tùng"), else [x]: a search is better in the person's own spelling
+  function spelled(text, x) {
+    const ws = x.split(' '), toks = String(text).trim().split(/\s+/).map((t) => t.replace(/[^\p{L}\p{N}]/gu, '')).filter(Boolean), f = toks.map(fold);
+    for (let i = 0; i + ws.length <= f.length; i++) if (ws.every((w, j) => f[i + j] === w)) return toks.slice(i, i + ws.length).join(' ');
+    return x;
+  }
+
+  // "<open verb>? X <connector> Y" with Y an app (an alias, or an installed name in full) and X more than that app: X is looked up inside Y
+  function searchIn(text, s, apps, c) {
+    if (!c.connect) return null;
+    const o = c.open.exec(s), m = c.connect.exec(o ? o[1] : s);
+    if (!m) return null;
+    const known = (w) => findApp(w, apps, c, false) || (apps || []).filter((a) => fold(a.name) === w).map((a) => ({ pkg: a.pkg, name: a.name }))[0] || null;
+    const target = known(m[2]);
+    if (!target) return null;
+    const kx = known(m[1]);
+    if (kx && kx.pkg === target.pkg) return null;                   // "mở youtube trên youtube"
+    const query = spelled(text, m[1]), alias = c.apps.find((a) => a.names.has(m[2]));
+    return { kind: 'search', pkg: target.pkg, name: target.name, query, url: alias && alias.search ? alias.search.replace('{q}', encodeURIComponent(query)) : null };
+  }
   const chName = (w) => w.replace(/([a-z]) (\d)/g, '$1$2');
 
   // apps: [{pkg, name}]; scenes: [{id, name}]; list: the phrases (default: the app's, read once). Returns what to do, or null for "ask the Assistant".
@@ -89,6 +110,8 @@
     if (m) return { kind: 'timer', min: Math.min(+m[1] * (c.hours.has(m[2] || '') ? 60 : 1), 720) };
     m = c.close.exec(s);
     if (m) { const hit = findApp(m[1], apps, c, true); if (hit && !c.neverClose.has(hit.pkg)) return { kind: 'close', pkg: hit.pkg, name: hit.name }; }
+    const found = searchIn(text, s, apps, c);
+    if (found) return found;
     const o = c.open.exec(s), verb = o ? o[1] : null, want = verb == null ? s : verb;
     let hit = findApp(want, apps, c, false);
     if (hit) return { kind: 'app', pkg: hit.pkg, name: hit.name };

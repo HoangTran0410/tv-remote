@@ -46,9 +46,14 @@ def check():
             else:
                 for s in sub:
                     strs(b[part].get(s, []), "%s.%s.%s" % (l, part, s))
+    for l, b in d["lang"].items():
+        strs(b.get("connect", []), l + ".connect")             # "on", "trên": X <connect> app = search X in that app (Voice.kt, js/voice.js)
     for a in d["apps"]:
         if not a.get("label") or not a.get("names"):
             fail("app without label / names: %r" % a)
+        q = a.get("search")
+        if q is not None and not (re.fullmatch(r"https://[^ ]*\{q\}[^ ]*", q) and q.count("{q}") == 1):
+            fail("%s: search must be an https link with one {q}" % a["label"])
         for p in a.get("pkgs", []):
             if not re.fullmatch(r"[A-Za-z0-9_.]+", p):
                 fail("bad package " + p)

@@ -249,6 +249,7 @@ object MicVoice {
         is Voice.Command.Key -> T("auto.pressed", "key" to cmd.key.lowercase().replace('_', ' ')) + if (cmd.times > 1) " × ${cmd.times}" else ""
         is Voice.Command.App -> T("automation.opening", "name" to cmd.name)
         is Voice.Command.Channel -> T("automation.channel", "name" to cmd.name)
+        is Voice.Command.Search -> T("talk.search_in", "q" to cmd.query, "name" to cmd.name)
         is Voice.Command.Close -> T("mic.do_close", "name" to cmd.name)
         is Voice.Command.Timer -> if (cmd.minutes <= 0) T("mic.do_timer_off") else T("mic.do_timer", "n" to cmd.minutes)
         is Voice.Command.Scene -> T("mic.do_scene", "name" to (scenes(c)[cmd.id] ?: cmd.id))
@@ -295,6 +296,29 @@ object MicVoice {
         return true
     }
 
+    /**
+     * "mở vtv3 trên fpt play": the order of [dev.tvremote.core.adb.TvShell.searchIn], started from the voice screen in front (no ADB): the list's
+     * web search aimed at the app (any app when it is not installed), the app's own SEARCH screen, else the app alone and the words saying so.
+     * Nothing is pressed on the results. Null: done.
+     */
+    private fun searchIn(c: Context, cmd: Voice.Command.Search): String? {
+        val pm = c.packageManager
+        val installed = try { pm.getLaunchIntentForPackage(cmd.pkg) != null || pm.getLeanbackLaunchIntentForPackage(cmd.pkg) != null } catch (e: Exception) { false }
+        fun go(i: Intent) = try { c.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); true } catch (e: Exception) { false }
+        if (cmd.url != null) {
+            val view = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(cmd.url)).addCategory(Intent.CATEGORY_BROWSABLE)
+            // not there or off (an FPT box's Google YouTube): the app taking this link and not every link (TvShell.NOT_YOUTUBE), as TvShell.searchIn
+            val any = try { pm.queryIntentActivities(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(dev.tvremote.core.adb.TvShell.NOT_YOUTUBE)).addCategory(Intent.CATEGORY_BROWSABLE), 0).map { it.activityInfo.packageName }.toSet() } catch (e: Exception) { emptySet() }
+            val own = if (installed) cmd.pkg else try { pm.queryIntentActivities(view, 0).map { it.activityInfo.packageName }.firstOrNull { it !in any } } catch (e: Exception) { null }
+            if (go(if (own != null) view.setPackage(own) else view)) return null
+        }
+        val search = Intent(Intent.ACTION_SEARCH).setPackage(cmd.pkg).putExtra(android.app.SearchManager.QUERY, cmd.query)
+        if (installed && pm.queryIntentActivities(search, 0).isNotEmpty() && go(search)) return null
+        val open = pm.getLeanbackLaunchIntentForPackage(cmd.pkg) ?: pm.getLaunchIntentForPackage(cmd.pkg) ?: return T("auto.search_in_none", "name" to cmd.name)
+        go(open)
+        return T("auto.search_in_none", "name" to cmd.name)
+    }
+
     /** Carries [cmd] out (off the main thread). Null: done; else the words of what could not be done. */
     fun run(c: Context, cmd: Voice.Command): String? {
         val sh: (String) -> String = { RemoteService.shell(it) ?: throw IllegalStateException("adb") }
@@ -304,6 +328,7 @@ object MicVoice {
                     val i = c.packageManager.getLeanbackLaunchIntentForPackage(cmd.pkg) ?: c.packageManager.getLaunchIntentForPackage(cmd.pkg)
                     if (i != null) c.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) else Scenes.launch(sh, cmd.pkg)
                 }
+                is Voice.Command.Search -> return searchIn(c, cmd)
                 is Voice.Command.Close -> {
                     if (dev.tvremote.core.ontv.Setup.mustKeep(cmd.pkg) || cmd.pkg == c.packageName) return T("mic.failed")   // the TV needs it
                     sh("am force-stop " + dev.tvremote.core.adb.Adb.q(cmd.pkg))

@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "rev": 2,
+  "rev": 3,
   "about": "Words of the spoken commands (Voice.kt, js/voice.js). What each KEY / verb DOES is code; the words are here. Accents and case do not matter (folded), 'tivi' and 'ti vi' read as 'tv'. Signed: dev/sign/sign_voice.py.",
   "never_close": [
     "dev.tvremote.setup",
@@ -28,7 +28,8 @@
         "du tup",
         "diu tup",
         "youtube tv"
-      ]
+      ],
+      "search": "https://www.youtube.com/results?search_query={q}"
     },
     {
       "label": "Netflix",
@@ -112,13 +113,17 @@
     },
     {
       "label": "FPT Play",
-      "pkgs": [],
+      "pkgs": [
+        "net.fptplay.ottbox",
+        "com.fptplay.launcher"
+      ],
       "names": [
         "fpt play",
         "fpt",
         "fpt plei",
         "fptplay"
-      ]
+      ],
+      "search": "https://fptplay.vn/tim-kiem/{q}"
     },
     {
       "label": "VieON",
@@ -540,7 +545,12 @@
           "doi sang"
         ],
         "tune": []
-      }
+      },
+      "connect": [
+        "tren",
+        "trong",
+        "o"
+      ]
     },
     "en": {
       "fillers": [
@@ -765,7 +775,9 @@
           "switch to",
           "take me to",
           "switch to",
-          "change to"
+          "change to",
+          "turn on",
+          "switch on"
         ],
         "noise": [
           "the app",
@@ -805,7 +817,11 @@
         "tune": [
           "tune to"
         ]
-      }
+      },
+      "connect": [
+        "on",
+        "in"
+      ]
     }
   },
   "spoken": {

@@ -20,7 +20,7 @@ const cmd = (t, apps = [
   { pkg: 'org.videolan.vlc', name: 'VLC' },
 ]) => voiceCommand(t, apps, SCENES, LIST);
 const show = (c) => !c ? 'null' : c.kind === 'key' ? `key:${c.key}:${c.times}` : c.kind === 'app' ? `app:${c.pkg}` : c.kind === 'close' ? `close:${c.pkg}`
-  : c.kind === 'channel' ? `channel:${c.name}` : c.kind === 'timer' ? `timer:${c.min}` : `scene:${c.scene.id}`;
+  : c.kind === 'channel' ? `channel:${c.name}` : c.kind === 'timer' ? `timer:${c.min}` : c.kind === 'search' ? `search:${c.pkg}:${c.query}` : `scene:${c.scene.id}`;
 
 test('the sentence table (shared with VoiceTest.kt)', () => {
   assert.ok(TABLE.cases.length >= 40);
@@ -99,4 +99,13 @@ test('sleep timer in minutes or hours, and cancelling it', () => {
 test('a scene by its name', () => {
   assert.equal(cmd('đi ngủ').scene.id, 's1');
   assert.equal(cmd('cảnh xem phim').scene.id, 's2');
+});
+
+test('"X on Y": a search inside the app, with its link when the list has one', () => {
+  const c = voiceCommand('mở vtv3 trên fpt play', APPS, SCENES, LIST);
+  assert.equal(c.kind, 'search');
+  assert.equal(c.url, 'https://fptplay.vn/tim-kiem/vtv3');
+  assert.equal(voiceCommand('Mở Sơn Tùng trên YouTube', APPS, SCENES, LIST).url, 'https://www.youtube.com/results?search_query=S%C6%A1n%20T%C3%B9ng');
+  assert.equal(voiceCommand('open cats on netflix', APPS, SCENES, LIST).url, null);       // no link in the list: the app's own SEARCH or just the app
+  assert.deepEqual(voiceCommand('mở vtv3 trên fpt play', [], SCENES, LIST).pkg, 'net.fptplay.ottbox');   // no app list: the alias's package
 });

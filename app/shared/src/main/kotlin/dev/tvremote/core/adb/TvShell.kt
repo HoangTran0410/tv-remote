@@ -30,6 +30,27 @@ object TvShell {
             "else am start -a android.search.action.GLOBAL_SEARCH --es query " + Adb.q(s) + " 2>&1 | grep -q Error || echo gs; fi"
     }
     /**
+     * [q] looked up inside the app [pkg] ("mở vtv3 trên fpt play"), in this order: [url] (the list's web search for it, aimed at [pkg] when
+     * installed, else Android picks), the app's own SEARCH screen (found by asking the TV, [q] as `query`), else nothing. Prints "url",
+     * "search" or "none"; on "none" the caller just opens the app. Nothing is pressed on the results.
+     */
+    fun searchIn(pkg: String, url: String?, q: String): String {
+        pkg(pkg)
+        val s = q.trim().take(300)
+        require(s.isNotEmpty()) { "empty query" }
+        require(url == null || (url.startsWith("https://") && url.length < 1000)) { "bad link" }
+        val p = Adb.q(pkg)
+        // [pkg] only while it is on (an FPT box keeps Google's YouTube installed but off: -p there is an error); else the app that takes
+        // this link and not every link ([NOT_YOUTUBE]: browsers, Downloader), so TizenTube / SmartTube get YouTube's, not a chooser
+        val pick = if (url == null) "" else "g=\$(cmd package query-activities --brief -a android.intent.action.VIEW -d '$NOT_YOUTUBE' 2>/dev/null); " +
+            "for a in \$(cmd package query-activities --brief -a android.intent.action.VIEW -d " + Adb.q(url) + " 2>/dev/null | grep /); do " +
+            "case \"\$g\" in *\"\$a\"*) ;; *) t=\"-p \${a%%/*}\"; break;; esac; done; "
+        return "p=$p; r=none; t=; if pm list packages -e \$p 2>/dev/null | grep -qx \"package:\$p\"; then t=\"-p \$p\"; else $pick fi; " +
+            (if (url != null) "am start -a android.intent.action.VIEW -d " + Adb.q(url) + " \$t 2>&1 | grep -q Error || r=url; " else "") +
+            "if [ \$r = none ] && cmd package query-activities --brief -a android.intent.action.SEARCH 2>/dev/null | grep -q \"^ *\$p/\"; then " +
+            "am start -a android.intent.action.SEARCH -p \$p --es query " + Adb.q(s) + " 2>&1 | grep -q Error || r=search; fi; echo \$r"
+    }
+    /**
      * Whichever app opens YouTube's links and not every link: Google's YouTube, Cobalt (YouTube for set-top boxes: an FPT Play box switches
      * Google's off and ships it), SmartTube, ... found by asking the TV, so no list to keep. Browsers and Downloader take any link: left out
      * by also asking who opens [NOT_YOUTUBE]. None: the TV's search, last, since on a box with no Google account a press on its results does nothing.

@@ -607,6 +607,11 @@ async function doCommand(c) {
   if (c.kind === 'scene') return runScene(c.scene);
   if (c.kind === 'app') return openOnTv(c.pkg, c.name);
   if (c.kind === 'channel') return chanOpen(c.name);
+  if (c.kind === 'search') {                                          // "mở vtv3 trên fpt play": the query inside that app, else only the app
+    const r = await api('/api/search', { query: c.query, pkg: c.pkg, url: c.url || '' });
+    if (r) toast(T(r.to === 'open' ? 'auto.search_in_none' : 'auto.search_in', { name: c.name, q: c.query }));
+    return;
+  }
   if (c.kind === 'timer') return setSleep(c.min);
   if (c.kind === 'close') {                                           // am force-stop, so ADB; TV Setup / TV Home are refused by the server as well
     if (needAdb()) return;

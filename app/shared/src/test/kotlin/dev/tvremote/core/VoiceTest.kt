@@ -23,6 +23,7 @@ class VoiceTest {
     private fun show(c: Command?): String = when (c) {
         null -> "null"; is Command.Key -> "key:${c.key}:${c.times}"; is Command.App -> "app:${c.pkg}"; is Command.Close -> "close:${c.pkg}"
         is Command.Channel -> "channel:${c.name}"; is Command.Timer -> "timer:${c.minutes}"; is Command.Scene -> "scene:${c.id}"
+        is Command.Search -> "search:${c.pkg}:${c.query}"
     }
     @Test fun sentenceTable() {
         val t = JSONObject(File("tests/voice_cases.json").readText())
@@ -129,5 +130,14 @@ class VoiceTest {
         }
         assertNull(Voice.preview("", apps, scenes)); assertNull(Voice.preview("  !! ", apps, scenes))
         assertNull(Voice.preview("mở spotify", apps, scenes)!!.command)             // not known: the TV's search, said so
+    }
+
+    @Test fun searchInAnApp() {
+        val c = p("mở vtv3 trên fpt play") as Command.Search
+        assertEquals("https://fptplay.vn/tim-kiem/vtv3", c.url)
+        assertEquals("https://www.youtube.com/results?search_query=S%C6%A1n%20T%C3%B9ng", (p("Mở Sơn Tùng trên YouTube") as Command.Search).url)
+        assertNull((p("open cats on netflix") as Command.Search).url)
+        assertEquals("net.fptplay.ottbox", (Voice.parse("mở vtv3 trên fpt play", emptyMap(), scenes) as Command.Search).pkg)
+        assertEquals(Voice.Say("talk.search_in", mapOf("name" to "FPT Play", "q" to "vtv3")), Voice.preview("mở vtv3 trên fpt play", apps, scenes)!!.say)
     }
 }
