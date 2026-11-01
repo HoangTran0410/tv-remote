@@ -61,9 +61,12 @@ object Providers {
     }
     class Played(val url: String, val until: Long)
 
-    private val KINDS: Map<String, Kind> = mapOf("vieon" to Vieon, "tv360" to Tv360, "vtvgo" to Vtvgo)
+    private val KINDS: Map<String, Kind> = mapOf("vieon" to Vieon, "tv360" to Tv360, "vtvgo" to Vtvgo, "streams" to Streams)
 
     fun kind(p: Provider): Kind? = KINDS[p.kind]
+
+    /** Whether it gives channels (an API's "list", or "streams" written in the list itself), not only a guide (TV360). */
+    private fun lists(p: Provider) = p.o.has("list") || p.o.has("streams")
 
     /** The providers that are on and whose kind this app knows; a shape that is not ours is no provider, not a crash. */
     fun parse(text: String): List<Provider> = try {
@@ -80,14 +83,14 @@ object Providers {
     /** Whether [merge] for [cc] can run without the network (the list and each provider's channels kept, a day at most): the screen then waits for it. */
     fun warm(c: Context, cc: String): Boolean =
         (mem?.let { System.currentTimeMillis() - it.first < DAY } == true || Catalog.young(c, "providers.json")) &&
-            all(c).filter { it.country == cc && it.o.has("list") }.all { Catalog.young(c, "prov-${it.id}-$cc.json") }
+            all(c).filter { it.country == cc && lists(it) }.all { Catalog.young(c, "prov-${it.id}-$cc.json") }
 
     /** The list: the site's (checked, kept a day), else the last one read, else the copy packed in the APK. */
-    fun all(c: Context): List<Provider> {
-        mem?.let { if (System.currentTimeMillis() - it.first < DAY) return it.second }
+    fun all(c: Context, again: Boolean = false): List<Provider> {      // again: a refresh asked by the person reads the site's list too
+        if (!again) mem?.let { if (System.currentTimeMillis() - it.first < DAY) return it.second }
         val f = File(c.filesDir, "providers.json")
         var fresh = true
-        val text = if (f.exists() && dev.tvremote.guard.Age.fresh(f.lastModified(), DAY)) f.readText() else
+        val text = if (!again && f.exists() && dev.tvremote.guard.Age.fresh(f.lastModified(), DAY)) f.readText() else
             fetchSigned()?.also { SignedList.keep(f, it.toByteArray(Charsets.UTF_8)) }
                 ?: run { fresh = false; null }
                 ?: f.takeIf { it.exists() }?.readText()
@@ -102,7 +105,7 @@ object Providers {
 
     /** [iptv] (a country's playlist) with the providers' channels of that country merged in. */
     fun merge(c: Context, cc: String, iptv: List<Channel>, fresh: Boolean): List<Channel> {
-        val ps = all(c).filter { it.country == cc && it.o.has("list") }
+        val ps = all(c, fresh).filter { it.country == cc && lists(it) }
         if (ps.isEmpty()) return iptv
         val byName = HashMap<String, Channel>(); for (ch in iptv) byName.getOrPut(key(ch.name)) { ch }
         val before = HashMap<String, MutableList<Channel>>()             // a provider's stream to put ahead of a channel's own
@@ -315,4 +318,22 @@ object Tv360 : Providers.Kind {
             if (t.isEmpty() || s <= 0 || e <= s) null else Show(t, s, e)
         }
     } catch (e: org.json.JSONException) { null }
+}
+
+/**
+ * Streams written in the signed list itself ("streams": [{name, url, group?, logo?}]): the stations' own public addresses
+ * (their site's player, VOV's), no API. Named as TV Channels already names a channel, one is that channel's backup stream (the
+ * player falls to it when the first one dies); otherwise a channel of its own. Only http(s): the list never points elsewhere.
+ */
+object Streams : Providers.Kind {
+    override fun list(p: Providers.Provider, get: (String) -> String?): List<Channel> = parse(p)
+
+    fun parse(p: Providers.Provider): List<Channel> {
+        val a = p.o.optJSONArray("streams") ?: return emptyList()
+        return (0 until a.length()).mapNotNull { a.optJSONObject(it) }.mapNotNull { o ->
+            val name = o.optString("name").trim(); val url = o.optString("url")
+            if (name.isEmpty() || !Regex("^https?://[^\\s]+$").matches(url)) null
+            else Channel("${Providers.key(name)}.${p.country}@${p.id}", name, o.optString("logo"), o.optString("group", "General"), url)
+        }
+    }
 }

@@ -15,7 +15,7 @@ class ProvidersTest {
         val list = File(docs, "providers.json").readBytes()
         assertTrue(dev.tvremote.update.SignedList.verify(list, File(docs, "providers.json.sig").readText()))
         assertFalse(dev.tvremote.update.SignedList.verify(list + ' '.code.toByte(), File(docs, "providers.json.sig").readText()))   // one byte more: refused
-        assertEquals(listOf("tv360", "vieon", "vtvgo"), Providers.parse(String(list)).map { it.id })
+        assertEquals(listOf("tv360", "vieon", "vtvgo", "stations"), Providers.parse(String(list)).map { it.id })
     }
 
     @Test fun offAndUnknownKindsAreLeftOut() {
@@ -25,6 +25,19 @@ class ProvidersTest {
         assertEquals("vn", Providers.parse(l)[0].country)
         assertTrue(Providers.parse("""{"v":2,"providers":[]}""").isEmpty())
         assertTrue(Providers.parse("not json").isEmpty())
+    }
+
+    /** Streams written in the list: a name TV Channels already has becomes that channel's backup (same key), anything not http(s) is dropped. */
+    @Test fun streamsFromTheListItself() {
+        val p = Providers.parse("""{"v":1,"providers":[{"id":"st","kind":"streams","country":"vn","streams":[
+            {"name":"Can Tho TV","url":"https://live.example.vn/tv/playlist.m3u8"},{"name":"Bad","url":"javascript:alert(1)"},
+            {"name":"","url":"https://x/a.m3u8"},{"name":"VOV5","url":"https://x/vov5.m3u8","group":"Music"}]}]}""")[0]
+        val got = Streams.parse(p)
+        assertEquals(listOf("Can Tho TV", "VOV5"), got.map { it.name })
+        assertEquals(Providers.key("Cần Thơ TV"), Providers.key(got[0].name))
+        assertEquals("cantho.vn@st", got[0].id)
+        assertEquals("Music", got[1].group)
+        assertFalse(Providers.isLink(got[0].url))                        // played as is, no provider call
     }
 
     @Test fun namesBothListsAgreeOn() {
