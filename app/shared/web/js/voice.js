@@ -36,6 +36,7 @@
       timerSet: new RegExp('^(?:' + alt(all('timer', 'set')) + ') (\\d+) ?(' + alt([...all('timer', 'hours'), ...all('timer', 'minutes')]) + ')?$'),
       open: new RegExp('^(?:' + alt([...all('open', 'verbs'), ...tune]) + ')(?: (?:' + noise + '))? (.+)$'),
       close: new RegExp('^(?:' + alt(all('close', 'verbs')) + ') (?:(?:' + noise + ') )?(.+)$'),
+      appWord: new RegExp('^(?:(?:' + alt(all('open', 'verbs')) + ') )?(?:' + noise + ') (.+)$'),   // "mở ứng dụng X": X is an app's name, matched loosely (near)
       tune: new RegExp('^(?:' + alt(tune) + ') (.+)$'),
       channel: new RegExp('^(?:(?:' + alt(all('channel', 'verbs')) + ') )?(?:' + alt(all('channel', 'words')) + ') (.+)$'),
       channelNames: new RegExp('^(?:' + (list.channel_names || []).join('|') + ')$'),
@@ -99,8 +100,34 @@
   // 2 [want] inside the name, 3 the name inside [want]. One target at the best quality: it. A pin named like an app that matched too: the app.
   // Several at the same quality: a 'choice' of up to MAX_CHOICES; this is the only place a list can come from (Voice.kt best()).
   const MAX_CHOICES = 3;
+  // a name as it sounds: no spaces or marks, "y" as "i"; the recognizer splits and respells brand names ("VietMITV" heard as "Việt MyTV")
+  const sound = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '').replace(/y/g, 'i');
+  // the installed apps whose name sounds closest to [want], a few letters off, asked only after the word "app": at most a quarter of the
+  // letters, one for a short name; several as close: a 'choice' (Voice.kt near())
+  function near(want, apps) {
+    const w = sound(want);
+    if (w.length < 3) return null;
+    const off = (apps || []).map((a) => { const n = sound(fold(a.name)); return [a, n, n ? edits(w, n) : 99]; })
+      .filter((x) => x[2] <= Math.max(1, Math.floor(Math.min(w.length, x[1].length) / 4)));
+    if (!off.length) return null;
+    const top = Math.min(...off.map((x) => x[2]));
+    const at = off.filter((x) => x[2] === top).map((x) => x[0])
+      .sort((x, y) => x.name.length - y.name.length || (x.name < y.name ? -1 : x.name > y.name ? 1 : 0)).map((a) => ({ kind: 'app', pkg: a.pkg, name: a.name }));
+    return at.length === 1 ? at[0] : { kind: 'choice', options: at.slice(0, MAX_CHOICES) };
+  }
+  // letters to add, drop or change to turn a into b (Levenshtein)
+  function edits(a, b) {
+    let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= a.length; i++) {
+      const cur = [i];
+      for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = cur;
+    }
+    return prev[b.length];
+  }
   function best(want, apps, pins, exactOnly, withApps) {
-    const quality = (n) => !n ? null : n === want ? 0 : exactOnly ? null : (n.startsWith(want) || want.startsWith(n + ' ')) ? 1
+    const heard = sound(want);
+    const quality = (n) => !n ? null : (n === want || heard.length >= 4 && sound(n) === heard) ? 0 : exactOnly ? null : (n.startsWith(want) || want.startsWith(n + ' ')) ? 1
       : want.length >= 3 && n.includes(want) ? 2 : n.length >= 3 && want.includes(n) ? 3 : null;
     const hits = [];
     if (withApps) for (const a of apps || []) { const q = quality(fold(a.name)); if (q != null) hits.push([q, { kind: 'app', pkg: a.pkg, name: a.name }]); }
@@ -145,6 +172,8 @@
     // a name said in full: an installed app (after "open" only: a bare word is not asked to open anything), else a pin; this before the channels, a tile the person named "VTV3" is theirs
     const whole = best(want, apps, pins, true, verb != null);
     if (whole) return whole;
+    m = c.appWord.exec(s);
+    if (m) { const hit2 = best(m[1], apps, pins, false, true) || near(m[1], apps); if (hit2) return hit2; }   // "app" said: a name close to one installed
     if (c.settingWords.has(want)) { const id = c.settingWords.get(want); return { kind: 'setting', id, actions: c.settings[id] }; }   // after the apps: an app named "Wifi" is the app
     // before the apps by name: "mở kênh vtv1" is a channel, not an app called "kenh vtv1"
     m = c.channel.exec(s);

@@ -105,9 +105,10 @@ object Voice {
      * a [Command.Choice] of up to [MAX_CHOICES]; this is the only place a list can come from.
      */
     private fun best(want: String, apps: Map<String, String>, pins: List<PinRef>, exactOnly: Boolean, withApps: Boolean = true): Command? {
+        val heard = sound(want)
         fun quality(n: String): Int? = when {
             n.isEmpty() -> null
-            n == want -> 0
+            n == want || heard.length >= 4 && sound(n) == heard -> 0
             exactOnly -> null
             n.startsWith(want) || want.startsWith("$n ") -> 1
             want.length >= 3 && n.contains(want) -> 2
@@ -124,6 +125,34 @@ object Voice {
         at = at.distinctBy { if (it is Command.App) it.pkg else (it as Command.Pin).key }.sortedWith(compareBy({ names1(it).length }, { names1(it) }))   // the shortest name first (the closest), and the same order on every client
         return if (at.size == 1) at[0] else Command.Choice(at.take(MAX_CHOICES))
     }
+
+    /**
+     * The installed apps whose name sounds closest to [want], a few letters off ("mở app việt mai tivi"), asked only after the word "app":
+     * at most a quarter of the letters, one for a short name. Several as close: a [Command.Choice].
+     */
+    private fun near(want: String, apps: Map<String, String>): Command? {
+        val w = sound(want); if (w.length < 3) return null
+        val off = apps.map { (pkg, name) -> val n = sound(fold(name)); Triple(pkg, name, if (n.isEmpty()) 99 else edits(w, n)) }
+            .filter { it.third <= maxOf(1, minOf(w.length, sound(fold(it.second)).length) / 4) }
+        val top = off.minOfOrNull { it.third } ?: return null
+        val at = off.filter { it.third == top }.sortedWith(compareBy({ it.second.length }, { it.second })).map { Command.App(it.first, it.second) }
+        return if (at.size == 1) at[0] else Command.Choice(at.take(MAX_CHOICES))
+    }
+
+    /** Letters to add, drop or change to turn [a] into [b] (Levenshtein). */
+    private fun edits(a: String, b: String): Int {
+        var prev = IntArray(b.length + 1) { it }
+        for (i in 1..a.length) {
+            val cur = IntArray(b.length + 1); cur[0] = i
+            for (j in 1..b.length) cur[j] = minOf(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + if (a[i - 1] == b[j - 1]) 0 else 1)
+            prev = cur
+        }
+        return prev[b.length]
+    }
+
+    /** A name as it sounds: no spaces or marks, "y" as "i". The recognizer splits and respells brand names ("VietMITV" heard as "Việt MyTV"). */
+    private fun sound(s: String) = s.lowercase().replace(NOT_ALNUM, "").replace('y', 'i')
+    private val NOT_ALNUM = Regex("[^a-z0-9]")
 
     private fun channelName(w: String) = w.replace(Regex("([a-z]) (\\d)"), "\$1\$2")
 
@@ -152,6 +181,7 @@ object Voice {
         app(want, apps, ph, false)?.let { return Command.App(it.first, it.second) }
         // a name said in full: an installed app (after "open" only: a bare word is not asked to open anything), else a pin; this before the channels, a tile the person named "VTV3" is theirs
         best(want, apps, pins, true, withApps = verb != null)?.let { return it }
+        ph.appWord.matchEntire(s)?.groupValues?.get(1)?.let { n -> (best(n, apps, pins, false) ?: near(n, apps))?.let { return it } }   // "app" said: a name close to one installed
         ph.settingWords[want]?.let { id -> return Command.Setting(id, ph.settings[id].orEmpty()) }   // after the apps: an app named "Wifi" is the app
         // before the apps by name: "mở kênh vtv1" is a channel, not an app called "kenh vtv1"
         ph.channel.matchEntire(s)?.let { m -> val n = m.groupValues[1]; return Command.Channel(if (ph.channelNames.matches(n)) channelName(n) else n) }

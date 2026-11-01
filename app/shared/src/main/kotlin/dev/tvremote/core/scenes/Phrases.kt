@@ -41,6 +41,8 @@ class Phrases(json: String) {
     private val noise = alt(all("open", "noise"))
     val open = Regex("^(?:" + alt(all("open", "verbs") + tune) + ")(?: (?:$noise))? (.+)$")
     val close = Regex("^(?:" + alt(all("close", "verbs")) + ") (?:(?:$noise) )?(.+)$")
+    /** "mở ứng dụng X", "app X": the word "app" said, so X is an app's name and may be matched loosely ([Voice] near). */
+    val appWord = Regex("^(?:(?:" + alt(all("open", "verbs")) + ") )?(?:$noise) (.+)$")
     /** "X <connector> Y" ("vtv3 trên fpt play"): X and Y, split at the last connector word; null before the list has any. */
     val connect: Regex? = all("connect").takeIf { it.isNotEmpty() }?.let { Regex("^(.+) (?:" + alt(it) + ") (.+)$") }
     val tuneRe = Regex("^(?:" + alt(tune) + ") (.+)$")

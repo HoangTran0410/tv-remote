@@ -12,13 +12,42 @@
   "tv.demo.musica": "Musica",
   "tv.demo.musicbox": "Music Box",
   "tv.demo.musicpro": "Music Pro",
-  "tv.demo.musicx": "Music X"
+  "tv.demo.musicx": "Music X",
+  "com.vxm.voiceassist.googletv": "VietMITV"
  },
  "scenes": {
   "s1": "Đi ngủ",
   "s2": "Xem phim"
  },
  "cases": [
+  [
+   "Mở Việt MyTV",
+   "app:com.vxm.voiceassist.googletv"
+  ],
+  [
+   "mở việt mi tivi",
+   "app:com.vxm.voiceassist.googletv"
+  ],
+  [
+   "mở ứng dụng việt mai tivi",
+   "app:com.vxm.voiceassist.googletv"
+  ],
+  [
+   "mở app nét flic",
+   "app:com.netflix.ninja"
+  ],
+  [
+   "ứng dụng fpt plei",
+   "app:com.fptplay.tv"
+  ],
+  [
+   "mở app youtub",
+   "app:com.google.android.youtube.tv"
+  ],
+  [
+   "mở phim hay",
+   "null"
+  ],
   [
    "ra màn hình chính",
    "key:HOME:1"

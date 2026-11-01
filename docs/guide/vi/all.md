@@ -266,6 +266,7 @@ Clipboard là chỗ TV giữ chữ vừa sao chép. Dùng để xem chữ trên 
 | Nói | TV làm |
 | --- | --- |
 | mở Netflix | Mở app đó. |
+| mở app nét flic · mở ứng dụng Việt My TV | Có chữ “app” hay “ứng dụng”: mở app có tên gần giống nhất (sai vài chữ, cách chữ vẫn được). |
 | mở VTV3 trên FPT Play · xem hoạt hình trên YouTube | Tìm ngay trong app đó (FPT Play, YouTube); app nào chưa tìm được thì chỉ mở app. |
 | tắt tiếng · tạm dừng · phát | Bấm phím tương ứng. |
 | về home · quay lại · bài tiếp · bài trước | Điều hướng. |

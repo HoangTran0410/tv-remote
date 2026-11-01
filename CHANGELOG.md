@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Voice: "open the app X" / "mở ứng dụng X" opens the installed app whose name is closest, a few letters off or split differently ("Việt MyTV" opens VietMITV); without the word "app" names still match strictly
 - Phone app: the TV's picture no longer stays black with a box whose encoder stamps its frames out of order (an A95X F3 Air): the phone rebuilt its decoder every 0.6 s, thinking it lagged (#16)
 
 ## 0.40.2 - 2026-11-01

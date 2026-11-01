@@ -5,6 +5,7 @@ The **Ask the TV: open YouTube** box (in **⌨️ Keyboard**) understands plain 
 | Say | The TV does |
 | --- | --- |
 | open Netflix | Opens that app. |
+| open the app netflic | With the word “app”: opens the app whose name is closest (a few letters off or split words still work). |
 | open cats on YouTube | Searches inside that app (FPT Play, YouTube); an app that cannot be searched is just opened. |
 | mute · pause · play | Presses that key. |
 | go home · back · next · previous | Navigates. |
