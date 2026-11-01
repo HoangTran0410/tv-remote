@@ -90,6 +90,13 @@ class RulesTest {
             bad(JSONObject(), """{"do":"limit","pkg":"$p","minutes":5}""")
     }
 
+    /** A limit on TV Setup itself closed it every 15 s once used up: refused, and one kept from before counts for nothing. */
+    @Test fun tvSetupItselfHasNoLimit() {
+        bad(JSONObject(), """{"do":"limit","pkg":"dev.tvremote.setup","minutes":5}""")
+        assertEquals(null, Rules.budget(d("""{"limits":{"dev.tvremote.setup":5}}"""), "dev.tvremote.setup", now))
+        assertEquals(5, Rules.budget(d("""{"limits":{"com.a.b":5}}"""), "com.a.b", now))
+    }
+
     @Test fun bedtimeRangesPaddedCappedAndChecked() {
         val o = JSONObject()
         Rules.apply(o, d("""{"do":"bedtime","on":true,"ranges":[{"from":"9:05","to":"6:30"}]}"""), now)

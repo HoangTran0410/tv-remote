@@ -224,7 +224,7 @@ internal object Rules {
             "snooze" -> o.put("snooze_until", if (minutes > 0) now + minutes * 60_000L else 0L)
             "limit", "extra" -> {
                 val pkg = d.optString("pkg")
-                if (!PKG.matches(pkg)) throw IllegalArgumentException("bad package name")
+                if (!PKG.matches(pkg) || pkg == SELF) throw IllegalArgumentException("bad package name")   // as lock and sched: a limit on TV Setup closed it over and over
                 if (d.optString("do") == "limit") {
                     val limits = o.optJSONObject("limits") ?: JSONObject()
                     if (minutes > 0) limits.put(pkg, minutes) else limits.remove(pkg)
@@ -458,6 +458,7 @@ internal object Rules {
 
     /** The minutes [pkg] may use today before it is closed (extra grants not counted): the lowest of its daily limit and its schedule's cap inside the window; null for none. */
     fun budget(o: JSONObject, pkg: String, now: Long): Int? {
+        if (pkg == SELF) return null                                  // one kept from before the setter refused it: never closes TV Setup
         val cap = o.optJSONObject("sched")?.optJSONObject(pkg)?.optInt("max")?.takeIf { it > 0 && allowedNow(o, pkg, now) }
         val limit = o.optJSONObject("limits")?.optInt(pkg)?.takeIf { it > 0 }
         return if (cap != null && limit != null) minOf(cap, limit) else cap ?: limit
