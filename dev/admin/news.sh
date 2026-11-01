@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Hands the Claude session what crashwatch found since last time (new census crashes, GitHub issues waiting for us), once:
 # ~/.tv-remote-release/news.txt is written by crashwatch.py (launchd, every 5 min) and emptied here. Run by the project's hooks
-# (.claude/settings.json) on each prompt and after each tool call, so news reaches a long turn too. Nothing new: silent.
+# (.claude/settings.json) on each prompt and after each tool call, so news reaches a long turn too; an idle session is woken by news_wait.sh. Nothing new: silent.
 # $1: the hook's event name (UserPromptSubmit, PostToolUse).
 f="$HOME/.tv-remote-release/news.txt"
 [ -s "$f" ] || exit 0
