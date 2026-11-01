@@ -396,6 +396,10 @@
    "pin:pin:com.demo.tv/news"
   ],
   [
+   "mở đàn ABC",
+   "pin:pin:dev.tvremote.home/abc"
+  ],
+  [
    "mở rick",
    "pin:pin:dev.tvremote.home/l1"
   ],
@@ -503,6 +507,12 @@
    "key": "pin:com.demo.tv/news2",
    "title": "Tin thể thao",
    "app": "com.demo.tv"
+  },
+  {
+   "key": "pin:dev.tvremote.home/abc",
+   "title": "Đàn abc",
+   "app": "io.gh.reisxd.tizentube.cobalt",
+   "link": "https://www.youtube.com/watch?v=p_5yt5IX38I"
   }
  ]
 }

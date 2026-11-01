@@ -249,7 +249,7 @@ class MicActivity : Activity(), RecognitionListener {
         else { MicVoice.broke(); say(T("mic.no_perm"), T("mic.use_phone"), 3500) }
     }
 
-    private fun parse(t: String): Voice.Command? { MicVoice.warm(this); return Voice.parse(t, MicVoice.apps(this), MicVoice.scenes(this), MicVoice.pins(this)) }   // waits for warm() only when a sentence comes before it is done
+    private fun parse(t: String, last: Boolean = false): Voice.Command? { MicVoice.warm(this); return Voice.parse(t, MicVoice.apps(this), MicVoice.scenes(this), MicVoice.pins(this, wait = last)) }   // waits for warm() only when a sentence comes before it is done
 
     /** The sentence is complete (or clear enough): carry it out, say so, close. */
     private fun finish(text: String, cut: Boolean) {
@@ -262,7 +262,7 @@ class MicActivity : Activity(), RecognitionListener {
         MicVoice.fixed()
         level.stop()
         heard.text = text
-        val cmd = if (text.isEmpty()) null else parse(text)
+        val cmd = if (text.isEmpty()) null else parse(text, last = true)   // the last words: the pins asked at the press (started seconds ago) are waited for
         if (cmd == null && text.isNotEmpty()) MicVoice.search(this, text)?.let { swap(act, it, TvUi.ACCENT); ui.postDelayed(close, 600); return }   // not a command: looked up, not a dead end
         if (cmd == null) { say(if (text.isEmpty()) T("mic.nothing") else T("mic.unknown", "text" to text), T("mic.try"), 2500); return }
         swap(act, "→ " + MicVoice.describe(cmd, this), TvUi.ACCENT)

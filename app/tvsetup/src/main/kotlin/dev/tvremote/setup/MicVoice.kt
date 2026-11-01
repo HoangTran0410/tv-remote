@@ -220,16 +220,25 @@ object MicVoice {
 
     @Volatile private var pinList: List<Voice.PinRef> = emptyList()
     @Volatile private var pinsAt = 0L
-    @Volatile private var pinsBusy = false
-    /** TV Home's pinned tiles, said by name like apps: what was read last (ADB asks TV Home, in a thread of its own, at most every 5 minutes); none without ADB or TV Home. */
-    fun pins(c: Context): List<Voice.PinRef> {
-        if (System.currentTimeMillis() - pinsAt > 300_000 && !pinsBusy) {
-            pinsBusy = true
-            Thread({
-                try { pinList = dev.tvremote.core.ontv.Home.ownPins { RemoteService.shell(it) ?: throw IllegalStateException("adb") } } catch (e: Exception) { }
-                finally { pinsAt = System.currentTimeMillis(); pinsBusy = false }
-            }, "mic-pins").apply { isDaemon = true }.start()
+    @Volatile private var pinsAsk: java.util.concurrent.FutureTask<Unit>? = null
+    /**
+     * TV Home's pinned tiles, said by name like apps. Asked again on every mic press (ADB asks TV Home, ~0.4 s, in a thread of its
+     * own while the person speaks; at most every 15 s): a tile pinned a minute ago was not known for 5 minutes and "mở đàn ABC"
+     * went to a YouTube search (the user, 2026-11-01). [wait]: the sentence is in, so wait for that answer, at most 1.5 s (on the main thread: it started seconds ago).
+     */
+    fun pins(c: Context, wait: Boolean = false): List<Voice.PinRef> {
+        synchronized(this) {
+            if (System.currentTimeMillis() - pinsAt > 15_000 && pinsAsk?.isDone != false) {
+                pinsAt = System.currentTimeMillis()
+                pinsAsk = java.util.concurrent.FutureTask {
+                    val t0 = System.currentTimeMillis()
+                    try { pinList = dev.tvremote.core.ontv.Home.ownPins { RemoteService.shell(it) ?: throw IllegalStateException("adb") } }
+                    catch (e: Exception) { android.util.Log.i("MicVoice", "pins: $e") }
+                    android.util.Log.i("MicVoice", "pins: ${pinList.size} in ${System.currentTimeMillis() - t0} ms"); Unit
+                }.also { Thread(it, "mic-pins").apply { isDaemon = true }.start() }
+            }
         }
+        if (wait) try { pinsAsk?.get(1500, java.util.concurrent.TimeUnit.MILLISECONDS) } catch (e: Exception) { }
         return pinList
     }
 
