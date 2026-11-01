@@ -29,6 +29,12 @@ class HomeConfigTest {
         assertEquals("[\"com.a.b\"]", c.getJSONArray("hidden").toString())
     }
 
+    @Test fun hiddenDropsFolderMembers() {                            // unticked in Choose apps while in a folder: it stays in the folder, where it shows
+        val c = HomeConfig.clean(JSONObject().put("hidden", JSONArray(listOf("com.a.b", "com.c.d"))).put("tiles", JSONArray(listOf("folder:f1")))
+            .put("order", JSONArray(listOf("folder:f1"))).put("folders", JSONObject().put("f1", JSONObject().put("name", "F").put("apps", JSONArray(listOf("com.c.d"))))))
+        assertEquals("[\"com.a.b\"]", c.getJSONArray("hidden").toString())
+    }
+
     @Test fun emptyGivesTheDefaults() {
         val c = HomeConfig.clean(JSONObject())
         assertEquals(emptyList<String>(), dock(c))

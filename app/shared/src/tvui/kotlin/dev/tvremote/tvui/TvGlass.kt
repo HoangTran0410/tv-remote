@@ -152,15 +152,15 @@ object TvGlass {
                 setPadding(dp(14), dp(if (tight) 8 else 12), dp(16), dp(if (tight) 8 else 12)); background = rowBg(a, 16)
                 if (item.picture != null) addView(ImageView(a).apply { setImageDrawable(item.picture) }, LinearLayout.LayoutParams(dp(26), dp(26)).apply { rightMargin = dp(12) })
                 else if (item.icon != 0) addView(ImageView(a).apply { setImageResource(item.icon); imageTintList = ink }, LinearLayout.LayoutParams(dp(22), dp(22)).apply { rightMargin = dp(14) })
-                addView(TvUi.text(a, item.label, 16f, Color.WHITE).apply { font(this); maxLines = 1; ellipsize = TextUtils.TruncateAt.END }, LinearLayout.LayoutParams(0, -2, 1f))
-                val hintView = TvUi.text(a, item.live?.invoke() ?: item.hint, 14f, HINT).apply { font(this); maxLines = 1; gravity = Gravity.END; visibility = if (text.isEmpty()) View.GONE else View.VISIBLE }
-                addView(hintView, LinearLayout.LayoutParams(-2, -2).apply { leftMargin = dp(10) })
+                addView(TvUi.text(a, item.label, 16f, Color.WHITE).apply { font(this); maxLines = 1; ellipsize = TextUtils.TruncateAt.END }, LinearLayout.LayoutParams(-2, -2))
+                val hintView = TvUi.text(a, item.live?.invoke() ?: item.hint, 14f, HINT).apply { font(this); maxLines = 1; ellipsize = TextUtils.TruncateAt.END; gravity = Gravity.END; visibility = if (text.isEmpty()) View.INVISIBLE else View.VISIBLE }
+                addView(hintView, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(10) })   // the name first, the hint gets what is left (French "Choisir des applicatio…")
                 if (item.more) addView(TvUi.text(a, "›", 20f, HINT).apply { font(this) }, LinearLayout.LayoutParams(-2, -2).apply { leftMargin = dp(10) })
                 val ring = FrameLayout(a).apply { setPadding(dp(4), dp(4), dp(4), dp(4)) }.also { r ->
                     if (checkIcon != 0) r.addView(ImageView(a).apply { setImageResource(checkIcon); imageTintList = ink }, FrameLayout.LayoutParams(-1, -1))
                 }
                 fun paint() {                                                       // the state behind the row, after a press
-                    item.live?.invoke()?.let { hintView.text = it; hintView.visibility = if (it.isEmpty()) View.GONE else View.VISIBLE }
+                    item.live?.invoke()?.let { hintView.text = it; hintView.visibility = if (it.isEmpty()) View.INVISIBLE else View.VISIBLE }
                     val on = item.on?.invoke() ?: return
                     ring.background = GradientDrawable().apply { cornerRadius = dp(12).toFloat(); setColor(if (on) ROW_FOCUS else Color.TRANSPARENT); setStroke(dp(2), if (on) Color.WHITE else HINT) }
                     ring.getChildAt(0)?.visibility = if (on) View.VISIBLE else View.INVISIBLE

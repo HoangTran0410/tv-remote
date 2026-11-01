@@ -46,9 +46,12 @@ object Tiles {
 
     private fun list(c: JSONObject, k: String) = c.optJSONArray(k).let { a -> if (a == null) emptyList() else List(a.length()) { a.optString(it) } }
 
-    /** HIDE's change: in "hidden", out of the dock; null for anything but an app. */
-    fun hide(conf: JSONObject, key: String): JSONObject? =
-        if (kind(key) != Kind.APP) null else JSONObject().put("hidden", JSONArray(list(conf, "hidden") - key + key)).put("dock", JSONArray(list(conf, "dock") - key))
+    /** HIDE's change ([Folders.hide]: in "hidden", out of the dock and any folder); null for anything but an app. */
+    fun hide(conf: JSONObject, key: String): JSONObject? = if (kind(key) != Kind.APP) null else Folders.hide(conf, listOf(key))
+
+    /** Choose apps' Done: of [all] the apps listed, those not [chosen] leave the home screen (and their folders), the rest come back. */
+    fun choose(conf: JSONObject, all: Collection<String>, chosen: Collection<String>): JSONObject =
+        Folders.hide(conf, all.filter { it !in chosen && kind(it) == Kind.APP }, only = true)
 
     /** REMOVE's change to the settings (a shortcut is also unpinned from Android by the caller): out of "tiles", the dock, hidden and the order. */
     fun remove(conf: JSONObject, key: String): JSONObject? {
@@ -100,6 +103,7 @@ object Tiles {
             if (kind != Kind.APP || k !in hidden) out.add("lost: $k")
         }
         for (k in grid.filter { it in hidden }) out.add("on the grid and in Choose apps: $k")
+        for (k in list(conf, "hidden").filter { it in Folders.members(conf) }) out.add("in a folder and in Choose apps: $k")
         val there = (apps + pins).toSet()
         for ((id, f) in folders) if (HomeConfig.folderKey(id) !in grid && f.apps.any { it in there }) out.add("folder on no grid: $id")
         val choices = folderChoices(apps, pins, own).toSet()

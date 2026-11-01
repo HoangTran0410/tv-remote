@@ -30,6 +30,7 @@ class FoldersTest {
                 "create" -> Folders.create(conf, a.getString(0), a.getString(1), a.getString(2))
                 "rename" -> Folders.rename(conf, a.getString(0), a.getString(1))
                 "delete" -> Folders.delete(conf, a.getString(0))
+                "hide" -> Folders.hide(conf, strs(a.getJSONArray(0)), a.getBoolean(1))
                 "add" -> Folders.add(conf, a.getString(0), a.getString(1), if (a.length() > 2) a.getInt(2) else Int.MAX_VALUE)
                 "remove" -> Folders.remove(conf, a.getString(0), a.getString(1))
                 "reorder" -> Folders.reorder(conf, a.getString(0), a.getString(1), a.getInt(2))

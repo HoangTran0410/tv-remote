@@ -8,8 +8,10 @@
 set -u
 [ $# -ge 1 ] || { echo "usage: dev/test/home_tiles.sh <serial> [--json]"; exit 2; }
 TV="$1"; ADB="${ADB:-adb}"
-"$ADB" -s "$TV" shell input keyevent HOME                            # the check reads the Home on screen
-sleep 1
+if [ "${KEEP:-0}" != 1 ]; then                                     # KEEP=1: a menu is open (home_walk.py), leave it
+  "$ADB" -s "$TV" shell input keyevent HOME                          # the check reads the Home on screen
+  sleep 1
+fi
 out=$("$ADB" -s "$TV" shell am broadcast --include-stopped-packages -n dev.tvremote.home/.HomeReceiver --ez tiles true 2>&1)
 b64=$(printf '%s' "$out" | sed -n 's/.*data="\([A-Za-z0-9+/=]*\)".*/\1/p' | head -1)
 [ -n "$b64" ] || { echo "no answer (TV Home too old, or not the home screen?):"; echo "$out" | tail -2; exit 2; }

@@ -318,7 +318,7 @@ async function homeOpen() {
   const orderDraw = homeOrderBox(orderBox, orderFace, (k) => appLabel(k), (change) => send(change), (k) => putInFolder(k));
   const addHidden = el('button', { type: 'button', className: 'small', textContent: T('home.hide'), onclick: async () => {
     const p = await chooseApp(T('home.pick_hide'), apps().filter((x) => !r.config.hidden.includes(x)));
-    if (p) send({ hidden: [...r.config.hidden, p] });
+    if (p) send(HomeFolders.hide(r.config, [p]));                       // out of its folder too: an app in a folder is on the home screen
   } });
   const walls = el('div', { className: 'fchips homewalls' }), holdNote = el('p', { className: 'note', textContent: T('home.photo_hold'), hidden: true });
   // right over the pictures, filled: a tile among thirty went unseen, and in the head over "Change automatically" nobody
@@ -538,7 +538,7 @@ async function homeOpen() {
     const has = (t) => { const c = r.config; return Target.kind(t) === 'app' ? !c.hidden.includes(t) : (c.tiles || []).includes(t); };
     const toggle = (t) => {
       const c = r.config;
-      if (Target.kind(t) === 'app') send(c.hidden.includes(t) ? { hidden: c.hidden.filter((x) => x !== t) } : { hidden: [...c.hidden, t], dock: c.dock.filter((x) => x !== t) });
+      if (Target.kind(t) === 'app') send(c.hidden.includes(t) ? { hidden: c.hidden.filter((x) => x !== t) } : HomeFolders.hide(c, [t]));
       else send((c.tiles || []).includes(t) ? { tiles: c.tiles.filter((x) => x !== t) } : { tiles: [...(c.tiles || []), t] });
     };
     pickTarget(T('home.qk_addhome'), '', r.config, r.apps, { toggle, has });

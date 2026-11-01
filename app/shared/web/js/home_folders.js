@@ -40,6 +40,16 @@ const HomeFolders = {
   members(c) { return new Set(Object.values(c.folders || {}).flatMap((f) => f.apps || [])); },
   folderOf(c, pkg) { return Object.keys(c.folders || {}).sort().find((id) => (c.folders[id].apps || []).includes(pkg)) || null; },
   newId(c) { const used = c.folders || {}; for (;;) { let id = ''; for (let i = 0; i < 6; i++) id += 'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 36)]; if (!used[id]) return id; } },
+  /** [keys] off the home screen: into "hidden", out of the dock and their folders; [only]: "hidden" becomes [keys] (Folders.hide) */
+  hide(c, keys, only = false) {
+    const s = homeFolderState(c);
+    s.dock = s.dock.filter((k) => !keys.includes(k));
+    for (const f of Object.values(s.folders)) f.apps = f.apps.filter((k) => !keys.includes(k));
+    if (only) s.hidden = [];
+    for (const k of keys) if (!s.hidden.includes(k)) s.hidden.push(k);
+    homeFolderPrune(s);
+    return homeFolderChange(s);
+  },
   canCreate(c) { return Object.keys(c.folders || {}).length < FOLDER_MAX && (c.tiles || []).length < FOLDER_TILES_MAX; },
   create(c, id, name, app) {
     const s = homeFolderState(c);

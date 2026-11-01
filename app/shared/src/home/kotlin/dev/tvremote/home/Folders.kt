@@ -82,6 +82,17 @@ object Folders {
     }
 
     /** True when one more folder fits. */
+    /** [keys] off the home screen: into "hidden", out of the dock and of their folders (an emptied folder goes). [only]: "hidden"
+     *  becomes [keys] (Choose apps: what is not ticked). Through here, never "hidden" alone: an app in a folder stays shown. */
+    fun hide(c: JSONObject, keys: Collection<String>, only: Boolean = false): JSONObject {
+        val s = State(c)
+        for (k in keys) { s.dock.remove(k); for (f in s.folders.values) f.apps.remove(k) }
+        if (only) s.hidden.clear()
+        for (k in keys) if (k !in s.hidden) s.hidden.add(k)
+        s.prune()
+        return s.change()
+    }
+
     fun canCreate(c: JSONObject) = State(c).let { it.folders.size < HomeConfig.FOLDERS_MAX && it.tiles.size < HomeConfig.TILES_MAX }
 
     /**

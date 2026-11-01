@@ -2118,7 +2118,7 @@ class HomeActivity : Activity() {
                 if (want != (getString(id) in rows)) bad.add("${a.pkg}: menu ${if (want) "lacks" else "has"} \"${getString(id)}\"")
             }
             if ((Tiles.Act.START in acts && !docked) != groups.any { it.id == "start" }) bad.add("${a.pkg}: power-on / remote keys group wrong")
-            out.put(JSONObject().put("key", a.pkg).put("kind", Tiles.kind(a.pkg)?.name).put("acts", org.json.JSONArray(acts.map { it.name })).put("rows", org.json.JSONArray(rows)))
+            out.put(JSONObject().put("key", a.pkg).put("label", a.label).put("kind", Tiles.kind(a.pkg)?.name).put("acts", org.json.JSONArray(acts.map { it.name })).put("rows", org.json.JSONArray(rows)))
         }
         return JSONObject().put("grid", org.json.JSONArray(drawn)).put("expect", org.json.JSONArray(expect)).put("tiles", out).put("bad", org.json.JSONArray(bad))
     }
@@ -2586,6 +2586,7 @@ open class Tile(c: Context, val app: App?, w: Int, label: String, dp: (Number) -
 
     init {
         Font.on(name); name.textSize = 13f * k
+        contentDescription = label                                    // TalkBack reads the tile's name (and tests find a tile by it)
         val h = w * 9 / 16
         val banner = app?.banner ?: art                                // art: a tile that is not an app (TV Setup suggested)
         val liveFace = if (app?.live == true) LiveFace(c, w, h, label, say).also { it.set(LiveWidgets.cached(app.pkg), animate = false) } else null

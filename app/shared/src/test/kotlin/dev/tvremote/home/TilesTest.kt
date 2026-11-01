@@ -50,7 +50,7 @@ class TilesTest {
             repeat(60) {
                 fun <T> pick(l: Collection<T>): T? = if (l.isEmpty()) null else l.elementAt(r.nextInt(l.size))
                 val apps = apps(w); val grid = Tiles.grid(w.conf, apps, w.pinned.toList())
-                val op = r.nextInt(12)
+                val op = r.nextInt(14)
                 val step: String? = when (op) {
                     0 -> pick(grid.filter { Tiles.Act.HIDE in Tiles.acts(w.conf, it, own) })?.also { apply(w, Tiles.hide(w.conf, it)) }?.let { "hide $it" }
                     1 -> pick(Tiles.hiddenShown(w.conf, apps))?.also { apply(w, Tiles.add(w.conf, it, false)) }?.let { "choose $it" }
@@ -71,6 +71,15 @@ class TilesTest {
                     10 -> pick(grid.filter { Tiles.Act.MOVE in Tiles.acts(w.conf, it, own) && Tiles.kind(it) == Tiles.Kind.APP })?.also {
                         apply(w, JSONObject().put("dock", JSONArray(list(w.conf, "dock") - it + it)))
                     }?.let { "dock $it" }
+                    11 -> pick(w.installed.filter { it !in Tiles.hiddenShown(w.conf, apps) })?.let { k ->   // Customize's app list: any app, one in a folder too
+                        apply(w, Tiles.hide(w.conf, k))
+                        if (k !in Tiles.hiddenShown(w.conf, apps(w))) fail("seed $seed: $k hidden but not in Choose apps\n" + log.joinToString("\n"))
+                        "toggle off $k"
+                    }
+                    12 -> { val all = w.installed.toList(); val on = all.filter { r.nextBoolean() }   // Choose apps' Done
+                        apply(w, Tiles.choose(w.conf, all, on))
+                        for (k in all - on.toSet()) if (k !in Tiles.hiddenShown(w.conf, apps(w))) fail("seed $seed: $k not ticked but not in Choose apps\n" + log.joinToString("\n"))
+                        "choose $on" }
                     else -> pick(w.installed - own)?.also { w.installed.remove(it); w.pinned.removeAll { p -> Target.pkg(p) == it } }?.let { "uninstall $it" }
                 }
                 if (step != null) { log.add(step); check(w, listOf("seed $seed") + log) }

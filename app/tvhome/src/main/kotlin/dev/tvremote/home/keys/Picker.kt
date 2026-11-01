@@ -79,6 +79,7 @@ class PickTile(c: Context, w: Int, private val dpx: (Number) -> Int, val key: St
 
     init {
         Font.on(name)
+        contentDescription = label                                    // TalkBack says the name (and tests find a tile by it)
         setOnFocusChangeListener { _, on -> focus(on) }
         val banner = if (flat) null else art?.banner       // flat: the key pad has a chip on top, so an icon and a name, never a banner
         faceColor(if (banner != null) PK_BANNER_BACK else if (color != 0) color else shade(hue))
@@ -106,7 +107,7 @@ class PickTile(c: Context, w: Int, private val dpx: (Number) -> Int, val key: St
         if (tag.isNotEmpty()) { tagView.text = tag; tagView.visibility = View.VISIBLE }
     }
 
-    fun mark(on: Boolean) { check.visibility = if (on) View.VISIBLE else View.GONE }
+    fun mark(on: Boolean) { check.visibility = if (on) View.VISIBLE else View.GONE; isSelected = on }   // selected: TalkBack and tests read the tick
     fun tag(t: String) { tagView.text = t; tagView.visibility = if (t.isEmpty()) View.GONE else View.VISIBLE }
     val wide get() = h
 
@@ -233,7 +234,7 @@ object Picker {
             if (Target.kind(it.key) == Target.Kind.APP) {          // an app: off the grid (hidden) or back
                 val hidden = Store.list(a, "hidden")
                 if (it.key in hidden) Store.change(a, JSONObject().put("hidden", JSONArray(hidden - it.key)))
-                else Store.change(a, JSONObject().put("hidden", JSONArray(hidden + it.key)).put("dock", JSONArray(Store.list(a, "dock") - it.key)))
+                else Tiles.hide(Store.get(a), it.key)?.let { c -> Store.change(a, c) }   // out of its folder too (Tiles.kt)
             } else if (Target.kind(it.key) == Target.Kind.PIN) {   // a shortcut: pinned = on the grid; press unpins it (like the long-press menu), or pins it again
                 if (it.key in pinnedNow || it.key in tilesNow) { Pins.off(a, it.key); pinnedNow = pinnedNow - it.key }
                 else if (Pins.add(a, it.key)) pinnedNow = pinnedNow + it.key
@@ -390,9 +391,7 @@ object Picker {
             allBtn.setOnClickListener { if (chosen.containsAll(allKeys)) chosen.clear() else chosen.addAll(allKeys); allKeys.forEach { k -> tiles[k]?.mark(k in chosen) }; labels() }
             if (pick != null) doneBtn.setOnClickListener { dialog.dismiss(); if (chosen.isNotEmpty()) pick(chosen.toList()) }
             else doneBtn.setOnClickListener {                             // what is not ticked leaves the grid (hidden: in + Add, nothing lost); a ticked favourite keeps its dock place
-                val off = allKeys.filter { it !in chosen }
-                val dock = Store.list(a, "dock").filter { it in chosen || it !in allKeys }
-                Store.change(a, JSONObject().put("hidden", JSONArray(off)).put("dock", JSONArray(dock)))
+                Store.change(a, Tiles.choose(Store.get(a), allKeys, chosen))
                 dialog.dismiss()
             }
             labels()
