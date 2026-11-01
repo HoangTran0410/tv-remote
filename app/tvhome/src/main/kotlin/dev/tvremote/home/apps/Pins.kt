@@ -345,8 +345,11 @@ object Pins {
 
     /** The config the clients read gains "pinsOk", "pinsAvail" [{key, title, app}] and "pinsCan" (only the home screen may start a shortcut). */
     fun report(c: Context, conf: JSONObject): JSONObject = conf.put("pinsOk", true).put("pinsCan", can(c))
-        .put("pinsAvail", try { JSONArray(prefs(c).getString("avail", "[]")) } catch (e: Exception) { JSONArray() })
+        .put("pinsAvail", avail(c))
         .put("pinned", pinned(c))
+
+    /** What the apps offer to pin, [{key, title, app, t}], as last read: + Add's list (not [report]: its "pinned" asks every link's app, ~80 ms on the FPT box). */
+    fun avail(c: Context): JSONArray = try { JSONArray(prefs(c).getString("avail", "[]")) } catch (e: Exception) { JSONArray() }
 
     /** The tiles pinned now, [{key, title, app, link?}]: the clients rename them and voice opens them by name (link: a pinned link's, [linkOf]). */
     private fun pinned(c: Context): JSONArray = JSONArray().also { out ->

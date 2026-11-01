@@ -902,9 +902,11 @@ class HomeActivity : Activity() {
 
     private fun loadApps() {
         if (Build.VERSION.SDK_INT >= 26) try { packageManager.getChangedPackages(seq)?.let { seq = it.sequenceNumber } } catch (e: Exception) { }   // before the list, so a change during it is seen on the next return
+        Links.forget()
         bg.execute {
             val list = Apps.list(this)
             list.forEach { it.load(this) }                            // the pictures off the main thread: dozens of apps on a slow chip
+            if (Pins.can(this)) Links.installed(this)                 // + Add's channel rows, ready before it opens
             runOnUiThread { if (!isDestroyed) { apps = (list + apps.filter { it.grid }).sortedBy { it.label.lowercase() }; shownKey = ""; show() } }
         }
     }
@@ -1339,8 +1341,10 @@ class HomeActivity : Activity() {
             background = TvUi.round(TvUi.SHEET_FILL, dp(TvUi.R_SHEET.toInt()).toFloat(), 1, TvUi.SHEET_EDGE)
             addView(title); addView(scroll, LinearLayout.LayoutParams(-2, -2))
         }
+        var first = true
         fun build(mem: List<App>, focusPkg: String?, focusAt: Int) {
             if (!dlg.isShowing) return
+            if (first) { first = false; Motion.appear(card) }            // with its tiles, not as an empty card
             body.removeAllViews()
             val lives = ArrayList<Tile>()
             var row: LinearLayout? = null
@@ -2488,8 +2492,8 @@ class HomeActivity : Activity() {
         for (p in Store.rowsOff(this)) { val l = try { packageManager.getApplicationLabel(packageManager.getApplicationInfo(p, 0)).toString() } catch (e: Exception) { continue }
             rowsOff.add(TvGlass.Item(0, l, getString(R.string.add_row), false, false) { Store.rowsOn(this, p); open?.dismiss(); watchRead() }.also { it.picture = icon(p) }) }   // a row hidden from its menu comes back here
         if (Pins.can(this)) {
-            val l = Pins.report(this, JSONObject()).optJSONArray("pinsAvail")
-            for (i in 0 until (l?.length() ?: 0)) { val o = l!!.getJSONObject(i); val k = o.getString("key")
+            val l = Pins.avail(this)
+            for (i in 0 until l.length()) { val o = l.getJSONObject(i); val k = o.getString("key")
                 if (k in onGrid || pins.size >= 40) continue
                 pins.add(TvGlass.Item(0, o.optString("title"), getString(R.string.add_pin), false, false) { addToGrid(k, true) }.also { it.picture = Pins.rowIcon(this, k, o.optString("app"), o.optLong("t")) ?: icon(o.optString("app")) }) }
         }

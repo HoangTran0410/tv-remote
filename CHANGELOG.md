@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: + Add opens in about a third of the time (FPT box: 150-230 ms to 55-70 ms: it no longer works out which app opens each pinned link, and the channel apps' list is kept until apps change); a folder opens with a short fade and grow
 - TV Home: an app in a folder that was unticked in Choose apps (or hidden from the page) no longer sits both in the folder and under + Add, counted as not on the home screen; hiding an app now takes it out of its folder
 - TV Home: menu rows keep their whole name and shorten the hint on the right instead (French showed "Nouvea…", "Ajouter u…" in + Add)
 - TV Home: a new folder lists every shortcut on the grid (YouTube videos, TV Channels channels pinned through Android); only those added from + Add showed before

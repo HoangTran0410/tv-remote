@@ -82,7 +82,14 @@ object Links {
      * The items of the apps installed and turned on here, in the list's order. One app under two packages (FPT Play: the
      * Android TV app and FPT boxes' launcher) is offered once, by the first of them there.
      */
-    fun installed(c: Context): List<Item> {
+    fun installed(c: Context): List<Item> = kept?.takeIf { it.first === now }?.second ?: find(c).also { kept = now to it }
+
+    /** The apps changed: [installed] asks again (HomeActivity.loadApps, which then warms it off the main thread). */
+    fun forget() { kept = null }
+
+    @Volatile private var kept: Pair<All, List<Item>>? = null         // asking each app's link took ~30 ms of the FPT box's main thread on every + Add
+
+    private fun find(c: Context): List<Item> {
         val pm = c.packageManager
         val anyApps = now.items.filter { it.any }.distinctBy { it.app }.filter { LinkApps.best(c, link(it), LinkApps.groupFor(link(it))) != null }.map { it.app }.toSet()
         val there = now.items.filter { !it.any }.map { it.pkg }.distinct()

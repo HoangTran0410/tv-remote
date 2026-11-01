@@ -59,4 +59,12 @@ object Motion {
         else if (calm) { v.scaleX = s; v.scaleY = s }                   // calm (a weak box): grown at once, one frame instead of ~25
         else v.animate().scaleX(s).scaleY(s).setDuration(ms(if (focused) 420L else 220L)).setInterpolator(if (focused) spring else glide).withLayer().start()   // on a layer: without it each frame drew the whole panel again (16 ms + 36 ms GPU on the FPT box)
     }
+
+    /** A card that opens over the screen (a folder) comes up from a touch smaller and fades in; calm: the fade alone, shorter. */
+    fun appear(v: View) {
+        if (!on) return
+        v.alpha = 0f
+        if (!calm) { v.scaleX = .94f; v.scaleY = .94f }
+        v.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(ms(240)).setInterpolator(glide).withLayer().start()
+    }
 }
