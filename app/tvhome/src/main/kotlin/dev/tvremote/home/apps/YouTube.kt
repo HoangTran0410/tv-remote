@@ -86,7 +86,7 @@ object YouTube {
             connectTimeout = ms; readTimeout = ms; instanceFollowRedirects = true
             setRequestProperty("User-Agent", UA); setRequestProperty("Cookie", "SOCS=CAI; CONSENT=YES+")   // the EU consent page would hide the tags
             try {
-                if (responseCode != 200) null
+                if (responseCode != 200) { android.util.Log.i("TvHome", "fetch $responseCode ${url.take(80)}"); null }
                 else inputStream.use { i ->
                     val out = java.io.ByteArrayOutputStream(); val b = ByteArray(8192)
                     var tail = ""
@@ -98,14 +98,26 @@ object YouTube {
                 }
             } finally { disconnect() }
         }
-    } catch (e: Exception) { null }
+    } catch (e: Exception) { android.util.Log.i("TvHome", "fetch ${url.take(80)}: $e"); null }
 
     private fun bitmap(url: String): Bitmap? = get(url, 1 shl 20)?.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
 
     class Meta(val name: String?, val image: Bitmap?)
 
-    /** Name and picture of [l] unless the caller gave them; both may stay null (offline, a page that changed): the caller falls back. */
+    /**
+     * Name and picture of [l] unless the caller gave them; both may stay null (offline, a page that changed): the caller falls back.
+     * Nothing at all once: asked again after 1.5 s (on FPT a pin got neither, from a TV Home that had sat behind an app; a minute later
+     * the same link fetched fine, the user 2026-11-01): the tile keeps what it got, an app icon is all a miss leaves.
+     */
     fun fetch(l: Link, name: String?, img: String?): Meta {
+        val m = fetchOnce(l, name, img)
+        if (m.image != null && (m.name != null || name != null)) return m
+        Thread.sleep(1500)
+        val again = fetchOnce(l, name, img)
+        return Meta(again.name ?: m.name, again.image ?: m.image)
+    }
+
+    private fun fetchOnce(l: Link, name: String?, img: String?): Meta {
         var title = name?.takeIf { it.isNotBlank() }
         var pic: Bitmap? = null
         var imgUrl = img?.takeIf { it.startsWith("https://") }

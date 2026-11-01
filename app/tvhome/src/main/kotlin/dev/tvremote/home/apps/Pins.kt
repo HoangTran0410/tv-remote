@@ -147,7 +147,12 @@ object Pins {
     fun pinIntent(c: Context, source: String, label: String, intent: android.content.Intent, art: android.graphics.Bitmap?, marked: Boolean = false): Made {
         if (!can(c)) return Made.FAIL
         val id = ownId(intent)
-        if (list(c).any { it.pkg == Target.pin(c.packageName, id) }) return Made.SAME
+        if (list(c).any { it.pkg == Target.pin(c.packageName, id) }) {
+            if (art != null && dev.tvremote.tvui.PinArt.own(c, id, 64) == null) {   // pinned when its picture could not be fetched: pinning it again gives it one
+                dev.tvremote.tvui.PinArt.save(c, id, art); made.remove(Target.pin(c.packageName, id))
+            }
+            return Made.SAME
+        }
         val sm = c.getSystemService(android.content.pm.ShortcutManager::class.java) ?: return Made.FAIL
         val icon = art ?: try {                                      // no poster: the source app's own icon, not this home's
             val d = c.packageManager.getApplicationIcon(source)
