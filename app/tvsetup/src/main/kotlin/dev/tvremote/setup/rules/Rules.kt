@@ -126,6 +126,10 @@ internal object Rules {
             "mic" -> o.put("mic", d.optBoolean("on"))                       // MicVoice: the remote's mic button opens TV Remote's voice, not the Assistant
             "mic_offline" -> o.put("mic_offline", d.optBoolean("on"))       // TV Setup Voice on the TV: speech heard without Google (MicVoice.syncOffline)
             "awake" -> o.put("awake", d.optBoolean("on"))                   // KeepAwake: the chip kept up while the TV is "off"
+            "family" -> {                                              // Family mode's record of what it set (js/family.js): kept here so every phone sees the same; no rec = off
+                val rec = d.optJSONObject("rec")
+                if (rec != null && rec.toString().length <= FAMILY_MAX) o.put("family", rec) else o.remove("family")
+            }
             "pin" -> {
                 val pin = d.optString("pin")
                 if (!PIN.matches(pin)) throw IllegalArgumentException("bad PIN")
@@ -243,6 +247,7 @@ internal object Rules {
 
     const val SCHED_MAX = 50
     const val ALLOW_MAX = 100
+    const val FAMILY_MAX = 8000                                       // its record holds two app lists of at most ALLOW_MAX names
     const val RECOVERY_N = 8
 
     /** A fresh set of [RECOVERY_N] one-time codes of 8 digits for when the phone is lost: only salted hashes are kept, the codes are returned (once). The old ones are void. */
@@ -547,6 +552,7 @@ internal object Rules {
             .put("limits", limits).put("volume", o.optJSONArray("volume") ?: JSONArray()).put("volume_now", volumeCap(o, now) ?: JSONObject.NULL)
             .put("ram", ram(o)).put("volume_fixed", Guard.volumeFixed(c)).put("running", RemoteService.isRunning()).put("wanted", active(c))
             .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("mic_offline", o.optBoolean("mic_offline")).put("voice", MicVoice.offlineState(c)).put("homekey", o.optString("homekey"))
+            .put("family", o.optJSONObject("family") ?: JSONObject.NULL)
             .put("keys", KeysBridge.bound())                           // the key filter is up: LauncherSwap.byKey keeps Home only then (issue #9)
             .put("sched", sched)
             .put("lock", JSONObject().put("pin", o.optJSONObject("lock")?.has("hash") == true)

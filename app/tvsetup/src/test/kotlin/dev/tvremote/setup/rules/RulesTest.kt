@@ -22,6 +22,16 @@ class RulesTest {
         assertEquals(0, o.length())
     }
 
+    @Test fun familyRecordIsKeptAndTakenBack() {
+        val o = JSONObject()
+        Rules.apply(o, d("""{"do":"family","rec":{"v":1,"total":{"min0":0,"min":120}}}"""), now)
+        assertEquals(120, o.getJSONObject("family").getJSONObject("total").getInt("min"))
+        Rules.apply(o, d("""{"do":"family"}"""), now)                      // no rec: off
+        assertFalse(o.has("family"))
+        Rules.apply(o, d("""{"do":"family","rec":{"x":"${"a".repeat(Rules.FAMILY_MAX)}"}}"""), now)   // too big: not kept
+        assertFalse(o.has("family"))
+    }
+
     @Test fun appLocksNeedAPin() {
         val o = JSONObject()
         bad(o, """{"do":"lock","pkg":"com.netflix.ninja","on":true}""")          // no PIN yet

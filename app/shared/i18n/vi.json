@@ -2218,6 +2218,7 @@
  "mic.do_scene": "Chạy cảnh {name}",
  "core.need_mic": "nút mic của remote mở giọng nói TV Remote",
  "core.need_mic_offline": "nhận giọng nói ngay trên TV",
+ "core.need_family": "chế độ gia đình",
  "core.need_holdkeys": "Giữ 2 giây để đổi nguồn vào",
  "core.need_keytest": "thử phím remote",
  "core.need_support": "cho hỗ trợ xem TV từ điện thoại hay máy tính",

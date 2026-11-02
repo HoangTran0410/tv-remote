@@ -41,6 +41,7 @@ object SetupNeed {
         "support" to "0.33.2",                                         // 🛟 let support look at the TV, opened from a phone, a computer or the web page (RulesReceiver "support"; the release after 0.33.1)
         "scenepin" to "0.34.3",                                        // 📌 a scene as a tile on TV Home (ScenePin, RulesReceiver "scenepin"; the release after 0.34.2)
         "mic_offline" to "0.38.1",                                     // 🎙️ speech heard on the TV without Google (TV Setup Voice, Rules "mic_offline"; the release after 0.38.0)
+        "family" to "0.38.5",                                          // 🛡️ Family mode's record kept on the TV (Rules "family"; the release after 0.38.4)
         "home_usage" to "0.14.1",                                      // 📊 TV Home's card of app use and limits (HomeInfo)
     )
 
@@ -81,6 +82,7 @@ object SetupNeed {
             "support" -> t("core.need_support")
             "scenepin" -> t("core.need_scenepin")
             "mic_offline" -> t("core.need_mic_offline")
+            "family" -> t("core.need_family")
             else -> feature
         }
     }

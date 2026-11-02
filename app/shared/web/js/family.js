@@ -1,5 +1,5 @@
 // Family mode: one card in the Automation tab that sets a parent's preset in one go (apps for kids, TV time a day, a bedtime, a PIN)
-// through the rules the other cards already write (kids mode `do:'kids'`, `do:'total'`, `do:'bedtime'`, the PIN), and remembers what it
+// through the rules the other cards already write (kids mode `do:'kids'`, `do:'total'`, `do:'bedtime'`, the PIN), and keeps on the TV what it
 // changed, so "turn off" removes exactly that and nothing the person made by hand. Nothing runs until used (tests/family.test.js).
 
 const FAMILY_TIMES = [60, 90, 120, 180];
@@ -67,32 +67,28 @@ if (typeof module !== 'undefined') module.exports = { familyPlan, familyUndo, fa
 // ---- the card ----
 if (typeof document !== 'undefined') {
   const FM = { allow: [], min: 120, bedOn: true, from: '21:00', to: '07:00' };     // the form's defaults
-  const famMem = {};
-  const famKey = () => String(curHost || '');
-  const famGet = () => { try { const o = JSON.parse(localStorage.getItem('familyMode') || '{}'); return o[famKey()] || null; } catch (e) { return famMem[famKey()] || null; } };
-  const famPut = (rec) => {
-    famMem[famKey()] = rec;
-    try { const o = JSON.parse(localStorage.getItem('familyMode') || '{}'); if (rec) o[famKey()] = rec; else delete o[famKey()]; localStorage.setItem('familyMode', JSON.stringify(o)); } catch (e) { }
-  };
+  // the record of what it set lives on the TV (rules "family"), so every phone and computer sees the same card and can turn it off
+  const famGet = () => (RULES && RULES.family) || null;
+  const famPut = (rec) => kidsSend(rec ? { do: 'family', rec } : { do: 'family' });
   const famRun = async (steps) => {                                  // each step through the rules call the other cards use; stops at the first that fails
     for (const s of steps) if (!await kidsSend(s)) return false;
     return true;
   };
 
   async function familyOn() {
-    const r = RULES; if (!r || !await kidsGate()) return;
+    const r = RULES; if (!r || !await kidsGate() || !await setupFor('family')) return;
     if (!FM.allow.length) return toast(T('family.pick_one'));
     if (FM.bedOn && FM.from === FM.to) return toast(T('family.bed_bad'));
     if (FM.bedOn && familyBedRanges(r).length && !await setupFor('bedtimes')) return;
     if (!(r.lock && r.lock.pin) && !await askPin()) return;          // kids mode opens with a PIN
     const plan = familyPlan(RULES, { allow: FM.allow, min: FM.min, bed: FM.bedOn ? { from: FM.from, to: FM.to } : null });
     if (!plan.rec) return;
-    if (await famRun(plan.steps)) { famPut(plan.rec); toast(T('family.done')); }
+    if (await famRun(plan.steps) && await famPut(plan.rec)) toast(T('family.done'));
     if (RULES) renderFamily(RULES);
   }
   async function familyOff(rec) {
     if (!await ask(T('family.off_ask'), { ok: T('family.off_btn'), danger: true })) return;
-    if (await famRun(familyUndo(RULES, rec))) { famPut(null); toast(T('family.off_done')); }
+    if (await famRun(familyUndo(RULES, rec)) && await famPut(null)) toast(T('family.off_done'));
     if (RULES) renderFamily(RULES);
   }
 
@@ -106,7 +102,6 @@ if (typeof document !== 'undefined') {
         UI.actions(act(T('family.off_btn'), () => familyOff(rec), 'danger')));
       return;
     }
-    if (rec) famPut(null);                                           // everything it set was changed by hand since: nothing left to undo
     const names = FM.allow.map((p) => {
       const icon = appIcon(p); onMeta(p, (m) => icon.fill(m));
       return el('div', { className: 'item' }, icon, el('div', { className: 'name' }, el('span', { textContent: appName(p) })),

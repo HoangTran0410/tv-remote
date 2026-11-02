@@ -2308,6 +2308,7 @@
   "mic.do_scene": "Lancer la scène {name}",
   "core.need_mic": "le bouton micro de la télécommande qui ouvre la commande vocale de TV Remote",
   "core.need_mic_offline": "la reconnaissance vocale sur la TV elle-même",
+  "core.need_family": "le mode famille",
   "core.need_holdkeys": "maintenir une touche pour changer d’entrée",
   "core.need_keytest": "tester les touches de la télécommande",
   "core.need_support": "permettre au support de voir la TV depuis un téléphone ou un ordinateur",

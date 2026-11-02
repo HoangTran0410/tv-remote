@@ -2302,6 +2302,7 @@
  "mic.do_scene": "Run scene {name}",
  "core.need_mic": "the remote's mic button opening TV Remote's voice",
  "core.need_mic_offline": "speech recognition on the TV itself",
+ "core.need_family": "Family mode",
  "core.need_holdkeys": "holding a key to change the input",
  "core.need_keytest": "testing the remote keys",
  "core.need_support": "letting support look at the TV from a phone or computer",
