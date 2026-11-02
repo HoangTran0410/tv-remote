@@ -8,6 +8,15 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 - Voice on the TV: with TV Setup Voice on, a TV whose Google recognizer has no network now hears you with TV Setup Voice at once ("say it again"), instead of "No network for speech". The guide says which one listens when.
 
+- Voice on the TV: pick who listens to the mic button, Google or TV Setup Voice (faster, private): chips on the Setup tab's Remote buttons card, and TV Home's Quick settings mic tile now switches between the two. Without TV Setup Voice the tile opens a TV Setup screen showing what it does, with Install and use. TV Setup's More TV apps row lists TV Setup Voice.
+- TV Home: a widget with nothing to show (the timer with no timer set) no longer lifts the app grid away from the bottom.
+- TV Home: the site's picture, slideshow and video themes no longer get a web page under them after you come back to Home (two captions on Earth from above, ~60 MB more memory on the FPT box).
+- TV Home folders: Move inside an open folder carries the app with the arrows (OK saves, Back cancels), instead of one menu per step; Right on the last app stays there instead of jumping up a row.
+- TV Setup Voice in English too (tv-voice-en.apk, 36 MB, its own app beside the 25 MB Vietnamese one): pick the language on the Setup tab or in TV Voice's details on the TV; adding one keeps the other, Remove takes out only the one in use.
+- TV Setup: OK on TV Home, Channels, Games or Apps in the More TV apps row opens its details (Open, Update, Automatic updates for that app alone, Remove) instead of opening the app; the row fades at its edges when more apps sit past them, and a focused app gets a ring instead of growing (it was cut at the top and bottom). The Update button at the top is gone: TV Setup's own tile in that row does it.
+- Settings: a button beside a field (Tailscale's Save) no longer drops its icon above its word on a narrow screen.
+- TV Setup: the More TV apps row scrolls sideways and starts with TV Setup itself (OK opens its Update menu); downloads show a progress bar under the log, and TV Setup Voice's install shows in the log whoever started it.
+
 ## 0.41.0 - 2026-11-03
 
 Web 0.41.0 · Phone app 0.38.0 · TV app 0.39.0 · TV Home 0.25.0 · TV Channels 0.18.2 · TV Games 0.18.0 · TV Apps 0.3.1

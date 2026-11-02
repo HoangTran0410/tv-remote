@@ -14,6 +14,18 @@ object VoiceProtocol {
     const val WARM = "dev.tvremote.setup.voice.Warm"
     /** ArrayList<String> of folded words; every word of the model that folds to one of them is listened for. */
     const val WORDS = "dev.tvremote.voice.WORDS"
+    /** Application meta-data of the add-on: the language of its model ("vi", "en"). Absent = an old add-on, which is Vietnamese. */
+    const val LANG_META = "dev.tvremote.voice.LANG"
+
+    /** The languages there is an add-on for, each its own package ([addon]) and release file: "vi" tv-voice.apk, "en" tv-voice-en.apk. */
+    val LANGS = listOf("vi", "en")
+    /** The add-on's package for [lang]: Vietnamese keeps the first one's name (installed TVs), the others a suffix, so several sit side by side. */
+    fun addon(lang: String) = if (lang == "en") "$ADDON.en" else ADDON
+
+    /** The language of the add-on [pkg] (by [LANG_META]); null when it is not installed. */
+    fun langOf(pm: android.content.pm.PackageManager, pkg: String): String? = try {
+        pm.getApplicationInfo(pkg, android.content.pm.PackageManager.GET_META_DATA).metaData?.getString(LANG_META) ?: "vi"
+    } catch (e: Exception) { null }
 
     /** Voice.fold: accents off, đ to d, lower case, words only. */
     fun fold(s: String): String = Normalizer.normalize(s, Normalizer.Form.NFD).replace(MARKS, "").replace('đ', 'd').replace('Đ', 'd')
@@ -30,7 +42,39 @@ object VoiceProtocol {
      * read digits. Up to 999, the words as said, with their accents ("sau", after, is not "sáu", six): "trăm", "mươi" / "mười",
      * "linh" / "lẻ", "mốt" / "tư" / "lăm" after a ten. "một hai ba" stays three numbers.
      */
-    fun digits(text: String): String {
+    fun digits(text: String, lang: String = "vi"): String = if (lang == "en") digitsEn(text) else digitsVi(text)
+
+    private val EN_UNIT = mapOf("zero" to 0, "oh" to 0, "one" to 1, "two" to 2, "three" to 3, "four" to 4, "five" to 5, "six" to 6, "seven" to 7,
+        "eight" to 8, "nine" to 9, "ten" to 10, "eleven" to 11, "twelve" to 12, "thirteen" to 13, "fourteen" to 14, "fifteen" to 15,
+        "sixteen" to 16, "seventeen" to 17, "eighteen" to 18, "nineteen" to 19)
+    private val EN_TENS = mapOf("twenty" to 20, "thirty" to 30, "forty" to 40, "fifty" to 50, "sixty" to 60, "seventy" to 70, "eighty" to 80, "ninety" to 90)
+
+    /** English: "set timer thirty minutes" -> "set timer 30 minutes", "channel twenty five" -> "channel 25", "one hundred and five" -> "105"; "one two three" stays three numbers. */
+    private fun digitsEn(text: String): String {
+        val w = text.split(' ').filter { it.isNotEmpty() }
+        val out = ArrayList<String>()
+        var i = 0
+        while (i < w.size) {
+            var total = 0; var cur = 0; var j = i; var any = false
+            while (j < w.size) {
+                val x = w[j].lowercase()
+                val u = EN_UNIT[x]; val t = EN_TENS[x]
+                when {
+                    t != null && cur == 0 -> cur = t
+                    u != null && cur == 0 && !(u == 0 && any) -> cur = u
+                    u != null && u in 1..9 && cur in 20..90 && cur % 10 == 0 -> cur += u
+                    x == "hundred" && cur in 1..9 -> { total += cur * 100; cur = 0 }
+                    x == "and" && total > 0 && cur == 0 && j + 1 < w.size && (w[j + 1].lowercase() in EN_UNIT || w[j + 1].lowercase() in EN_TENS) -> { }
+                    else -> break
+                }
+                any = true; j++
+            }
+            if (j == i) { out += w[i]; i++ } else { out += (total + cur).toString(); i = j }
+        }
+        return out.joinToString(" ")
+    }
+
+    private fun digitsVi(text: String): String {
         val w = text.split(' ').filter { it.isNotEmpty() }
         val out = ArrayList<String>()
         var i = 0

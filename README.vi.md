@@ -50,7 +50,7 @@ Mọi thứ đi thẳng từ máy bạn tới TV: không qua đám mây, không 
 | Linux | **App máy tính** | [x64](https://github.com/HoangTran0410/tv-remote/releases/latest/download/TV-Remote-linux-x64.tar.gz) · [arm64](https://github.com/HoangTran0410/tv-remote/releases/latest/download/TV-Remote-linux-arm64.tar.gz) | |
 | Tùy chọn, trên TV | TV Home · TV Channels · TV Games · TV Apps | [tv-home.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-home.apk) · [tv-channels.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-channels.apk) · [tv-games.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-games.apk) · [tv-apps.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-apps.apk) | **`4356026`** · **`8135635`** · **`2294968`** · **`1082201`** |
 
-Mã nhập trong app **Downloader** trên TV, luôn trỏ tới bản mới nhất. *tv-voice.apk* (nhận giọng nói ngay trên TV, tiếng Việt, 25 MB) không có mã: TV Setup tự cài khi bạn bật "Nhận giọng nói ngay trên TV" (tab Thiết lập, thẻ Nút remote) và gỡ khi tắt.
+Mã nhập trong app **Downloader** trên TV, luôn trỏ tới bản mới nhất. *tv-voice.apk* (nhận giọng nói ngay trên TV, tiếng Việt, 25 MB) và *tv-voice-en.apk* (tiếng Anh, 36 MB, khi TV Setup ở ngôn ngữ khác) không có mã: TV Setup tự cài khi bạn bật "Nhận giọng nói ngay trên TV" (tab Thiết lập, thẻ Nút remote) và gỡ khi tắt.
 
 ## Bắt đầu nhanh
 

@@ -18,12 +18,13 @@ app/tvvoice/              TV Setup Voice (`dev.tvremote.setup.voice`): speech he
                           Warm (unpack now, not on the first press; shell only)
   build.gradle.kts        packModel: the Vosk small Vietnamese model 0.4 (Apache-2.0) into assets without Gr.fst (we give a grammar:
                           TV Setup passes the commands, apps and scenes as said, `Phrases.spoken`); words.txt + fold.txt made at build time
-  build.sh                -> build/tv-voice.apk (release.sh builds it and attaches it)
+  build.sh                -> build/tv-voice.apk (vi) + build/tv-voice-en.apk (release.sh builds and attaches them)
 ```
 
 ## Rules
 
-- Vietnamese only (the one small model; en/ru/fr would each need ~40 MB plus spoken phrases). TV Setup uses Google's recognizer first
+- One APK per language, never two models in one (vi 24.9 MB `tv-voice.apk`, en 35.7 MB `tv-voice-en.apk`; `-Pvoicelang=vi|en`, `build.sh`
+  builds both). Each language is its own package (`VoiceProtocol.addon(lang)`: vi `dev.tvremote.setup.voice`, en `….voice.en`), so several sit side by side; `VoiceProtocol.langOf` reads an APK's language (meta-data `dev.tvremote.voice.LANG`; absent = an old vi one). TV Setup's rule `mic_lang` picks the one that listens, `mic_lang_remove` takes one out (dev/flows/voice.md). TV Setup uses Google's recognizer first
   wherever the TV has one: it is faster and understands any sentence; this add-on only knows the grammar it is given.
 - Off = nothing: the rule off removes the APK, so no service, model or file stays on the TV.
 - Speed is measured on a release build (debug is ~4x slower): FPT box, model cold load 2.6 s (hidden behind the buffered mic),

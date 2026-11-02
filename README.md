@@ -46,7 +46,7 @@ Everything goes straight from your device to the TV: no cloud, no sign-up. Every
 | Linux | **Computer app** | [x64](https://github.com/HoangTran0410/tv-remote/releases/latest/download/TV-Remote-linux-x64.tar.gz) · [arm64](https://github.com/HoangTran0410/tv-remote/releases/latest/download/TV-Remote-linux-arm64.tar.gz) | |
 | Optional, on the TV | TV Home · TV Channels · TV Games · TV Apps | [tv-home.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-home.apk) · [tv-channels.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-channels.apk) · [tv-games.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-games.apk) · [tv-apps.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-apps.apk) | **`4356026`** · **`8135635`** · **`2294968`** · **`1082201`** |
 
-Codes go in the **Downloader** app on the TV and always point at the latest release. *tv-voice.apk* (speech heard on the TV itself, Vietnamese, 25 MB) has no code: TV Setup installs it when you turn on "Understand speech on the TV itself" (Setup tab, Remote buttons card) and removes it when you turn it off.
+Codes go in the **Downloader** app on the TV and always point at the latest release. *tv-voice.apk* (speech heard on the TV itself, Vietnamese, 25 MB) and *tv-voice-en.apk* (English, 36 MB, for TV Setup in any other language) have no code: TV Setup installs the one for its language when you turn on "Understand speech on the TV itself" (Setup tab, Remote buttons card) and removes it when you turn it off.
 
 ## Quick start
 

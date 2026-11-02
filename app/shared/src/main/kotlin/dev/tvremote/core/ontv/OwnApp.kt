@@ -45,9 +45,10 @@ class OwnApp(val pkg: String, val apk: String, private val versionKey: String, p
     /** Forget what GitHub said, so the next [state] asks again (TV Setup's own timer, which wants the news within hours, not 6). */
     fun refresh() { seen = null }
 
-    /** Installs it, or puts the newer one over it (its own data stays). [go] false once downloaded: not now (it was opened meanwhile). */
+    /** Installs it, or puts the newer one over it (its own data stays). [go] false once downloaded: not now (it was opened meanwhile).
+     *  [progress]: the download's percent, for a bar (TV Setup Voice is 25 MB: minutes on a slow line). */
     @Throws(IOException::class)
-    fun install(adb: Adb, dir: File?, lang: String, go: () -> Boolean = { true }): JSONObject {
+    fun install(adb: Adb, dir: File?, lang: String, go: () -> Boolean = { true }, progress: ((Int) -> Unit)? = null): JSONObject {
         val sh: (String) -> String = { adb.shell(it) }
         seen = null
         val now = state(sh)
@@ -55,7 +56,7 @@ class OwnApp(val pkg: String, val apk: String, private val versionKey: String, p
         val file = File(dir ?: File(System.getProperty("java.io.tmpdir")), apk.removeSuffix(".apk") + "-${r.version}.apk")
         PlayProtect.check(dir, r.sha256)                              // refused before: no new "Harmful app blocked" on the TV
         try {
-            r.download(file, null)
+            r.download(file, progress?.let { f -> dev.tvremote.update.Release.Progress { f(it) } })
             if (!go()) return now
             val out = Setup(adb, dir, lang) { }.install(file)
             PlayProtect.check(dir, r.sha256, out)

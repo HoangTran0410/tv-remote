@@ -723,6 +723,10 @@ class HomeActivity : Activity() {
             runOnUiThread {
                 if (isDestroyed) return@runOnUiThread
                 widgets.show(want, f, note, { p -> apps.firstOrNull { it.pkg == p }?.label ?: p.substringAfterLast('.') }, sizes, conf.optJSONObject("qrs") ?: JSONObject())
+                // chosen but with nothing to show (the timer with no timer set, a lunar date off): no row, so the grid sits as with none
+                // (FPT, the user 2026-11-03: the timer alone left the grid up under an empty row)
+                val shown = widgets.visibility == View.VISIBLE
+                if (noWidgets == shown) { noWidgets = !shown; peek() }
                 focusWidget?.let { k -> ui.post { widgetView(k)?.let { focusWidget = null; go(it) } } }
                 if (widgets.speed != null) { ui.removeCallbacks(netTick); ui.postDelayed(netTick, Widgets.SAMPLE_MS) }   // the graph was just added: its tick starts
                 // TV Setup answers the CPU with its last measure and starts the next: the first time there is none, so ask again soon, once
@@ -1303,6 +1307,7 @@ class HomeActivity : Activity() {
 
     private var folderDlg: android.app.Dialog? = null
     private var folderLive: List<Tile> = emptyList()                 // the open panel's live widgets: read once when it opens (no timer for a panel), and again by a press
+    private var folderCarry: ((String) -> Unit)? = null               // the open panel's "Move": carry that app with the D-pad
     private var folderFill: (() -> Unit)? = null                      // the open panel drawn again from the settings (null while none is open)
 
     private fun folderDo(change: JSONObject?) { if (change != null) Store.change(this, change) }
@@ -1382,8 +1387,33 @@ class HomeActivity : Activity() {
             background = TvUi.round(TvUi.SHEET_FILL, dp(TvUi.R_SHEET.toInt()).toFloat(), 1, TvUi.SHEET_EDGE)
             addView(title); addView(scroll, LinearLayout.LayoutParams(-2, -2))
         }
+        val note = TvUi.text(this, getString(R.string.move_hint), 15f, TvUi.DIM).apply { visibility = View.GONE; gravity = Gravity.CENTER }
+        card.addView(note, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
         var first = true
-        fun build(mem: List<App>, focusPkg: String?, focusAt: Int) {
+        var carried: String? = null                                   // the app carried by the D-pad ("Move" in its menu): each press is a step, OK saves, Back puts it back
+        lateinit var build: (List<App>, String?, Int) -> Unit
+        // a carried app's key: one step on screen per press (the list only), one write on OK (the user, 2026-11-03: Earlier / Later in the menu was a menu per step)
+        fun carryKey(mem: List<App>, i: Int, code: Int, e: KeyEvent, t: Tile): Boolean {
+            when (code) {
+                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_ESCAPE -> {
+                    if (e.action == KeyEvent.ACTION_UP) {                 // on the release: the press's UP would otherwise open the app under it
+                        val pkg = carried; carried = null
+                        val save = code != KeyEvent.KEYCODE_BACK && code != KeyEvent.KEYCODE_ESCAPE
+                        val c = if (save && pkg != null) Folders.reorder(conf, id, pkg, i) else null
+                        if (c != null) folderDo(c) else folderFill?.invoke()
+                    }
+                    return true
+                }
+            }
+            if (e.action != KeyEvent.ACTION_DOWN) return true
+            val d = when (code) { KeyEvent.KEYCODE_DPAD_LEFT -> -1; KeyEvent.KEYCODE_DPAD_RIGHT -> 1
+                KeyEvent.KEYCODE_DPAD_UP -> -cols; KeyEvent.KEYCODE_DPAD_DOWN -> cols; else -> return false }
+            val to = (i + d).let { if (d == cols && it >= mem.size && i / cols < (mem.size - 1) / cols) mem.size - 1 else it }   // Down onto a short last row: its end
+            if (to !in mem.indices) { t.nudge(if (d == 1) 1 else if (d == -1) -1 else 0, if (d == cols) 1 else if (d == -cols) -1 else 0); return true }
+            build(mem.toMutableList().apply { add(to, removeAt(i)) }, mem[i].pkg, to)
+            return true
+        }
+        build = fun(mem: List<App>, focusPkg: String?, focusAt: Int) {
             if (!dlg.isShowing) return
             if (first) { first = false; Motion.appear(card) }            // with its tiles, not as an empty card
             body.removeAllViews()
@@ -1394,11 +1424,15 @@ class HomeActivity : Activity() {
                 val t = PanelTile(this, m, w, m.label, ::dp).apply {
                     setOnClickListener { dlg.dismiss(); ui.post { launch(m) } }
                     setOnLongClickListener { menu(m); true }
-                    setOnKeyListener { _, code, e ->
-                        // Right at a row's end / Left at its start goes on to the next / previous row, as the home grid does
+                    setOnKeyListener { v, code, e ->
+                        if (carried == m.pkg) return@setOnKeyListener carryKey(mem, i, code, e, v as Tile)
+                        // Right at a row's end / Left at its start goes on to the next / previous row, as the home grid does;
+                        // Right on the last app / Left on the first stays (Android's search took Right on a short row's end up a row: the user, 2026-11-03)
+                        val edge = code == KeyEvent.KEYCODE_DPAD_RIGHT && i == mem.size - 1 || code == KeyEvent.KEYCODE_DPAD_LEFT && i == 0
                         val to = when (code) { KeyEvent.KEYCODE_DPAD_RIGHT -> if (i % cols == cols - 1) i + 1 else -1
                             KeyEvent.KEYCODE_DPAD_LEFT -> if (i % cols == 0) i - 1 else -1; else -> -1 }
                         if (code == KeyEvent.KEYCODE_MENU) { if (e.action == KeyEvent.ACTION_UP) menu(m); true }
+                        else if (edge) { if (e.action == KeyEvent.ACTION_DOWN) (v as Tile).nudge(if (i == 0) -1 else 1, 0); true }
                         else if (to in shown.indices) { if (e.action == KeyEvent.ACTION_DOWN) shown[to].requestFocus(); true }
                         else false }
                     onFocusChangeListener = View.OnFocusChangeListener { v, f -> (v as Tile).focus(f) }
@@ -1415,6 +1449,8 @@ class HomeActivity : Activity() {
             dlg.window?.setLayout(maxOf(tiles, head) + card.paddingLeft + card.paddingRight, -2)
             val all = (0 until body.childCount).flatMap { r -> (body.getChildAt(r) as ViewGroup).let { g -> (0 until g.childCount).map { g.getChildAt(it) } } }
             (all.firstOrNull { (it as? Tile)?.app?.pkg == focusPkg } ?: all.getOrNull(minOf(focusAt, all.size - 1).coerceAtLeast(0)))?.requestFocus()
+            note.visibility = if (carried != null) View.VISIBLE else View.GONE
+            for (v in all) (v as? Tile)?.let { t -> val me = carried != null && t.app?.pkg == carried; if (me) t.carry(true); t.alpha = if (carried == null || me) 1f else DIM }   // carry(false) is focus's look, not rest: only the carried one (fresh tiles each build)
         }
         fun fill() {
             val f = Folders.of(conf)[id]
@@ -1426,9 +1462,10 @@ class HomeActivity : Activity() {
             if (mem.none { it.banner == null && it.icon == null }) build(mem, at, was)
             else bg.execute { mem.forEach { if (it.banner == null && it.icon == null) it.load(this) }; runOnUiThread { if (!isDestroyed) build(mem, at, was) } }   // pictures off the main thread
         }
+        folderCarry = { pkg -> if (dlg.isShowing) { carried = pkg; fill() } }
         dlg.setContentView(card)
         dlg.window?.apply { setBackgroundDrawable(android.graphics.drawable.ColorDrawable(0)); setLayout(-2, -2); setGravity(Gravity.CENTER); setDimAmount(.6f); addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND) }
-        dlg.setOnDismissListener { if (folderDlg === dlg) { folderDlg = null; folderFill = null; folderLive = emptyList() } }
+        dlg.setOnDismissListener { if (folderDlg === dlg) { folderDlg = null; folderFill = null; folderCarry = null; folderLive = emptyList() } }
         folderDlg = dlg; folderFill = ::fill; open = dlg
         dlg.show()
         fill()
@@ -1802,6 +1839,9 @@ class HomeActivity : Activity() {
     private fun attachWeb() {
         val url = conf.optString("wurl")
         if (web != null && webOf == url) return
+        // the site's picture, slideshow and video themes are drawn natively ([loadWall]): a WebView under them ran loop.html's own
+        // slideshow too, two captions and two pictures (FPT, the user 2026-11-03), from onStart's "attach once now" after Home was away
+        if (NetPicture.direct(url) != null || Slideshow.ref(url) != null || netVideo.isNotEmpty()) return
         detachWeb()
         val root = scroll.parent as? ViewGroup ?: return
         val v = WebWall.make(this, url, { detachWeb(); ui.postDelayed(webRetry, 120_000) })
@@ -2050,8 +2090,12 @@ class HomeActivity : Activity() {
         else if (inFolder != null) {
             val mine = Folders.of(conf)[inFolder]?.apps.orEmpty(); val at = mine.indexOf(a.pkg)
             home.add(item(R.drawable.ic_up, R.string.folder_out) { folderDo(Folders.remove(conf, inFolder, a.pkg)) })
-            if (at > 0) home.add(item(R.drawable.ic_left, R.string.folder_earlier) { folderDo(Folders.reorder(conf, inFolder, a.pkg, at - 1)) })
-            if (at in 0 until mine.size - 1) home.add(item(R.drawable.ic_right, R.string.folder_later) { folderDo(Folders.reorder(conf, inFolder, a.pkg, at + 1)) })
+            val carry = folderCarry
+            if (carry != null && mine.size > 1) home.add(item(R.drawable.ic_expand, R.string.move) { ui.post { carry(a.pkg) } })   // carried with the D-pad, as on the grid
+            else {
+                if (at > 0) home.add(item(R.drawable.ic_left, R.string.folder_earlier) { folderDo(Folders.reorder(conf, inFolder, a.pkg, at - 1)) })
+                if (at in 0 until mine.size - 1) home.add(item(R.drawable.ic_right, R.string.folder_later) { folderDo(Folders.reorder(conf, inFolder, a.pkg, at + 1)) })
+            }
         }
         if (Tiles.Act.FOLDER_PUT in acts && !dockedPin) home.add(item(R.drawable.ic_apps, if (inFolder == null) R.string.folder_put else R.string.folder_other) { ui.post { folderPicker(a.pkg, inFolder) } })
         if (dockedPin) home.add(item(R.drawable.ic_close, R.string.unpin) { Pins.remove(this, a); pins = pins.filter { it !== a }; shownKey = ""; show() })

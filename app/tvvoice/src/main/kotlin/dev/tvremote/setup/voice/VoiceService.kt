@@ -21,6 +21,7 @@ import kotlin.math.sqrt
  * TV Setup stops it.
  */
 class VoiceService : RecognitionService() {
+    private val lang by lazy { VoiceProtocol.langOf(packageManager, packageName) ?: "vi" }   // this APK's model: Vietnamese numbers or English ones
     private var job: Listen? = null
 
     override fun onStartListening(intent: Intent, cb: Callback) {
@@ -110,7 +111,7 @@ class VoiceService : RecognitionService() {
     private fun text(json: String, key: String, written: List<Pair<String, String>>): String = try {
         var t = " " + JSONObject(json).optString(key).split(' ').filter { it.isNotEmpty() && it != "[unk]" }.joinToString(" ") + " "
         for ((said, w) in written) t = t.replace(" $said ", " $w ")
-        VoiceProtocol.digits(t.trim())
+        VoiceProtocol.digits(t.trim(), lang)
     } catch (e: Exception) { "" }
 
     /**

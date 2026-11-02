@@ -4,7 +4,9 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- Android 11+: the service checks its caller's microphone permission by package, which it must see (else error 9, FPT 2026-11-01) -->
     <queries><package android:name="dev.tvremote.setup" /></queries>
-    <application android:label="@string/app_name" android:icon="@android:drawable/sym_def_app_icon" android:allowBackup="false">
+    <application android:label="@string/app_name" android:icon="@drawable/icon" android:banner="@drawable/banner" android:allowBackup="false">
+        <!-- the language of the model in this APK (VoiceProtocol.langOf); each language is its own package too (VoiceProtocol.addon) -->
+        <meta-data android:name="dev.tvremote.voice.LANG" android:value="${voiceLang}" />
         <!-- Android's speech service: TV Setup names it (VoiceProtocol.SERVICE); never made the TV's default -->
         <service android:name=".VoiceService" android:exported="true" android:label="@string/voice_service">
             <intent-filter><action android:name="android.speech.RecognitionService" /></intent-filter>

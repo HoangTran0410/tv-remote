@@ -284,9 +284,13 @@ Clipboard là chỗ TV giữ chữ vừa sao chép. Dùng để xem chữ trên 
 
 Nút mic của điều khiển TV: bật **Nút mic mở giọng nói của TV Remote** ở tab Thiết lập, thẻ Nút remote (mặc định tắt). Cần TV Setup mới.
 
-TV không có nhận giọng nói (hộp không Google): bật thêm **Nhận giọng nói ngay trên TV, không cần Google** ở cùng chỗ. TV Setup tự tải 25 MB và cài; chỉ hiểu lệnh tiếng Việt; tắt là gỡ.
+TV không có nhận giọng nói (hộp không Google): bật thêm **Nhận giọng nói ngay trên TV, không cần Google** ở cùng chỗ; tắt là gỡ.
+
+Tiếng Việt 25 MB, tiếng Anh 36 MB: chọn ngôn ngữ ở dòng **Ngôn ngữ** (hay ô TV Voice trong TV Setup); thêm ngôn ngữ mới không gỡ ngôn ngữ cũ.
 
 TV có Google thì Google nghe trước (hiểu mọi câu); mất mạng hay Google không trả lời thì giọng nói của TV Setup nghe thay.
+
+Muốn TV Setup Voice luôn nghe trước (nhanh hơn, giọng nói không rời TV): chọn **TV Setup** ở dòng “Nghe giọng nói bằng”, hoặc bấm ô Nút mic trong Cài đặt nhanh của TV Home.
 
 ### Mẹo
 
@@ -594,7 +598,7 @@ Một bảng cho mọi thứ ghim được lên lưới, kể cả hàng Xem ti�
 Gom vài ô (app, lối tắt, widget) vào một ô thư mục (hiện 4 biểu tượng nhỏ và tên). Sửa được ngay trên TV hoặc ở tab TV → Tùy chỉnh → Thư mục.
 
 1. Giữ OK trên một app, lối tắt hay widget → **Trên màn hình chính** → **Cho vào thư mục**: chọn thư mục có sẵn hoặc **Thư mục mới** rồi đặt tên.
-2. OK trên thư mục mở một bảng các ô của nó; Back đóng. Mỗi app trong đó vẫn có menu riêng, có **Đưa ra khỏi thư mục**, chuyển sang thư mục khác, lên trước / xuống sau.
+2. OK trên thư mục mở một bảng các ô của nó; Back đóng. Mỗi app trong đó vẫn có menu riêng, có **Đưa ra khỏi thư mục**, chuyển sang thư mục khác, **Di chuyển** (mũi tên, OK lưu).
 3. Giữ OK trên ô thư mục để **Chọn ô trong thư mục** (bỏ dấu là lấy ra), đổi tên, di chuyển trên lưới hoặc xóa (app trong đó về lại lưới). Thư mục trống tự biến mất.
 
 - Khóa PIN và giới hạn giờ của app vẫn áp dụng bên trong thư mục.
@@ -650,7 +654,7 @@ Hai tùy chọn cho nền của TV Home, tính trên TV, không cần mạng.
 
 Nút Cài đặt (bánh răng) trên thanh trên mở bảng theo kiểu Android. Ô lớn: Tùy chỉnh, Hẹn giờ tắt.
 
-Ô nhỏ: Mạng (tên Wi-Fi), Nguồn vào (hoặc Bluetooth nếu TV không có nguồn vào), Nút mic (TV Remote hay Mặc định; chỉ hiện khi remote có nút mic), Khoá trẻ em.
+Ô nhỏ: Mạng (tên Wi-Fi), Nguồn vào (hoặc Bluetooth nếu TV không có nguồn vào), Nút mic (đổi Google / TV Setup Voice; chỉ hiện khi remote có nút mic), Khoá trẻ em.
 
 Khoá trẻ em: chạm để bật; bật rồi thì chạm (hỏi mã PIN) để chọn app hoặc tắt. Cần TV Setup.
 

@@ -19,6 +19,12 @@ plugins {
 // stays small: 25 MB, put on the TV only when someone switches it on (MicVoice / VoiceAddon), taken off when switched off.
 // No number of its own: TV Setup's (app/tvsetup/VERSION); signed with TV Setup's key, which TV Setup checks before installing it.
 val appVersion = (System.getenv("VERSION_NAME") ?: file("../tvsetup/VERSION").readText()).trim()
+// One APK and one package per language (the Vietnamese one must not carry the English model; a second language is added, not swapped): -Pvoicelang=vi (default, tv-voice.apk) or en (tv-voice-en.apk).
+val voiceLang = (findProperty("voicelang") as String?) ?: "vi"
+val models = mapOf(
+    "vi" to listOf("https://alphacephei.com/vosk/models/vosk-model-small-vn-0.4.zip", "efe5c8494212110471a79befc48c79da679e5b1fc52a4ffb500222ff86d622e5"),
+    "en" to listOf("https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip", "30f26242c4eb449f948e42cb302dd7a686cb29a3423a8367f99ff41780942498"))
+require(voiceLang in models) { "voicelang must be one of ${models.keys}" }
 val keystore = file("../tvsetup/signing.jks")                         // git-ignored; app/tvsetup/build.sh creates one on the first build
 
 android {
@@ -26,10 +32,11 @@ android {
     namespace = "dev.tvremote.setup.voice"
     compileSdk = 35
     defaultConfig {
-        applicationId = "dev.tvremote.setup.voice"
+        applicationId = if (voiceLang == "vi") "dev.tvremote.setup.voice" else "dev.tvremote.setup.voice.$voiceLang"   // VoiceProtocol.addon: a package per language, so both can be on the TV
         minSdk = 21
         targetSdk = 34
         versionName = appVersion
+        manifestPlaceholders["voiceLang"] = voiceLang
         versionCode = appVersion.split(".").map { it.toInt() }.let { 100000 + it[0] * 10000 + it[1] * 100 + it[2] }   // as TV Setup's
         ndk { abiFilters += listOf("armeabi-v7a", "arm64-v8a") }      // TV boxes; the x86 emulators cannot run it (6 MB more for no TV)
     }
@@ -65,12 +72,12 @@ apply(from = "../gradle/i18n.gradle")
 // committed (51 MB). Only what a command list needs is packed: Gr.fst (24 MB, the free-speech language model) is left out, and its
 // word list, which the recognizer needs to build a list's graph, is written out as graph/words.txt. assets/model/files.txt lists the
 // files for VoiceModel.unpack; assets/model/VERSION is the hash, so a new model is unpacked again.
-val modelUrl = "https://alphacephei.com/vosk/models/vosk-model-small-vn-0.4.zip"
-val modelSha = "efe5c8494212110471a79befc48c79da679e5b1fc52a4ffb500222ff86d622e5"
+val modelUrl = models.getValue(voiceLang)[0]
+val modelSha = models.getValue(voiceLang)[1]
 val modelLayout = 3                                                   // raise when what is packed changes (3: fold.txt, likely words): TVs unpack it again
-val modelOut = layout.buildDirectory.dir("generated/model")
+val modelOut = layout.buildDirectory.dir("generated/model-$voiceLang")
 val packModel = tasks.register("packModel") {
-    val zip = layout.buildDirectory.file("model-dl/model.zip")
+    val zip = layout.buildDirectory.file("model-dl/model-$voiceLang.zip")
     inputs.property("sha", modelSha)
     inputs.property("layout", modelLayout)
     outputs.dir(modelOut)

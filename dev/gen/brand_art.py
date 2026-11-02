@@ -18,6 +18,7 @@ APPS = {                                                             # name, the
     "channels": ("Channels", (20, 184, 166), (37, 99, 235)),
     "games": ("Games", (124, 58, 237), (219, 39, 119)),
     "tvapps": ("Apps", (245, 158, 11), (234, 88, 12)),
+    "voice": ("Voice", (239, 68, 68), (190, 24, 93)),               # TV Setup Voice (app/tvvoice): its tile in TV Setup's More TV apps row
 }
 BOLT = (255, 200, 61)                                                # TV Setup's bolt keeps the logo's yellow
 
@@ -73,6 +74,14 @@ def glyph(kind, d, cx, cy, s, mid):
         line(d, rim, lw)
         line(d, [(cx - r, mid_y), (cx, cy + s * 0.06), (cx + r, mid_y)], lw)
         line(d, [(cx, cy + s * 0.06), (cx, cy + s * 0.52)], lw)
+    elif kind == "voice":                                            # a mic: a capsule, the holder's arc, a stem and a foot
+        cw, ch = s * 0.34, s * 0.56
+        top = cy - s * 0.50
+        d.rounded_rectangle((cx - cw / 2, top, cx + cw / 2, top + ch), cw / 2, fill="white")
+        r = s * 0.30
+        d.arc((cx - r, top + ch * 0.62 - r, cx + r, top + ch * 0.62 + r), 0, 180, fill="white", width=lw)
+        line(d, [(cx, top + ch * 0.62 + r), (cx, cy + s * 0.46)], lw)
+        line(d, [(cx - s * 0.18, cy + s * 0.46), (cx + s * 0.18, cy + s * 0.46)], lw)
     else:                                                            # a pad: white body, a cross, two buttons
         w, h = s, s * 0.56
         x0, y0 = cx - w / 2, cy - h / 2
@@ -101,10 +110,11 @@ def font(weight, size):
 
 
 small, big = font("Semibold", 26 * K), font("Bold", 36 * K)
-DIR = {"tv": "tvsetup", "home": "tvhome", "channels": "tvchannels", "games": "tvgames"}   # glyph and eco_*.png names -> app folder
+DIR = {"tv": "tvsetup", "home": "tvhome", "channels": "tvchannels", "games": "tvgames", "voice": "tvvoice"}   # glyph and eco_*.png names -> app folder
 for app, (name, a, b) in APPS.items():
     mid = tuple((a[i] + b[i]) // 2 for i in range(3))
     out = ROOT / f"app/{DIR.get(app, app)}/src/main/res/drawable"
+    out.mkdir(parents=True, exist_ok=True)
     ban = tile(320 * K, 180 * K, 0, a, b).convert("RGB")
     d = ImageDraw.Draw(ban)
     glyph(app, d, 72 * K, 90 * K, 80 * K, mid)

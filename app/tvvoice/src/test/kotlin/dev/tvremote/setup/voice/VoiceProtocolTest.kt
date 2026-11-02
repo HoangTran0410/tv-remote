@@ -14,9 +14,18 @@ class VoiceProtocolTest {
         assertEquals("1 2 3", VoiceProtocol.digits("một hai ba"))
     }
 
+    @Test fun englishNumberWordsBecomeDigits() {
+        assertEquals("set timer 30 minutes", VoiceProtocol.digits("set timer thirty minutes", "en"))
+        assertEquals("channel 25", VoiceProtocol.digits("channel twenty five", "en"))
+        assertEquals("105", VoiceProtocol.digits("one hundred and five", "en"))
+        assertEquals("14", VoiceProtocol.digits("fourteen", "en"))
+        assertEquals("1 2 3", VoiceProtocol.digits("one two three", "en"))
+        assertEquals("open netflix and play", VoiceProtocol.digits("open netflix and play", "en"))
+    }
+
     /** build.gradle.kts folds the model's words with its own copy of fold (a build script cannot call this one): both must agree. */
     @Test fun buildFoldsLikeTheApp() {
-        val f = File("build/generated/model/model/graph/fold.txt")
+        val f = File("build/generated/model-vi/model/graph/fold.txt")
         if (!f.isFile) return                                         // packModel runs before any build of this module
         var n = 0
         for (l in f.readLines()) {

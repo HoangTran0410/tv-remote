@@ -694,6 +694,8 @@
   "cc_mic": "Bouton micro",
   "cc_mic_ours": "TV Remote",
   "cc_mic_tv": "Par défaut",
+  "cc_mic_google": "Google",
+  "cc_mic_voice": "TV Setup",
   "cc_sleep": "Minuteur de mise en veille",
   "cc_sleep_left": "%1$s min restantes",
   "cc_setup_need": "Nécessite l'application TV Setup",

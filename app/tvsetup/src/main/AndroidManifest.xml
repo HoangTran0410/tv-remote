@@ -84,6 +84,9 @@
         <!-- the key tester (KeyTestActivity): started by this app, by TV Home (a PendingIntent of HomeControl) and by the shell (am start) -->
         <activity android:name=".KeyTestActivity" android:exported="true" android:permission="android.permission.DUMP" android:excludeFromRecents="true" android:launchMode="singleTask" android:taskAffinity=""
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize" />
+        <!-- TV Setup Voice offered and switched (VoiceActivity): from TV Home's Control Center (a PendingIntent of HomeControl) and the More TV apps row -->
+        <activity android:name=".VoiceActivity" android:exported="false" android:excludeFromRecents="true" android:launchMode="singleTask" android:taskAffinity=""
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" />
         <!-- the Input button's picker where the TV has none (KeysBridge) -->
         <activity android:name=".InputsActivity" android:exported="false" android:excludeFromRecents="true" android:taskAffinity=""
             android:theme="@android:style/Theme.DeviceDefault.Dialog.NoActionBar" />

@@ -131,7 +131,7 @@ NOTES="$NOTES
 | Windows 10/11 | [TV-Remote-windows-x64.zip]($D/TV-Remote-windows-x64.zip) |
 | Linux x64 / arm64 | [TV-Remote-linux-x64.tar.gz]($D/TV-Remote-linux-x64.tar.gz) · [TV-Remote-linux-arm64.tar.gz]($D/TV-Remote-linux-arm64.tar.gz) |"
 # the APKs live only in releases, never in git
-gh release create "v$VER" app/android/build/tv-remote.apk app/tvsetup/build/tv-setup.apk app/tvhome/build/tv-home.apk app/tvchannels/build/tv-channels.apk app/tvgames/build/tv-games.apk app/tvapps/build/tv-apps.apk app/tvvoice/build/tv-voice.apk app/android/build/versions.json --title "v$VER" --notes "$NOTES" --latest  # by date: GitHub would still call 2.24.2 the latest
+gh release create "v$VER" app/android/build/tv-remote.apk app/tvsetup/build/tv-setup.apk app/tvhome/build/tv-home.apk app/tvchannels/build/tv-channels.apk app/tvgames/build/tv-games.apk app/tvapps/build/tv-apps.apk app/tvvoice/build/tv-voice.apk app/tvvoice/build/tv-voice-en.apk app/android/build/versions.json --title "v$VER" --notes "$NOTES" --latest  # by date: GitHub would still call 2.24.2 the latest
 if [ "$DESK" != "$VER" ]; then
   echo "computer app not built: the $DESK archives attached again"
   T=$(mktemp -d); gh release download "$LAST" -p 'TV-Remote-*' -D "$T" && gh release upload "v$VER" "$T"/TV-Remote-*; rm -rf "$T"

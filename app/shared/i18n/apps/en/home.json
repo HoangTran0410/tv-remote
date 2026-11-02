@@ -622,6 +622,8 @@
   "cc_mic": "Mic button",
   "cc_mic_ours": "TV Remote",
   "cc_mic_tv": "Default",
+  "cc_mic_google": "Google",
+  "cc_mic_voice": "TV Setup",
   "cc_sleep": "Sleep timer",
   "cc_sleep_left": "%1$s min left",
   "cc_setup_need": "Needs the TV Setup app",

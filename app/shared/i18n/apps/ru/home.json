@@ -698,6 +698,8 @@
   "cc_mic": "Микрофон",
   "cc_mic_ours": "TV Remote",
   "cc_mic_tv": "Обычный",
+  "cc_mic_google": "Google",
+  "cc_mic_voice": "TV Setup",
   "cc_sleep": "Таймер сна",
   "cc_sleep_left": "осталось %1$s мин",
   "cc_setup_need": "Нужно приложение TV Setup",

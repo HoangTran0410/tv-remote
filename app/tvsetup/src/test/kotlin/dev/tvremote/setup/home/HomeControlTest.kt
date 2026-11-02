@@ -18,6 +18,14 @@ class HomeControlTest {
         assertEquals("ask", HomeControl.route(""))
     }
 
+    /** The mic tile's two-way switch (dev/flows/voice.md): Google's is plain rules, TV Setup Voice may need its screen first. */
+    @Test fun theMicTileSwitchesWhoListens() {
+        assertEquals("rules", HomeControl.route("mic:google"))
+        assertEquals("mictv", HomeControl.route("mic:tv"))
+        assertEquals("voice", HomeControl.route("voice"))
+        assertEquals("bad", HomeControl.route("mic:vosk"))
+    }
+
     @Test fun theBrightnessBarTakesOffOrAStrengthInRange() {
         assertEquals("dim", HomeControl.route("dim:0"))
         assertEquals("dim", HomeControl.route("dim:30"))

@@ -622,6 +622,8 @@
   "cc_mic": "Nút mic",
   "cc_mic_ours": "TV Remote",
   "cc_mic_tv": "Mặc định",
+  "cc_mic_google": "Google",
+  "cc_mic_voice": "TV Setup",
   "cc_sleep": "Hẹn giờ tắt",
   "cc_sleep_left": "Còn %1$s phút",
   "cc_setup_need": "Cần app TV Setup",

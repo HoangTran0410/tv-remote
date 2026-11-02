@@ -53,6 +53,7 @@ class MicVoiceTest {
 
     /** :shared installs the add-on by its name and cannot see VoiceProtocol; MicVoice binds it by VoiceProtocol's: one package. */
     @Test fun addonNameIsOne() = assertEquals(VoiceProtocol.ADDON, VoiceAddon.PKG)
+    @Test fun addonLangsAreOne() { assertEquals(VoiceProtocol.LANGS, VoiceAddon.LANGS); for (l in VoiceAddon.LANGS) assertEquals(VoiceProtocol.addon(l), VoiceAddon.pkg(l)) }
 
     /** Google's assistant coming back (switched on again, updated) is taken back; one the person picked is not. */
     @Test fun googleComingBackIsTakenBack() {

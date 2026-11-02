@@ -2,7 +2,7 @@
 
 The Settings button (gear) on the top bar opens a panel in Android's look. Big tiles: Customize, Sleep timer.
 
-Small tiles: Network (Wi-Fi name), Inputs (or Bluetooth when the TV has no inputs), Mic button (TV Remote or Default; only when the remote has a mic button), Kids mode.
+Small tiles: Network (Wi-Fi name), Inputs (or Bluetooth when the TV has no inputs), Mic button (Google / TV Setup Voice; only when the remote has a mic button), Kids mode.
 
 Kids mode: tap to turn on; when on, a tap (asks the PIN) picks the apps or turns it off. Needs TV Setup (greyed without it).
 

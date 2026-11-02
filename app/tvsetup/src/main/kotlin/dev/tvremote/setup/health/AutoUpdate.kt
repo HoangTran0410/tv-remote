@@ -35,6 +35,11 @@ internal class AutoUpdate(private val c: Context, private val version: String, p
         private const val PREFS = "remote"
         fun on(c: Context): Boolean = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean("auto_update", true)
         fun set(c: Context, on: Boolean) { c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean("auto_update", on).apply() }
+        /** One TV app's own switch (its menu in TV Setup's More TV apps row, the user 2026-11-03); never set = as TV Setup's own [on]. */
+        fun on(c: Context, pkg: String): Boolean = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean("auto_update:$pkg", on(c))
+        fun set(c: Context, pkg: String, on: Boolean) { c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean("auto_update:$pkg", on).apply() }
+        /** The TV apps it updates, each by its own switch. */
+        val APPS get() = listOf(HomeConfig.PKG, Channels.PKG, Games.PKG, TvApps.PKG) + VoiceAddon.LANGS.map { VoiceAddon.pkg(it) }
         private const val MIN = 60_000L
     }
 
@@ -66,9 +71,11 @@ internal class AutoUpdate(private val c: Context, private val version: String, p
 
     /** One step towards an update; returns how long until the next is worth trying. */
     private fun step(): Long {
-        if (!on(c)) return 60 * MIN
+        val apps = APPS.any { on(c, it) }
+        if (!on(c) && !apps) return 60 * MIN
         val now = System.currentTimeMillis()
-        if (now - appsAt >= UpdatePlan.CHECK) adb()?.let { a -> appsAt = if (ownApps(a)) now else now - UpdatePlan.CHECK + UpdatePlan.RETRY }   // one had to wait: again soon
+        if (apps && now - appsAt >= UpdatePlan.CHECK) adb()?.let { a -> appsAt = if (ownApps(a)) now else now - UpdatePlan.CHECK + UpdatePlan.RETRY }   // one had to wait: again soon
+        if (!on(c)) return 20 * MIN                                   // TV Setup's own switch off: only the apps whose switch is on
         if (found == null && now - checkedAt < UpdatePlan.CHECK) return 20 * MIN
         if (now - checkedAt >= UpdatePlan.CHECK) {
             checkedAt = now
@@ -122,7 +129,8 @@ internal class AutoUpdate(private val c: Context, private val version: String, p
             Triple(Channels.PKG, { Channels.state(sh) }, { Channels.install(a, dir, Words.lang) { free(Channels.PKG, true) } }),
             Triple(Games.PKG, { Games.state(sh) }, { Games.install(a, dir, Words.lang) { free(Games.PKG, true) } }),
             Triple(TvApps.PKG, { TvApps.state(sh) }, { TvApps.install(a, dir, Words.lang) { free(TvApps.PKG, true) } }),
-            Triple(VoiceAddon.PKG, { VoiceAddon.state(sh) }, { VoiceAddon.install(a, dir, Words.lang) { free(VoiceAddon.PKG, false) } }))) {   // no screen: only "not in use now"
+            *VoiceAddon.LANGS.map { l -> Triple(VoiceAddon.pkg(l), { VoiceAddon.state(sh, l) }, { VoiceAddon.install(a, dir, Words.lang, { free(VoiceAddon.pkg(l), false) }, voice = l) }) }.toTypedArray())) {   // TV Setup Voice, each language on the TV; no screen: only "not in use now"
+            if (!on(c, pkg)) continue                                 // its own switch off
             try {
                 val s = state()
                 if (s.optBoolean("installed") && s.has("latest")) {
@@ -130,7 +138,7 @@ internal class AutoUpdate(private val c: Context, private val version: String, p
                 }
             } catch (e: Exception) { android.util.Log.w("AutoUpdate", pkg, e) }   // next time
         }
-        try { if (free(HomeConfig.PKG, false)) Home.update(a, dir, Words.lang) { free(HomeConfig.PKG, false) } } catch (e: Exception) { }   // not on this TV ("home:missing"), offline: next time
+        try { if (on(c, HomeConfig.PKG) && free(HomeConfig.PKG, false)) Home.update(a, dir, Words.lang) { free(HomeConfig.PKG, false) } } catch (e: Exception) { }   // not on this TV ("home:missing"), offline: next time
         return !waited
     }
 

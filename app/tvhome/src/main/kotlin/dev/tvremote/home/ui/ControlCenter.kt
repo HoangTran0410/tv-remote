@@ -388,7 +388,7 @@ object ControlCenter {
                         "pin" -> toast(R.string.cc_kids_nopin)
                         "overlay" -> toast(R.string.cc_dim_overlay)
                         "bad", "failed" -> if (word == "kids:off" || (word == "kids:setup" && ctl?.optBoolean("kids") == true)) toast(R.string.cc_kids_unlock) else if (word == "kids:setup") toast(R.string.cc_kids_nopin)   // a TV Setup older than the word
-                        else -> if (word == "kids:setup" && out != null) dialog.dismiss()                // the Manage screen is over us
+                        else -> if ((word == "kids:setup" || word == "voice" || word == "mic:tv" && out?.optString("voice") != "ready") && out != null) dialog.dismiss()   // TV Setup's screen is over us                // the Manage screen is over us
                     }
                 }
             }, "home-cc-control").apply { isDaemon = true }.start()
@@ -442,8 +442,9 @@ object ControlCenter {
             paintDim()
             val c = ctl
             if (c == null) { kids.state(a.getString(R.string.cc_need_setup), true); sleep.state(a.getString(R.string.cc_need_setup), true); mic?.state(a.getString(R.string.cc_need_setup), true); return }
-            mic?.state(if (!c.has("mic")) a.getString(R.string.cc_need_setup) else a.getString(if (c.optBoolean("mic")) R.string.cc_mic_ours else R.string.cc_mic_tv), !c.has("mic"))   // who answers the button, not On / Off (the user, 2026-11-01)   // an older TV Setup has no switch for it
-            kids.state(a.getString(if (c.optBoolean("kids")) R.string.cc_on else R.string.cc_off)); kids.on(c.optBoolean("kids")); mic?.on(c.optBoolean("mic"))   // a small tile: one word; with no PIN a press opens the card where it is set
+            if (c.has("mic_engine")) { mic?.state(a.getString(if (micTv(c)) R.string.cc_mic_voice else R.string.cc_mic_google)); mic?.on(micTv(c)) }   // who listens: Google or TV Setup Voice (the user, 2026-11-03)
+            else mic?.state(if (!c.has("mic")) a.getString(R.string.cc_need_setup) else a.getString(if (c.optBoolean("mic")) R.string.cc_mic_ours else R.string.cc_mic_tv), !c.has("mic"))   // who answers the button, not On / Off (the user, 2026-11-01)   // an older TV Setup has no switch for it
+            kids.state(a.getString(if (c.optBoolean("kids")) R.string.cc_on else R.string.cc_off)); kids.on(c.optBoolean("kids")); if (!c.has("mic_engine")) mic?.on(c.optBoolean("mic"))   // a small tile: one word; with no PIN a press opens the card where it is set
             val left = (c.optLong("sleep_at") - System.currentTimeMillis()).let { if (it > 0) (it + 59_999) / 60_000 else 0L }
             sleep.state(if (left > 0) a.getString(R.string.cc_sleep_left, left.toString()) else a.getString(R.string.cc_off)); sleep.on(left > 0)
         }
@@ -502,7 +503,11 @@ object ControlCenter {
             else if (a.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) { btTile = tile(R.drawable.ic_bluetooth, R.string.cc_bluetooth, true) { go(listOf(Settings.ACTION_BLUETOOTH_SETTINGS, PAIR, Settings.ACTION_SETTINGS)) }; paintBt() }   // FPT Play (Android 14) has no BLUETOOTH_SETTINGS: its Settings answers only the pairing screen
             // the remote's mic button to TV Remote's voice (TV Setup's "mic" rule, as the phone and web switch it)
             // only with a remote that has the button, or while it is on (to turn it off): the phone's voice needs no switch
-            if (micKey() || lastCtl?.optBoolean("mic") == true) mic = tile(R.drawable.ic_mic, R.string.cc_mic, true) { ctl?.let { c -> control(if (c.optBoolean("mic")) "mic:off" else "mic:on") } }
+            // a TV Setup that knows "mic_engine": Google <-> TV Setup Voice; it not on the TV yet, TV Setup's screen offers it (HomeControl "mic:tv");
+            // hold: that screen (Remove, what it does). An older one: TV Remote's voice on / off, as before
+            if (micKey() || lastCtl?.optBoolean("mic") == true) mic = tile(R.drawable.ic_mic, R.string.cc_mic, true) {
+                ctl?.let { c -> control(if (!c.has("mic_engine")) (if (c.optBoolean("mic")) "mic:off" else "mic:on") else if (micTv(c)) "mic:google" else "mic:tv") }
+            }.also { t -> t.hold = { if (ctl?.has("mic_engine") == true) control("voice") } }
             // on: TV Setup's lock card (behind its PIN), where the apps a child may open are chosen and kids mode turned off; a press
             // that only asked the PIN to turn it off left no way to that list (the user, 2026-10-26). Long OK: the list, on or off
             kids = tile(R.drawable.ic_lock, R.string.cc_kids, true) {
@@ -607,4 +612,7 @@ object ControlCenter {
 }
 
 /** A real remote that sends a mic / search / assistant key (MicVoice.KEYS): the key layout says so; a virtual device does not count. */
+/** The mic button goes to TV Setup Voice: it on the TV, chosen, and the button ours (HomeControl's answer). */
+private fun micTv(c: JSONObject) = c.optBoolean("mic") && c.optString("mic_engine") == "tv" && c.optString("voice") == "ready"
+
 private fun micKey() = InputDevice.getDeviceIds().any { id -> InputDevice.getDevice(id)?.let { d -> !d.isVirtual && d.hasKeys(231, 219, 84).any { it } } == true }

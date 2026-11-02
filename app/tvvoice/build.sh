@@ -5,6 +5,10 @@ set -e
 cd "$(dirname "$0")"
 export ANDROID_HOME="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
 [ -f ../tvsetup/signing.jks ] || { echo "app/tvsetup/signing.jks missing: build TV Setup first (./app/tvsetup/build.sh)"; exit 1; }
-../gradle/gradlew -q -p ../gradle :tvvoice:assembleRelease
-cp build/outputs/apk/release/tvvoice-release.apk build/tv-voice.apk
-ls -l build/tv-voice.apk | awk '{print "built", $9, $5, "bytes"}'
+# one APK per language: tv-voice.apk (Vietnamese; the name old TV Setups download) and tv-voice-en.apk (English)
+for l in vi en; do
+  out=tv-voice.apk; [ $l = vi ] || out=tv-voice-$l.apk
+  ../gradle/gradlew -q -p ../gradle :tvvoice:assembleRelease -Pvoicelang=$l
+  cp build/outputs/apk/release/tvvoice-release.apk build/$out
+  ls -l build/$out | awk '{print "built", $9, $5, "bytes"}'
+done

@@ -42,17 +42,41 @@ object MicVoice {
      */
     fun own(c: Context): Boolean = try {
         val cn = android.content.ComponentName.unflattenFromString(android.provider.Settings.Secure.getString(c.contentResolver, "voice_recognition_service").orEmpty())
-        cn != null && cn.packageName != VoiceProtocol.ADDON && c.packageManager.getApplicationInfo(cn.packageName, 0).enabled && c.packageManager.getServiceInfo(cn, 0).enabled
+        cn != null && !cn.packageName.startsWith(VoiceProtocol.ADDON) && c.packageManager.getApplicationInfo(cn.packageName, 0).enabled && c.packageManager.getServiceInfo(cn, 0).enabled
     } catch (e: Exception) { false }
 
-    /** TV Setup Voice, when on the TV: speech heard offline (app/tvvoice). */
-    fun offline(c: Context): android.content.ComponentName? = try {
-        c.packageManager.getApplicationInfo(VoiceProtocol.ADDON, 0).takeIf { it.enabled }?.let { android.content.ComponentName(VoiceProtocol.ADDON, VoiceProtocol.SERVICE) }
-    } catch (e: Exception) { null }
+    /** TV Setup Voice, when on the TV: speech heard offline (app/tvvoice). The language picked ([lang]) when it is there, else any other. */
+    fun offline(c: Context): android.content.ComponentName? = installed(c).let { has ->
+        (lang(c).takeIf { it in has } ?: has.firstOrNull())?.let { android.content.ComponentName(VoiceProtocol.addon(it), VoiceProtocol.SERVICE) }
+    }
+
+    /** The languages of TV Setup Voice on the TV (each its own package, VoiceProtocol.addon), installed and on. */
+    fun installed(c: Context): List<String> = VoiceProtocol.LANGS.filter { l ->
+        try { c.packageManager.getApplicationInfo(VoiceProtocol.addon(l), 0).enabled } catch (e: Exception) { false }
+    }
+
+    /** The language of the add-on that listens now ([offline]), null when none is on the TV: may differ from [lang] while that one installs. */
+    fun active(c: Context): String? = offline(c)?.let { VoiceProtocol.langOf(c.packageManager, it.packageName) }
+
+    /** The language TV Setup Voice listens in: the rule "mic_lang" (picked on its screen), else the one for TV Setup's language. */
+    fun lang(c: Context): String = try { Rules.load(c).optString("mic_lang") } catch (e: Exception) { "" }
+        .takeIf { it in VoiceProtocol.LANGS } ?: dev.tvremote.core.ontv.VoiceAddon.lang(dev.tvremote.core.Words.lang)
+
+    /** The rule "mic_engine" is "tv": TV Setup Voice listens first, where it is on the TV, Google's only when it is not (the user, 2026-11-03: faster). */
+    fun engineTv(c: Context): Boolean = try { Rules.load(c).optString("mic_engine") == "tv" } catch (e: Exception) { false }
+
+    /** The mic button to TV Setup Voice: it on the TV (installed when missing), listening first, the button ours ([VoiceActivity], [HomeControl]). */
+    fun useTv(c: Context) {
+        Rules.change(c, org.json.JSONObject().put("do", "mic_offline").put("on", true))
+        Rules.change(c, org.json.JSONObject().put("do", "mic_engine").put("engine", "tv"))
+        Rules.change(c, org.json.JSONObject().put("do", "mic").put("on", true))
+    }
 
     /** The rule "mic_offline" on: TV Setup Voice installed (from the release, over our own ADB). */
     fun offlineOn(c: Context): Boolean = try { Rules.load(c).optBoolean("mic_offline") } catch (e: Exception) { false }
 
+    /** The add-on's download, 0-100 while it runs, else -1: VoiceActivity's bar (25 MB). */
+    @Volatile var offlinePct = -1
     @Volatile private var offlineJob = ""                              // "busy", or the last failure's words for the page ("" when none)
 
     /** For the page: "ready" (on the TV), "busy" (being installed), "failed:<why>", or "none". */
@@ -63,28 +87,42 @@ object MicVoice {
         else -> "none"
     }
 
-    /** TV Setup Voice made to match the rule, in the background: installed when on and missing, removed when off (nothing of it stays). */
+    /** TV Setup Voice made to match the rules, in the background: the language picked installed when on and missing (the others stay:
+     *  a language is added, never swapped, the user 2026-11-03), every language removed when off (nothing of it stays). */
     fun syncOffline(c: Context) {
         if (offlineJob == "busy") return
         val want = offlineOn(c)
-        if (want == (offline(c) != null)) return
+        val has = installed(c)
+        val lang = lang(c)
+        if (if (want) lang in has else has.isEmpty()) return
         val adb = dev.tvremote.setup.RemoteService.adb() ?: run { offlineJob = if (want) "adb" else ""; return }
         offlineJob = "busy"
         Thread({
             offlineJob = try {
-                if (want) dev.tvremote.core.ontv.VoiceAddon.install(adb, c.cacheDir, dev.tvremote.core.Words.lang) else dev.tvremote.core.ontv.VoiceAddon.remove(adb)
-                if (want && offline(c) == null) "install" else ""
+                if (want) try { dev.tvremote.core.ontv.VoiceAddon.install(adb, c.cacheDir, dev.tvremote.core.Words.lang, progress = { offlinePct = it }, voice = lang) } finally { offlinePct = -1 }
+                else dev.tvremote.core.ontv.VoiceAddon.remove(adb)
+                if (want && lang !in installed(c)) "install" else ""
             } catch (e: Exception) { (e.message ?: "install").take(200) }
         }, "voice-addon").apply { isDaemon = true }.start()
     }
 
-    /** What TV Setup Voice listens for: the commands as said in Vietnamese (its only model), this TV's apps and scenes ([Phrases.spoken]). */
+    /** One language off the TV (its screen's Remove): the last one = the rule "mic_offline" off; the one in use = another one picked. */
+    fun removeLang(c: Context, lang: String) {
+        val rest = installed(c) - lang
+        if (rest.isEmpty()) { Rules.change(c, org.json.JSONObject().put("do", "mic_engine").put("engine", "auto")); Rules.change(c, org.json.JSONObject().put("do", "mic_offline").put("on", false)); return }
+        if (lang == lang(c)) Rules.change(c, org.json.JSONObject().put("do", "mic_lang").put("lang", rest.first()))
+        val adb = dev.tvremote.setup.RemoteService.adb() ?: run { offlineJob = "adb"; return }
+        Thread({ try { dev.tvremote.core.ontv.VoiceAddon.remove(adb, lang) } catch (e: Exception) { } }, "voice-remove").apply { isDaemon = true }.start()
+    }
+
+    /** What TV Setup Voice listens for: the commands as said in its model's language, this TV's apps and scenes ([Phrases.spoken]). */
     fun words(c: Context): ArrayList<String> {
         val more = apps(c).values + scenes(c).values
-        val key = (Voice.phrases?.hashCode() ?: 0) * 31 + more.hashCode()
+        val lang = offline(c)?.let { VoiceProtocol.langOf(c.packageManager, it.packageName) } ?: "vi"   // the add-on that will listen
+        val key = ((Voice.phrases?.hashCode() ?: 0) * 31 + more.hashCode()) * 31 + lang.hashCode()
         spoken?.let { (k, w) -> if (k == key) return w }
         val t0 = System.currentTimeMillis()
-        val w = ArrayList(Voice.phrases?.spoken("vi", more).orEmpty())
+        val w = ArrayList(Voice.phrases?.spoken(lang, more).orEmpty())
         android.util.Log.i("MicVoice", "words: ${w.size} in ${System.currentTimeMillis() - t0} ms")
         spoken = key to w
         return w

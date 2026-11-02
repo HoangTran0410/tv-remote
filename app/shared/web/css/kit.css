@@ -115,6 +115,7 @@ h2 .lower { font-size:13px; font-weight:400; color:var(--muted); }   /* "· cầ
 .note, .empty { color:var(--muted); font-size:13px; margin:0; line-height:1.45; }
 .line { display:flex; gap:8px; align-items:center; }
 .line > input, .line > select { flex:1; min-width:0; }
+.line > button { flex:none; white-space:nowrap; }                 /* the field gives way, not the button: shrunk, its icon fell above its word */
 .actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
 .warnline { display:block; color:var(--warn); font-size:13px; margin:0; }
 .actions.end { justify-content:flex-end; }

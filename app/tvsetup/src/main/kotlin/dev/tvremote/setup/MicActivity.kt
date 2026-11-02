@@ -45,6 +45,7 @@ class MicActivity : Activity(), RecognitionListener {
     private var thinking = false
     private var retried = false
     private var offline = false                                       // TV Setup Voice is listening, not the TV's own recognizer
+    private val tvFirst by lazy { MicVoice.engineTv(this) }           // TV Setup Voice picked over Google's (rule "mic_engine")
     /** Speech began but no word came back (Google's server stalled: 7 s of nothing, FPT 2026-11-01): a fresh session once, said on the card, then give up. */
     private val stall = Runnable {
         if (done || partial.isNotEmpty()) return@Runnable
@@ -135,7 +136,7 @@ class MicActivity : Activity(), RecognitionListener {
     private fun listen() {
         quiet(true)
         sr?.let { try { it.destroy() } catch (e: Exception) { } }    // the stalled session, on a retry
-        val off = if (offline || !MicVoice.own(this)) MicVoice.offline(this) else null   // the TV's own first; TV Setup Voice where it has none
+        val off = if (offline || tvFirst || !MicVoice.own(this)) MicVoice.offline(this) else null   // the TV's own first, unless TV Setup Voice was picked; it where the TV has none: dev/flows/voice.md
         offline = off != null
         log(if (off != null) "engine offline" else "engine own")
         val r = try { if (off != null) SpeechRecognizer.createSpeechRecognizer(this, off) else SpeechRecognizer.createSpeechRecognizer(this) } catch (e: Exception) { null }

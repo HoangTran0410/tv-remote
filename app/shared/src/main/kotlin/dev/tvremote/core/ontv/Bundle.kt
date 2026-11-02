@@ -12,15 +12,15 @@ import java.io.IOException
  */
 object Bundle {
     /** [key] / [apk]: its number in versions.json and its file in the release, for TV Setup's install without ADB (Android's installer). */
-    class App(val name: String, val pkg: String, val key: String, val apk: String, val install: (Adb, File?, String) -> JSONObject)
+    class App(val name: String, val pkg: String, val key: String, val apk: String, val install: (Adb, File?, String, ((Int) -> Unit)?) -> JSONObject)   // the last: download percent, or null
 
     private val home = OwnApp(HomeConfig.PKG, Launchers.SELF_APK, "home", "home:none", HomeConfig.GRANT_WIFI)
 
     val apps = listOf(
-        App("TV Home", HomeConfig.PKG, "home", Launchers.SELF_APK) { a, d, l -> home.install(a, d, l) },
-        App("TV Channels", Channels.PKG, "channels", Channels.APK) { a, d, l -> Channels.install(a, d, l) },
-        App("TV Games", Games.PKG, "games", Games.APK) { a, d, l -> Games.install(a, d, l) },
-        App("TV Apps", TvApps.PKG, "tvapps", TvApps.APK) { a, d, l -> TvApps.install(a, d, l) })
+        App("TV Home", HomeConfig.PKG, "home", Launchers.SELF_APK) { a, d, l, p -> home.install(a, d, l, progress = p) },
+        App("TV Channels", Channels.PKG, "channels", Channels.APK) { a, d, l, p -> Channels.install(a, d, l, progress = p) },
+        App("TV Games", Games.PKG, "games", Games.APK) { a, d, l, p -> Games.install(a, d, l, progress = p) },
+        App("TV Apps", TvApps.PKG, "tvapps", TvApps.APK) { a, d, l, p -> TvApps.install(a, d, l, progress = p) })
 
     /** The ones not on the TV, in one shell call. */
     @Throws(IOException::class)

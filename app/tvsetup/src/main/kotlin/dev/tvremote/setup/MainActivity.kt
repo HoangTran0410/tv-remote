@@ -65,6 +65,9 @@ class MainActivity : Activity() {
         }
     }
     private lateinit var logView: TextView
+    private lateinit var bar: ProgressBar
+    /** The bar at [pct] (0-100), or hidden with -1; from any thread. */
+    private fun barAt(pct: Int) = ui { if (pct < 0 || pct >= 100) bar.visibility = View.GONE else { bar.visibility = View.VISIBLE; bar.progress = pct } }
     private lateinit var scroll: ScrollView
     private lateinit var spinner: ProgressBar
     private lateinit var tiles: List<Tile>
@@ -94,6 +97,7 @@ class MainActivity : Activity() {
     private val WARN = Color.rgb(240, 179, 74)
     private val BAD = Color.rgb(255, 112, 112)
     private val HOWTO = Color.rgb(138, 180, 248)                       // what to do next: a light blue, apart from white info and the three states
+    private val BG_CLEAR = TvUi.BG and 0x00FFFFFF                     // the page's colour, see-through: a fade to it, not to black
     private val PILL = Color.argb(153, 0, 0, 0)                        // the pill on an app's banner: TV Home's name scrim
     private val PILL_ON = Color.argb(230, 22, 128, 72)                // ...on a green that says it is on this TV
     private val PILL_NEW = Color.argb(235, 196, 110, 12)              // ...on amber: a newer one is in the latest release
@@ -106,8 +110,9 @@ class MainActivity : Activity() {
     private inner class Eco(val app: dev.tvremote.core.ontv.Bundle.App, banner: Int) :
         dev.tvremote.tvui.TvTile(this@MainActivity, dp(ECO_W), { n -> (n.toFloat() * resources.displayMetrics.density).roundToInt() }) {
         init { name.visibility = View.GONE }                          // what it does goes in the words beside it
+        override val grows get() = false                             // focus = the ring only, no growth (the user, 2026-11-03: cut at top and bottom)
         val key = app.pkg.substringAfterLast('.')                    // home, channels, games, apps
-        val sub = when (key) { "home" -> T("eco.home_sub"); "channels" -> T("eco.channels_sub"); "apps" -> T("eco.tvapps_sub"); else -> T("eco.games_sub") }   // what it is, beside the banners while focused
+        val sub = when (key) { "home" -> T("eco.home_sub"); "channels" -> T("eco.channels_sub"); "apps" -> T("eco.tvapps_sub"); "voice" -> T("eco.voice_sub"); "setup" -> T("eco.setup_sub"); else -> T("eco.games_sub") }   // what it is, beside the banners while focused
         override val glassy get() = false                         // no gliding glass on this screen: the ring
         var on = false; private set
         var version = ""; private set                               // on this TV ("" when not)
@@ -132,11 +137,16 @@ class MainActivity : Activity() {
         }
         /** Beside the banners, not under them (no gap to keep for a name: the log below keeps its lines): what OK does, what it is. */
         fun said(): CharSequence {
-            val act = newer?.let { T("eco.update", "name" to app.name, "from" to version, "to" to it) } ?: if (on) T("eco.open", "name" to app.name, "v" to version) else T("eco.get", "name" to app.name)
+            val act = if (app === SELF) (if (this@MainActivity.newer.isNullOrEmpty()) "TV Setup $version" + (if (this@MainActivity.newer == "") " · " + T("tv_main.up_to_date") else "") else T("tv_main.update_to", "v" to this@MainActivity.newer!!))
+                else newer?.let { T("eco.update", "name" to app.name, "from" to version, "to" to it) } ?: if (on) T("eco.open", "name" to app.name, "v" to version) else T("eco.get", "name" to app.name)
             return android.text.SpannableString("$act\n$sub").apply { setSpan(android.text.style.ForegroundColorSpan(TvUi.TEXT), 0, act.length, 0) }
         }
     }
     private var eco: List<Eco> = emptyList()
+    /** TV Setup Voice in the row too (the user, 2026-11-03: not seen there), never in [dev.tvremote.core.ontv.Bundle]: that installs by itself, this only when asked. */
+    private val VOICE = dev.tvremote.core.ontv.Bundle.App("TV Setup Voice", dev.tvremote.core.ontv.VoiceAddon.PKG, "tv", dev.tvremote.core.ontv.VoiceAddon.APK) { a, d, l, p -> dev.tvremote.core.ontv.VoiceAddon.install(a, d, l, progress = p, voice = MicVoice.lang(this)) }
+    /** TV Setup itself, first in the row (the user, 2026-11-03: it is one of the apps too); OK opens its Update menu, as the tile at the top. */
+    private val SELF = dev.tvremote.core.ontv.Bundle.App("TV Setup", "dev.tvremote.setup", "tv", "tv-setup.apk") { _, _, _, _ -> org.json.JSONObject() }
     private var ecoNote: TextView? = null
     private var ecoWaiting: Eco? = null                               // Android's "install unknown apps" switch was opened for this one
 
@@ -285,7 +295,8 @@ class MainActivity : Activity() {
             RemoteService.start(this)                                 // serves 127.0.0.1 even with the web remote off
             startActivity(android.content.Intent(this, ManageActivity::class.java).putExtra(ManageActivity.PASS, RemoteService.selfPass))
         }
-        if (!phone) head.addView(updateTile.view, LinearLayout.LayoutParams(dp(210), dp(48)).apply { leftMargin = dp(16) })   // beside the name: three tiles below, each wide enough for one line
+        // a TV has no Update tile: TV Setup's own banner, first in the More TV apps row, is it (the user, 2026-11-03: twice was too many);
+        // updateTile stays, unseen, as the state it paints from
         val grid = listOf(manage) + if (phone) tiles else tiles.filter { it !== updateTile }   // Manage first, in the grid: no ragged last row
         val cols = if (phone) 2 else 3                                 // TV: one row of three; phone: 2 x 2
         for (row in grid.chunked(cols)) {
@@ -299,11 +310,43 @@ class MainActivity : Activity() {
             val row = LinearLayout(this)
             row.clipChildren = false
             row.gravity = Gravity.CENTER_VERTICAL
-            val pics = mapOf("home" to R.drawable.eco_home, "channels" to R.drawable.eco_channels, "games" to R.drawable.eco_games, "apps" to R.drawable.eco_tvapps)
-            eco = dev.tvremote.core.ontv.Bundle.apps.mapNotNull { a -> pics[a.pkg.substringAfterLast('.')]?.let { Eco(a, it) } }   // an app with no banner here yet is left out
+            val pics = mapOf("home" to R.drawable.eco_home, "channels" to R.drawable.eco_channels, "games" to R.drawable.eco_games, "apps" to R.drawable.eco_tvapps, "voice" to R.drawable.eco_voice, "setup" to R.drawable.banner)
+            eco = (listOf(SELF) + dev.tvremote.core.ontv.Bundle.apps.let { b -> val g = b.indexOfFirst { it.pkg.endsWith(".games") }.let { if (it < 0) b.size else it }; b.take(g) + VOICE + b.drop(g) })   // TV Voice before TV Games (the user, 2026-11-03)
+                .mapNotNull { a -> pics[a.pkg.substringAfterLast('.')]?.let { Eco(a, it) } }   // an app with no banner here yet is left out
             eco.forEachIndexed { i, e -> row.addView(e, LinearLayout.LayoutParams(-2, -2).apply { if (i > 0) leftMargin = dp(14) }) }
             ecoNote = text("", 12, MUTED, false).also { it.minLines = 2; it.maxLines = 2; it.ellipsize = TextUtils.TruncateAt.END }   // two lines held: no jump on focus
-            left.addView(row, margins(top = 14))
+            // a row that scrolls sideways: more apps than the column holds (TV Setup Voice made five, the user 2026-11-03); focus scrolls it
+            val strip = object : android.widget.HorizontalScrollView(this) {
+                override fun getLeftFadingEdgeStrength() = 0f         // Android's own fade drew a hard dark band: the shades below instead,
+                override fun getRightFadingEdgeStrength() = 0f        // while its length still scrolls the focused banner clear of them
+            }.apply {
+                isHorizontalScrollBarEnabled = false; isFillViewport = false
+                isHorizontalFadingEdgeEnabled = true; setFadingEdgeLength(dp(44))
+                isFocusable = false; descendantFocusability = android.view.ViewGroup.FOCUS_AFTER_DESCENDANTS
+                val m = dp(14); row.setPadding(m, m, m, m); row.clipToPadding = false; row.clipChildren = false   // the ring lies outside the banner              // a scroll view cuts at its own edge: room inside it for a focused banner's growth, ring and shadow (the user, 2026-11-03: cut);
+                                                              // on the row, not the scroll view, whose focus scrolling leaves its own padding out (the last banner stopped flush)
+                addView(row, android.widget.FrameLayout.LayoutParams(-2, -2))
+            }
+            // the page's colour fading out over an edge with more apps past it (the user, 2026-11-03), none at an end
+            fun shade(end: Boolean) = object : View(this) {               // no height of its own: the row's (else it took the log's room)
+                override fun onMeasure(w: Int, h: Int) = setMeasuredDimension(MeasureSpec.getSize(w), if (MeasureSpec.getMode(h) == MeasureSpec.EXACTLY) MeasureSpec.getSize(h) else 0)
+            }.apply {
+                background = android.graphics.drawable.GradientDrawable(if (end) android.graphics.drawable.GradientDrawable.Orientation.RIGHT_LEFT else android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
+                    intArrayOf(TvUi.BG, BG_CLEAR))
+                visibility = View.INVISIBLE
+            }
+            val shadeL = shade(false); val shadeR = shade(true)
+            val shades = { val max = row.width - strip.width
+                shadeL.visibility = if (strip.scrollX > 0) View.VISIBLE else View.INVISIBLE
+                shadeR.visibility = if (strip.scrollX < max - 1) View.VISIBLE else View.INVISIBLE }
+            strip.viewTreeObserver.addOnScrollChangedListener { shades() }
+            strip.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> shades() }
+            val box = android.widget.FrameLayout(this).apply {
+                addView(strip, android.widget.FrameLayout.LayoutParams(-1, -2))
+                addView(shadeL, android.widget.FrameLayout.LayoutParams(dp(36), -1, Gravity.START).apply { topMargin = dp(10); bottomMargin = dp(10) })   // over the banners only,
+                addView(shadeR, android.widget.FrameLayout.LayoutParams(dp(36), -1, Gravity.END).apply { topMargin = dp(10); bottomMargin = dp(10) })     // not the tiles above
+            }
+            left.addView(box, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) - dp(14); leftMargin = -dp(14); bottomMargin = -dp(8) })   // the padding outside on the left (first tile in line with the column); the right edge is the column's
             left.addView(ecoNote, margins(top = 6))                   // under the banners: four of them leave no room beside
             ecoPaint()
         }
@@ -323,6 +366,12 @@ class MainActivity : Activity() {
         val logBox = android.widget.FrameLayout(this)
         logBox.addView(scroll, android.widget.FrameLayout.LayoutParams(-1, -1))
         logBox.addView(spinner, android.widget.FrameLayout.LayoutParams(dp(16), dp(16), Gravity.TOP or Gravity.END).apply { setMargins(0, dp(10), dp(12), 0) })
+        bar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {   // a download's percent, under the lines: TV Setup Voice is 25 MB
+            max = 100; visibility = View.GONE
+            progressTintList = android.content.res.ColorStateList.valueOf(ACCENT)
+            progressBackgroundTintList = android.content.res.ColorStateList.valueOf(TvUi.FOCUS_FILL)
+        }
+        logBox.addView(bar, android.widget.FrameLayout.LayoutParams(-1, dp(6), Gravity.BOTTOM).apply { setMargins(dp(16), 0, dp(16), dp(10)) })
         // ---- right: taking over from a phone or a computer
         webCol = LinearLayout(this)
         webCol.orientation = LinearLayout.VERTICAL
@@ -385,11 +434,11 @@ class MainActivity : Activity() {
 
     /** The Update tile says what is true now: a newer version to install (lit), up to date, or not known (the user, 2026-10-26:
      *  an "Update" tile always there, with a version number nobody could tell was this one or the next, was confusing). */
-    private fun showUpdate() = when (val v = newer) {
+    private fun showUpdate() { eco.firstOrNull()?.paint(); when (val v = newer) {   // TV Setup's own banner says it too
         null -> updateTile.show(T("setup.update_ok"), T("tv_main.update_check"), R.drawable.ic_download)
         "" -> updateTile.show(T("tv_main.up_to_date"), autoText(), R.drawable.ic_check)
         else -> updateTile.show(T("tv_main.update_to", "v" to v), T("tv_main.update_from", "v" to version()), R.drawable.ic_download, hot = true)
-    }
+    } }
 
     private fun autoText() = if (AutoUpdate.on(this)) T("tv_main.automatic_updates_on") else T("tv_main.automatic_updates_off")
 
@@ -473,6 +522,31 @@ class MainActivity : Activity() {
 
     override fun onPause() { shown = false; super.onPause() }
 
+    /** TV Setup Voice installs on its own thread ([MicVoice.syncOffline]: started by its screen, TV Home's mic tile or a phone),
+     *  so the log and the bar follow it from here while this screen shows (the user, 2026-11-03: the log said nothing). */
+    private var voiceWatching = false
+    private var voiceBefore: String? = null                           // its state when its screen was opened from here
+    private fun voiceWatch() {
+        val before = voiceBefore.also { voiceBefore = null }
+        val now = MicVoice.offlineState(this)
+        if (before != null && before != now && now != "busy") {      // installed (or failed) all while its screen was in front
+            if (now == "ready") log("✓ " + T("tv_main.bundle_installed", "name" to VOICE.name)) else if (now.startsWith("failed:")) log("✗ " + VOICE.name + ": " + now.removePrefix("failed:"))
+            ecoPaint()
+        }
+        if (voiceWatching || now != "busy") return
+        voiceWatching = true
+        log(T("tv_main.bundle_installing", "name" to VOICE.name))
+        val tick = object : Runnable { override fun run() {
+            if (isFinishing) return
+            val st = MicVoice.offlineState(this@MainActivity)
+            if (st == "busy") { barAt(MicVoice.offlinePct); scroll.postDelayed(this, 500); return }
+            voiceWatching = false; barAt(-1)
+            if (st == "ready") log("✓ " + T("tv_main.bundle_installed", "name" to VOICE.name)) else if (st.startsWith("failed:")) log("✗ " + VOICE.name + ": " + st.removePrefix("failed:"))
+            ecoPaint()
+        } }
+        scroll.post(tick)
+    }
+
     private var onPhoneShown = false
     /** A phone: once, "this is for TVs; the phone app is tv-remote.apk". "Use it here" is remembered and never asked again. */
     private fun askOnPhone() {
@@ -511,6 +585,7 @@ class MainActivity : Activity() {
             startActivity(android.content.Intent(this, PinActivity::class.java).putExtra("pkg", packageName))
         }
         shown = true
+        voiceWatch()
         self.check({ }, { r -> install(r) })                          // back from "install unknown apps" for an update: on with it
         askOnPhone()
         pairLine.removeCallbacks(pairPoll); pairPoll.run()
@@ -847,21 +922,57 @@ class MainActivity : Activity() {
     }
 
     /** On this TV: opened. Not yet: install it (and for TV Home with ADB, make it the home screen too). */
+    /** OK on a banner: its menu, as TV Setup's own (the user, 2026-11-03: not straight into the app). Open, update, its own automatic
+     *  updates and remove; TV Home adds "make it the home screen". TV Setup Voice has its own screen ([VoiceActivity]). */
     private fun ecoPress(e: Eco) {
-        e.newer?.let { v ->                                           // a newer one: update it, or open the one there
-            menu(e.app.name, listOf(
-                TvUi.Item(R.drawable.ic_download, T("eco.update", "name" to e.app.name, "from" to e.version, "to" to v), e.sub) { ecoInstall(e) },
-                TvUi.Item(R.drawable.ic_play, T("eco.open", "name" to e.app.name, "v" to e.version), "") { ecoOpen(e) }))
-            return
+        if (e.app === SELF) return updateMenu()                    // this very app: its own update path (ADB script, or Android's installer)
+        if (e.app.pkg == VOICE.pkg) { ecoOpen(e); return }            // TV Setup Voice: installed from its screen, which also makes it the mic's
+        if (busy) return
+        val items = mutableListOf<TvUi.Item>()
+        if (!e.on) items += TvUi.Item(R.drawable.ic_download, T("eco.get", "name" to e.app.name), { e.sub }) { ecoInstall(e) }
+        else {
+            items += TvUi.Item(R.drawable.ic_play, T("eco.open_only", "name" to e.app.name)) { if (!ecoOpen(e)) log("✗ " + e.app.name) }
+            val v = e.newer
+            items += if (v != null) TvUi.Item(R.drawable.ic_download, T("tv_main.update_to", "v" to v), { T("tv_main.update_from", "v" to e.version) }) { ecoInstall(e) }
+                     else TvUi.Item(R.drawable.ic_download, T("tv_main.update_now"), { T("eco.on", "v" to e.version) }) { ecoInstall(e) }
+            items += TvUi.Item(R.drawable.ic_refresh, T("tv_main.automatic_updates"), on = { AutoUpdate.on(this, e.app.pkg) }) {
+                AutoUpdate.set(this, e.app.pkg, !AutoUpdate.on(this, e.app.pkg))
+                log(e.app.name + ": " + (if (AutoUpdate.on(this, e.app.pkg)) T("tv_main.automatic_updates_on") else T("tv_main.automatic_updates_off")))
+            }
         }
-        if (e.on && ecoOpen(e)) return
-        val items = mutableListOf(TvUi.Item(R.drawable.ic_download, T("eco.get", "name" to e.app.name), e.sub) { ecoInstall(e) })
-        if (e.app.pkg == dev.tvremote.home.HomeConfig.PKG && adb != null)
-            items += TvUi.Item(R.drawable.ic_home, T("eco.home_set"), T("eco.home_set_sub")) { chooseLauncher(dev.tvremote.home.HomeConfig.PKG) }
-        menu(e.app.name, items)
+        if (e.app.pkg == dev.tvremote.home.HomeConfig.PKG && !e.on && adb != null)
+            items += TvUi.Item(R.drawable.ic_home, T("eco.home_set"), { T("eco.home_set_sub") }) { chooseLauncher(dev.tvremote.home.HomeConfig.PKG) }
+        if (e.app.pkg == dev.tvremote.home.HomeConfig.PKG && e.on && adb != null && !isHome(e.app.pkg))
+            items += TvUi.Item(R.drawable.ic_home, T("eco.home_make"), { T("eco.home_set_sub") }) { chooseLauncher(dev.tvremote.home.HomeConfig.PKG) }
+        if (e.on) items += TvUi.Item(R.drawable.ic_trash, T("eco.remove", "name" to e.app.name)) { ecoRemove(e) }
+        menu(e.app.name + if (e.on) " " + e.version else "", items)
+    }
+
+    /** The home screen now is [pkg]: Android's answer for HOME. */
+    private fun isHome(pkg: String): Boolean = try {
+        packageManager.resolveActivity(android.content.Intent(android.content.Intent.ACTION_MAIN).addCategory(android.content.Intent.CATEGORY_HOME), android.content.pm.PackageManager.MATCH_DEFAULT_ONLY)?.activityInfo?.packageName == pkg
+    } catch (x: Exception) { false }
+
+    /** Removed over ADB (no question), else Android's own uninstall screen. TV Home while it is the home screen: another one first,
+     *  or the TV would be left with whatever Android picks. */
+    private fun ecoRemove(e: Eco) {
+        if (e.app.pkg == dev.tvremote.home.HomeConfig.PKG && isHome(e.app.pkg)) { log(T("eco.remove_home_first")); if (adb != null) chooseLauncher(); return }
+        TvUi.confirm(this, R.style.TvSheet, T("eco.remove_ask", "name" to e.app.name), T("eco.remove_note"), T("fleet.remove"), T("common.cancel"), danger = true, accent = ACCENT) {
+            val a = adb
+            if (a == null || setup == null) {
+                try { startActivity(android.content.Intent(android.content.Intent.ACTION_DELETE, android.net.Uri.parse("package:${e.app.pkg}"))) } catch (x: Exception) { log("✗ " + reason(x)) }
+                return@confirm
+            }
+            job { _ ->
+                val out = a.shell("pm uninstall ${e.app.pkg} 2>&1").trim()
+                if (out.contains("Success")) log("✓ " + T("eco.removed", "name" to e.app.name)) else log("✗ " + e.app.name + ": " + out.lines().lastOrNull().orEmpty().take(120))
+                ui { ecoPaint() }
+            }
+        }
     }
 
     private fun ecoOpen(e: Eco): Boolean {
+        if (e.app.pkg == VOICE.pkg) return try { voiceBefore = MicVoice.offlineState(this); startActivity(android.content.Intent(this, VoiceActivity::class.java)); true } catch (x: Exception) { false }   // no screen of its own: ours offers it, switches it, removes it
         val i = packageManager.getLeanbackLaunchIntentForPackage(e.app.pkg) ?: packageManager.getLaunchIntentForPackage(e.app.pkg) ?: return false
         return try { startActivity(i); true } catch (x: Exception) { false }
     }
@@ -872,8 +983,10 @@ class MainActivity : Activity() {
         if (a != null && setup != null) {
             job { _ ->
                 log(T("tv_main.bundle_installing", "name" to e.app.name))
-                e.app.install(a, getExternalFilesDir("update"), Words.lang)
-                log("✓ " + T("tv_main.bundle_installed", "name" to e.app.name))
+                val was = if (e.on) e.version else null
+                val out = try { e.app.install(a, getExternalFilesDir("update"), Words.lang) { barAt(it) } } finally { barAt(-1) }   // 100% = downloaded: the install's own lines follow
+                if (was != null && out.optString("version") == was) log(e.app.name + ": " + T("tv_main.newest_version", "v" to was))   // "Update now" with nothing newer
+                else log("✓ " + T("tv_main.bundle_installed", "name" to e.app.name))
                 ui { ecoPaint() }
             }
             return
@@ -895,11 +1008,12 @@ class MainActivity : Activity() {
                 val r = Release.newer("0", e.app.key, e.app.apk) ?: throw java.io.IOException(T("eco.none", "name" to e.app.name))
                 var last = -25
                 dev.tvremote.update.SelfUpdate.stage(this, r, android.content.Intent(this, dev.tvremote.update.SelfUpdate.Installed::class.java), false) { pct ->
-                    if (pct >= last + 25) { last = pct; log("  $pct%") }
+                    barAt(pct); if (pct >= last + 25) { last = pct; log("  $pct%") }
                 }
                 log(T("eco.installer_asks"))
             } catch (x: Exception) { log("✗ " + reason(x)) }
             busy = false
+            barAt(-1)
             ui { spinner.visibility = View.INVISIBLE }
         }.start()
     }
@@ -1055,7 +1169,7 @@ class MainActivity : Activity() {
                 for (app in todo) {
                     log(T("tv_main.bundle_installing", "name" to app.name))
                     try {
-                        app.install(a, getExternalFilesDir("update"), Words.lang)
+                        try { app.install(a, getExternalFilesDir("update"), Words.lang) { barAt(it) } } finally { barAt(-1) }
                         log("✓ " + T("tv_main.bundle_installed", "name" to app.name))
                     } catch (e: Exception) { all = false; log("✗ " + app.name + ": " + reason(e)) }
                 }

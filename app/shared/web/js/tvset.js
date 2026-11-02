@@ -184,7 +184,7 @@ async function loadHold(now) {
   holdBusy = false;
   if (gen !== holdGen || !r) return;
   checkSet('mic', !!r.mic);
-  const seen = JSON.stringify([r.holdkeys, r.mic, r.mic_offline, r.voice]) + window.LANG;
+  const seen = JSON.stringify([r.holdkeys, r.mic, r.mic_offline, r.voice, r.mic_lang, r.mic_langs, r.mic_engine]) + window.LANG;
   if (seen === holdSeen) return;                                       // nothing new: keep what is on screen
   holdSeen = seen;
   const holdOld = r.holdkeys === undefined;
@@ -208,9 +208,26 @@ async function loadHold(now) {
     const ok = (r.mic_offline !== undefined || await setupFor('mic_offline')) && await api('/api/rules', { do: 'mic_offline', on });
     cb.disabled = false; if (!ok) cb.checked = !on; else { holdSeen = ''; toast(on ? T('mic.offline_installing') : T('mic.offline_removed')); loadHold(true); }
   } }), ' ' + T('mic.offline'));
+  // Who listens first once TV Setup Voice is on the TV (Rules "mic_engine"; MicActivity): Google's, or TV Setup Voice (faster, no Internet)
+  const pickEngine = async (engine) => {
+    if ((r.mic_engine !== undefined || await setupFor('mic_engine')) && await api('/api/rules', { do: 'mic_engine', engine })) { holdSeen = ''; loadHold(true); }
+  };
+  const tvFirst = r.mic_engine === 'tv';
+  const engine = voice === 'ready' ? [el('p', { className: 'note', textContent: T('mic.engine') }), UI.chips([
+    { label: T('mic.engine_google'), on: !tvFirst, fn: () => pickEngine('auto') },
+    { label: T('mic.engine_tv'), on: tvFirst, fn: () => pickEngine('tv') }]), UI.note(T('mic.engine_sub'))] : [];
+  // Its language (Rules "mic_lang"): each one its own download, added beside the others (the user, 2026-11-03); a TV Setup that does not
+  // report mic_langs is older than languages, and shows none
+  const VLANGS = { vi: [LANGS.vi, '25 MB'], en: [LANGS.en, '36 MB'] }, has = r.mic_langs || [];   // each by its own name (langs.json)
+  const pickLang = async (lang) => { if (await api('/api/rules', { do: 'mic_lang', lang })) { holdSeen = ''; loadHold(true); } };
+  const dropLang = async (lang) => { if (await api('/api/rules', { do: 'mic_lang_remove', lang })) { holdSeen = ''; toast(T('mic.offline_removed')); loadHold(true); } };
+  const langs = r.mic_offline && r.mic_langs && voice !== 'busy' ? [el('p', { className: 'note', textContent: T('tvvoice.lang') }),
+    UI.chips(Object.entries(VLANGS).map(([l, [name, size]]) => ({ label: has.includes(l) ? name : name + ' · ' + size, on: l === (r.mic_active || r.mic_lang), fn: () => pickLang(l) }))),
+    ...(has.length > 1 ? [el('div', { className: 'actions' }, el('button', { type: 'button', className: 'danger', textContent: T('tvvoice.remove_lang', { lang: VLANGS[r.mic_active || r.mic_lang]?.[0] }), onclick: () => dropLang(r.mic_active || r.mic_lang) }))] : []),
+    UI.note(T('tvvoice.size'))] : [];
   const vstate = voice === 'busy' ? T('mic.offline_busy') : voice === 'ready' ? T('mic.offline_ready')
     : voice.startsWith('failed:') && r.mic_offline ? T('mic.offline_failed', { why: voice === 'failed:adb' ? T('mic.needs_adb') : friendly(voice.slice(7)) }) : '';
-  box.replaceChildren(UI.group(T('hold.tile'), hold, UI.note(T('hold.sub')), UI.note(T('hold.sub_off'))), UI.group(T('mic.tile'), mic, UI.note(T('mic.sub')), UI.note(T('mic.sub_off')), UI.note(T('mic.eg')), UI.note(T('mic.need')), offline, UI.note(T('mic.offline_sub')), ...(vstate ? [UI.note(vstate)] : [])),
+  box.replaceChildren(UI.group(T('hold.tile'), hold, UI.note(T('hold.sub')), UI.note(T('hold.sub_off'))), UI.group(T('mic.tile'), mic, UI.note(T('mic.sub')), UI.note(T('mic.sub_off')), UI.note(T('mic.eg')), UI.note(T('mic.need')), offline, UI.note(T('mic.offline_sub')), ...(vstate ? [UI.note(vstate)] : []), ...langs, ...engine),
     // The key tester (KeyTestActivity in TV Setup): opened on the TV by `am start`; an older TV Setup is asked to update first.
     UI.group(T('keytest.tile'), el('div', { className: 'actions' }, el('button', { type: 'button', textContent: T('keytest.open'), onclick: async () => { if (await api('/api/keytest/open', {})) toast(T('keytest.opened')); } })), UI.note(T('keytest.note'))));
 }

@@ -284,9 +284,13 @@ The **Ask the TV: open YouTube** box (in **⌨️ Keyboard**) understands plain 
 
 The TV remote's mic button: turn on **Mic button opens TV Remote voice** in the Setup tab, Remote buttons card (off by default). Needs a newer TV Setup.
 
-A TV with no speech recognizer (a box without Google): also turn on **Understand speech on the TV itself, no Google needed** there. TV Setup downloads 25 MB and installs it; Vietnamese commands only; off removes it.
+A TV with no speech recognizer (a box without Google): also turn on **Understand speech on the TV itself, no Google needed** there; off removes it.
+
+Vietnamese 25 MB, English 36 MB: pick one under **Language** (or on TV Setup's TV Voice tile); adding one keeps the other.
 
 On a TV with Google, Google listens first (it understands any sentence); with no Internet, or no answer from Google, TV Setup's takes over.
+
+To have TV Setup Voice always listen first (faster, your voice stays on the TV): pick **TV Setup** under “Listen with”, or press the Mic button tile in TV Home's Quick settings.
 
 ### Tips
 
@@ -594,7 +598,7 @@ One panel for all you can pin to the grid, the Play Next row and apps left out a
 Put several tiles (apps, shortcuts, live widgets) in one folder tile (4 small icons and its name). Edit it on the TV or in the TV tab → Customize → Folders.
 
 1. Hold OK on an app, shortcut or live widget → **On the home screen** → **Put in a folder**: pick a folder or **New folder** and name it.
-2. OK on the folder opens a panel of its tiles; Back closes it. Each tile keeps its own menu, with **Take out of the folder**, move to another folder, earlier / later.
+2. OK on the folder opens a panel of its tiles; Back closes it. Each tile keeps its own menu, with **Take out of the folder**, move to another folder, **Move** (arrows, OK saves).
 3. Hold OK on the folder tile to **Choose what's in it** (tick what goes in, untick what comes out), rename it, move it on the grid or delete it (its apps return to the grid). An empty folder disappears.
 
 - An app's PIN lock and time limit still apply inside a folder.
@@ -650,7 +654,7 @@ Two options for TV Home's look, worked out on the TV with no network.
 
 The Settings button (gear) on the top bar opens a panel in Android's look. Big tiles: Customize, Sleep timer.
 
-Small tiles: Network (Wi-Fi name), Inputs (or Bluetooth when the TV has no inputs), Mic button (TV Remote or Default; only when the remote has a mic button), Kids mode.
+Small tiles: Network (Wi-Fi name), Inputs (or Bluetooth when the TV has no inputs), Mic button (Google / TV Setup Voice; only when the remote has a mic button), Kids mode.
 
 Kids mode: tap to turn on; when on, a tap (asks the PIN) picks the apps or turns it off. Needs TV Setup (greyed without it).
 

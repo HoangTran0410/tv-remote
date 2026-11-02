@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import dev.tvremote.setup.KeysBridge
 import dev.tvremote.setup.MicVoice
+import dev.tvremote.setup.voice.VoiceProtocol
 import dev.tvremote.setup.RemoteService
 import dev.tvremote.setup.WelcomeState
 import dev.tvremote.setup.health.Stats
@@ -97,7 +98,8 @@ internal object Rules {
         }
         Guard.poke()
         KeepAwake.live?.check()
-        if (d.optString("do") == "mic_offline") MicVoice.syncOffline(c)       // TV Setup Voice put on the TV or taken off, in the background
+        if (d.optString("do") == "mic_offline" || d.optString("do") == "mic_lang") MicVoice.syncOffline(c)   // TV Setup Voice put on the TV or taken off, in the background
+        if (d.optString("do") == "mic_lang_remove") MicVoice.removeLang(c, d.optString("lang"))   // one language off the TV, the others stay
         if (d.optString("do") in setOf("holdkeys", "mic", "homekey")) Thread({
             if (d.optString("do") == "mic" && d.optBoolean("on")) RemoteService.adb()?.let { MicVoice.grant(c, it) }   // the microphone, allowed through ADB
             if (d.optString("do") == "mic") MicVoice.takeAssist(c)            // the mic button reaches us through the assistant (Google TV)
@@ -125,6 +127,9 @@ internal object Rules {
             "homekey" -> o.put("homekey", d.optString("pkg").takeIf { HomeKey.PKG.matches(it) } ?: "")   // HomeKey: Home opens this launcher ("" stops)
             "mic" -> o.put("mic", d.optBoolean("on"))                       // MicVoice: the remote's mic button opens TV Remote's voice, not the Assistant
             "mic_offline" -> o.put("mic_offline", d.optBoolean("on"))       // TV Setup Voice on the TV: speech heard without Google (MicVoice.syncOffline)
+            "mic_engine" -> o.put("mic_engine", if (d.optString("engine") == "tv") "tv" else "auto")   // who listens first: "tv" = TV Setup Voice over Google's (MicVoice.engineTv)
+            "mic_lang_remove" -> {}                                         // nothing kept: MicVoice.removeLang uninstalls and moves "mic_lang"
+            "mic_lang" -> d.optString("lang").takeIf { it in VoiceProtocol.LANGS }?.let { o.put("mic_lang", it) }   // the language TV Setup Voice listens in (MicVoice.lang); a new one is added, not swapped
             "awake" -> o.put("awake", d.optBoolean("on"))                   // KeepAwake: the chip kept up while the TV is "off"
             "family" -> {                                              // Family mode's record of what it set (js/family.js): kept here so every phone sees the same; no rec = off
                 val rec = d.optJSONObject("rec")
@@ -551,7 +556,7 @@ internal object Rules {
             .put("in_bedtime", inBedtime(o, now)).put("snooze_until", o.optLong("snooze_until").let { if (it > now) it else 0L })
             .put("limits", limits).put("volume", o.optJSONArray("volume") ?: JSONArray()).put("volume_now", volumeCap(o, now) ?: JSONObject.NULL)
             .put("ram", ram(o)).put("volume_fixed", Guard.volumeFixed(c)).put("running", RemoteService.isRunning()).put("wanted", active(c))
-            .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("mic_offline", o.optBoolean("mic_offline")).put("voice", MicVoice.offlineState(c)).put("homekey", o.optString("homekey"))
+            .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("mic_offline", o.optBoolean("mic_offline")).put("mic_engine", o.optString("mic_engine").ifEmpty { "auto" }).put("voice", MicVoice.offlineState(c)).put("mic_lang", MicVoice.lang(c)).put("mic_active", MicVoice.active(c) ?: "").put("mic_langs", JSONArray(MicVoice.installed(c))).put("homekey", o.optString("homekey"))
             .put("family", o.optJSONObject("family") ?: JSONObject.NULL)
             .put("keys", KeysBridge.bound())                           // the key filter is up: LauncherSwap.byKey keeps Home only then (issue #9)
             .put("sched", sched)

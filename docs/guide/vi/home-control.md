@@ -2,7 +2,7 @@
 
 Nút Cài đặt (bánh răng) trên thanh trên mở bảng theo kiểu Android. Ô lớn: Tùy chỉnh, Hẹn giờ tắt.
 
-Ô nhỏ: Mạng (tên Wi-Fi), Nguồn vào (hoặc Bluetooth nếu TV không có nguồn vào), Nút mic (TV Remote hay Mặc định; chỉ hiện khi remote có nút mic), Khoá trẻ em.
+Ô nhỏ: Mạng (tên Wi-Fi), Nguồn vào (hoặc Bluetooth nếu TV không có nguồn vào), Nút mic (đổi Google / TV Setup Voice; chỉ hiện khi remote có nút mic), Khoá trẻ em.
 
 Khoá trẻ em: chạm để bật; bật rồi thì chạm (hỏi mã PIN) để chọn app hoặc tắt. Cần TV Setup.
 

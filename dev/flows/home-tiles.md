@@ -32,5 +32,5 @@ Run the TV check after any change to tiles, folders, pins or the tile menu. A ne
 | shortcut | `pin:pkg/id` | pinned through Android (no key in `tiles` needed), or its key in `tiles` | Move, Put in a folder, Rename, **Remove**, Start, Link | `Tiles.kt:remove` + `Pins.off` (the system pin too, or it came back) |
 | folder | `folder:id` | its key in `tiles`, holding a member | its own menu (`openFolder`); Choose what's in it (`Folders.kt:setApps`: the ticked ones in, the unticked out, each through `put` / `out`) | emptied, or Delete: its tiles come back where it was |
 
-In a folder, any kind has Out of the folder / Earlier / Later instead of Move, and no Hide / Remove (out of the folder first).
+In a folder, any kind has Out of the folder and Move inside the open panel (the arrows carry it, OK saves through `Folders.kt:reorder`, Back cancels; Earlier / Later only when no panel is open) instead of the grid's Move, and no Hide / Remove (out of the folder first).
 A shortcut pinned through Android that goes into a folder gets its key into `tiles` (`Folders.kt:keep`): that is what keeps it.

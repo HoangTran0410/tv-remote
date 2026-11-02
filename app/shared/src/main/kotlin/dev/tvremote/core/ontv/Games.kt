@@ -22,7 +22,7 @@ object Games {
     fun refresh() = app.refresh()
 
     @Throws(IOException::class)
-    fun install(adb: Adb, dir: File?, lang: String, go: () -> Boolean = { true }): JSONObject = app.install(adb, dir, lang, go)
+    fun install(adb: Adb, dir: File?, lang: String, go: () -> Boolean = { true }, progress: ((Int) -> Unit)? = null): JSONObject = app.install(adb, dir, lang, go, progress)
 
     /** TV Games writes "port token" here when its pad server runs (the pad page of the QR on the TV); the shell may read it. */
     const val PAD_FILE = "/sdcard/Android/data/$PKG/files/pad.txt"
