@@ -82,10 +82,17 @@ object MicVoice {
     /** For the page: "ready" (on the TV), "busy" (being installed), "failed:<why>", or "none". */
     fun offlineState(c: Context): String = when {
         offlineJob == "busy" -> "busy"
-        offline(c) != null -> "ready"
+        offlineJob.isNotEmpty() && lang(c) !in installed(c) -> "failed:$offlineJob"   // the language picked failed: said, even with another one on the TV
+        offline(c) != null -> "ready"                                 // (FPT 2026-11-03: English not in the release, "ready" from Vietnamese hid it)
         offlineJob.isNotEmpty() -> "failed:$offlineJob"
         else -> "none"
     }
+
+    /** Words for a "failed:<why>" state, for a person. */
+    fun why(c: Context, state: String): String = when (val why = state.removePrefix("failed:")) {
+        "adb" -> T("mic.needs_adb")
+        "voice:none" -> T("tvvoice.lang_none", "lang" to (dev.tvremote.i18n.Langs.NAMES[lang(c)] ?: lang(c)))   // that language's APK not in the release
+        else -> why }
 
     /** TV Setup Voice made to match the rules, in the background: the language picked installed when on and missing (the others stay:
      *  a language is added, never swapped, the user 2026-11-03), every language removed when off (nothing of it stays). */

@@ -99,7 +99,7 @@ class VoiceActivity : Activity() {
             used -> T(if (waiting) "tvvoice.done" else "tvvoice.used")
             voice == "ready" -> T("tvvoice.ready_unused")
             voice.startsWith("failed:") && r.optBoolean("mic_offline") ->
-                T("mic.offline_failed", "why" to if (voice == "failed:adb") T("mic.needs_adb") else voice.removePrefix("failed:"))
+                T("mic.offline_failed", "why" to MicVoice.why(this, voice))
             else -> ""
         }
         state.visibility = if (state.text.isEmpty()) View.GONE else View.VISIBLE

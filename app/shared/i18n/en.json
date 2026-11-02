@@ -2298,6 +2298,7 @@
  "tvvoice.remove": "Remove",
  "tvvoice.remove_lang": "Remove {lang}",
  "tvvoice.lang": "Language",
+ "tvvoice.lang_none": "The latest release doesn't have {lang} yet.",
  "tvvoice.remove_ask": "Remove the {lang} voice?",
  "tvvoice.remove_note": "With no language left, the mic button goes back to Google. You can add it again any time.",
  "eco.voice_sub": "Talk to the TV: fast, no Internet needed",

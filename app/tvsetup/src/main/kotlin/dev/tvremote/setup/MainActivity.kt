@@ -530,7 +530,7 @@ class MainActivity : Activity() {
         val before = voiceBefore.also { voiceBefore = null }
         val now = MicVoice.offlineState(this)
         if (before != null && before != now && now != "busy") {      // installed (or failed) all while its screen was in front
-            if (now == "ready") log("✓ " + T("tv_main.bundle_installed", "name" to VOICE.name)) else if (now.startsWith("failed:")) log("✗ " + VOICE.name + ": " + now.removePrefix("failed:"))
+            if (now == "ready") log("✓ " + T("tv_main.bundle_installed", "name" to VOICE.name)) else if (now.startsWith("failed:")) log("✗ " + VOICE.name + ": " + MicVoice.why(this, now))
             ecoPaint()
         }
         if (voiceWatching || now != "busy") return
@@ -541,7 +541,7 @@ class MainActivity : Activity() {
             val st = MicVoice.offlineState(this@MainActivity)
             if (st == "busy") { barAt(MicVoice.offlinePct); scroll.postDelayed(this, 500); return }
             voiceWatching = false; barAt(-1)
-            if (st == "ready") log("✓ " + T("tv_main.bundle_installed", "name" to VOICE.name)) else if (st.startsWith("failed:")) log("✗ " + VOICE.name + ": " + st.removePrefix("failed:"))
+            if (st == "ready") log("✓ " + T("tv_main.bundle_installed", "name" to VOICE.name)) else if (st.startsWith("failed:")) log("✗ " + VOICE.name + ": " + MicVoice.why(this@MainActivity, st))
             ecoPaint()
         } }
         scroll.post(tick)
@@ -1082,7 +1082,7 @@ class MainActivity : Activity() {
     private fun voiceSub(): String = MicVoice.offlineState(this).let { v -> when {
         v == "busy" -> T("mic.offline_busy")
         v == "ready" -> T("mic.offline_ready")
-        v.startsWith("failed:") && MicVoice.offlineOn(this) -> T("mic.offline_failed", "why" to when (val why = v.removePrefix("failed:")) { "adb" -> T("mic.needs_adb"); "voice:none" -> T("core.fr_voice_none"); else -> why })
+        v.startsWith("failed:") && MicVoice.offlineOn(this) -> T("mic.offline_failed", "why" to MicVoice.why(this, v))
         else -> T("mic.offline_sub")
     } }
 

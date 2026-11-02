@@ -446,8 +446,31 @@ def shot_tvapp():
             words(img, (x - 4, y, x + 760, y + h), img.getpixel((x - 6, y + 2)), (x, y + 1), NAME[lang] + ", Android 14", 26, 400, (140, 150, 163))
             img = img.resize((1280, 720), Image.LANCZOS)
             save_webp(img, f"tvapp-{lang}")
+            voice_card(lang)
     finally:
         adb(TV, "shell", "cmd", "locale", "set-app-locales", app, "--locales", "")
+
+
+VOICE_TITLE = {"vi": "Giọng nói TV Setup", "en": "TV Setup Voice"}   # tvvoice.title
+
+
+def voice_card(lang):
+    """feat-voice-<lang>, the home page's TV Setup Voice card: its screen (VoiceActivity) cut to its panel, on a gradient. The screen
+    is not exported, so it is reached as a person does: OK on TV Voice, 4th in the More TV apps row (MainActivity, after Channels)."""
+    key = lambda k, n=1: [adb(TV, "shell", "input", "keyevent", k) for _ in range(n)]
+    key("KEYCODE_DPAD_DOWN"); time.sleep(0.6)
+    key("KEYCODE_DPAD_LEFT", 6); time.sleep(1)
+    key("KEYCODE_DPAD_RIGHT", 3); time.sleep(1)
+    key("KEYCODE_DPAD_CENTER"); time.sleep(3)
+    xml = screen_texts(TV)
+    try:
+        if VOICE_TITLE[lang] not in xml: sys.exit("TV Setup Voice's screen did not open from the More TV apps row")
+        boxes = [tuple(map(int, b)) for b in re.findall(r'bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', xml)]
+        panel = max((b for b in boxes if b[2] - b[0] < 1800), key=lambda b: (b[2] - b[0]) * (b[3] - b[1]))   # the card: the largest box short of the screen
+        cut = screencap(TV).crop(panel)
+        save_webp(frame(cut, cut.width / 2, 5), f"feat-voice-{lang}")   # 2 px a CSS px, like the page's cards
+    finally:
+        key("KEYCODE_BACK"); time.sleep(1)
 
 
 def shot_og():

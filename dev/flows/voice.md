@@ -33,6 +33,7 @@ Language (the user, 2026-11-03: pick it, add one without losing the other): one 
 |---|---|
 | a language picked that is on the TV | `mic_lang` set; nothing downloaded |
 | a language picked that is not | `mic_lang` set, `mic_offline` on; `syncOffline` installs it beside the others |
+| the download of the one picked fails (not in the release: `voice:none`, no ADB) | `MicVoice.offlineState` says `failed:` with `MicVoice.why`, even while another language is on the TV and keeps listening (`offline` falls back to it); before, "ready" from that one hid the failure (FPT, 2026-11-03) |
 | TV Setup's own language changed | nothing: `mic_lang` keeps what was picked (before: removed and swapped) |
 | `mic_lang_remove` of one of two | `MicVoice.removeLang` uninstalls it; it was in use = the other picked |
 | `mic_lang_remove` of the last | `mic_offline` off, `mic_engine` auto: all gone, the mic back to Google |

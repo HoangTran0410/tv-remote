@@ -2304,6 +2304,7 @@
   "tvvoice.remove": "Supprimer",
   "tvvoice.remove_lang": "Supprimer {lang}",
   "tvvoice.lang": "Langue",
+  "tvvoice.lang_none": "La dernière version n'a pas encore {lang}.",
   "tvvoice.remove_ask": "Supprimer la voix {lang} ?",
   "tvvoice.remove_note": "Sans aucune langue, le bouton micro repasse à Google. Vous pourrez la remettre à tout moment.",
   "eco.voice_sub": "Parlez à la TV : rapide, sans Internet",
