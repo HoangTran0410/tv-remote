@@ -139,9 +139,10 @@ object QuickKeys {
 
         val change = Store.onChange                                   // the screen behind still hears every change; this one redraws too
         var lastFocus: Int? = null
-        Store.onChange = { change?.invoke(); redraw(tiles.entries.firstOrNull { it.value.hasFocus() }?.key ?: lastFocus) }
+        val mine: () -> Unit = { change?.invoke(); redraw(tiles.entries.firstOrNull { it.value.hasFocus() }?.key ?: lastFocus) }
+        Store.onChange = mine
         Keys.onState = { paintHead() }
-        dialog.setOnDismissListener { Store.onChange = change; Keys.onState = null; Keys.capture(a, false) }
+        dialog.setOnDismissListener { if (Store.onChange === mine) Store.onChange = change; Keys.onState = null; Keys.capture(a, false) }   // a Home made since keeps its own
         dialog.setOnShowListener { Keys.push(a) }                     // asks TV Setup again, so the line above is true when it answers
         dialog.setOnKeyListener { _, code, e ->                       // the real key on the remote: the tile of that key is chosen without walking to it
             if (code in tiles.keys && code in HomeConfig.KEY_NUMBERS + HomeConfig.KEY_COLOURS) { if (e.action == android.view.KeyEvent.ACTION_DOWN && e.repeatCount == 0) choose(code); true } else false

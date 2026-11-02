@@ -142,6 +142,7 @@ class HomeActivity : Activity() {
     private val zoom by lazy { Zoom(this) }
     private var away = false                                        // really left (stopped), not just paused: only then does the screen come in again
     private var trimmed = false                                     // the pictures were let go for memory while away ([trim])
+    private var heard: (() -> Unit)? = null                         // this Home's Store.onChange
     private var shownKey = ""                                       // what the tiles were built from: the same again builds nothing
     private var tileCache = HashMap<String, Tile>()                 // a tile is made once per app and size, then moved
     private var soft: Bitmap? = null                                // the photo wallpaper's small blurred copy (the widgets' frost, the stand-in in [trim]); the photo itself is not kept, the [backdrop] has it painted
@@ -296,7 +297,7 @@ class HomeActivity : Activity() {
             // the veil alone (its stepper, a step every press): the picture painted again, nothing else rebuilt; the whole screen
             // made again took ~60 ms of the FPT box's main thread a step (the widgets, the tiles)
             if (veilOnly(was, conf)) wall() else onConf()
-        }
+        }.also { heard = it }
         val pkgs = IntentFilter().apply {
             addAction(Intent.ACTION_PACKAGE_ADDED); addAction(Intent.ACTION_PACKAGE_REMOVED); addAction(Intent.ACTION_PACKAGE_CHANGED)
             addDataScheme("package")
@@ -327,7 +328,7 @@ class HomeActivity : Activity() {
         Pins.unwatch(this, shortcutWatch)
         Customize.forget(this)
         if (locked) { try { unregisterReceiver(unlocked) } catch (e: Exception) { }; super.onDestroy(); return }
-        Store.onChange = null; ThemeShots.live = null
+        if (Store.onChange === heard) Store.onChange = null; ThemeShots.live = null   // only ours: a newer Home made before this end keeps hearing (else its conf goes stale)
         open?.dismiss()
         ui.removeCallbacks(widgetTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick); ui.removeCallbacks(slideTick); ui.removeCallbacks(webRetry); ui.removeCallbacks(liveTick); ui.removeCallbacks(skyTick); ui.removeCallbacks(shiftTick)
         detachWeb(); detachVideo()
@@ -1011,7 +1012,7 @@ class HomeActivity : Activity() {
         val cols = conf.optInt("cols", HomeConfig.COLS_DEFAULT)
         val gap = dp(GRID_GAP)
         val w = tileW()                                               // one size for every tile: the favourites are only the first ones
-        val cells: MutableList<View> = (favs + rest).map { tile(it, w, made) }.toMutableList()
+        val cells: MutableList<View> = (favs + rest).distinct().map { tile(it, w, made) }.toMutableList()   // one App, one tile: a second addView of it is a crash, not a twin
         if (suggestSetup()) cells.add(favs.indexOfFirst { it.pkg !in Store.OWN }.let { if (it < 0) favs.size else it }, moves(Tile(this, null, w, getString(R.string.suggest_setup), ::dp,
             art = getDrawable(R.drawable.suggest_setup), corner = getString(R.string.suggest_install)).apply { setOnClickListener { if (editing) suggestMenu(this) else askSetup() }; setOnLongClickListener { suggestMenu(this); true } }) { suggestMenu(currentFocus ?: grid) })   // with the project's other apps in the first row: seen, as its own would be
         if (conf.optBoolean("showAdd", true)) cells.add(moves(Tile(this, null, w, getString(R.string.add), ::dp, mark = R.drawable.ic_plus).apply { setOnClickListener { if (editing) addMenu(this) else addPanel() }; setOnLongClickListener { addMenu(this); true } }) { addMenu(currentFocus ?: grid) })   // the way to put anything on the grid: hidden apps, shortcuts, live widgets
@@ -1134,7 +1135,7 @@ class HomeActivity : Activity() {
     private var movingFavs = 0
 
     /** The favourites are the first tiles, as many as the saved dock holds (pins and the rest follow). */
-    private fun dockCount(): Int { val by = (apps.map { it.pkg } + pins.map { it.pkg }).toSet(); return Store.list(this, "dock").count { it in by } }
+    private fun dockCount() = Tiles.dock(conf, apps.map { it.pkg }.toSet(), pins.map { it.pkg }).size   // the conf the grid was drawn from, as show()
 
     private fun moveKey(t: Tile, code: Int): Boolean {
         when (code) {
