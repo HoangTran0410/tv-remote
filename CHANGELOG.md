@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.42.0 - 2026-11-03
+
+Web 0.42.0 · Phone app 0.39.0 · TV app 0.40.0 · TV Home 0.26.0 · TV Channels 0.18.2 · TV Games 0.18.0 · TV Apps 0.3.1
 
 - Voice on the TV: with TV Setup Voice on, a TV whose Google recognizer has no network now hears you with TV Setup Voice at once ("say it again"), instead of "No network for speech". The guide says which one listens when.
 
