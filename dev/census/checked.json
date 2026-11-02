@@ -499,6 +499,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
+ "3e2e54bac9ca5b483b94307f|0.24.3": {
+  "at": "2026-11-02T09:32:53+07:00",
+  "n": 1,
+  "note": "show(): dock from Store, grid from the older conf: an app in both, its tile added twice; both now from conf (Tiles.dock)"
+ },
  "3eba4ca5a45b04107595e6ee|0.30.0": {
   "at": "2026-10-28T14:05:35+07:00",
   "n": 1,

@@ -36,7 +36,9 @@ class TilesTest {
     private fun check(w: World, log: List<String>) {
         val apps = apps(w)
         val bad = Tiles.problems(w.conf, apps, w.pinned.toList(), own) +
-            w.installed.filter { it !in apps }.map { "installed but not among the apps: $it" }
+            w.installed.filter { it !in apps }.map { "installed but not among the apps: $it" } +
+            Tiles.dock(w.conf, apps.toSet(), w.pinned.toList()).let { d ->   // HomeActivity.show splits the grid at the dock's size
+                val g = Tiles.grid(w.conf, apps, w.pinned.toList()); if (g.take(d.size) != d || g.drop(d.size).any { it in d }) listOf("grid does not start with its dock: $g / $d") else emptyList() }
         if (bad.isNotEmpty()) fail(bad.joinToString("; ") + "\nconf=${w.conf}\ninstalled=${w.installed} pinned=${w.pinned}\nsteps:\n" + log.joinToString("\n"))
     }
 

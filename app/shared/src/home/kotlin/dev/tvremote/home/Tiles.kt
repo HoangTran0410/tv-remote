@@ -68,11 +68,15 @@ object Tiles {
         return c
     }
 
+    /** The dock's keys that are there: [grid]'s first ones. The caller takes them from the same [conf] it gave [grid]: the dock read
+     *  from Store and the grid from an older conf put an app in both, its one tile added twice (a crash, sig 3e2e54ba). */
+    fun dock(conf: JSONObject, have: Set<String>, pins: List<String>) = list(conf, "dock").filter { it in have || it in pins }
+
     /** The grid in the order drawn: the dock's keys that are there, then the rest by "order" (unknown ones last, in [apps] order;
      *  [first]: unknown ones that go first instead). */
     fun grid(conf: JSONObject, apps: List<String>, pins: List<String>, first: (String) -> Boolean = { false }): List<String> {
         val have = apps.toSet()
-        val dock = list(conf, "dock").filter { it in have || it in pins }
+        val dock = dock(conf, have, pins)
         val hidden = list(conf, "hidden").toSet()
         val inFolder = Folders.members(conf)
         val shownPins = pins.filter { it !in have && it !in dock && it !in inFolder }

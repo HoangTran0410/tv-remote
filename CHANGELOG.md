@@ -4,6 +4,10 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- TV Home: no more crash when an app changed while the dock was being edited from the phone or the web page (an app could land in the dock and the grid at once)
+
 ## 0.40.4 - 2026-11-02
 
 Web 0.40.4 · Phone app 0.37.4 · TV app 0.38.4 · TV Home 0.24.3 · TV Channels 0.18.2 · TV Games 0.17.1 · TV Apps 0.3.1

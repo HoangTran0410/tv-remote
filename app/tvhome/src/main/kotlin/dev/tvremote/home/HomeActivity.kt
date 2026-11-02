@@ -993,8 +993,8 @@ class HomeActivity : Activity() {
         if (Store.promote(this, apps.map { it.pkg })) return          // TV Setup, Games or Channels came: the change draws the screen again
         val byPkg = apps.associateBy { it.pkg }
         val byKey = byPkg + pins.filter { it.pkg !in byPkg }.associateBy { it.pkg }   // a pinned shortcut is one of the grid's tiles, with a place of its own like an app
-        val dockPkgs = Store.list(this, "dock").filter { it in byKey }
-        val hidden = Store.list(this, "hidden").toSet()
+        val dockPkgs = Tiles.dock(conf, apps.map { it.pkg }.toSet(), pins.map { it.pkg })   // the same conf as Tiles.grid below: Store's newer one put an app in both
+        val hidden = conf.optJSONArray("hidden").let { a -> if (a == null) emptySet() else List(a.length()) { a.optString(it) }.toSet() }
         val shownPins = pins.filter { it.pkg !in byPkg && it.pkg !in dockPkgs }   // a shortcut put on the grid by the picker shows as that tile, not twice
         val inFolder = if (conf.optJSONObject("folders")?.length() ?: 0 == 0) emptySet() else Folders.members(conf)   // none: no work at all
         val key = (dockPkgs + shownPins.map { it.pkg }).joinToString(",") + "|" + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden && it.pkg !in inFolder }.joinToString(",") { it.pkg } + "|" + apps.filter { it.folder }.joinToString(",") { it.pkg + it.members } + "|" + apps.count { it.pkg in hidden } + "|" + conf.optInt("cols") + "|" + conf.optJSONArray("order") + "|" + conf.optJSONObject("names") + "|" + suggestSetup() + "|" + conf.optBoolean("showAdd", true)
