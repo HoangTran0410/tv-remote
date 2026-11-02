@@ -29,9 +29,25 @@ internal object LinkFailure {
      * Chromecast with Google TV (20 of ~70 census reports, 2026-10): it never opens 5555, so "unplug it" led nowhere; the way in is
      * the Wireless debugging switch and a code, once (not "Reconnect": nothing opens 5555 before the pairing). Older Android has no such switch: only the plain note.
      */
-    fun noPortHowto(wifiOn: Boolean, sdk: Int): List<String> = when {
+    fun noPortHowto(wifiOn: Boolean, sdk: Int, opening: Boolean = false): List<String> = when {   // opening: the page opens now, its line says where the switch sits
+        sdk >= 30 && !wifiOn && opening -> listOf("tv_main.opening_wireless_debugging", "tv_main.adb_wifi_only_pair", "tv_main.adb_wifi_only_again")
         sdk >= 30 && wifiOn -> listOf("tv_main.adb_wifi_only_howto", "tv_main.adb_wifi_only_pair", "tv_main.adb_wifi_only_again")
         sdk >= 30 -> listOf("tv_main.adb_wifi_off_howto", "tv_main.adb_wifi_only_pair", "tv_main.adb_wifi_only_again")   // three lines, as the switch-on case: a fourth pushed the first out of the log box
         else -> listOf("tv_main.adb_no_port_howto")
     }
+
+    /** One Settings screen to try: [cls] in [pkg], or Developer options with the [fragment] extra when [cls] is empty. */
+    data class Screen(val pkg: String, val cls: String, val fragment: String = "")
+
+    /**
+     * The Wireless debugging page, in the order to try (the caller keeps the first that opens and stays in front; none or all
+     * failing = Developer options, then the words only). Android 11+ only: no such switch before. The names are AOSP's; a TV
+     * vendor's Settings may lack them, so each is a try, never a promise.
+     */
+    fun wirelessScreens(sdk: Int): List<Screen> = if (sdk < 30) emptyList() else listOf(
+        Screen("com.android.settings", "com.android.settings.Settings\$WirelessDebuggingActivity"),
+        Screen("com.android.settings", "", "com.android.settings.development.WirelessDebuggingFragment"))
+
+    /** Open the page by itself, once, only where the words say to go there (Wireless debugging off, Android 11+). */
+    fun opensWireless(wifiOn: Boolean, sdk: Int): Boolean = sdk >= 30 && !wifiOn
 }

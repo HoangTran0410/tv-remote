@@ -758,7 +758,9 @@ class MainActivity : Activity() {
                         log("✗ " + T("tv_main.adb_no_port"))
                         // Android 11+ with no 5555 (a Chromecast with Google TV): only Wireless debugging; a paired phone or computer opens 5555 for TV Setup
                         val wifiOn = try { android.provider.Settings.Global.getInt(contentResolver, "adb_wifi_enabled", 0) == 1 } catch (x: Exception) { false }
-                        LinkFailure.noPortHowto(wifiOn, android.os.Build.VERSION.SDK_INT).forEach { howto(T(it)) }
+                        val opens = !openedWireless && LinkFailure.opensWireless(wifiOn, android.os.Build.VERSION.SDK_INT)   // once: straight to the switch
+                        LinkFailure.noPortHowto(wifiOn, android.os.Build.VERSION.SDK_INT, opens).forEach { howto(T(it)) }
+                        if (opens) { openedWireless = true; wirelessDebugging() }
                         tiles[1].enable(true)
                         tiles[1].view.requestFocus()
                         return@ui
@@ -809,6 +811,7 @@ class MainActivity : Activity() {
      * password of their own when "Build" is pressed seven times; the screen itself often opens when asked for by name.
      */
     private var openedDev = false
+    private var openedWireless = false
     private var retryOnResume = false                                // one more try when the person comes back from the screen we sent them to
 
     private fun keepText() = if (KeepAdb.on(this)) T("tv_main.turn_back_on_when")
@@ -989,6 +992,21 @@ class MainActivity : Activity() {
     /** A box from an Internet provider (FPT Play, Viettel; names as the census sees them): Build's 7 presses ask the ISP's password. */
     private fun ispBox() = listOf(android.os.Build.BRAND, android.os.Build.MANUFACTURER, android.os.Build.MODEL)
         .joinToString(" ").lowercase().let { "fpt" in it || "viettel" in it }
+
+    /** The Wireless debugging page itself ([LinkFailure.wirelessScreens]); a screen that does not open or closes at once = the next, then Developer options. */
+    private fun wirelessDebugging() {
+        retryOnResume = true
+        val tries = LinkFailure.wirelessScreens(Build.VERSION.SDK_INT)
+        fun attempt(i: Int) {
+            if (i >= tries.size) { devOptions(); return }
+            val t = tries[i]
+            val intent = if (t.cls.isNotEmpty()) android.content.Intent().setClassName(t.pkg, t.cls)
+                else android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).putExtra(":settings:show_fragment", t.fragment)
+            try { startActivity(intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (e: Exception) { attempt(i + 1); return }
+            window.decorView.postDelayed({ if (hasWindowFocus()) attempt(i + 1) }, 1200)
+        }
+        attempt(0)
+    }
 
     private fun devOptions() {
         retryOnResume = true

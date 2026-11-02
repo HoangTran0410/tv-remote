@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Setup: with ADB debugging on, no network ADB port and Wireless debugging off (Android 11+), the TV opens the Wireless debugging page by itself, once (Developer options if that page is missing)
 - TV Setup on a Chromecast with Google TV (ADB debugging on, no network ADB port): the TV now says to turn on Wireless debugging and pair once, instead of "unplug it and try again"
 - TV Home: no more crash when an app changed while the dock was being edited from the phone or the web page (an app could land in the dock and the grid at once)
 

@@ -2306,6 +2306,7 @@
  "tv_main.adb_wifi_off_howto": "Bật Gỡ lỗi không dây trong Tùy chọn nhà phát triển, rồi quét mã QR góc phải bằng điện thoại.",
  "tv_main.adb_wifi_only_pair": "Trên TV: Cài đặt > Tùy chọn nhà phát triển > Gỡ lỗi không dây > Ghép nối bằng mã, để hộp mã mở.",
  "tv_main.adb_wifi_only_again": "Trên trang web: bấm Ghép bằng Gỡ lỗi không dây, gõ IP:cổng và mã 6 số trong hộp mã. Chỉ làm một lần.",
+ "tv_main.opening_wireless_debugging": "Đang mở cài đặt: bật Gỡ lỗi không dây (dưới Gỡ lỗi USB), bấm Quay lại rồi quét mã QR góc phải.",
  "tv_main.adb_no_port_howto": "Rút điện TV/box, cắm lại, mở TV Setup. Vẫn vậy là máy khóa ADB qua mạng: app điện thoại vẫn bấm phím được.",
  "tv_main.isp_no_taps": "Box nhà mạng: đừng bấm 7 lần vào “Bản dựng”, box sẽ đòi mật khẩu. TV Setup mở thẳng Tùy chọn nhà phát triển.",
  "tv_main.isp_locked": "Trang báo “không dùng được” là nhà mạng đã khóa: hỏi tổng đài, hoặc dùng app điện thoại để bấm phím (không cần ADB).",

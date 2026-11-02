@@ -2405,6 +2405,7 @@
   "tv_main.adb_wifi_off_howto": "Activez Débogage sans fil dans Options pour les développeurs, puis scannez le QR en haut à droite avec un téléphone.",
   "tv_main.adb_wifi_only_pair": "Sur la TV : Paramètres > Options pour les développeurs > Débogage sans fil > Associer avec un code, et laissez le code affiché.",
   "tv_main.adb_wifi_only_again": "Sur la page web : appuyez sur Associer par débogage sans fil et saisissez l’IP:port et le code à 6 chiffres de la fenêtre du code. Une seule fois.",
+  "tv_main.opening_wireless_debugging": "Ouverture des paramètres : activez Débogage sans fil (sous Débogage USB), appuyez sur Retour, puis scannez le QR en haut à droite.",
   "tv_main.adb_no_port_howto": "Débranchez la TV/box, rebranchez-la, ouvrez TV Setup. Toujours pareil : l’ADB réseau est bloqué ici ; l’application pour téléphone envoie quand même les touches.",
   "tv_main.isp_no_taps": "Box d’un fournisseur d’accès : n’appuyez pas 7 fois sur « Numéro de build », la box demande un mot de passe. TV Setup ouvre directement les Options pour les développeurs.",
   "tv_main.isp_locked": "Si la page indique « non disponible », le fournisseur l’a verrouillée : demandez-lui, ou utilisez l’application pour téléphone pour les touches (sans ADB).",

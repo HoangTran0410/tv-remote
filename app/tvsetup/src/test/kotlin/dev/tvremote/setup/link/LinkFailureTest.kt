@@ -37,8 +37,19 @@ class LinkFailureTest {
 
     @Test fun androidElevenWithWirelessDebuggingOffIsToldToTurnItOn() {
         assertEquals("tv_main.adb_wifi_off_howto", LinkFailure.noPortHowto(false, 34).first())   // a Chromecast: "unplug it" led nowhere
-        assertEquals(3, LinkFailure.noPortHowto(false, 34).size)                                // a fourth line pushed the first out of the log box
+        assertEquals(3, LinkFailure.noPortHowto(false, 34).size)
+        assertEquals(listOf("tv_main.opening_wireless_debugging", "tv_main.adb_wifi_only_pair", "tv_main.adb_wifi_only_again"), LinkFailure.noPortHowto(false, 34, opening = true))   // a fourth line ran out of the box                                // a fourth line pushed the first out of the log box
         assertEquals("tv_main.adb_wifi_only_howto", LinkFailure.noPortHowto(true, 34).first())
         assertEquals(listOf("tv_main.adb_no_port_howto"), LinkFailure.noPortHowto(false, 29))     // no such switch before Android 11
+    }
+
+    @Test fun wirelessScreensInOrder() {
+        assertEquals(emptyList<LinkFailure.Screen>(), LinkFailure.wirelessScreens(29))
+        val s = LinkFailure.wirelessScreens(34)
+        assertEquals("com.android.settings.Settings\$WirelessDebuggingActivity", s.first().cls)   // the page itself first
+        assertEquals("com.android.settings.development.WirelessDebuggingFragment", s.last().fragment)
+        assertEquals(true, LinkFailure.opensWireless(false, 30))
+        assertEquals(false, LinkFailure.opensWireless(true, 34))   // already on: the words say pair, nothing to open
+        assertEquals(false, LinkFailure.opensWireless(false, 29))
     }
 }

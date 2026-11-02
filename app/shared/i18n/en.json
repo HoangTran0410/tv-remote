@@ -2399,6 +2399,7 @@
  "tv_main.adb_wifi_off_howto": "Turn on Wireless debugging in Developer options, then scan the QR at the top right with a phone.",
  "tv_main.adb_wifi_only_pair": "On the TV: Settings > Developer options > Wireless debugging > Pair with code, and leave the code up.",
  "tv_main.adb_wifi_only_again": "On the web page: press Pair with Wireless debugging and type the IP:port and the 6-digit code from the code box. Once only.",
+ "tv_main.opening_wireless_debugging": "Opening settings: turn on Wireless debugging (below USB debugging), press Back, then scan the QR at the top right.",
  "tv_main.adb_no_port_howto": "Unplug the TV/box, plug it back in, open TV Setup. Still the same: network ADB is blocked here; the phone app still sends keys.",
  "tv_main.isp_no_taps": "Internet provider box: do not press “Build” 7 times, the box asks for a password. TV Setup opens Developer options directly.",
  "tv_main.isp_locked": "If the page says “not available”, the provider locked it: ask them, or use the phone app for keys (no ADB needed).",
