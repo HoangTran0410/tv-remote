@@ -914,7 +914,7 @@ object Customize {
         groups[6].fill = {
             // every language at once, each in its own words, the one in use ticked: one tile stepping through them hid which
             // there were, and each press built Home again before the next could be seen
-            val sys = android.content.res.Resources.getSystem().locale0()
+            val sys = Lang.tv()
             val now = Store.get(a).optString("lang")
             for ((k, name) in (listOf("" to a.getString(R.string.c_lang_tv)) + dev.tvremote.i18n.Langs.NAMES.toList())) {
                 val row = LinearLayout(a).apply {

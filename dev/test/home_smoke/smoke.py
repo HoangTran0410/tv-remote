@@ -27,7 +27,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument("outdir")
 ap.add_argument("--serial", default="emulator-5610")
 ap.add_argument("--lang", default="en", choices=["en", "vi"], help="TV Home's own language setting for this run (restored at the end)")
-ap.add_argument("--only", default="", help="home | setup (default both)")
+ap.add_argument("--only", default="", help="home | setup (default both) | doors (the same-job-same-screen check; only when asked)")
 ARGS = ap.parse_args()
 os.makedirs(ARGS.outdir, exist_ok=True)
 SER = ARGS.serial
@@ -115,10 +115,24 @@ class Screen:
     def find(self, labels):
         """text / desc equal to one of the labels (exact), else None"""
         labels = [labels] if isinstance(labels, str) else labels
-        for n in self.nodes:
-            if (n.text and n.text.strip() in labels) or (n.desc and n.desc in labels):
+        hits = [n for n in self.nodes if (n.text and n.text.strip() in labels) or (n.desc and n.desc in labels)]
+        # a row's title before another row's second line with the same words ("Same as the TV" / "Tiếng Việt" over the
+        # "Tiếng Việt" row when the TV is in Vietnamese): the first text inside its focusable row
+        for n in hits:
+            row = n
+            while row and not row.focusable:
+                row = row.parent
+            if row is None or next((m for m in self.nodes if m.text and m.text.strip() and self._under(m, row)), None) is n:
                 return n
-        return None
+        return hits[0] if hits else None
+
+    @staticmethod
+    def _under(m, row):
+        while m is not None:
+            if m is row:
+                return True
+            m = m.parent
+        return False
 
     def focus_target(self, labels):
         n = self.find(labels)
@@ -464,6 +478,180 @@ def run_home():
     print("[%s] leave_to_home" % ("ok " if st_rec["ok"] else "FAIL"))
 
 
+# ---------------------------------------------------------------- doors: one job, one screen
+TIME_RE = re.compile(r"^\d{1,2}:\d{2}$")                             # the clock changes between two dumps; not part of a screen's identity
+
+
+def signature(scr):
+    """(title, labels): the top-most text and the set of every text / content-desc shown (order-insensitive)"""
+    items = []
+    for n in scr.nodes:
+        if n.b[2] <= n.b[0] or n.b[3] <= n.b[1]:
+            continue                                                   # inverted / empty bounds: not drawn
+        for t in (n.text, n.desc):
+            t = t.strip()
+            if t and not TIME_RE.match(t):
+                items.append((max(n.b[1], 0), n.b[0], t))
+    return (min(items)[2] if items else "", frozenset(t for _, _, t in items))
+
+
+def front():
+    t = adb("shell", "dumpsys", "activity", "activities")
+    m = re.search(r"topResumedActivity=ActivityRecord\{\S+ u\d+ ([\w.]+)/([\w.$]+)", t)
+    return (m.group(1), m.group(2).lstrip(".")) if m else ("?", "?")
+
+
+def doors_home():
+    """HOME, then BACK until the Home screen shows (its gear, named Quick settings, and the top bar; the old home_to_top looks for the
+    Settings / Inputs buttons that this build no longer has)"""
+    adb("shell", "am", "start", "-c", "android.intent.category.HOME", "-a", "android.intent.action.MAIN")
+    time.sleep(2.0)
+    for _ in range(6):
+        scr = dump()
+        g = scr.find(S("cc_title"))
+        if g is not None and g.focusable and not scr.has(S("el_edit_hint")):   # edit mode shows the same bar: BACK is "done"
+            return scr
+        key("BACK", 0.8)
+    raise Fail("could not get back to the Home screen")
+
+
+def home_customize():
+    """Home -> the gear (Quick settings = the Control Center) -> its Customize tile: the in-Home door"""
+    scr = go_to(S("cc_title"), doors_home()); press_ok(scr, S("cc_title"))
+    time.sleep(1.0)
+    scr = go_to(S("cc_customize"), dump()); press_ok(scr, S("cc_customize"))
+    time.sleep(1.2)
+    return dump()
+
+
+def menu_key_customize():
+    """Menu key on a tile -> the tile's menu -> Customize TV Home (the first tile of the grid)"""
+    scr = doors_home()
+    f = scr.focused()
+    if f is None or f.b[1] < 500:
+        scr = go_to(S("add"), scr)                                      # any grid tile; the Add tile has no menu, so go one up
+        key("DPAD_UP")
+        scr = dump()
+    key("KEYCODE_MENU", 1.2)
+    scr = go_to(S("customize"), dump()); press_ok(scr, S("customize"))
+    time.sleep(1.2)
+    return dump()
+
+
+def keys_page_door(scr, label):
+    scr = go_to(S("g_keys"), scr); press_ok(scr, S("g_keys"))
+    scr = go_to(label, dump()); press_ok(scr, label)
+    time.sleep(0.8)
+    return dump()
+
+
+def dream_settings():
+    adb("shell", "am", "start", "-n", HOME_PKG + "/.DreamSettings")
+    time.sleep(2.5)
+    return dump()
+
+
+def am_home_action(action, over=None):
+    """TV Home's own action, from Home (or over another app: the Control Center's case)"""
+    doors_home()
+    if over:
+        adb("shell", "am", "start", "-a", over)
+        time.sleep(2.0)
+    adb("shell", "am", "start", "-n", HOME_PKG + "/.HomeActivity", "-a", HOME_PKG + "." + action)
+    time.sleep(2.5)
+    return dump()
+
+
+def control_center_customize():
+    adb("shell", "am", "start", "-a", "android.settings.SETTINGS")     # any app in front of it
+    time.sleep(2.0)
+    adb("shell", "am", "start", "-n", HOME_PKG + "/.ControlCenterActivity")
+    time.sleep(2.5)
+    scr = go_to(S("cc_customize"), dump()); press_ok(scr, S("cc_customize"))
+    time.sleep(1.2)
+    return dump()
+
+
+def grid_add_tile():
+    scr = go_to(S("add"), doors_home()); press_ok(scr, S("add"))
+    return dump()
+
+
+def run_doors():
+    print("== doors: one job, one screen (%s) ==" % ARGS.lang)
+    jobs = [
+        ("add", [("grid + Add tile", grid_add_tile),
+                 ("Customize > Keys & startup > Add to home screen", lambda: keys_page_door(home_customize(), S("c_add_home"))),
+                 ("DreamSettings > Keys & startup > Add to home screen", lambda: keys_page_door(dream_settings(), S("c_add_home"))),
+                 ("am start -a ADD", lambda: am_home_action("ADD"))]),
+        ("customize", [("Home > gear (Quick settings) > Customize", home_customize),
+                       ("Menu key on a tile > Customize TV Home", menu_key_customize),
+                       ("Control Center over Settings > Customize", control_center_customize),
+                       ("am start -a CUSTOMIZE", lambda: am_home_action("CUSTOMIZE")),
+                       ("am start -a CUSTOMIZE over Settings", lambda: am_home_action("CUSTOMIZE", over="android.settings.SETTINGS"))]),
+        ("edit", [("Customize > Keys & startup > Edit home screen", lambda: keys_page_door(home_customize(), S("el_edit"))),
+                  ("DreamSettings > Keys & startup > Edit home screen", lambda: keys_page_door(dream_settings(), S("el_edit"))),
+                  ("am start -a EDIT", lambda: am_home_action("EDIT"))]),
+        ("quick_keys", [("Customize > Keys & startup > Quick keys", lambda: keys_page_door(home_customize(), S("c_quickkeys"))),
+                        ("DreamSettings > Keys & startup > Quick keys", lambda: keys_page_door(dream_settings(), S("c_quickkeys"))),
+                        ("am start -a QUICK_KEYS", lambda: am_home_action("QUICK_KEYS"))]),
+    ]
+    for job, doors in jobs:
+        sigs = []
+        for door, fn in doors:
+            st = Step("doors_%s_%s" % (job, re.sub(r"[^a-z0-9]+", "_", door.lower()).strip("_")[:40]), HOME_PKG, expect_first=False)
+            try:
+                scr = fn()
+            except Fail as e:
+                st.problem("door not reached: %s" % e)
+                st.rec["visible_text"] = []
+                RESULTS.append(st.rec)
+                print("[FAIL] %s: %s" % (st.name, e))
+                sigs.append((door, None))
+                continue
+            pkg, act = front()
+            sg = signature(scr)
+            st.rec.update({"door": door, "front": pkg + "/" + act, "title": sg[0], "labels": sorted(sg[1])})
+            if pkg != HOME_PKG:
+                st.problem("in front: %s/%s, not TV Home" % (pkg, act))
+            elif act.endswith("DreamSettings") and not door.startswith("DreamSettings"):
+                st.problem("left in DreamSettings", hard=False)
+            elif act.endswith("DreamSettings"):
+                st.problem("still in DreamSettings after the door (the job's screen is TV Home's)", hard=False)
+            st.end(scr)
+            print("       front=%s/%s title=%r labels=%d" % (pkg, act, sg[0], len(sg[1])))
+            sigs.append((door, sg))
+        base = next(((d, s) for d, s in sigs if s), None)
+        rec = {"step": "doors_%s_same_screen" % job, "ok": True, "problems": [], "doors": [d for d, _ in sigs]}
+        for d, s in sigs:
+            if s is None:
+                rec["ok"] = False
+                rec["problems"].append("%s: not reached" % d)
+            elif base and s != base[1]:
+                rec["ok"] = False
+                rec["problems"].append("%s differs from %s: title %r vs %r; only in %s: %s; only in %s: %s" % (
+                    d, base[0], s[0], base[1][0], d, sorted(s[1] - base[1][1]), base[0], sorted(base[1][1] - s[1])))
+        RESULTS.append(rec)
+        print("[%s] %s: %d doors, one screen?" % ("ok " if rec["ok"] else "FAIL", rec["step"], len(sigs)))
+        for p in rec["problems"]:
+            print("       - " + p)
+    doors_home()
+
+
+def set_language_by_customize(row, target, leave_lang):
+    """--only doors: TV Home's language through the Customize action (the Settings button the old setter presses is gone); row and
+    target are the labels in the language TV Home shows now. Focus-checked like every step."""
+    adb("shell", "am", "start", "-c", "android.intent.category.HOME", "-a", "android.intent.action.MAIN")
+    time.sleep(2.0)
+    adb("shell", "am", "start", "-n", HOME_PKG + "/.HomeActivity", "-a", HOME_PKG + ".CUSTOMIZE")
+    time.sleep(2.5)
+    scr = go_to(row, dump()); press_ok(scr, row)
+    scr = go_to(target, dump()); press_ok(scr, target)
+    time.sleep(0.8)
+    adb("shell", "am", "start", "-c", "android.intent.category.HOME", "-a", "android.intent.action.MAIN")
+    time.sleep(1.5)
+
+
 def set_home_language(target_native):
     """set TV Home's own language through its UI (focus-checked); target_native is the row text, e.g. 'Tiếng Việt'"""
     adb("shell", "am", "start", "-c", "android.intent.category.HOME", "-a", "android.intent.action.MAIN")   # not open_home(): that waits for the labels of --lang, which is not set yet
@@ -611,15 +799,21 @@ def run_setup():
 def main():
     try:
         adb("shell", "input", "keyevent", "KEYCODE_WAKEUP")
-        if ARGS.only in ("", "home"):
+        if ARGS.only in ("", "home", "doors"):
             if ARGS.lang == "vi":
-                set_home_language("Tiếng Việt")
+                if ARGS.only == "doors":
+                    set_language_by_customize(EN["c_lang"], "Tiếng Việt", "vi")
+                else:
+                    set_home_language("Tiếng Việt")
             try:
-                run_home()
+                run_doors() if ARGS.only == "doors" else run_home()
             finally:
                 if ARGS.lang == "vi":
                     try:
-                        set_home_language(VI["c_lang_tv"])
+                        if ARGS.only == "doors":
+                            set_language_by_customize(VI["c_lang"], VI["c_lang_tv"], "en")
+                        else:
+                            set_home_language(VI["c_lang_tv"])
                     except Exception as e:
                         print("!! could not restore the language to 'Same as the TV':", e)
         if ARGS.only in ("", "setup") and ARGS.lang == "en":       # TV Setup follows the TV's locale, not TV Home's own setting: its labels here are English
