@@ -16,3 +16,4 @@ The gate (`node dev/flows/check.js`, in the pre-push hook and `app/shared/tests/
 |---|---|
 | [home-screen.md](home-screen.md) | another launcher (TV Home, the gallery's) as the home screen: Optimize TV, the launcher gallery, the Settings page, the way back |
 | [home-tiles.md](home-tiles.md) | TV Home's grid: tile kinds, their menu, hide / remove / folders, and the checks (fuzz test, `home_tiles.sh` on a TV) |
+| [voice.md](voice.md) | the remote's mic button: the two switches, who listens (the TV's recognizer or TV Setup Voice) per TV, network and stall |

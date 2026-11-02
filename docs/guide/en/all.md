@@ -284,7 +284,9 @@ The **Ask the TV: open YouTube** box (in **⌨️ Keyboard**) understands plain 
 
 The TV remote's mic button: turn on **Mic button opens TV Remote voice** in the Setup tab, Remote buttons card (off by default). Needs a newer TV Setup.
 
-A TV with no speech recognizer (a box without Google): also turn on **Understand speech on the TV itself, no Google needed** there. TV Setup downloads 25 MB and installs it; Vietnamese only; off removes it.
+A TV with no speech recognizer (a box without Google): also turn on **Understand speech on the TV itself, no Google needed** there. TV Setup downloads 25 MB and installs it; Vietnamese commands only; off removes it.
+
+On a TV with Google, Google listens first (it understands any sentence); with no Internet, or no answer from Google, TV Setup's takes over.
 
 ### Tips
 

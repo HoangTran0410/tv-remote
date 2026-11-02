@@ -284,7 +284,9 @@ Clipboard là chỗ TV giữ chữ vừa sao chép. Dùng để xem chữ trên 
 
 Nút mic của điều khiển TV: bật **Nút mic mở giọng nói của TV Remote** ở tab Thiết lập, thẻ Nút remote (mặc định tắt). Cần TV Setup mới.
 
-TV không có nhận giọng nói (hộp không Google): bật thêm **Nhận giọng nói ngay trên TV, không cần Google** ở cùng chỗ. TV Setup tự tải 25 MB và cài; chỉ hiểu tiếng Việt; tắt là gỡ.
+TV không có nhận giọng nói (hộp không Google): bật thêm **Nhận giọng nói ngay trên TV, không cần Google** ở cùng chỗ. TV Setup tự tải 25 MB và cài; chỉ hiểu lệnh tiếng Việt; tắt là gỡ.
+
+TV có Google thì Google nghe trước (hiểu mọi câu); mất mạng hay Google không trả lời thì giọng nói của TV Setup nghe thay.
 
 ### Mẹo
 

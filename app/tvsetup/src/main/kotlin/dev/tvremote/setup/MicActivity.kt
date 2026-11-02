@@ -233,7 +233,13 @@ class MicActivity : Activity(), RecognitionListener {
         when (code) {
             SpeechRecognizer.ERROR_NO_MATCH, SpeechRecognizer.ERROR_SPEECH_TIMEOUT ->
                 if (partial.isNotEmpty()) finish(partial, cut = false) else say(T("mic.nothing"), T("mic.try"), 2000)
-            SpeechRecognizer.ERROR_NETWORK, SpeechRecognizer.ERROR_NETWORK_TIMEOUT, SpeechRecognizer.ERROR_SERVER -> { MicVoice.broke(); say(T("mic.no_net"), T("mic.use_phone"), 3500) }
+            SpeechRecognizer.ERROR_NETWORK, SpeechRecognizer.ERROR_NETWORK_TIMEOUT, SpeechRecognizer.ERROR_SERVER ->
+                if (!offline && MicVoice.offline(this) != null) {     // Google's needs the Internet, TV Setup Voice does not: dev/flows/voice.md row 3
+                    offline = true; log("network: offline")
+                    swap(act, T("mic.again"), TvUi.DIM)
+                    ui.removeCallbacks(giveUp); ui.postDelayed(giveUp, 8000)
+                    listen()
+                } else { MicVoice.broke(); say(T("mic.no_net"), T("mic.use_phone"), 3500) }
             SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> {
                 if (!MicVoice.granted(this)) ask() else { MicVoice.broke(); say(T("mic.no_perm"), T("mic.use_phone"), 3500) }
             }
