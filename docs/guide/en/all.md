@@ -1144,6 +1144,10 @@ Home Assistant sends the token in the `x-tvr-hook` header, out of the logs.
 
 > 💡 **🧹 Check-out** (guesthouses): clears the chosen apps' data, sets the volume, signs out paired browsers, goes Home. Asks first.
 
+> 💡 **📋 Copy settings to another TV** (Setup tab): tick groups, **Take from this TV**, switch TV, **Show what changes**, **Apply**. Save a file to carry it to another TV's web page.
+
+> 💡 Apps the other TV lacks are left out; own photo walls and QR codes are not copied. App locks need a PIN: type a new one for the other TV, the old one cannot be read back.
+
 ## See every TV at a glance
 
 Each saved TV has a line: **On**, **Standby** or **No answer**, with its model and the app open. It refreshes every 10 seconds.

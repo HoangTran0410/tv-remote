@@ -1144,6 +1144,10 @@ Home Assistant gửi mã qua header `x-tvr-hook`, không lộ trong log.
 
 > 💡 **🧹 Trả phòng** (nhà nghỉ): xoá dữ liệu app đã chọn, đặt âm lượng, đăng xuất trình duyệt đã ghép, về Home. Có hỏi trước.
 
+> 💡 **📋 Chép cài đặt sang TV khác** (tab Thiết lập): tích nhóm, **Lấy từ TV này**, đổi TV, **Xem sẽ đổi gì**, **Áp dụng**. Lưu thành tệp để mang sang trang web của TV khác.
+
+> 💡 App TV kia không có thì bị bỏ qua; ảnh nền riêng và mã QR không chép. Khoá app cần PIN: gõ PIN mới cho TV kia, vì PIN cũ không đọc ngược được.
+
 ## Xem tình trạng mọi TV
 
 Mỗi TV đã thử có một dòng: **Đang bật**, **Chế độ chờ** hoặc **Không thấy TV**, kèm kiểu máy và app đang mở. Tự làm mới 10 giây một lần.
