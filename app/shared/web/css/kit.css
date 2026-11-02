@@ -66,6 +66,8 @@ button .minispin { border-color:currentColor; border-right-color:transparent; } 
 @keyframes spin { to { transform:rotate(360deg); } }
 .flash { animation:flash 3s ease-out; }                             /* goTo(): the card a jump was about */
 @keyframes flash { 0% { box-shadow:0 0 0 0 var(--accent); } 10%, 60% { box-shadow:0 0 0 3px var(--accent), 0 0 24px var(--accent); } 100% { box-shadow:0 0 0 3px transparent; } }
+.part { display:flex; flex-direction:column; gap:var(--gap); padding:12px; border:1px solid var(--line); border-radius:12px; }   /* a part set apart inside a card (Kids mode's Quick setup) */
+.part:empty { display:none; }
 .state { font-size:16px; font-weight:600; margin:0 0 10px; }
 .state:empty { display:none; }
 .state.bad { color:var(--bad); }

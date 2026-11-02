@@ -82,6 +82,7 @@ the same classes.
 | Tools at a card's top right | `UI.head(title, ...tools)` / `o.tools`; tools are `.small` or `.small.iconbtn` | big buttons in a head |
 | Rarely used, or advanced | `UI.card(title, { fold: true }, ...)` → `details.card > summary` (14px plain words) | a hand-made toggle |
 | A card that only says one thing | `UI.say(text, cls)` ("reading…", "nothing", "cannot") | an empty card with a spinner only |
+| A part set apart inside a card (a preset at its top: Kids mode's Quick setup) | `div.part` (line edge, 12px radius, gap `--gap`) | a card in a card |
 | One setting / one part of a card | `UI.group(h3Title, ...controls)` → `div.group` (gap 6) | margins |
 | Why, under a title or control | `UI.note(t)` → `p.note` | `<small>`, inline colour |
 | What is on now | `UI.state(t)` → `p.state` (hidden when empty) | bold `p` |

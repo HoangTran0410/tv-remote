@@ -1,4 +1,4 @@
-// Family mode: one card in the Automation tab that sets a parent's preset in one go (apps for kids, TV time a day, a bedtime, a PIN)
+// Family mode, shown as "Quick setup" at the top of the Kids mode card (one idea for a parent, not two cards): it sets a parent's preset in one go (apps for kids, TV time a day, a bedtime, a PIN)
 // through the rules the other cards already write (kids mode `do:'kids'`, `do:'total'`, `do:'bedtime'`, the PIN), and keeps on the TV what it
 // changed, so "turn off" removes exactly that and nothing the person made by hand. Nothing runs until used (tests/family.test.js).
 
@@ -66,7 +66,7 @@ if (typeof module !== 'undefined') module.exports = { familyPlan, familyUndo, fa
 
 // ---- the card ----
 if (typeof document !== 'undefined') {
-  const FM = { allow: [], min: 120, bedOn: true, from: '21:00', to: '07:00' };     // the form's defaults
+  const FM = { open: false, allow: [], min: 120, bedOn: true, from: '21:00', to: '07:00' };     // the form's defaults
   // the record of what it set lives on the TV (rules "family"), so every phone and computer sees the same card and can turn it off
   const famGet = () => (RULES && RULES.family) || null;
   const famPut = (rec) => kidsSend(rec ? { do: 'family', rec } : { do: 'family' });
@@ -83,7 +83,7 @@ if (typeof document !== 'undefined') {
     if (!(r.lock && r.lock.pin) && !await askPin()) return;          // kids mode opens with a PIN
     const plan = familyPlan(RULES, { allow: FM.allow, min: FM.min, bed: FM.bedOn ? { from: FM.from, to: FM.to } : null });
     if (!plan.rec) return;
-    if (await famRun(plan.steps) && await famPut(plan.rec)) toast(T('family.done'));
+    if (await famRun(plan.steps) && await famPut(plan.rec)) { FM.open = false; toast(T('family.done')); }
     if (RULES) renderFamily(RULES);
   }
   async function familyOff(rec) {
@@ -93,13 +93,18 @@ if (typeof document !== 'undefined') {
   }
 
   function renderFamily(r) {
-    const card = $('#familycard'); if (!card) return;
+    const card = $('#familybox'); if (!card) return;                  // kids.js puts it at the top of #kidscard
     const rec = famGet(), sum = familySummary(r, rec);
     if (rec && sum.length) {                                         // on: what it set, still standing
-      card.replaceChildren(UI.head(T('family.title')), UI.state(T('family.on_state')),
+      card.replaceChildren(UI.group(T('family.title'), UI.state(T('family.on_state')),
         ...sum.map((s) => UI.note(T(s.id, s.id === 'family.sum_time' ? { time: mins(s.vars.min) } : s.vars))),
         UI.note(T('family.pin_stays')),
-        UI.actions(act(T('family.off_btn'), () => familyOff(rec), 'danger')));
+        UI.actions(act(T('family.off_btn'), () => familyOff(rec), 'danger'))));
+      return;
+    }
+    if (!FM.open) {                                                  // folded: the kids card below is the main thing
+      card.replaceChildren(UI.group(T('family.title'), UI.note(T('family.note')),
+        UI.actions(UI.btn(T('family.start'), () => { FM.open = true; renderFamily(r); }, 'primary'))));
       return;
     }
     const names = FM.allow.map((p) => {
@@ -109,7 +114,7 @@ if (typeof document !== 'undefined') {
     });
     const from = el('input', { type: 'time', value: FM.from, 'aria-label': T('family.bed_from') }), to = el('input', { type: 'time', value: FM.to, 'aria-label': T('family.bed_to') });
     from.addEventListener('change', () => { FM.from = from.value; }); to.addEventListener('change', () => { FM.to = to.value; });
-    card.replaceChildren(UI.head(T('family.title')), UI.note(T('family.note')),
+    card.replaceChildren(UI.group(T('family.title'), UI.note(T('family.note'))),
       UI.group(T('family.apps'), UI.list(names, T('family.apps_none')),
         UI.actions(act(T('family.apps_add'), async () => {
           if (!await kidsGate()) return;
@@ -123,7 +128,7 @@ if (typeof document !== 'undefined') {
         { label: T('family.bed_none'), on: !FM.bedOn, fn: () => { FM.bedOn = false; renderFamily(r); } }]),
         FM.bedOn ? UI.line(from, to) : null),
       UI.note(T((r.lock && r.lock.pin) ? 'family.pin_have' : 'family.pin_need')),
-      UI.actions(UI.btn(T('family.on_btn'), familyOn, 'primary')));
+      UI.actions(UI.btn(T('family.on_btn'), familyOn, 'primary'), act(T('common.cancel'), () => { FM.open = false; renderFamily(r); })));
   }
-  onTvChange(() => { FM.allow = []; });
+  onTvChange(() => { FM.allow = []; FM.open = false; });
 }

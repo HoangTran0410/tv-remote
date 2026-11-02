@@ -47,17 +47,18 @@ function renderKids(r) {
   const card = $('#kidscard'); if (!card) return;
   const k = kidsOf(r) || { mode: 'list', allow: [], methods: { pin: true, totp: false, ask: false } };
   const kids = k.mode === 'kids', pin = !!(r.lock && r.lock.pin), wait = k.wait_until > r.now;
-  const body = [UI.note(T('auto.kids_note'))];
-  body.push(UI.chips([
+  const part = (...kids) => el('div', { className: 'part' }, ...kids.filter(Boolean));   // each block in its own box: the card reads at a glance
+  const body = [UI.note(T('auto.kids_note')), el('div', { id: 'familybox', className: 'part' })];   // Quick setup (family.js) first: a parent's one tap
+  const lockPart = [UI.group(T('auto.kids_lock_title'), UI.chips([
     { label: T('auto.kids_mode_list'), on: !kids, fn: () => kids && kidsSave(k, { mode: 'list' }) },
-    { label: T('auto.kids_mode_kids'), on: kids, fn: () => !kids && kidsSave(k, { mode: 'kids' }) }]));
+    { label: T('auto.kids_mode_kids'), on: kids, fn: () => !kids && kidsSave(k, { mode: 'kids' }) }]))];
   if (kids) {
     const names = k.allow.map((p) => {
       const icon = appIcon(p); onMeta(p, (m) => icon.fill(m));
       return el('div', { className: 'item' }, icon, el('div', { className: 'name' }, el('span', { textContent: appName(p) })),
         el('div', { className: 'acts' }, act('🗑', () => kidsSave(k, { allow: k.allow.filter((x) => x !== p) }), 'danger', T('auto.kids_allow_remove'))));
     });
-    body.push(UI.group(T('auto.kids_allow_title'), UI.list(names, T('auto.kids_allow_none')),
+    lockPart.push(UI.group(T('auto.kids_allow_title'), UI.list(names, T('auto.kids_allow_none')),
       UI.actions(Object.assign(act(T('auto.kids_allow_add'), async () => {
         if (!await kidsGate()) return;
         if (!pickApps.length) await loadPickApps();
@@ -65,9 +66,11 @@ function renderKids(r) {
         await kidsSave(k, { allow: [...k.allow, pkg] });
       }), { id: 'kidsadd' }))));   // TV Home's kids tile lands here (?card=kidsadd)
   }
+  body.push(part(...lockPart));
   // how a parent opens what is locked
+  const unlockPart = [];
   const canAsk = tgFull, canOffPin = !!k.methods.totp && !(r.lock && r.lock.recovery_left === 0);   // off only with Authenticator on and its backup codes shown
-  body.push(UI.group(T('auto.kids_methods_title'), UI.note(T('auto.kids_methods_why')),
+  unlockPart.push(UI.group(T('auto.kids_methods_title'), UI.note(T('auto.kids_methods_why')),
     kidsMethodRow(T('auto.kids_m_pin'), k.methods.pin, async (on) => {
       if (on && !pin && !await askPin()) return;
       await kidsSave(k, { methods: { ...k.methods, pin: on } });
@@ -79,20 +82,22 @@ function renderKids(r) {
       canAsk ? T('auto.kids_m_ask_note') : T('auto.kids_m_ask_none'), !canAsk),
     canAsk ? null : UI.actions(act(T('auto.kids_open_telegram'), () => { $('#aboutbtn').click(); setTimeout(() => { const g = $('#tggroup'); if (g) g.scrollIntoView({ block: 'center' }); }, 300); }))));
   const left = r.lock && r.lock.recovery_left;
-  if (k.methods.totp && left !== undefined) body.push(UI.group(null, UI.state(T('auto.kids_recovery_left', { n: left })),
+  if (k.methods.totp && left !== undefined) unlockPart.push(UI.group(null, UI.state(T('auto.kids_recovery_left', { n: left })),
     UI.actions(act(T('auto.kids_recovery_new'), async () => { if (!await kidsGate()) return; const res = await kidsRaw({ do: 'recovery_new' }); if (res.recovery) { await showRecovery(res.recovery); loadRules(null, true); } else toast(friendly(res.error)); }))));
-  body.push(UI.actions(act(T(pin ? 'auto.pin_change' : 'auto.pin_first'), () => askPin(), pin && k.methods.pin ? 'primary' : '')), UI.note(T('auto.kids_lost_phone')));
-  if (wait) body.push(UI.warn(T('auto.kids_waiting', { at: clock(k.wait_until) })));
+  unlockPart.push(UI.actions(act(T(pin ? 'auto.pin_change' : 'auto.pin_first'), () => askPin(), pin && k.methods.pin ? 'primary' : '')), UI.note(T('auto.kids_lost_phone')));
+  if (wait) unlockPart.push(UI.warn(T('auto.kids_waiting', { at: clock(k.wait_until) })));
   const warn = k.methods.totp ? kidsClockWarn(r) : null;
-  if (warn) body.push(UI.warn(warn));
+  if (warn) unlockPart.push(UI.warn(warn));
+  body.push(part(...unlockPart));
   // open for a while, or lock again at once
   const open = r.unlock_until > r.now;
-  body.push(UI.group(T('auto.kids_unlock_title'),
+  body.push(part(UI.group(T('auto.kids_unlock_title'),
     open ? UI.state(T('auto.kids_open_until', { at: clock(r.unlock_until) })) : null,
     UI.chips([...UNLOCKS.map(([m, id]) => ({ label: T(id), fn: () => kidsSend({ do: 'unlock', minutes: m }) })),
       { label: T('auto.kids_open_today'), fn: () => kidsSend({ do: 'unlock', today: true }) }]),
-    open ? UI.actions(act(T('auto.kids_lock_now'), () => kidsSend({ do: 'unlock', minutes: 0 }), 'danger')) : null));
+    open ? UI.actions(act(T('auto.kids_lock_now'), () => kidsSend({ do: 'unlock', minutes: 0 }), 'danger')) : null)));
   card.replaceChildren(UI.head(T('auto.kids_title')), ...body.filter(Boolean));
+  if (typeof renderFamily === 'function') renderFamily(r);
   renderTotal(r);
   kidsTelegram().then((v) => { if (v !== canAsk && RULES === r) renderKids(r); });
 }

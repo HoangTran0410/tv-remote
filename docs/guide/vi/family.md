@@ -1,7 +1,7 @@
-# Chế độ gia đình
+# Chế độ trẻ em: thiết lập nhanh
 
-1. Tab **⏰ Tự động → 🛡️ Chế độ gia đình**: chọn app cho trẻ, giờ xem TV mỗi ngày và giờ ngủ.
-2. Bấm **Bật chế độ gia đình**. Chưa có PIN thì đặt ngay.
-3. **Tắt chế độ gia đình** chỉ gỡ phần nó đã đặt. Luật bạn tự đặt vẫn giữ, PIN cũng giữ.
+1. Tab **⏰ Tự động → 🛡️ Chế độ trẻ em → ⚡ Thiết lập nhanh**, bấm **Bắt đầu**: chọn app cho trẻ, giờ xem TV mỗi ngày và giờ ngủ.
+2. Bấm **Áp dụng**. Chưa có PIN thì đặt ngay.
+3. **Gỡ thiết lập nhanh** chỉ gỡ phần nó đã đặt. Luật bạn tự đặt vẫn giữ, PIN cũng giữ. Điện thoại, máy tính nào mở cũng thấy như nhau (lưu trên TV).
 
-> 💡 Dùng chính các luật Chế độ trẻ em, Tổng giờ xem TV và Giờ ngủ, nên sửa riêng từng cái ở thẻ của nó. Cần TV Setup có chế độ trẻ em.
+> 💡 Dùng chính các luật Chế độ trẻ em, Tổng giờ xem TV và Giờ ngủ, nên sửa riêng từng cái ở thẻ của nó. Cần TV Setup mới nhất.

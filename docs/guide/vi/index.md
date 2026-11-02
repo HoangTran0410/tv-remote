@@ -65,7 +65,7 @@
 - [Giờ đi ngủ](bedtime.md): Tab ⏰ Tự động → 🌙 Giờ đi ngủ. _(gio di ngu bedtime tre em tat tv ban dem)_
 - [Màn hình chào](welcome.md): Tab ⏰ Tự động → 🏠 Màn hình chào, bấm Chọn video hoặc ảnh (mp4, webm, mkv, jpg, png, webp; tối đa 200 MB). _(man hinh chao welcome video anh khach homestay khach san bat tv khoi dong)_
 - [Giới hạn app, âm lượng, RAM](limits.md): Tab ⏰ Tự động → ⏳ Giới hạn app mỗi ngày. _(gioi han app moi ngay am luong ram day limit tre em)_
-- [Chế độ gia đình](family.md): Tab ⏰ Tự động → 🛡️ Chế độ gia đình: chọn app cho trẻ, giờ xem TV mỗi ngày và giờ ngủ. _(gia dinh che do tre em bo me family parental kids bedtime pin gio xem)_
+- [Chế độ trẻ em: thiết lập nhanh](family.md): Tab ⏰ Tự động → 🛡️ Chế độ trẻ em → ⚡ Thiết lập nhanh, bấm Bắt đầu: chọn app cho trẻ, giờ xem TV mỗi ngày và giờ ngủ. _(gia dinh che do tre em bo me family parental kids bedtime pin gio xem)_
 - [Khóa app bằng mã PIN](lock.md): Đã mở khóa thì dùng tới khi sang app khác hoặc TV tắt; mở lại là hỏi lại. Sai 5 lần: chờ 1 phút. _(tre em kids google authenticator totp ma du phong recovery tong gio xem khoa app ma pin tre em lock pin parental)_
 - [Lịch mở app theo ngày và giờ](schedule.md): Ví dụ: YouTube chỉ mở từ thứ Hai đến thứ Sáu, 16:00 đến 18:00, tối đa 30 phút. Ngoài giờ app bị đóng ngay và TV hiện thông báo. _(lich mo app theo ngay gio thu hai den thu sau khung gio tre em chan app schedule weekday window parental block)_
 - [Cảnh (một nút làm nhiều việc)](scenes.md): Một cảnh là chuỗi việc chạy một lần bấm. Ví dụ “Xem phim”: bật TV, mở Netflix, đặt âm lượng 20. _(canh scene lenh nhanh tu dong hoa kich ban)_

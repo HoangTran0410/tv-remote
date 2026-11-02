@@ -65,7 +65,7 @@ Remote control for Android TV / Google TV (and LG, Samsung, Roku, VIDAA) with no
 - [Bedtime](bedtime.md): Tab ⏰ Automation → 🌙 Bedtime. _(gio di ngu bedtime tre em tat tv ban dem)_
 - [Welcome screen](welcome.md): Tab ⏰ Automation → 🏠 Welcome screen, tap Choose a video or picture (mp4, webm, mkv, jpg, png, webp; 200 MB at most). _(man hinh chao welcome video anh khach homestay khach san bat tv khoi dong)_
 - [App, volume and memory limits](limits.md): Tab ⏰ Automation → ⏳ Daily app limits. _(gioi han app moi ngay am luong ram day limit tre em)_
-- [Family mode](family.md): Tab ⏰ Automation → 🛡️ Family mode: pick the kids' apps, TV time a day and a bedtime. _(gia dinh che do tre em bo me family parental kids bedtime pin gio xem)_
+- [Kids mode: quick setup](family.md): Tab ⏰ Automation → 🛡️ Kids mode → ⚡ Quick setup, tap Start: pick the kids' apps, TV time a day and a bedtime. _(gia dinh che do tre em bo me family parental kids bedtime pin gio xem)_
 - [Lock apps with a PIN](lock.md): Once unlocked it stays open until another app comes up or the TV turns off; opening it again asks again. 5 wrong PINs: a minute's wait. _(tre em kids google authenticator totp ma du phong recovery tong gio xem khoa app ma pin tre em lock pin parental)_
 - [App schedule: days and hours](schedule.md): For example: YouTube opens only Monday to Friday, 16:00 to 18:00, at most 30 minutes. Outside those hours the app is closed at once and… _(lich mo app theo ngay gio thu hai den thu sau khung gio tre em chan app schedule weekday window parental block)_
 - [Scenes (one tap, many steps)](scenes.md): A scene is a chain of steps run with one tap. For example “Movie”: turn on the TV, open Netflix, set volume 20. _(canh scene lenh nhanh tu dong hoa kich ban)_
