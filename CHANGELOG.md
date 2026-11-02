@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: the clock no longer stops on TVs whose firmware stops the minute tick after standby (a TCL on Android 9); before Android 12 it checks itself once a minute.
 - Optimize TV: four more suggestions (Hisense hotel menu, AI picture book, Migu preload; Changhong retail demo); never offered to turn off: Philips Mimi sound, Skyworth remote updater, Hisense voice and smart-home parts, the Android 14 SDK sandbox.
 - Optimize TV: seven more suggestions from cleanyourtv (Android 14 ad services x3, Google partner attribution, a Xiaomi projector installer, two manuals).
 

@@ -166,6 +166,12 @@ class HomeActivity : Activity() {
     private lateinit var widgets: Widgets
     private val ui = android.os.Handler(android.os.Looper.getMainLooper())
     private val widgetTick = object : Runnable { override fun run() { widgetsRead(); ui.postDelayed(this, 60_000) } }
+    private var ticked = 0L                                           // elapsedRealtime of the last TIME_TICK (the wall clock jumps on these boxes)
+    // TextClock before Android 12 moves only on TIME_TICK, which some firmware stops sending after a standby (a TCL on Android 9,
+    // cleanyourtv #3044): the clock froze until a reboot. Each minute while Home is in front, redrawn only when no tick came.
+    private val clockTick = object : Runnable { override fun run() {
+        if (android.os.SystemClock.elapsedRealtime() - ticked > 50_000) clockAndDay()
+        ui.postDelayed(this, 61_000 - System.currentTimeMillis() % 60_000) } }
     private val netTick = object : Runnable { override fun run() { widgets.sample(); if (widgets.speed != null) ui.postDelayed(this, Widgets.SAMPLE_MS) } }   // no network graph: no 2 s wake-up
 
     private fun dp(v: Number) = (v.toFloat() * resources.displayMetrics.density).toInt()
@@ -331,7 +337,7 @@ class HomeActivity : Activity() {
         if (locked) { try { unregisterReceiver(unlocked) } catch (e: Exception) { }; super.onDestroy(); return }
         if (Store.onChange === heard) Store.onChange = null; ThemeShots.live = null   // only ours: a newer Home made before this end keeps hearing (else its conf goes stale)
         open?.dismiss()
-        ui.removeCallbacks(widgetTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick); ui.removeCallbacks(slideTick); ui.removeCallbacks(webRetry); ui.removeCallbacks(liveTick); ui.removeCallbacks(skyTick); ui.removeCallbacks(shiftTick)
+        ui.removeCallbacks(widgetTick); ui.removeCallbacks(clockTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick); ui.removeCallbacks(slideTick); ui.removeCallbacks(webRetry); ui.removeCallbacks(liveTick); ui.removeCallbacks(skyTick); ui.removeCallbacks(shiftTick)
         detachWeb(); detachVideo()
         try { unregisterReceiver(changed); unregisterReceiver(tick) } catch (e: Exception) { }
         bg.shutdownNow()
@@ -360,6 +366,7 @@ class HomeActivity : Activity() {
         bg.execute { forget(null); if (LiveWidgets.refresh(this)) runOnUiThread { if (!isDestroyed) { shownKey = ""; show() } } }   // what TV Setup offers (it may have been installed or updated while away)
         ui.removeCallbacks(liveTick); ui.post(liveTick)
         ui.removeCallbacks(widgetTick); ui.post(widgetTick)
+        ui.removeCallbacks(clockTick); if (Build.VERSION.SDK_INT < 31) ui.postDelayed(clockTick, 61_000 - System.currentTimeMillis() % 60_000)   // 12+: TextClock keeps its own time
         ui.removeCallbacks(netTick); ui.postDelayed(netTick, Widgets.SAMPLE_MS)
         slideGo()                                                     // a slideshow wall: the slide of this slot, the timer again
         if (!Store.advance(this, false)) wallTimer()                  // on a change the new look sets the timer itself ([Store.onChange])
@@ -636,7 +643,7 @@ class HomeActivity : Activity() {
         }
     }
 
-    override fun onPause() { if (moving != null) endMove(false); zoom.paused(); ui.removeCallbacks(widgetTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick); ui.removeCallbacks(slideTick); ui.removeCallbacks(liveTick); ui.removeCallbacks(skyTick); ui.removeCallbacks(shiftTick); super.onPause() }
+    override fun onPause() { if (moving != null) endMove(false); zoom.paused(); ui.removeCallbacks(widgetTick); ui.removeCallbacks(clockTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick); ui.removeCallbacks(slideTick); ui.removeCallbacks(liveTick); ui.removeCallbacks(skyTick); ui.removeCallbacks(shiftTick); super.onPause() }
 
     private var cpuAgain = false
 
@@ -885,6 +892,7 @@ class HomeActivity : Activity() {
             // a screensaver over Home: Android 11+ stops the activity, older TVs only lay a window over it and the video went on decoding
             when (i.action) { Intent.ACTION_DREAMING_STARTED -> { video?.stop(); WebWall.sleep(web); return }
                 Intent.ACTION_DREAMING_STOPPED -> { if (!away) { video?.start(); WebWall.wake(web) }; return } }   // the live page sleeps under it too: it was drawing frames nobody sees
+            if (i.action == Intent.ACTION_TIME_TICK) ticked = android.os.SystemClock.elapsedRealtime()
             clockAndDay(); bingCheck()                                // Bing: a new day's picture seen while Home stays on
         }
     }
