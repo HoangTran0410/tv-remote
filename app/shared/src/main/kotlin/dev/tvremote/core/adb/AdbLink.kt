@@ -66,6 +66,18 @@ class AdbLink(val keyDir: File, val host: String) {
         }
     }
 
+    /**
+     * [get] for work nobody pressed a button for (TV Setup's own jobs): after a failed dial it waits [QUIET_MS] before asking
+     * the TV again. A person who pressed Cancel on "Allow USB debugging?" got the question back within a second, again and
+     * again, because each background job dialled anew (emulator, 2026-11-03). [reconnect] ("Try again") clears the wait.
+     */
+    @Throws(IOException::class)
+    fun getQuiet(): Adb {
+        adb?.let { if (!it.isDead()) return it }
+        if (failed && dialing == null && System.currentTimeMillis() - lastTry < QUIET_MS) throw IOException(STILL)
+        return get()
+    }
+
     fun waitingForUser(): Boolean = waiting
 
     /** The last dial did not get through: "unknown" is then a TV without ADB being asked again, not a link coming up. */
@@ -119,6 +131,7 @@ class AdbLink(val keyDir: File, val host: String) {
     companion object {
         const val ASKING = "the TV is asking to allow USB debugging"   // Errors.say
         const val STILL = "adb still connecting"
-        const val WAIT_MS = 20000L                                    // a dial that gets through takes a second or two, TLS with mDNS a few more
+        const val QUIET_MS = 60000L                                   // getQuiet(): a refused or failed dial is not tried again sooner
+        const val WAIT_MS = 20000L                                   // a dial that gets through takes a second or two, TLS with mDNS a few more
     }
 }

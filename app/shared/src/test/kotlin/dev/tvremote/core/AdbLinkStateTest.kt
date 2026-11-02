@@ -20,4 +20,15 @@ class AdbLinkStateTest {
         AdbLink::class.java.getDeclaredField("lastTry").apply { isAccessible = true }.setLong(l, 0L)   // 10 s later
         assertEquals("unknown", l.state())                                // dialing again: not "closed"
     }
+
+    /** TV Setup's own jobs do not ask the TV again right after a refusal (Cancel brought the question straight back); "Try again" does. */
+    @Test fun quietWaitsAfterAFailure() {
+        val l = AdbLink(Files.createTempDirectory("keys").toFile(), "127.0.0.1:1")
+        try { l.get() } catch (e: java.io.IOException) { }                 // refused
+        val msg = try { l.getQuiet(); "dialed" } catch (e: java.io.IOException) { e.message }
+        assertEquals(AdbLink.STILL, msg)                                  // no new dial within QUIET_MS
+        AdbLink::class.java.getDeclaredField("lastTry").apply { isAccessible = true }.setLong(l, 0L)   // a minute later
+        val again = try { l.getQuiet(); "dialed" } catch (e: java.io.IOException) { e.message }
+        org.junit.Assert.assertNotEquals(AdbLink.STILL, again)            // it dials (and fails on port 1 for its own reason)
+    }
 }

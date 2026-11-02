@@ -369,10 +369,12 @@ def back_check(step_rec, labels_prev, row_labels=None, expect_focus_row=True):
 
 # ---------------------------------------------------------------- TV Home
 def home_to_top():
-    """BACK until the clock screen shows (never more than 6 keys, each one looked at)"""
+    """BACK until the clock screen shows (never more than 6 keys, each one looked at): the same test as doors_home()
+    (Home's top bar is the gear, Quick settings; the Settings / Inputs buttons are gone)"""
     for _ in range(6):
         scr = dump()
-        if scr.has(S("settings")) and scr.has(S("inputs")) and scr.find(S("settings")).focusable:
+        g = scr.find(S("cc_title"))
+        if g is not None and g.focusable and not scr.has(S("el_edit_hint")):
             return scr
         key("BACK", 0.8)
     raise Fail("could not get back to the Home screen")
@@ -381,10 +383,15 @@ def home_to_top():
 def open_home():
     adb("shell", "am", "start", "-c", "android.intent.category.HOME", "-a", "android.intent.action.MAIN")
     time.sleep(2.0)
-    return home_to_top()
+    scr = home_to_top()
+    for _ in range(3):                                                # the grid takes the focus once it is laid out
+        if scr.focused() is not None:
+            break
+        time.sleep(1.0); scr = dump()
+    return scr
 
 
-CUSTOMIZE_PAGES = [("background", ["bg"]), ("look", ["g_look"]), ("layout", ["g_layout"]), ("widgets", ["w_widgets"]),
+CUSTOMIZE_PAGES = [("themes", ["g_themes"]), ("background", ["bg"]), ("look", ["g_look"]), ("widgets", ["w_widgets"]),   # Layout is part of Look now
                    ("system", ["g_system", "w_system"]), ("keys_and_startup", ["g_keys"]), ("language", ["c_lang"])]
 
 
@@ -398,20 +405,21 @@ def run_home():
     scr = open_home()
     st.end(scr)
 
-    # Settings button -> menu
+    # the gear (Quick settings) -> the Control Center
     st = Step("settings_menu", HOME_PKG)
-    scr = go_to(S("settings"), scr)
-    press_ok(scr, S("settings"))
+    scr = go_to(S("cc_title"), scr)
+    press_ok(scr, S("cc_title"))
+    time.sleep(1.0)
     scr = dump()
-    if not scr.has(S("customize")):
-        st.problem("Settings menu does not list %r" % S("customize"))
+    if not scr.has(S("cc_customize")):
+        st.problem("Quick settings does not list %r" % S("cc_customize"))
     st.end(scr)
-    menu_f = S("settings")
 
-    # Customize TV Home -> landing
+    # its Customize tile -> landing
     st = Step("customize_landing", HOME_PKG)
-    scr = go_to(S("customize"), scr)
-    press_ok(scr, S("customize"))
+    scr = go_to(S("cc_customize"), scr)
+    press_ok(scr, S("cc_customize"))
+    time.sleep(1.2)
     scr = dump()
     rec = st.end(scr)
     landing = labels("customize")
@@ -465,10 +473,10 @@ def run_home():
     key("BACK", 0.9)
     scr = dump()
     st_rec = {"step": "leave_to_home", "ok": True, "problems": []}
-    if scr.has(S("customize")) and scr.has(S("tv_settings")):
+    if scr.has(S("cc_customize")):                                   # the Control Center it came from
         key("BACK", 0.9)
         scr = dump()
-    if not (scr.has(S("settings")) and scr.has(S("inputs"))):
+    if not (scr.find(S("cc_title")) is not None and scr.find(S("cc_title")).focusable):
         st_rec["ok"] = False
         st_rec["problems"].append("BACK chain did not end on Home: %s" % scr.all_text()[:6])
     else:
@@ -801,19 +809,13 @@ def main():
         adb("shell", "input", "keyevent", "KEYCODE_WAKEUP")
         if ARGS.only in ("", "home", "doors"):
             if ARGS.lang == "vi":
-                if ARGS.only == "doors":
-                    set_language_by_customize(EN["c_lang"], "Tiếng Việt", "vi")
-                else:
-                    set_home_language("Tiếng Việt")
+                set_language_by_customize(EN["c_lang"], "Tiếng Việt", "vi")
             try:
                 run_doors() if ARGS.only == "doors" else run_home()
             finally:
                 if ARGS.lang == "vi":
                     try:
-                        if ARGS.only == "doors":
-                            set_language_by_customize(VI["c_lang"], VI["c_lang_tv"], "en")
-                        else:
-                            set_home_language(VI["c_lang_tv"])
+                        set_language_by_customize(VI["c_lang"], VI["c_lang_tv"], "en")
                     except Exception as e:
                         print("!! could not restore the language to 'Same as the TV':", e)
         if ARGS.only in ("", "setup") and ARGS.lang == "en":       # TV Setup follows the TV's locale, not TV Home's own setting: its labels here are English

@@ -2660,14 +2660,19 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "fa5d02d9f13f6121886b7727|0.37.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T02:13:11+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB health report (TX5: Wireless debugging port 37081 refused, debugging off or the port changed), not a code fault"
  },
  "fa5d02d9f13f6121886b7727|0.38.2": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T02:13:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB health report (TX5: Wireless debugging port 37081 refused, debugging off or the port changed), not a code fault"
+ },
+ "fa5d02d9f13f6121886b7727|0.38.4": {
+  "at": "2026-11-03T02:13:11+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (TX5: Wireless debugging port 37081 refused, debugging off or the port changed), not a code fault"
  },
  "fad2a14ed1bb2056883cbfb5|0.28.0": {
   "at": "2026-10-27T09:37:25+07:00",

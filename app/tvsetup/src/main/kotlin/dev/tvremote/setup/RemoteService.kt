@@ -183,9 +183,9 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         /** Why the last session failed, as the TV said it (Support's report). */
         fun adbDetail(): String = adbDetail
         /** A command in the TV's shell over our own ADB link (null without one): what apps may not read, like /proc/stat. */
-        fun shell(cmd: String): String? = try { running?.link?.get()?.shell(cmd) } catch (e: Exception) { null }
+        fun shell(cmd: String): String? = try { running?.link?.getQuiet()?.shell(cmd) } catch (e: Exception) { null }
         /** The ADB session itself (null without the service or a link): HomePower runs its fixed actions on it. */
-        fun adb(): dev.tvremote.core.adb.Adb? = try { running?.link?.get() } catch (e: Exception) { null }
+        fun adb(): dev.tvremote.core.adb.Adb? = try { running?.link?.getQuiet() } catch (e: Exception) { null }
 
         /** The anonymous-stats switch and install id as the census keeps them (Census.enabled / Census.id): what TV Home, Channels and Games follow (HomeInfo "census"). */
         fun censusState(c: Context): JSONObject {
@@ -405,7 +405,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         manage = Manage(l, object : Manage.Labels {
             @Volatile var own: Map<String, String>? = null              // TV Home's names, read once over ADB, then kept by the page's changes
             override fun own(m: Map<String, String>) { own = m }
-            override fun label(pkg: String): String? = (own ?: try { dev.tvremote.core.ontv.Home.ownNames { l.get().shell(it) }.also { own = it } } catch (e: Exception) { emptyMap() })[pkg] ?:   // no ADB yet: asked again
+            override fun label(pkg: String): String? = (own ?: try { dev.tvremote.core.ontv.Home.ownNames { l.getQuiet().shell(it) }.also { own = it } } catch (e: Exception) { emptyMap() })[pkg] ?:   // no ADB yet: asked again
                 try { packageManager.getApplicationLabel(packageManager.getApplicationInfo(pkg, 0)).toString() } catch (e: Exception) { null }
             override fun icons(): Boolean = true
             private val caps by lazy { Caps.report(this@RemoteService) }   // the hardware does not change while TV Setup runs
@@ -429,21 +429,21 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         lastUse = System.currentTimeMillis()
         lastSeen = lastUse
         connect()
-        guard = Guard(this) { try { link?.get() } catch (e: Exception) { null } }.also { it.start() }
+        guard = Guard(this) { try { link?.getQuiet() } catch (e: Exception) { null } }.also { it.start() }
         dev.tvremote.core.ontv.Launchers.useTestFile(getExternalFilesDir(null))
         dev.tvremote.core.ontv.Launchers.dir = java.io.File(cacheDir, "launchers")   // the gallery's list and pictures kept: it opens without waiting on the network
-        launcherGuard = LauncherGuard(this) { try { link?.get() } catch (e: Exception) { null } }.also { it.start() }
-        tsWatch = TailscaleWatch(this) { try { link?.get() } catch (e: Exception) { null } }.also { it.start() }
-        dnsWatch = DnsWatch(this) { try { link?.get() } catch (e: Exception) { null } }.also { it.start() }
+        launcherGuard = LauncherGuard(this) { try { link?.getQuiet() } catch (e: Exception) { null } }.also { it.start() }
+        tsWatch = TailscaleWatch(this) { try { link?.getQuiet() } catch (e: Exception) { null } }.also { it.start() }
+        dnsWatch = DnsWatch(this) { try { link?.getQuiet() } catch (e: Exception) { null } }.also { it.start() }
         keepAdb = KeepAdb(this).also { it.start() }
-        reoptimize = Reoptimize(this) { try { link?.get() } catch (e: Exception) { null } }.also { it.start() }
-        nightly = Nightly(this) { try { link?.get() } catch (e: Exception) { null } }.also { it.start() }
+        reoptimize = Reoptimize(this) { try { link?.getQuiet() } catch (e: Exception) { null } }.also { it.start() }
+        nightly = Nightly(this) { try { link?.getQuiet() } catch (e: Exception) { null } }.also { it.start() }
         keyFix = KeyFixWatch(this).also { it.start() }
         homeCompile = HomeCompile(this).also { it.start() }
         keepAwake = KeepAwake(this).also { it.start(); it.check() }
         welcome = WelcomeWatch(this).also { it.start() }
         autoOpen = AutoOpenWatch(this).also { it.start() }
-        updates = AutoUpdate(this, version, { try { link?.get() } catch (e: Exception) { null } }) { busyWhy() }.also { it.start() }
+        updates = AutoUpdate(this, version, { try { link?.getQuiet() } catch (e: Exception) { null } }) { busyWhy() }.also { it.start() }
         telegram.sync()                                               // on only when the owner switched it on and gave a token
         ui.postDelayed(rest, 30000)
         ui.postDelayed(diary, 20000)
@@ -582,7 +582,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
                 retryMs = 5000
                 failSince = 0L; fails = 0
                 if (!saidAlive && serving) { saidAlive = true; afterUpdate() }
-                if (!KeepAdb.can(this) || !KeyFix.prepared) Thread({ try { link?.get()?.let { KeepAdb.grant(this, it); KeyFix.prepare(this, it); WebViewFix.repair(it); if (MicVoice.on(this)) MicVoice.grant(this, it); MicVoice.takeAssist(this); MicVoice.syncOffline(this); KeyFix.sync(this) } } catch (e: Exception) { } }, "grant").apply { isDaemon = true }.start()
+                if (!KeepAdb.can(this) || !KeyFix.prepared) Thread({ try { link?.getQuiet()?.let { KeepAdb.grant(this, it); KeyFix.prepare(this, it); WebViewFix.repair(it); if (MicVoice.on(this)) MicVoice.grant(this, it); MicVoice.takeAssist(this); MicVoice.syncOffline(this); KeyFix.sync(this) } } catch (e: Exception) { } }, "grant").apply { isDaemon = true }.start()
             }
             "closed", "error" -> {                                    // ADB off, TV just booted, session dropped: keep trying
                 if (resting) return                                   // we closed it ourselves
@@ -605,7 +605,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
     // ---------------------------------------------------------------- updates of this app (AutoUpdate, SetupUpdate)
     /** Up, serving and through to the TV's ADB: an update that is waiting to know whether this version works keeps it. */
     private fun afterUpdate() = Thread({
-        try { link?.get()?.let { SetupUpdate.alive(it, version) } } catch (e: Exception) { }
+        try { link?.getQuiet()?.let { SetupUpdate.alive(it, version) } } catch (e: Exception) { }
         if (!wanted(this)) ui.post { stopSelf() }                     // started by the update only: nothing for it to do
     }, "alive").apply { isDaemon = true }.start()
 
@@ -631,7 +631,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
     /** The one scenes handler of every core (Scenes.Routes); here the list is kept in the preferences. */
     private val sceneRoutes by lazy {
         Scenes.Routes({ scenes() }, { prefs.edit().putString("scenes", it.toString()).apply(); ScenePin.publish(this, it) }, { "adb:$adbState" }) {
-            link?.let { l -> Scenes.Shell({ l.get().shell(it) }) { m -> Rules.change(this, JSONObject().put("do", "sleep").put("minutes", m)) } }
+            link?.let { l -> Scenes.Shell({ l.getQuiet().shell(it) }) { m -> Rules.change(this, JSONObject().put("do", "sleep").put("minutes", m)) } }
         }.also { it.pin = { sc -> ScenePin.request(this, sc) } }
     }
 
