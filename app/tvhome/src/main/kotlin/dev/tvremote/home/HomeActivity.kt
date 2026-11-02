@@ -292,7 +292,8 @@ class HomeActivity : Activity() {
 
         setContentView(root)
         ThemeShots.live = { webShot() ?: backdrop.small }              // a web wall: the page as it is drawn now, or the site's picture / slide TV Home draws itself
-        Store.onChange = {
+        Store.onChange = fun() {
+            if (isDestroyed) { if (Store.onChange === heard) Store.onChange = null; return }   // handed back to a gone Home (a Quick keys dialog closed after it)
             val was = conf; conf = Store.get(this)
             // the veil alone (its stepper, a step every press): the picture painted again, nothing else rebuilt; the whole screen
             // made again took ~60 ms of the FPT box's main thread a step (the widgets, the tiles)
