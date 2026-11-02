@@ -223,6 +223,11 @@ dialog.ask .card > .actions:last-child { justify-content:flex-end; }   /* a dial
 dialog.ask .acts button { min-width:88px; padding:0 18px; min-height:var(--ctl); font-size:14px; }   /* as tall as the closing row of the dialogs made with UI.actions */
 dialog.ask button.danger { background:var(--bad); color:#fff; font-weight:700; }
 .aboutbox { max-width:480px; margin:0; }
+/* Settings: the box takes the page colour and each part sits on it as its own card, so the parts read apart (the user, 2026-11-03) */
+dialog > .aboutbox, dialog > .aboutbox > .card-head:first-child { background:var(--bg); }
+.aboutbox > .group, .aboutbox > details.sect { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
+.aboutbox > details.sect > summary::after { right:4px; }
+.aboutbox .places { flex-wrap:wrap; }                                  /* a few picks each: all in view, never a hidden last language */
 .aboutbox p { font-size:14px; line-height:1.5; }   /* every part a .group: one left edge */
 .aboutbox .qrs { margin:0; }
 .aboutbox a { color:var(--accent-text); }
