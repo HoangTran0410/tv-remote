@@ -10,7 +10,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 - TV Setup: the phone app's download QR sits behind a button (it opens on a card), so the screen shows one QR: "scan the QR" can no longer be read off the wrong one.
 - TV Setup: with ADB debugging on, no network ADB port and Wireless debugging off (Android 11+), the TV opens the Wireless debugging page by itself, once (Developer options if that page is missing)
-- TV Home Quick settings in Android's look: each tile's icon on a disc, lit when it is on (sleep timer, kids mode, network, mic, Bluetooth); the brightness bar is a thick pill with the sun inside its fill, and the colour button beside it is round.
+- TV Home Quick settings in Android's look: each tile's icon on a disc, lit when it is on (sleep timer, kids mode, network, mic, Bluetooth); the brightness bar is a thick pill filled with soft glass, the sun inside its fill, and the colour button beside it is round; the overlay colour list fits a 1080p screen (its last colour was cut off).
 - TV Setup's home screen no longer shows bedtime, limits or the sleep timer beside the link status; they live on Manage → Automation.
 - Phone app: the ADB banner names the button it shows (How to turn it on); while the TV asks to allow, only Try again.
 - Card titles in sentence case, larger and dark instead of small grey capitals (easier to read with accents).

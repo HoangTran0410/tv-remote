@@ -67,8 +67,8 @@ object ControlCenter {
     private const val TICK_MS = 2000L
     private const val R_TILE = 16                                      // a row of the glass panel: Customize's and the long-press menu's
     private const val ON = 0xFF8AB4F8.toInt()                          // a tile that is on: its icon's disc (Android's quick settings; Customize's accent)
-    private const val ON_INK = 0xFF202124.toInt()                      // the icon on that disc, and on the brightness bar's fill
-    private const val FILL = 0xFFE8EAED.toInt()                        // the brightness bar's fill: light, as Android's
+    private const val ON_INK = 0xFF202124.toInt()                      // the icon on that disc
+    private const val FILL = 0x47FFFFFF                                // the brightness bar's fill: lit glass, not Android's solid light (the user, 2026-11-02: too bright for the panel)
     private fun disc(color: Int) = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(color) }
     /** What the last reading found, kept for the session: the panel then opens without asking the system on the UI thread (a cold open cost ~25 ms of it on the FPT box). */
     private class Seen(val inputs: Boolean, val net: Pair<Int, String>, val line: String?)
@@ -152,8 +152,11 @@ object ControlCenter {
         }
 
         fun icon(res: Int) = pic.setImageDrawable(glyph(pic.context, res, if (small) 20 else 22))
-        /** A colour's dot in the icon's place (the tint's colours). */
-        fun swatch(color: Int) { pic.imageTintList = null; pic.background = null; pic.setPadding(0, 0, 0, 0); pic.setImageDrawable(dot(color, dp(22), dp(2))) }
+        /** A colour's dot in the icon's place (the tint's colours), the row lower: six of them at 72 dp ran off a 540 dp TV (the user, 2026-11-02: the last one cut). */
+        fun swatch(color: Int) {
+            pic.imageTintList = null; pic.background = null; pic.setPadding(0, 0, 0, 0); pic.setImageDrawable(dot(color, dp(28), dp(2)))
+            pic.layoutParams = pic.layoutParams.apply { width = dp(28); height = dp(28) }; setPadding(dp(14), dp(10), dp(14), dp(10))
+        }
 
         private var lit: Boolean? = null
         /** On: the disc lit and the icon dark, as an Android tile that is on (the timer running, kids mode, a network, the mic ours). */
@@ -186,14 +189,17 @@ object ControlCenter {
         init {
             isFocusable = true; isClickable = true; contentDescription = name
             background = pill(TvGlass.ROW_FOCUS)
-            foreground = StateListDrawable().apply {                  // the ring over the fill: white focused, the accent while OK has it changing
-                addState(intArrayOf(android.R.attr.state_activated), pill(0, dp(2), TvUi.RING_ACCENT))
-                addState(intArrayOf(android.R.attr.state_focused), pill(0, dp(2), Color.WHITE))
-            }
             addView(fill.apply { background = pill(FILL) }, LayoutParams(-1, -1))
-            addView(ImageView(c).apply { setImageDrawable(glyph(c, R.drawable.ic_sun, 22)); imageTintList = ColorStateList.valueOf(ON_INK) },
+            addView(ImageView(c).apply { setImageDrawable(glyph(c, R.drawable.ic_sun, 22)); imageTintList = ColorStateList.valueOf(Color.WHITE) },
                 LayoutParams(dp(22), dp(22), Gravity.START or Gravity.CENTER_VERTICAL).apply { leftMargin = dp(15) })   // centred in the fill's end disc at 10 %
             addView(value.apply { textSize = 13f; typeface = Font.bold; fontFeatureSettings = "tnum"; gravity = Gravity.END }, LayoutParams(-2, -2, Gravity.END or Gravity.CENTER_VERTICAL).apply { rightMargin = dp(16) })
+            addView(View(c).apply {                                   // the ring over the fill: white focused, the accent while OK has it changing (a child: View.foreground is API 23)
+                isDuplicateParentStateEnabled = true
+                background = StateListDrawable().apply {
+                    addState(intArrayOf(android.R.attr.state_activated), pill(0, dp(2), TvUi.RING_ACCENT))
+                    addState(intArrayOf(android.R.attr.state_focused), pill(0, dp(2), Color.WHITE))
+                }
+            }, LayoutParams(-1, -1))
             show(100)
         }
 
@@ -204,7 +210,7 @@ object ControlCenter {
             if (width == 0) return
             val w = height + (width - height) * (b - 10) / 90
             if (fill.layoutParams.width != w) { fill.layoutParams = fill.layoutParams.apply { width = w }; }
-            value.setTextColor(if (w > width - dp(64)) ON_INK else TvGlass.HINT)
+            value.setTextColor(if (w > width - dp(64)) Color.WHITE else TvGlass.HINT)
         }
 
         override fun onSizeChanged(w: Int, h: Int, ow: Int, oh: Int) { super.onSizeChanged(w, h, ow, oh); post { place() } }
