@@ -97,6 +97,9 @@ button .minispin { border-color:currentColor; border-right-color:transparent; } 
 details.card > summary { font-size:14px; font-weight:600; cursor:pointer; padding:6px 0; margin:-6px 0; }   /* every fold-out card reads the same */
 details.card[open] > summary { margin-bottom:var(--gap); }
 details.card > :not(summary) + :not(summary) { margin-top:var(--gap); }
+details.adv > summary { cursor:pointer; font-size:14px; font-weight:600; color:var(--muted); padding:6px 0; }   /* the advanced part of a card, folded */
+details.adv[open] > summary { margin-bottom:var(--gap); }
+details.adv > :not(summary) + :not(summary) { margin-top:var(--gap); }
 h2 .lower { text-transform:none; letter-spacing:0; font-weight:500; }   /* "· cần ADB", a TV's name: words beside a title */
 .group { display:flex; flex-direction:column; gap:6px; }
 .group > * { margin:0; }

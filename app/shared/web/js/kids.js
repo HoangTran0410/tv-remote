@@ -76,16 +76,17 @@ function renderKids(r) {
       if (on && !pin && !await askPin()) return;
       await kidsSave(k, { methods: { ...k.methods, pin: on } });
     }, k.methods.pin && !canOffPin ? T('auto.kids_m_pin_keep') : '', k.methods.pin && !canOffPin),
+    el('details', { className: 'adv', open: !!(k.methods.totp || k.methods.ask) }, el('summary', { textContent: T('auto.kids_methods_more') }),   // a parent's PIN first; the rest folded
     kidsMethodRow(T('auto.kids_m_totp'), k.methods.totp, async (on) => {
       if (on) await kidsTotp(); else if (await ask_(T('auto.kids_totp_off_ask'), T('auto.kids_totp_off'))) await kidsSend({ do: 'totp', off: true });
     }, T('auto.kids_m_totp_note')),
     kidsMethodRow(T('auto.kids_m_ask'), k.methods.ask && !!canAsk, async (on) => { await kidsSave(k, { methods: { ...k.methods, ask: on } }); },
       canAsk ? T('auto.kids_m_ask_note') : T('auto.kids_m_ask_none'), !canAsk),
-    canAsk ? null : UI.actions(act(T('auto.kids_open_telegram'), () => { $('#aboutbtn').click(); setTimeout(() => { const g = $('#tggroup'); if (g) g.scrollIntoView({ block: 'center' }); }, 300); }))));
+    canAsk ? null : UI.actions(act(T('auto.kids_open_telegram'), () => { $('#aboutbtn').click(); setTimeout(() => { const g = $('#tggroup'); if (g) g.scrollIntoView({ block: 'center' }); }, 300); })))))
   const left = r.lock && r.lock.recovery_left;
   if (k.methods.totp && left !== undefined) unlockPart.push(UI.group(null, UI.state(T('auto.kids_recovery_left', { n: left })),
     UI.actions(act(T('auto.kids_recovery_new'), async () => { if (!await kidsGate()) return; const res = await kidsRaw({ do: 'recovery_new' }); if (res.recovery) { await showRecovery(res.recovery); loadRules(null, true); } else toast(friendly(res.error)); }))));
-  unlockPart.push(UI.actions(act(T(pin ? 'auto.pin_change' : 'auto.pin_first'), () => askPin(), pin && k.methods.pin ? 'primary' : '')), UI.note(T('auto.kids_lost_phone')));
+  unlockPart.push(UI.actions(act(T(pin ? 'auto.pin_change' : 'auto.pin_first'), () => askPin(), pin ? '' : 'primary')), UI.note(T('auto.kids_lost_phone')));
   if (wait) unlockPart.push(UI.warn(T('auto.kids_waiting', { at: clock(k.wait_until) })));
   const warn = k.methods.totp ? kidsClockWarn(r) : null;
   if (warn) unlockPart.push(UI.warn(warn));
@@ -94,6 +95,7 @@ function renderKids(r) {
   const open = r.unlock_until > r.now;
   body.push(part(UI.group(T('auto.kids_unlock_title'),
     open ? UI.state(T('auto.kids_open_until', { at: clock(r.unlock_until) })) : null,
+    open ? null : UI.note(T('auto.kids_unlock_note')),
     UI.chips([...UNLOCKS.map(([m, id]) => ({ label: T(id), fn: () => kidsSend({ do: 'unlock', minutes: m }) })),
       { label: T('auto.kids_open_today'), fn: () => kidsSend({ do: 'unlock', today: true }) }]),
     open ? UI.actions(act(T('auto.kids_lock_now'), () => kidsSend({ do: 'unlock', minutes: 0 }), 'danger')) : null)));
