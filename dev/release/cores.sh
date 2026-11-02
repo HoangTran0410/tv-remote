@@ -30,6 +30,6 @@ while IFS='|' read -r id core name lic exts lay; do
 done <<< "$CORES"
 echo "--- \"cores\" entries for docs/games/games.json:"
 echo "{${ENTRIES%,}}" | python3 -m json.tool
-echo "--- upload (once; creates the release tag cores-1):"
-echo "gh release create cores-1 --title 'TV Games cores' --notes 'libretro cores TV Games downloads on first use (dev/release/cores.sh)' $OUT/*.zip"
+echo "--- upload (once; creates the release tag cores-1, never the latest: releases/latest/download/*.apk must stay the apps):"
+echo "gh release create cores-1 --latest=false --title 'TV Games cores' --notes 'libretro cores TV Games downloads on first use (dev/release/cores.sh)' $OUT/*.zip"
 echo "    (tag exists already: gh release upload cores-1 $OUT/*.zip --clobber)"
