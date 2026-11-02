@@ -34,4 +34,11 @@ class LinkFailureTest {
         val w = Errors.say(IOException(Adb.UNANSWERED), "en")
         assertTrue(w, w.contains("Allow USB debugging") && !w.contains(Adb.UNANSWERED))
     }
+
+    @Test fun androidElevenWithWirelessDebuggingOffIsToldToTurnItOn() {
+        assertEquals("tv_main.adb_wifi_off_howto", LinkFailure.noPortHowto(false, 34).first())   // a Chromecast: "unplug it" led nowhere
+        assertEquals(3, LinkFailure.noPortHowto(false, 34).size)                                // a fourth line pushed the first out of the log box
+        assertEquals("tv_main.adb_wifi_only_howto", LinkFailure.noPortHowto(true, 34).first())
+        assertEquals(listOf("tv_main.adb_no_port_howto"), LinkFailure.noPortHowto(false, 29))     // no such switch before Android 11
+    }
 }

@@ -2303,6 +2303,7 @@
  "tv_main.enable_adb_howto": "Cần bật “Gỡ lỗi ADB”: Cài đặt → Tùy chọn thiết bị (Google TV, Chromecast: Hệ thống) → Giới thiệu → bấm OK 7 lần vào “Bản dựng” (“Bản dựng Android TV OS”), rồi quay lại, cùng mục đó mở Tùy chọn nhà phát triển → bật “Gỡ lỗi ADB” (hoặc “Gỡ lỗi USB”).",
  "tv_main.adb_no_port": "“Gỡ lỗi ADB” đã bật nhưng TV không mở cổng ADB qua mạng (5555).",
  "tv_main.adb_wifi_only_howto": "Chỉ có Gỡ lỗi không dây: quét mã QR góc phải bằng điện thoại (cả iPhone) hoặc mở địa chỉ đó trên máy tính.",
+ "tv_main.adb_wifi_off_howto": "Bật Gỡ lỗi không dây trong Tùy chọn nhà phát triển, rồi quét mã QR góc phải bằng điện thoại.",
  "tv_main.adb_wifi_only_pair": "Trên TV: Cài đặt > Tùy chọn nhà phát triển > Gỡ lỗi không dây > Ghép nối bằng mã, để hộp mã mở.",
  "tv_main.adb_wifi_only_again": "Trên trang web: bấm Ghép bằng Gỡ lỗi không dây, gõ IP:cổng và mã 6 số trong hộp mã. Chỉ làm một lần.",
  "tv_main.adb_no_port_howto": "Rút điện TV/box, cắm lại, mở TV Setup. Vẫn vậy là máy khóa ADB qua mạng: app điện thoại vẫn bấm phím được.",

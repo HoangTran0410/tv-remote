@@ -27,6 +27,7 @@ import dev.tvremote.setup.keys.HoldKeys
 import dev.tvremote.setup.keys.KeyFix
 import dev.tvremote.setup.keys.KeysAddon
 import dev.tvremote.setup.link.KeepAdb
+import dev.tvremote.setup.link.LinkFailure
 import dev.tvremote.setup.link.OnPhone
 import dev.tvremote.setup.link.Paired
 import dev.tvremote.setup.link.Tls
@@ -755,10 +756,9 @@ class MainActivity : Activity() {
                     if (refused && adbOn) {
                         setStatus(BAD, T("tv_main.no_adb_connection"), "")
                         log("✗ " + T("tv_main.adb_no_port"))
-                        // only Wireless debugging (a Chromecast with Google TV): a paired phone or computer opens 5555 for TV Setup
-                        val wifiOnly = try { android.provider.Settings.Global.getInt(contentResolver, "adb_wifi_enabled", 0) == 1 } catch (x: Exception) { false }
-                        if (wifiOnly) listOf("tv_main.adb_wifi_only_howto", "tv_main.adb_wifi_only_pair", "tv_main.adb_wifi_only_again").forEach { howto(T(it)) }
-                        else howto(T("tv_main.adb_no_port_howto"))
+                        // Android 11+ with no 5555 (a Chromecast with Google TV): only Wireless debugging; a paired phone or computer opens 5555 for TV Setup
+                        val wifiOn = try { android.provider.Settings.Global.getInt(contentResolver, "adb_wifi_enabled", 0) == 1 } catch (x: Exception) { false }
+                        LinkFailure.noPortHowto(wifiOn, android.os.Build.VERSION.SDK_INT).forEach { howto(T(it)) }
                         tiles[1].enable(true)
                         tiles[1].view.requestFocus()
                         return@ui

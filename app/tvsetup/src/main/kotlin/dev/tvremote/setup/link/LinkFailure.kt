@@ -23,4 +23,15 @@ internal object LinkFailure {
         val state = if (key == "error" && !refused) "error" else if (refused) "refused" else "connecting"
         return Outcome(state, words, wait, true)
     }
+
+    /**
+     * What the TV shows (word ids) when ADB debugging is on yet port 5555 refuses. Android 11+ with Wireless debugging off is the
+     * Chromecast with Google TV (20 of ~70 census reports, 2026-10): it never opens 5555, so "unplug it" led nowhere; the way in is
+     * the Wireless debugging switch and a code, once (not "Reconnect": nothing opens 5555 before the pairing). Older Android has no such switch: only the plain note.
+     */
+    fun noPortHowto(wifiOn: Boolean, sdk: Int): List<String> = when {
+        sdk >= 30 && wifiOn -> listOf("tv_main.adb_wifi_only_howto", "tv_main.adb_wifi_only_pair", "tv_main.adb_wifi_only_again")
+        sdk >= 30 -> listOf("tv_main.adb_wifi_off_howto", "tv_main.adb_wifi_only_pair", "tv_main.adb_wifi_only_again")   // three lines, as the switch-on case: a fourth pushed the first out of the log box
+        else -> listOf("tv_main.adb_no_port_howto")
+    }
 }
