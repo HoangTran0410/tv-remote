@@ -186,6 +186,7 @@ async function homeCard() {
   if (!line) return;
   const r = ADB.state === 'ready' ? await homeLink.read(false, true) : null;
   homeNow = r && r.installed ? r : null;
+  checkSet('home', r ? { installed: !!r.installed, home: r.home, latest: r.latest, keysOk: !!(r.config && r.config.keysOk), keyon: !!(r.config && r.config.keyon) } : null);
   line.hidden = btn.hidden = !homeNow;
   if (homeNow) put(line, 'textContent', T(homeNow.home ? 'home.state_on' : 'home.state_off', { v: homeNow.version }));
   const upd = $('#homeupd');

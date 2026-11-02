@@ -325,6 +325,7 @@ async function checkSetup() {
   if (host !== (curHost || '-')) return null;                         // another TV was picked meanwhile: not its banner
   homeLatest = h && h.installed && h.latest || ''; homeHas = h && h.installed && h.version || '';
   if (!setupBusy) showSetupUpd(r);
+  checkSet('setup', r ? { installed: !!r.installed, latest: r.latest } : null);
   return r;
 }
 // TV Setup updates itself and TV Home quietly (r.silent): no banner until the TV has stayed on the version it has for 3 days

@@ -42,6 +42,8 @@
 .step { display:flex; gap:12px; padding:14px 0; border-top:1px solid var(--line); align-items:flex-start; }
 .step:first-child { border-top:0; }
 .step .mark { width:30px; height:30px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; background:var(--btn); color:var(--muted); }
+.chk .mark { width:24px; height:24px; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; border:2px solid var(--line); color:var(--ok); }
+.chk .mark:not(:empty) { border-color:var(--ok); background:var(--ok-bg); }
 .step.ok .mark { background:var(--ok-bg); color:var(--ok); }
 .step.wait .mark { background:var(--warn-bg); color:var(--warn); }
 .step .body { flex:1; min-width:0; }

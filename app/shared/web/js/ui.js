@@ -82,7 +82,7 @@ const TAB_HUE = { remote: 220, apps: 265, files: 38, health: 350, auto: 20, tv: 
 const ICON_TITLES = 'h2, h3, details > summary, .setrow > b, .step b, .qr > b, .tabs .ico';
 const ICON_BTNS = 'button, label.filebtn, a.linkbtn, #toast';
 // and the marks before a state's words (✓ done, ✗ failed, the ADB chip, a quick key's ⏻)
-const ICON_MARKS = '#chipAdb, .fleetstep, .ltag, .qkbadge, .tsok, .step .mark, li.ok, li.bad, li.yes, li.no';
+const ICON_MARKS = '#chipAdb, .chk .mark, .fleetstep, .ltag, .qkbadge, .tsok, .step .mark, li.ok, li.bad, li.yes, li.no';
 const ICON_SKIP = '.rc, .tiles, #scenetpl, #sceneicon, #steps .acts code, .item .ic0';
 const ICON_KEYS = Object.keys(ICON).sort((a, b) => b.length - a.length);
 UI.icon = (name, hue) => {

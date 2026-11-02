@@ -9,6 +9,7 @@ async function gameCard() {
   if (!line) return;
   const r = ADB.state === 'ready' ? await api('/api/games', null, true) : null;
   gameNow = r;
+  checkSet('game', r && { installed: !!r.installed, latest: r.latest });
   line.hidden = open.hidden = !(r && r.installed);
   soon.hidden = !(r && r.soon);
   if (r && r.installed) put(line, 'textContent', T('games.state', { v: r.version }));

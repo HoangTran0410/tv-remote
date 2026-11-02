@@ -4348,5 +4348,20 @@
   "family.done": "Mode famille activé",
   "family.off_done": "Mode famille désactivé",
   "family.pick_one": "Choisissez au moins une appli",
-  "family.bed_bad": "Le début et la fin doivent différer"
+  "family.bed_bad": "Le début et la fin doivent différer",
+ "check.title": "🧭 Configurer votre TV",
+ "check.count": "{done}/{n} faits",
+ "check.optional": "Facultatif",
+ "check.adb": "Connecté à la TV (ADB)",
+ "check.setup": "TV Setup sur la TV, dernière version",
+ "check.home": "TV Home comme écran d’accueil",
+ "check.mic": "Le bouton micro de la télécommande lance la voix",
+ "check.keys": "Touches rapides : 1-9 ouvrent des apps",
+ "check.chan": "TV Channels : chaînes TV gratuites",
+ "check.game": "TV Games : jeux sur la TV",
+ "check.b_adb": "Activer ADB",
+ "check.b_install": "Installer",
+ "check.b_update": "Mettre à jour",
+ "check.b_home": "Configurer",
+ "check.b_on": "Activer"
 }

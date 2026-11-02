@@ -4171,5 +4171,20 @@
  "family.done": "Đã bật chế độ gia đình",
  "family.off_done": "Đã tắt chế độ gia đình",
  "family.pick_one": "Chọn ít nhất một app cho trẻ",
- "family.bed_bad": "Giờ bắt đầu và kết thúc phải khác nhau"
+ "family.bed_bad": "Giờ bắt đầu và kết thúc phải khác nhau",
+ "check.title": "🧭 Thiết lập TV của bạn",
+ "check.count": "{done}/{n} xong",
+ "check.optional": "Không bắt buộc",
+ "check.adb": "Đã nối với TV (ADB)",
+ "check.setup": "TV Setup trên TV, bản mới nhất",
+ "check.home": "TV Home là màn hình chính",
+ "check.mic": "Nút mic trên remote mở giọng nói",
+ "check.keys": "Phím nhanh: 1-9 mở app",
+ "check.chan": "TV Channels: kênh TV miễn phí",
+ "check.game": "TV Games: game trên TV",
+ "check.b_adb": "Bật ADB",
+ "check.b_install": "Cài",
+ "check.b_update": "Cập nhật",
+ "check.b_home": "Chọn",
+ "check.b_on": "Bật"
 }

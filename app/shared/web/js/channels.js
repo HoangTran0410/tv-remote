@@ -8,6 +8,7 @@ async function chanCard() {
   if (!line) return;
   const r = ADB.state === 'ready' ? await api('/api/channels', null, true) : null;
   chanNow = r;
+  checkSet('chan', r && { installed: !!r.installed, latest: r.latest });
   const man = $('#chanmanage');
   line.hidden = form.hidden = man.hidden = !(r && r.installed);
   if (r && r.installed) put(line, 'textContent', T('channels.state', { v: r.version }));

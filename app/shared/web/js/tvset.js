@@ -183,6 +183,7 @@ async function loadHold(now) {
   const r = await api('/api/rules', null, true);
   holdBusy = false;
   if (gen !== holdGen || !r) return;
+  checkSet('mic', !!r.mic);
   const seen = JSON.stringify([r.holdkeys, r.mic, r.mic_offline, r.voice]) + window.LANG;
   if (seen === holdSeen) return;                                       // nothing new: keep what is on screen
   holdSeen = seen;

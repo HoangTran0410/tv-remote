@@ -4301,5 +4301,20 @@
  "family.done": "Семейный режим включён",
  "family.off_done": "Семейный режим выключен",
  "family.pick_one": "Выберите хотя бы одно приложение",
- "family.bed_bad": "Начало и конец должны различаться"
+ "family.bed_bad": "Начало и конец должны различаться",
+ "check.title": "🧭 Настройка телевизора",
+ "check.count": "Готово: {done} из {n}",
+ "check.optional": "По желанию",
+ "check.adb": "Подключено к ТВ (ADB)",
+ "check.setup": "TV Setup на ТВ, последняя версия",
+ "check.home": "TV Home как главный экран",
+ "check.mic": "Кнопка микрофона на пульте включает голос",
+ "check.keys": "Быстрые клавиши: 1-9 открывают приложения",
+ "check.chan": "TV Channels: бесплатные ТВ-каналы",
+ "check.game": "TV Games: игры на ТВ",
+ "check.b_adb": "Включить ADB",
+ "check.b_install": "Установить",
+ "check.b_update": "Обновить",
+ "check.b_home": "Настроить",
+ "check.b_on": "Включить"
 }

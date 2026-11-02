@@ -4315,5 +4315,20 @@
  "family.done": "Family mode is on",
  "family.off_done": "Family mode is off",
  "family.pick_one": "Choose at least one app for kids",
- "family.bed_bad": "Bedtime start and end must differ"
+ "family.bed_bad": "Bedtime start and end must differ",
+ "check.title": "🧭 Set up your TV",
+ "check.count": "{done}/{n} done",
+ "check.optional": "Optional",
+ "check.adb": "Connected to the TV (ADB)",
+ "check.setup": "TV Setup on the TV, latest version",
+ "check.home": "TV Home as the home screen",
+ "check.mic": "Remote's mic button opens voice",
+ "check.keys": "Quick keys: 1-9 open apps",
+ "check.chan": "TV Channels: free TV channels",
+ "check.game": "TV Games: games on the TV",
+ "check.b_adb": "Turn on ADB",
+ "check.b_install": "Install",
+ "check.b_update": "Update",
+ "check.b_home": "Set up",
+ "check.b_on": "Turn on"
 }
