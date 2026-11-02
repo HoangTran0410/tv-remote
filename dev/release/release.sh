@@ -38,7 +38,7 @@ if [ -n "$(dev/release/guide_stale.py -q)" ]; then                # no way round
   echo "read those topics in docs/guide.html against the commits shown, fix what is wrong, and set their data-v=\"next\" (that is the mark of a topic read)"; exit 1
 fi
 git fetch -q --tags origin || { echo "git fetch --tags failed: the last tag decides every number"; exit 1; }   # a tag made on another clone / by a past run: without it LAST is one release behind and that release is made again
-LAST=$(git describe --tags --abbrev=0 2>/dev/null || true)
+LAST=$(git describe --tags --abbrev=0 --match 'v[0-9]*' 2>/dev/null || true)   # release tags only: cores-1 (TV Games' arcade cores) once passed for the last release
 next() { python3 -c 'import sys; a = [int(x) for x in sys.argv[1].split(".")]; i = {"major": 0, "minor": 1}.get(sys.argv[2], 2); a[i] += 1; a[i + 1:] = [0] * (2 - i); print(".".join(map(str, a)))' "$1" "${BUMP:-patch}"; }
 # "changed": dev/release/code_changed.py, code beyond comments (a path renamed in comments is no update), in what the app's own
 # build.gradle.kts compiles (dev/release/app_paths.py) plus the extra paths given
