@@ -95,7 +95,7 @@ Link trực tiếp: [tv-setup.apk](https://github.com/HoangTran0410/tv-remote/re
 - TV chỉ có **Gỡ lỗi không dây** (không có cổng 5555)? Mở trang web của TV, bấm **📡 Ghép bằng Gỡ lỗi không dây**: xem “[Gỡ lỗi không dây](#wireless)”.
 - Màn hình chính của TV Setup có dòng mã ghép (6 số); mục **Kết nối** có **Quên mọi khóa ADB**.
 - Cài nhầm TV Setup lên điện thoại? App mời mở app điện thoại, hoặc chọn **Vẫn dùng ở đây**.
-- Hàng bốn ô **TV Home**, **TV Channels**, **TV Games**, **TV Apps** trên màn hình chính ghi **số bản** (vd v0.9.0), **Chưa cài** hoặc **Có bản mới**: bấm để mở, cài hay cập nhật, không cần ADB.
+- Hàng app trên màn hình chính ghi **số bản**, **Chưa cài** hoặc **Có bản mới**. OK trên một app: **Mở**, **Cập nhật**, **Tự cập nhật**, **Gỡ**. Không cần ADB.
 
 ## Mở trang web của TV (iPhone, trình duyệt)
 
@@ -793,7 +793,7 @@ Danh sách app miễn phí, mã nguồn mở cho TV (SmartTube, Kodi, VLC, Jelly
 Chỉ có remote của TV: cài bằng Downloader, mã **1082201**. Link trực tiếp: [tv-apps.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-apps.apk).
 
 1. Từ điện thoại hay máy tính: tab **📱 Ứng dụng** → thẻ **📦 Kho app** → **Xem app** → **Cài** (cần ADB).
-2. Trên TV: mở app **TV Apps** (TV Setup tự cài khi có ADB, hoặc ở hàng app TV của TV Setup). Chọn loại, chọn app, bấm OK. Giữ OK: Mở, Cài lại, Chi tiết.
+2. Trên TV: mở app **TV Apps** (TV Setup tự cài khi có ADB, hoặc từ hàng app của TV Setup). Chọn loại, chọn app, bấm OK. Giữ OK: Mở, Cài lại, Chi tiết.
 
 - Có TV Setup: cài luôn, TV không hỏi. Không có: Android hỏi trước, và lần đầu cần cho phép TV Apps cài app (app chỉ cách).
 - Tiện ích thêm (add-on của Stremio, Kodi) không bao giờ được cài thay bạn; trang chi tiết chỉ ghi tên.
@@ -867,7 +867,7 @@ Không có điện thoại hay máy tính ở gần? Làm ngay trên TV bằng �
 3. Có các tab **Ứng dụng**, **Tệp**, **Sức khỏe**, **Tự động**, **Thiết lập**. Dùng mũi tên và OK để chọn. Chuột (Air Mouse, chuột USB) bấm và cuộn được khắp màn hình.
 4. Bấm **Quay lại** để đóng hay thoát.
 
-Trong TV Setup còn có: **Tối ưu TV** / **Hoàn tác**, **Tailscale**, **Cập nhật**, bật tắt remote qua web, và **Hủy ghép** mọi thiết bị.
+Trong TV Setup còn có: **Tối ưu TV** / **Hoàn tác**, **Tailscale**, **Cập nhật** (ô TV Setup đầu hàng app), bật tắt remote qua web, và **Hủy ghép** mọi thiết bị.
 
 > 💡 Dùng được cả khi bạn đã tắt remote qua web.
 

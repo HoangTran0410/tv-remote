@@ -95,7 +95,7 @@ Direct links: [tv-setup.apk](https://github.com/HoangTran0410/tv-remote/releases
 - A TV with **Wireless debugging** only (no port 5555)? Open the TV's web page and press **📡 Pair with Wireless debugging**: see “[Wireless debugging](#wireless)”.
 - TV Setup's main screen shows the pairing code (6 digits); **Connection** has **Forget all ADB keys**.
 - TV Setup on a phone by mistake? It offers the phone app, or **Use it here anyway**.
-- The row of four tiles on the main screen, **TV Home**, **TV Channels**, **TV Games** and **TV Apps**, shows **the version** (e.g. v0.9.0), **Not installed** or **Update**: press to open, install or update, no ADB needed.
+- The row of apps on the main screen shows **the version**, **Not installed** or **Update**. OK on one: **Open**, **Update**, **Automatic updates**, **Remove**. No ADB needed.
 
 ## Open the TV's web page (iPhone, any browser)
 
@@ -793,7 +793,7 @@ A list of free, open-source TV apps (SmartTube, Kodi, VLC, Jellyfin…). Each co
 TV remote only: Downloader, code **1082201**. Direct link: [tv-apps.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-apps.apk).
 
 1. From a phone or computer: **📱 Apps** tab → **📦 TV Apps** card → **Browse apps** → **Install** (needs ADB).
-2. On the TV: open the **TV Apps** app (TV Setup installs it once it has ADB, or from its row of TV apps). Pick a kind, pick an app, press OK. Hold OK: Open, Install again, Details.
+2. On the TV: open the **TV Apps** app (TV Setup installs it with ADB, or from TV Setup's row of apps). Pick a kind, pick an app, press OK. Hold OK: Open, Install again, Details.
 
 - With TV Setup: installs at once, the TV asks nothing. Without it: Android asks first, and the first time TV Apps must be allowed to install apps (it shows how).
 - Add-ons (for Stremio, Kodi) are never installed for you; the details page only names them.
@@ -867,7 +867,7 @@ No phone or computer at hand? Do it on the TV itself with the TV's own remote.
 3. You get the tabs **Apps**, **Files**, **Health**, **Automation** and **Setup**. Use the arrows and OK to choose. A mouse (Air Mouse, a USB one) clicks and scrolls across the whole screen.
 4. Press **Back** to close or leave.
 
-TV Setup also has: **Optimize TV** / **Undo**, **Tailscale**, **Update**, a switch for the web remote, and **Unpair** for every device.
+TV Setup also has: **Optimize TV** / **Undo**, **Tailscale**, **Update** (TV Setup's tile, first in the row of apps), a switch for the web remote, and **Unpair** for every device.
 
 > 💡 It works even when the web remote is switched off.
 
