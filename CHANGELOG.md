@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Setup: the phone app's download QR sits behind a button (it opens on a card), so the screen shows one QR: "scan the QR" can no longer be read off the wrong one.
+
 - TV Setup: with ADB debugging on, no network ADB port and Wireless debugging off (Android 11+), the TV opens the Wireless debugging page by itself, once (Developer options if that page is missing)
 - Family mode (Automation tab): one card sets a parent's preset in one go (apps for kids, TV time a day, a bedtime, a PIN) through the existing Kids mode, Total TV time and Bedtime rules, and "Turn off" takes back only what it set, leaving rules made by hand. Needs the TV Setup that has Kids mode.
 - TV Setup on a Chromecast with Google TV (ADB debugging on, no network ADB port): the TV now says to turn on Wireless debugging and pair once, instead of "unplug it and try again"

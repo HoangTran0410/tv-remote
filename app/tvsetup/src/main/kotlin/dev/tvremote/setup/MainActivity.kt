@@ -578,17 +578,30 @@ class MainActivity : Activity() {
         showRules()
 
         webCol.addView(View(this), if (phone) LinearLayout.LayoutParams(1, dp(16)) else LinearLayout.LayoutParams(1, 0, 1f))
-        val app = LinearLayout(this)
-        app.gravity = Gravity.CENTER_VERTICAL
-        qr(APP_LINK)?.let { app.addView(it, LinearLayout.LayoutParams(dp(60), dp(60))) }
-        val words = LinearLayout(this)
-        words.orientation = LinearLayout.VERTICAL
-        words.setPadding(dp(12), 0, 0, 0)
-        words.addView(text(T("tv_main.tv_remote_android_app"), 14, TvUi.TEXT, true))
-        words.addView(text(T("tv_main.scan_to_download"), 12, MUTED, false))
-        app.addView(words, LinearLayout.LayoutParams(0, -2, 1f))
-        webCol.addView(app)
+        // behind a button: two QR codes on one screen, and "scan the QR" (pairing, the web remote) was read off the wrong one
+        webCol.addView(smallButton(T("tv_main.tv_remote_android_app")) { appQr() }, margins(top = 6))
         if (focused != null && focused.parent == null) webBtn.requestFocus()   // the focused button was rebuilt: keep the focus on this card
+    }
+
+    /** The phone app's download QR, alone on a card over the screen. */
+    private fun appQr() {
+        val d = android.app.Dialog(this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen)
+        val root = android.widget.FrameLayout(this)
+        root.setBackgroundColor(SCRIM)
+        val card = LinearLayout(this)
+        card.orientation = LinearLayout.VERTICAL
+        card.gravity = Gravity.CENTER_HORIZONTAL
+        card.background = box(TvUi.CARD, 22, 0)
+        card.setPadding(dp(32), dp(26), dp(32), dp(22))
+        card.addView(text(T("tv_main.tv_remote_android_app"), 22, TvUi.TEXT, true).apply { gravity = Gravity.CENTER_HORIZONTAL }, margins(top = 0))
+        card.addView(text(T("tv_main.scan_to_download"), 14, MUTED, false).apply { gravity = Gravity.CENTER_HORIZONTAL }, margins(top = 4))
+        qr(APP_LINK)?.let { card.addView(it, LinearLayout.LayoutParams(dp(200), dp(200)).apply { topMargin = dp(16) }) }
+        val close = smallButton(T("common.close")) { d.dismiss() }
+        card.addView(close, margins(top = 18))
+        root.addView(card, android.widget.FrameLayout.LayoutParams(dp(520), -2, Gravity.CENTER))
+        d.setContentView(root)
+        d.show()
+        close.requestFocus()
     }
 
     /** The timers and limits, on the right of the status card: nothing there when none is set. */
