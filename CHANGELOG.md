@@ -10,6 +10,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 - TV Setup: the phone app's download QR sits behind a button (it opens on a card), so the screen shows one QR: "scan the QR" can no longer be read off the wrong one.
 - TV Setup: with ADB debugging on, no network ADB port and Wireless debugging off (Android 11+), the TV opens the Wireless debugging page by itself, once (Developer options if that page is missing)
+- TV Setup's home screen no longer shows bedtime, limits or the sleep timer beside the link status; they live on Manage → Automation.
+- Phone app: the ADB banner names the button it shows (How to turn it on); while the TV asks to allow, only Try again.
 - Card titles in sentence case, larger and dark instead of small grey capitals (easier to read with accents).
 - ADB banners in plain words ("Some features are off · The remote buttons still work", "Look at the TV"), two buttons, one banner at a time: hidden while the self-check banner shows and on first setup, whose step 1 says the same.
 - First-time setup steps in one plain line each.

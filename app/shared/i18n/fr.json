@@ -687,6 +687,7 @@
   "core.adb_connecting": "Connexion à ADB…",
   "core.pcb_closed_title": "Certaines fonctions sont désactivées",
   "core.pcb_closed_text": "Les touches marchent toujours. Pour voir l’écran, ouvrir des applis ou gérer les fichiers : « Activer pour moi ».",
+  "core.phb_closed_text": "Les touches marchent toujours. Pour voir l’écran, ouvrir des applis ou gérer les fichiers : « Comment l’activer », puis suivez les étapes sur la TV.",
   "core.pcb_asking_title": "Regardez la TV",
   "core.pcb_asking_text": "Cochez « Toujours autoriser », OK, puis Réessayer.",
   "core.pcb_offline_title": "La TV ne répond pas",
@@ -2152,7 +2153,6 @@
   "tv_main.web_remote_off": "Télécommande web : désactivée",
   "tv_main.tv_remote_android_app": "Application TV Remote pour Android",
   "tv_main.scan_to_download": "Scanner pour télécharger",
-  "tv_main.cancel_the_sleep_timer": "Annuler le minuteur de mise en veille",
   "tv_main.older_device": "Ancien appareil",
   "tv_main.no_device_yet": "Aucun appareil pour l’instant.",
   "tv_main.paired_devices_2": "Appareils associés",
@@ -2378,12 +2378,6 @@
   "tv_main.days_ago": {
     "one": "il y a {n} jour",
     "other": "il y a {n} jours"
-  },
-  "tv_main.sleep_at": "La TV s’éteint à {at}",
-  "tv_main.bedtime_ranges": "Coucher {ranges}",
-  "tv_main.daily_limits": {
-    "one": "Limites quotidiennes : {n} application",
-    "other": "Limites quotidiennes : {n} applications"
   },
   "tv_main.apps_off_n": {
     "one": "{n} application sera désactivée",

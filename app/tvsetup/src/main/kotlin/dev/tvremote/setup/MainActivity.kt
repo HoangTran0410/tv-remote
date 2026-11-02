@@ -77,7 +77,6 @@ class MainActivity : Activity() {
     private lateinit var updateTile: Tile
     private lateinit var webCol: LinearLayout
     private lateinit var webBtn: Button
-    private lateinit var rulesCard: LinearLayout                     // timers and limits set from a phone or computer (Rules.kt)
     private var lanIp = ""
     private var tsIp = ""
     private var adb: Adb? = null
@@ -264,10 +263,6 @@ class MainActivity : Activity() {
         st.addView(statusTitle)
         st.addView(statusDetail)
         status.addView(st, LinearLayout.LayoutParams(0, -2, 1f))
-        rulesCard = LinearLayout(this)                               // on the right of the status: the page keeps its height, the log its room
-        rulesCard.orientation = LinearLayout.VERTICAL
-        rulesCard.gravity = Gravity.END or Gravity.CENTER_VERTICAL
-        status.addView(rulesCard, LinearLayout.LayoutParams(-2, -2).apply { leftMargin = dp(16) })
         left.addView(status, margins(top = 12))
         // Since Android 10 a service cannot open PairActivity over another app, and the shell route fails when ADB is off: without
         // this line a phone asking to pair would leave the person with a code nobody can see.
@@ -575,7 +570,6 @@ class MainActivity : Activity() {
         (webBtn.parent as? LinearLayout)?.removeView(webBtn)
         webCol.addView(webBtn, margins(top = 10))
         if (on) webCol.addView(smallButton(T("tv_main.paired_devices_n", "n" to RemoteService.pairedCount(this))) { pairedMenu() }, margins(top = 6))
-        showRules()
 
         webCol.addView(View(this), if (phone) LinearLayout.LayoutParams(1, dp(16)) else LinearLayout.LayoutParams(1, 0, 1f))
         // behind a button: two QR codes on one screen, and "scan the QR" (pairing, the web remote) was read off the wrong one
@@ -604,17 +598,6 @@ class MainActivity : Activity() {
         close.requestFocus()
     }
 
-    /** The timers and limits, on the right of the status card: nothing there when none is set. */
-    private fun showRules() {
-        rulesCard.removeAllViews()
-        val (line, sleeping) = rulesLine() ?: run { rulesCard.visibility = View.GONE; return }
-        rulesCard.visibility = View.VISIBLE
-        rulesCard.addView(text(line, 14, TvUi.TEXT, false).apply { setLineSpacing(dp(3).toFloat(), 1f); gravity = Gravity.END })
-        if (sleeping) rulesCard.addView(smallButton(T("tv_main.cancel_the_sleep_timer")) {
-            Rules.change(this, org.json.JSONObject().put("do", "sleep").put("minutes", 0)); showWeb()
-        }, LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(6); gravity = Gravity.END })
-    }
-
     /** The devices let in, one row each with when it was paired and its own Forget: the same list the TV web page shows (Paired.kt). */
     private fun pairedMenu() {
         val fmt = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US)
@@ -640,19 +623,6 @@ class MainActivity : Activity() {
         TvUi.confirm(this, R.style.TvSheet, "", T("tv_main.unpair_what_it_will", "what" to what), T("setup.unpair"), T("common.cancel"), danger = true, accent = ACCENT) {
             forget(); log(T("tv_main.unpaired_what", "what" to what)); showWeb(); again?.invoke()
         }
-    }
-
-    /** One line per timer or limit that is set, and whether the sleep timer is running; null when nothing is set. */
-    private fun rulesLine(): Pair<String, Boolean>? {
-        val o = Rules.load(this)
-        val lines = ArrayList<String>()
-        val at = o.optLong("sleep_at")
-        val sleeping = at > System.currentTimeMillis()
-        if (sleeping) lines.add("😴 " + T("tv_main.sleep_at", "at" to java.text.SimpleDateFormat("HH:mm", Locale.US).format(java.util.Date(at))))
-        Rules.bedtime(o).let { b -> if (b.optBoolean("on")) lines.add("🌙 " + T("tv_main.bedtime_ranges", "ranges" to b.getJSONArray("ranges").let { l -> (0 until l.length()).joinToString(", ") { l.getJSONObject(it).let { r -> r.optString("from") + " – " + r.optString("to") } } })) }
-        val n = o.optJSONObject("limits")?.length() ?: 0
-        if (n > 0) lines.add("⏳ " + T("tv_main.daily_limits", "n" to n))
-        return if (lines.isEmpty()) null else Pair(lines.joinToString("\n"), sleeping)
     }
 
     private fun qr(link: String): View? {

@@ -687,6 +687,7 @@
  "core.adb_connecting": "Connecting to ADB…",
  "core.pcb_closed_title": "Some features are off",
  "core.pcb_closed_text": "The remote buttons still work. To see the screen, open apps or manage files, press “Turn on for me”.",
+ "core.phb_closed_text": "The remote buttons still work. To see the screen, open apps or manage files: press “How to turn it on” and follow the steps on the TV.",
  "core.pcb_asking_title": "Look at the TV",
  "core.pcb_asking_text": "Tick “Always allow”, press OK, then press Try again.",
  "core.pcb_offline_title": "The TV is not answering",
@@ -2146,7 +2147,6 @@
  "tv_main.web_remote_off": "Web remote: Off",
  "tv_main.tv_remote_android_app": "TV Remote Android app",
  "tv_main.scan_to_download": "Scan to download",
- "tv_main.cancel_the_sleep_timer": "Cancel the sleep timer",
  "tv_main.older_device": "Older device",
  "tv_main.no_device_yet": "No device yet.",
  "tv_main.paired_devices_2": "Paired devices",
@@ -2372,12 +2372,6 @@
  "tv_main.days_ago": {
   "one": "{n} day ago",
   "other": "{n} days ago"
- },
- "tv_main.sleep_at": "The TV turns off at {at}",
- "tv_main.bedtime_ranges": "Bedtime {ranges}",
- "tv_main.daily_limits": {
-  "one": "Daily limits: {n} app",
-  "other": "Daily limits: {n} apps"
  },
  "tv_main.apps_off_n": {
   "one": "{n} app will be turned off",

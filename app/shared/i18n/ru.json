@@ -678,6 +678,7 @@
  "core.adb_connecting": "Подключение к ADB…",
  "core.pcb_closed_title": "Часть функций отключена",
  "core.pcb_closed_text": "Кнопки пульта работают. Чтобы видеть экран, открывать приложения и файлы, нажмите «Включить за меня».",
+ "core.phb_closed_text": "Кнопки пульта работают. Чтобы видеть экран, открывать приложения и файлы: нажмите «Как включить» и сделайте шаги на ТВ.",
  "core.pcb_asking_title": "Посмотрите на ТВ",
  "core.pcb_asking_text": "Отметьте «Всегда разрешать», нажмите OK, затем «Повторить».",
  "core.pcb_offline_title": "ТВ не отвечает",
@@ -2134,7 +2135,6 @@
  "tv_main.web_remote_off": "Веб-пульт: выкл.",
  "tv_main.tv_remote_android_app": "Приложение TV Remote для Android",
  "tv_main.scan_to_download": "Сканировать для скачивания",
- "tv_main.cancel_the_sleep_timer": "Отменить таймер сна",
  "tv_main.older_device": "Старое устройство",
  "tv_main.no_device_yet": "Устройств пока нет.",
  "tv_main.paired_devices_2": "Сопряжённые устройства",
@@ -2358,12 +2358,6 @@
  "tv_main.paired_at": "Сопряжено {at}",
  "tv_main.used_when": "использовалось {when}",
  "tv_main.days_ago": "{n} дн. назад",
- "tv_main.sleep_at": "ТВ выключится в {at}",
- "tv_main.bedtime_ranges": "Время сна {ranges}",
- "tv_main.daily_limits": {
-  "one": "Дневные лимиты: {n} приложение",
-  "other": "Дневные лимиты: {n} прилож."
- },
  "tv_main.apps_off_n": {
   "one": "Будет отключено {n} приложение",
   "other": "Будет отключено приложений: {n}"

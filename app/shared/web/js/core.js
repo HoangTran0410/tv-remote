@@ -522,8 +522,10 @@ function buildBanner() {
     // TV Setup on a TV with Wireless debugging only (a Chromecast with Google TV): the 6-digit code is typed here, from a phone or computer
     const pair = CORE === 'tv' && ADB.pair ? el('button', { type: 'button', className: 'small primary', textContent: T('setup.wireless_choice'), onclick: () => wirelessPair() }) : null;
     if (pair) how.className = 'small';
-    retry.className = 'small';
-    return el('div', { className: 'banner ' + cls }, el('b', { textContent: title }), el('p', { textContent: text }), detail, el('div', { className: 'actions' }, pair, how, retry));
+    if (ADB.state === 'unauthorized') how.hidden = true;               // ADB is on, the TV only asks: Allow there, then Retry
+    else retry.className = 'small';
+    const words = CORE === 'phone' && ADB.state === 'closed' ? T('core.phb_closed_text') : text;   // the computer's words name Turn on for me, which needs it
+    return el('div', { className: 'banner ' + cls }, el('b', { textContent: title }), el('p', { textContent: words }), detail, el('div', { className: 'actions' }, pair, how, retry));
   }
   const helpMe = ADB.state === 'closed' || ADB.state === 'error' ? el('button', { className: 'small primary', textContent: T('core.adb_help_me'), onclick: () => adbHelp() }) : null;
   if (helpMe) retry.className = 'small';
