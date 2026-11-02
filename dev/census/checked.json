@@ -1694,6 +1694,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
+ "9f2bc53e50f426e518d8f3d3|0.24.3": {
+  "at": "2026-11-03T01:11:12+07:00",
+  "n": 1,
+  "note": "same frame as 3e2e54ba (HomeActivity.D0:2732, show() adding a dock tile twice, here from onPause -> endMove); fixed in 098bbb74 + f38e624b, waits for the next TV Home release (latest is 0.24.3)"
+ },
  "9f69fe73209a99d57f0c2e92|0.38.2": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
