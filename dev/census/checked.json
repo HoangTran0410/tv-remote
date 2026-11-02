@@ -544,6 +544,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "330d8f5d7bec6332a86acee7|0.38.4": {
+  "at": "2026-11-03T03:42:50+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
  "331ced4ea9c75dd5ff72fb72|0.33.1": {
   "at": "2026-10-29T17:19:41+07:00",
   "n": 1,
@@ -610,14 +615,24 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "3b01e23e7f103596508b6746|0.31.0": {
-  "at": "2026-10-29T17:19:41+07:00",
+  "at": "2026-11-03T03:42:50+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "3b01e23e7f103596508b6746|0.34.2": {
+  "at": "2026-11-03T03:42:50+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "3b92aa84e5c9e5989f62d1f8|0.31.0": {
   "at": "2026-10-29T17:19:59+07:00",
   "n": 1,
   "note": "fixed in 314c0f33 (IR import capped 1 MB)"
+ },
+ "3d5dffd0b165e9e474f753dd|0.38.3": {
+  "at": "2026-11-03T03:42:51+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "3d96a7ea5daf9ac8790c3f07|0.13.1": {
   "at": "2026-10-29T17:19:42+07:00",
@@ -670,9 +685,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "3e2e54bac9ca5b483b94307f|0.24.3": {
-  "at": "2026-11-02T22:17:48+07:00",
-  "n": 3,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "at": "2026-11-03T03:42:49+07:00",
+  "n": 4,
+  "note": "fixed in 098bbb74 + f38e624b, released in TV Home 0.25.0 (v0.41.0)"
  },
  "3eba4ca5a45b04107595e6ee|0.30.0": {
   "at": "2026-10-28T14:05:35+07:00",
@@ -685,59 +700,64 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "3f685f9c7cdca8d898486836|0.26.2": {
-  "at": "2026-10-30T09:07:54+07:00",
+  "at": "2026-11-03T03:42:49+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "3f685f9c7cdca8d898486836|0.26.3": {
-  "at": "2026-10-30T09:07:54+07:00",
+  "at": "2026-11-03T03:42:49+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "3f685f9c7cdca8d898486836|0.28.0": {
-  "at": "2026-10-30T09:07:54+07:00",
+  "at": "2026-11-03T03:42:49+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "3f685f9c7cdca8d898486836|0.29.0": {
-  "at": "2026-10-30T09:07:54+07:00",
+  "at": "2026-11-03T03:42:49+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "3f685f9c7cdca8d898486836|0.30.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T03:42:49+07:00",
   "n": 4,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "3f685f9c7cdca8d898486836|0.31.0": {
-  "at": "2026-10-30T09:07:54+07:00",
+  "at": "2026-11-03T03:42:49+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "3f685f9c7cdca8d898486836|0.34.1": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T03:42:49+07:00",
   "n": 3,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "3f685f9c7cdca8d898486836|0.35.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T03:42:49+07:00",
   "n": 3,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "3f685f9c7cdca8d898486836|0.38.2": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T03:42:49+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "3f685f9c7cdca8d898486836|0.38.4": {
-  "at": "2026-11-02T22:17:48+07:00",
-  "n": 1,
+  "at": "2026-11-03T03:42:49+07:00",
+  "n": 2,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "41dd31f77cb49ce98c2242e0|0.28.0": {
   "at": "2026-10-27T09:37:26+07:00",
   "n": 1,
   "note": "launcher picker: Play link opened with adb.shell on the click thread; moved to a Thread (next release)"
+ },
+ "43698fd30ec8d059eadf6932|0.38.4": {
+  "at": "2026-11-03T03:42:51+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "441a305bdfd9a70cfcc633d7|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -1305,24 +1325,29 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "72197a51e589326b53120179|0.28.0": {
-  "at": "2026-10-29T17:20:06+07:00",
+  "at": "2026-11-03T03:42:52+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "72197a51e589326b53120179|0.29.0": {
-  "at": "2026-10-29T17:20:06+07:00",
+  "at": "2026-11-03T03:42:52+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "72197a51e589326b53120179|0.31.0": {
-  "at": "2026-10-29T17:20:06+07:00",
+  "at": "2026-11-03T03:42:52+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "72197a51e589326b53120179|0.32.1": {
-  "at": "2026-10-29T17:20:06+07:00",
+  "at": "2026-11-03T03:42:52+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "72197a51e589326b53120179|0.38.4": {
+  "at": "2026-11-03T03:42:52+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "72f479fc5e46b710d40d7e11|0.28.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -1348,6 +1373,11 @@
   "at": "2026-10-30T09:08:15+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+ },
+ "7370b2b3ea5a054289a494e0|0.38.4": {
+  "at": "2026-11-03T03:42:52+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "74e9dd24769f68fce154098f|0.26.3": {
   "at": "2026-10-27T09:37:17+07:00",
@@ -1395,9 +1425,14 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "7e4f66aa5d11a64666081bad|0.31.0": {
-  "at": "2026-10-29T17:19:46+07:00",
+  "at": "2026-11-03T03:42:53+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "7e4f66aa5d11a64666081bad|0.34.2": {
+  "at": "2026-11-03T03:42:53+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "80076832323d6921ebcd2475|0.13.1": {
   "at": "2026-10-26T21:47:47+07:00",
@@ -1679,6 +1714,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "9b3d0c38554de068c829dcd8|0.38.4": {
+  "at": "2026-11-03T03:42:53+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
  "9d907bef0ac0d1a2139bb6e2|0.34.1": {
   "at": "2026-10-30T09:08:21+07:00",
   "n": 1,
@@ -1705,12 +1745,22 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "9fae8eef259fdd7309a272c5|0.32.1": {
-  "at": "2026-10-29T17:20:10+07:00",
+  "at": "2026-11-03T03:42:54+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "9fae8eef259fdd7309a272c5|0.35.0": {
+  "at": "2026-11-03T03:42:54+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "9fae8eef259fdd7309a272c5|0.38.2": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T03:42:54+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "9fae8eef259fdd7309a272c5|0.38.4": {
+  "at": "2026-11-03T03:42:54+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
@@ -1800,32 +1850,42 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "a54cc4711ab55a41b38bd0ab|0.29.0": {
-  "at": "2026-10-28T14:05:47+07:00",
+  "at": "2026-11-03T03:42:54+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "a54cc4711ab55a41b38bd0ab|0.38.4": {
+  "at": "2026-11-03T03:42:54+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "a61105e296172cd1c6bf213f|0.30.0": {
-  "at": "2026-10-29T17:19:36+07:00",
+  "at": "2026-11-03T03:42:55+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "a61105e296172cd1c6bf213f|0.31.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T03:42:55+07:00",
   "n": 2,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "a61105e296172cd1c6bf213f|0.32.1": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T03:42:55+07:00",
   "n": 3,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "a61105e296172cd1c6bf213f|0.37.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T03:42:55+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "a61105e296172cd1c6bf213f|0.38.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T03:42:55+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "a61105e296172cd1c6bf213f|0.38.4": {
+  "at": "2026-11-03T03:42:55+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
@@ -2285,17 +2345,22 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "d498a8ad39a52e3263df243d|0.37.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T03:42:55+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "d498a8ad39a52e3263df243d|0.38.2": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T03:42:55+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "d498a8ad39a52e3263df243d|0.38.3": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T03:42:55+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "d498a8ad39a52e3263df243d|0.38.4": {
+  "at": "2026-11-03T03:42:55+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
