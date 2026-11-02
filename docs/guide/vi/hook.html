@@ -1,6 +1,6 @@
 <!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Home Assistant · Phím tắt (Siri)</title><pre style="white-space:pre-wrap;font:15px/1.5 sans-serif;max-width:760px;margin:24px auto;padding:0 16px"># Home Assistant · Phím tắt (Siri)
 
-Cho iPhone Phím tắt, Siri hay Home Assistant điều khiển TV bằng một đường link.
+Một đường link điều khiển TV: dùng với Phím tắt iPhone (Siri), điện thoại Android, Home Assistant hay bất cứ thứ gì mở được link.
 
 1. **App máy tính** hoặc **trang web của TV** (xem “[<a href="web-iphone">iPhone</a>]”) → nút **🛠️ Cài đặt** ở trên. App điện thoại không có.
 2. Thẻ **Home Assistant · Phím tắt** → **Cho dùng**.
@@ -14,13 +14,13 @@ http://192.168.1.20:8765/api/hook?k=3f9a1c7e5b2d4a60b8c1d9e7f2a4b6c8&amp;key=HOM
 
 Địa chỉ TV và cổng, `k=` là mã bí mật, `key=HOME` là việc cần làm. Mở link trong trình duyệt để thử.
 
-**iPhone: Phím tắt và Siri**
+| Máy | Cách làm |
+| --- | --- |
+| iPhone · Siri | App **Phím tắt** → **+** → **Lấy nội dung của URL**, dán link (giữ **GET**), đặt tên. Nói **“Hey Siri, tên phím tắt”**. Lần đầu chọn **Cho phép** mạng cục bộ. |
+| Android | Cài app **HTTP Shortcuts** (miễn phí) → **+** → **Phím tắt HTTP thông thường**, dán link, lưu. Giữ nó → **Đặt trên màn hình chính**: bấm là TV làm. Tasker cũng được. |
+| Trình duyệt | Mở link (hoặc lưu thành dấu trang) là TV làm. |
 
-1. Gửi link sang iPhone (Ghi chú, AirDrop), hoặc chép từ trang web của TV mở trong Safari.
-2. App **Phím tắt** → **+** → **Thêm hành động**.
-3. Chọn **Lấy nội dung của URL**, dán link vào ô **URL** (giữ **GET**).
-4. Đặt tên (vd “TV Home”), bấm **Xong**.
-5. Nói **“Hey Siri, tên phím tắt”** hoặc bấm phím tắt. iPhone cùng Wi-Fi với TV; lần đầu chọn **Cho phép** mạng cục bộ.
+Máy phải cùng Wi-Fi với TV.
 
 **Home Assistant**
 

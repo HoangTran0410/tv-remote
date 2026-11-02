@@ -1,6 +1,6 @@
 # Home Assistant · Shortcuts (Siri)
 
-Let iPhone Shortcuts, Siri or Home Assistant control the TV with one link.
+One link that controls the TV: use it from iPhone Shortcuts (Siri), an Android phone, Home Assistant or anything that can open a link.
 
 1. The **computer app** or the **TV web page** (see “[iPhone](web-iphone.md)”) → **🛠️ Settings** at the top. Not in the phone app.
 2. The **Home Assistant · Shortcuts** card → **On**.
@@ -14,13 +14,13 @@ http://192.168.1.20:8765/api/hook?k=3f9a1c7e5b2d4a60b8c1d9e7f2a4b6c8&key=HOME
 
 The TV's address and port, `k=` the secret token, `key=HOME` what to do. Open it in a browser to try.
 
-**iPhone: Shortcuts and Siri**
+| Device | How |
+| --- | --- |
+| iPhone · Siri | **Shortcuts** app → **+** → **Get contents of URL**, paste the link (keep **GET**), name it. Say **“Hey Siri, shortcut name”**. The first time, **Allow** the local network. |
+| Android | Install **HTTP Shortcuts** (free) → **+** → **Regular HTTP Shortcut**, paste the link, save. Hold it → **Place on home screen**: tap and the TV does it. Tasker works too. |
+| Browser | Open the link (or bookmark it) and the TV does it. |
 
-1. Get the link to the iPhone (Notes, AirDrop), or copy it from the TV web page in Safari.
-2. **Shortcuts** app → **+** → **Add Action**.
-3. Pick **Get contents of URL**, paste the link in **URL** (keep **GET**).
-4. Name it (e.g. “TV Home”), tap **Done**.
-5. Say **“Hey Siri, shortcut name”** or tap it. Same Wi-Fi as the TV; the first time, **Allow** the local network.
+The device must be on the TV's Wi-Fi.
 
 **Home Assistant**
 

@@ -71,7 +71,7 @@ Remote control for Android TV / Google TV (and LG, Samsung, Roku, VIDAA) with no
 - [Scenes (one tap, many steps)](scenes.md): A scene is a chain of steps run with one tap. For example “Movie”: turn on the TV, open Netflix, set volume 20. _(canh scene lenh nhanh tu dong hoa kich ban)_
 - [Control the TV from Telegram](telegram.md): Message your own bot to turn the TV off or on, set the volume, open apps, take a screenshot. The bot runs in TV Setup and opens no port… _(telegram bot botfather token pair ghep doi nhan tin chat nhom group lenh command shot remote)_
 - [Telegram: alerts and bedtime](telegram-more.md): More bot commands, and the TV messages you when something happens. A paired chat is needed (see the previous topic). _(telegram bao tin alert thong bao gio ngu bedtime gioi han limit chan app qr ghep doi lich su history usage thoi gian man hinh scenes channel type)_
-- [Home Assistant · Shortcuts (Siri)](hook.md): Let iPhone Shortcuts, Siri or Home Assistant control the TV with one link. _(home assistant phim tat shortcuts siri hook rest_command yaml webhook ios tu dong hoa nha thong minh token)_
+- [Home Assistant · Shortcuts (Siri)](hook.md): One link that controls the TV: use it from iPhone Shortcuts (Siri), an Android phone, Home Assistant or anything that can open a link. _(home assistant phim tat shortcuts siri android http shortcuts tasker hook rest_command yaml webhook ios tu dong hoa nha thong minh token)_
 
 ## More
 - [Several TVs](many.md): Save each TV: connect once and it stays in 💾 Saved TVs. _(nhieu tv fleet cai hang loat danh sach)_

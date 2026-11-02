@@ -71,7 +71,7 @@
 - [Cảnh (một nút làm nhiều việc)](scenes.md): Một cảnh là chuỗi việc chạy một lần bấm. Ví dụ “Xem phim”: bật TV, mở Netflix, đặt âm lượng 20. _(canh scene lenh nhanh tu dong hoa kich ban)_
 - [Điều khiển TV bằng Telegram](telegram.md): Nhắn bot của riêng bạn để tắt/bật TV, chỉnh tiếng, mở app, chụp màn hình. Bot chạy trong TV Setup, không mở cổng ra Internet. _(telegram bot botfather token pair ghep doi nhan tin chat nhom group lenh command shot remote)_
 - [Telegram: báo tin và giờ ngủ](telegram-more.md): Thêm lệnh cho bot, và TV tự nhắn khi có việc. Cần đã ghép đôi một chat (xem bài trước). _(telegram bao tin alert thong bao gio ngu bedtime gioi han limit chan app qr ghep doi lich su history usage thoi gian man hinh scenes channel type)_
-- [Home Assistant · Phím tắt (Siri)](hook.md): Cho iPhone Phím tắt, Siri hay Home Assistant điều khiển TV bằng một đường link. _(home assistant phim tat shortcuts siri hook rest_command yaml webhook ios tu dong hoa nha thong minh token)_
+- [Home Assistant · Phím tắt (Siri)](hook.md): Một đường link điều khiển TV: dùng với Phím tắt iPhone (Siri), điện thoại Android, Home Assistant hay bất cứ thứ gì mở được link. _(home assistant phim tat shortcuts siri android http shortcuts tasker hook rest_command yaml webhook ios tu dong hoa nha thong minh token)_
 
 ## Thêm nữa
 - [Nhiều TV cùng lúc](many.md): Lưu từng TV: nối vào TV một lần, nó nằm trong 💾 TV đã lưu. _(nhieu tv fleet cai hang loat danh sach)_
