@@ -117,7 +117,11 @@
     "com.android.federatedcompute.services": "Ad learning service",
     "com.google.android.partnersetup": "Google partner attribution",
     "com.xiaomi.mitv.manualhelp": "Xiaomi TV manual",
-    "com.haier.emanual": "Haier TV manual"
+    "com.haier.emanual": "Haier TV manual",
+    "com.hisense.hotelmenu": "Hisense hotel mode menu",
+    "com.vision.aibook": "Hisense AI picture book",
+    "com.ju.miguvideoTV.cmcc": "Migu Video (carrier preload)",
+    "com.homwee.store": "Changhong retail demo"
   },
   "drop": [
     "com.xm.webcontent"
@@ -158,7 +162,13 @@
     "com\\.control\\.device",
     "com\\.ztestb\\.basecomp",
     "tv\\.upgrade\\.service",
-    "com\\.youview\\.poa"
+    "com\\.youview\\.poa",
+    "com\\.android\\.sdksandbox",
+    "io\\.mimi\\.(sdk\\.service|tvapp)",
+    "com\\.airoha\\.ble\\.ota",
+    "com\\.(hispeech\\.ai\\.area|iflytek\\.xiri|intelligent\\.speech|vt\\.permission\\.manager)",
+    "com\\.keylab\\.speech\\..*",
+    "com\\.hisense\\.(aiot|aiod|raycodereceiver|hiservice|msvoicetome|vidaaassistant|widget\\.pro|tv\\.globalui)"
   ],
   "factory": [
     "com\\.skyworth\\.testtime",

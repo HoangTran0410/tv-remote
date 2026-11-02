@@ -5,7 +5,24 @@ before launcherx, check Home, roll back) come from these. Read them again now an
 `dev/sign/sign_bloat.py`, commit, push: every app reads it from the site when Optimize TV opens, no release needed), and now and
 then fold that list into Bloat.kt and empty it. The site's list can add suggestions, drop them, and only add to keep / factory.
 
-Last read: **2026-11-02 (midday)**, upstream at `3cd274f866` (165 commits after `6e8615eb0b`; 38 `debloat.txt` changed, 11 new; no new PRs or
+Last read: **2026-11-02 (evening)**, upstream main still `3cd274f866`; read the open PRs since 06:00 (3020, 3023-3026, 3035, 3039, 3041, 3043,
+3050, 3054, 3062-3065, 3070 and the SHOWCASE ones, which have no lists) and issues 2831, 2853, 2856, 2870, 2925, 2948, 2950, 2973, 2991, 3001, 3037
+(2930 has no comments). Into bloat.json: SUGGEST Hisense China `hotelmenu`, `vision.aibook`, Migu `ju.miguvideoTV.cmcc` (preloads, one list
+each), Changhong `homwee.store` (a retail-demo receiver, not a store). KEEP Philips `io.mimi.sdk.service` / `tvapp` (HBO Max dropped 33-46 % of
+its frames with them off), Skyworth `com.airoha.ble.ota` (the Bluetooth remote's updater), `com.android.sdksandbox`, the Hisense VIDAA China chain from the 85E7Q (voice:
+`hispeech`, `keylab.speech.*`, `iflytek.xiri`, `intelligent.speech`, `msvoicetome`, `vidaaassistant` which also handles installs and
+permissions; `aiot`, `aiod`, `raycodereceiver`, `hiservice`, `globalui`, `vt.permission.manager`, `widget.pro`). Already ours: `tiletransition`
+(HDMI rows switch nothing without it), the Sogou keyboard, `demome` (TV_INPUT_HARDWARE: `Setup` skips it). Not taken: `com.meetingroom` (answers
+HOME at -100: Home swap business), `jamdeo.calendar`, TV Booster `mk.tv.booster` (a cleaner), `tv.fun.tvupgrade` / `tpv.xmic.ota` (firmware
+updaters, off or on by choice), the AOSP / Google parts the new Skyworth, onn and Hisense lists switch off (already not suggested: user apps
+or a choice), streaming and FAST apps. Issues: 2950 (Fire TV stick stops opening Settings after OTA 8.1.8.5 with a list applied: no package
+isolated, upstream only warns in the header; nothing of ours suggested near it), 2991 (Google Home control dies after a reboot with
+`setupwraith` off; workaround: enable it, restart mediashell, disable again) and 2853 (Sony: `sonysystemservice` polls twice a second with it
+off): both are the price of our Google TV Home swap (`Setup.WIZARD`, off before launcherx), the same fact as 2812 below; not acted on, no
+package to move. 2948 (MFTR0 standby LED: 关机 is standby on OS3.0.106.0, no package), 3001 (PS5 flicker with a custom launcher as Home, open,
+asks for tests), 2973 (known, `LauncherSwap`; upstream's `pm list users` safety check is undecided), 3037, 2925, 2870, 2856, 2831 (launcherx +
+`com.android.sdksandbox` off on a REA75P: the sdksandbox line is ours too? it is not in SUGGEST, and `disable.sh` refuses it upstream): no change.
+Before that: **2026-11-02 (midday)**, upstream at `3cd274f866` (165 commits after `6e8615eb0b`; 38 `debloat.txt` changed, 11 new; no new PRs or
 issues). Into bloat.json: SUGGEST the Android 14 Privacy Sandbox trio `com.android.adservices.api`, `ondevicepersonalization.services`,
 `federatedcompute.services` (ad topics / measurement, off on a Xiaomi projector and an onn 4K Pro), `com.google.android.partnersetup`
 (RLZ attribution pings, off on 4 lists), `android.autoinstalls.config.fomovie` (Xiaomi projector installer), manuals `xiaomi.mitv.manualhelp`
