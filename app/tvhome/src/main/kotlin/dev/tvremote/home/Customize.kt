@@ -1144,8 +1144,7 @@ object Customize {
     }
 
     /**
-     * Two doors to full screens built of tvui tiles: "Add to home screen" ([Picker] in grid mode: apps, their shortcuts, live widgets,
-     * the hidden apps) and "Quick keys" ([QuickKeys]: 0-9, colour keys and the power-on app, each shown by the logo of its [Target]).
+     * Doors: "Add to home screen" (the grid's own "+ Add" menu, [HomeActivity.addPanel]: one menu for it everywhere) and "Quick keys" ([QuickKeys]: 0-9, colour keys and the power-on app, each shown by the logo of its [Target]).
      * They replaced a row list here that could not show logos nor shortcuts. Lines under say what needs TV Setup.
      */
     private fun launchPage(a: Activity, col: LinearLayout, glass: (Int, Int, Int) -> GradientDrawable, label: (String, Float, Int) -> TextView, gap: Int) {
@@ -1170,7 +1169,10 @@ object Customize {
                 setOnClickListener { open() }
             }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = gap })
         }
-        door(R.drawable.ic_apps, a.getString(R.string.c_add_home), { a.getString(R.string.pk_grid_hint) }) { Picker.show(a, Picker.Mode.GRID, a.getString(R.string.c_add_home)) }
+        door(R.drawable.ic_apps, a.getString(R.string.c_add_home), { a.getString(R.string.pk_grid_hint) }) {   // the same "+ Add" menu as the grid's tile (apps, folder, link, channels, live widgets): the bare grid picker lacked the half of it
+            val h = a as? HomeActivity
+            if (h != null) { panelDialog?.dismiss(); h.addPanel() } else Picker.show(a, Picker.Mode.GRID, a.getString(R.string.c_add_home))
+        }
         door(R.drawable.ic_pen, a.getString(R.string.el_edit), { a.getString(R.string.el_edit_sub) }) { panelDialog?.dismiss(); (a as? HomeActivity)?.edit() }
         door(R.drawable.ic_keyboard, a.getString(R.string.c_quickkeys), { a.getString(if (Keys.setup(a)) R.string.k_everywhere else R.string.k_need_setup) }) { QuickKeys.show(a) }
     }

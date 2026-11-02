@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: Customize → Add to home screen opens the same + Add menu as the grid's tile (new folder, links, channels, live widgets too); a shortcut's name no longer gets cut off under its picture in the picker.
 - TV Games: arcade games (FinalBurn Neo, downloaded on the first one): upload your own .zip under its romset name (Neo Geo needs neogeo.zip beside it), Coin on the pad, Press Start puts a coin in; seven free arcade games from mamedev.org in Suggestions.
 - TV Home folders: Right at the end of a row goes on to the next row and Left at its start back to the previous one, as on the home grid.
 - TV Home: the clock no longer stops on TVs whose firmware stops the minute tick after standby (a TCL on Android 9); before Android 12 it checks itself once a minute.

@@ -87,18 +87,22 @@ class PickTile(c: Context, w: Int, private val dpx: (Number) -> Int, val key: St
             fill(ImageView(c).apply { setImageDrawable(banner.constantState?.newDrawable(c.resources) ?: banner); scaleType = ImageView.ScaleType.CENTER_CROP })
             name.text = label
         } else {
-            val inner = LinearLayout(c).apply { orientation = VERTICAL; gravity = Gravity.CENTER; setPadding(dpx(6), dpx(if (tag.isEmpty()) 4 else if (flat) 28 else 22), dpx(6), dpx(4)) }   // a tag sits on the top edge: the picture starts under it
+            val top = dpx(if (tag.isEmpty()) 4 else if (flat) 28 else 22)
+            val inner = LinearLayout(c).apply { orientation = VERTICAL; gravity = Gravity.CENTER; setPadding(dpx(6), top, dpx(6), dpx(4)) }   // a tag sits on the top edge: the picture starts under it
             val pic = if (flat) art?.banner ?: art?.icon else art?.icon   // a key pad tile: the banner when there is one, it is what people know the app by
-            val side = if (flat) h - dpx(28 + 20 + 3) else h * 42 / 100            // under the chip, over the name
+            val lbl = if (label.isEmpty()) null else Font.on(TextView(c)).apply {
+                text = label; textSize = 12f; setTextColor(if (plus) PK_SOFT else Color.WHITE); maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END; gravity = Gravity.CENTER
+                setPadding(0, dpx(if (flat) 1 else 4), 0, 0)
+            }
+            val lblH = lbl?.let { it.measure(0, 0); it.measuredHeight } ?: 0
+            // the picture takes what the tag and the name leave: 42 % of a 6-column tile on a 960 dp TV (71 dp high) pushed the name out of it
+            val side = if (flat) h - dpx(28 + 20 + 3) else minOf(h * 42 / 100, h - top - dpx(4) - lblH).coerceAtLeast(dpx(16))
             val wide = flat && art?.banner != null && pic === art.banner
             inner.addView(ImageView(c).apply {
                 if (pic != null) { setImageDrawable(pic.constantState?.newDrawable(c.resources) ?: pic); scaleType = ImageView.ScaleType.FIT_CENTER }   // a copy: the grid's tile has the same picture
                 else { setImageResource(if (plus) R.drawable.ic_plus else icon.takeIf { it != 0 } ?: R.drawable.ic_apps); imageTintList = android.content.res.ColorStateList.valueOf(if (plus) PK_FAINT else Color.WHITE) }
             }, LayoutParams(if (wide) side * 16 / 9 else if (plus) side * 3 / 4 else side, if (plus) side * 3 / 4 else side))
-            if (label.isNotEmpty()) inner.addView(Font.on(TextView(c)).apply {
-                text = label; textSize = 12f; setTextColor(if (plus) PK_SOFT else Color.WHITE); maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END; gravity = Gravity.CENTER
-                setPadding(0, dpx(if (flat) 1 else 4), 0, 0)
-            }, LayoutParams(-1, -2))
+            if (lbl != null) inner.addView(lbl, LayoutParams(-1, -2))
             fill(inner)
             name.text = ""
         }

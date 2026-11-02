@@ -2498,7 +2498,7 @@ class HomeActivity : Activity() {
      * the first run hid every app but the well-known ones, a row per hidden app pushed the rest of the list off the screen. The hidden
      * apps are the choice grid (many ticked at once), not rows here.
      */
-    private fun addPanel() {
+    fun addPanel() {
         val hidden = Store.list(this, "hidden"); val onGrid = Store.list(this, "tiles") + Pins.list(this).map { it.pkg }   // a pinned shortcut is on the grid already
         fun icon(pkg: String) = try { packageManager.getApplicationIcon(pkg) } catch (e: Exception) { null }
         val live = ArrayList<TvGlass.Item>(); val pins = ArrayList<TvGlass.Item>(); val rowsOff = ArrayList<TvGlass.Item>()
