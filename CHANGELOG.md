@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: the Control Center over an app opens Home's own Customize panel and sources menu; Customize from the screensaver's settings opens Home's + Add menu and Edit mode (Edit did nothing there); turning the power-on app off from a tile's menu also clears it in Quick keys.
 - TV Home: Customize → Add to home screen opens the same + Add menu as the grid's tile (new folder, links, channels, live widgets too); a shortcut's name no longer gets cut off under its picture in the picker.
 - TV Games: arcade games (FinalBurn Neo, downloaded on the first one): upload your own .zip under its romset name (Neo Geo needs neogeo.zip beside it), Coin on the pad, Press Start puts a coin in; seven free arcade games from mamedev.org in Suggestions.
 - TV Home folders: Right at the end of a row goes on to the next row and Left at its start back to the previous one, as on the home grid.

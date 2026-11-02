@@ -17,10 +17,9 @@ class DirectBootTest {
         "dev.tvremote.home.apps.SystemSettings.open(this)",
         "finish(); return",
         "}",
-        "wantInputs = intent?.action == InputOpen.INPUTS",
+        "wantStart = intent?.takeIf { it.action in START_ACTIONS }",     // kept, run in onResume (which waits for the unlock)
         "Font.load(this)",                                             // the APK's assets
         "InputOpen.sync(this)",                                        // the package manager
-        "if (intent?.action == HomeConfig.PHOTO_QR) window.decorView.post { if (!locked) PhotoScreen.show(this) {} }",
     )
 
     @Test fun nothingReadsStorageBeforeTheUnlockCheck() {

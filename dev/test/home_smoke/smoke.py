@@ -21,6 +21,7 @@ ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 RES = os.path.join(ROOT, "app", "tvhome", "src", "main", "res")
 HOME_PKG, SETUP_PKG = "dev.tvremote.home", "dev.tvremote.setup"
 SCREEN = (1920, 1080)
+CLIP_MIN = 26                                                         # px at 1080p: one line of 11 sp is ~27; the cut picker names were 20, whole ones 40
 
 ap = argparse.ArgumentParser()
 ap.add_argument("outdir")
@@ -61,6 +62,7 @@ class Node:
         self.text, self.desc, self.cls = a.get("text", ""), a.get("content-desc", ""), a.get("class", "").split(".")[-1]
         self.focused, self.focusable = a.get("focused") == "true", a.get("focusable") == "true"
         self.enabled = a.get("enabled") != "false"
+        self.scrollable = a.get("scrollable") == "true"
         m = re.match(r"\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\]", a.get("bounds", "[0,0][0,0]"))
         self.b = tuple(int(x) for x in m.groups())
         self.children = []
@@ -265,6 +267,15 @@ def static_checks(scr):
     for n in scr.nodes:
         if n.text.strip() and (n.b[2] > SCREEN[0] + 2 or n.b[3] > SCREEN[1] + 2):
             w.append("text clipped by the screen %r %s" % (n.text[:30], n.b))
+        # cut by its own box: a node's bounds are what is visible of it, so a label squeezed under a picture (the picker's tile
+        # names, 2026-11-03) is a sliver. The edges of a
+        # scrolling list cut rows on purpose and are skipped
+        if n.text.strip() and n.cls in ("TextView", "Button") and 0 < n.b[3] - n.b[1] < CLIP_MIN:
+            s = n.parent
+            while s and not s.scrollable:
+                s = s.parent
+            if not (s and (abs(n.b[1] - s.b[1]) <= 2 or abs(n.b[3] - s.b[3]) <= 2)) and 0 < n.b[3] <= SCREEN[1] and n.b[1] >= 0:
+                w.append("text cut by its box %r %s (%d px high)" % (n.text[:30], n.b, n.b[3] - n.b[1]))
     # untranslated: in vi, a text equal to an English string whose Vietnamese differs; in en, Vietnamese letters we did not ship
     en_val = {}
     for k, v in EN.items():

@@ -83,11 +83,11 @@ object QuickKeys {
         val tiles = HashMap<Int, PickTile>()
         var seq = 0                                                   // a redraw superseded by a newer one (two changes in a row) is dropped
 
-        fun targetOf(code: Int, c: JSONObject = Store.get(a)): String = if (code == POWER) c.optString("autoapp") else HomeConfig.keyApps(c.optJSONObject("keyapps"))[code].orEmpty()
+        fun targetOf(code: Int, c: JSONObject = Store.get(a)): String = if (code == POWER) Keys.powerApp(c) else HomeConfig.keyApps(c.optJSONObject("keyapps"))[code].orEmpty()
         fun words(code: Int) = if (code == POWER) a.getString(R.string.qk_power) else Keys.name(a, code)
         fun choose(code: Int) {
             Picker.show(a, Picker.Mode.TARGET, words(code), targetOf(code), actions = code != POWER) { t ->   // the power-on slot opens an app: an action needs a key press
-                if (code == POWER) Store.change(a, JSONObject().put("autoapp", t).put("autoon", t.isNotEmpty()))   // the slot alone decides
+                if (code == POWER) Keys.setPowerApp(a, t)                 // the slot alone decides
                 else {
                     val m = JSONObject(); for ((k, v) in HomeConfig.keyApps(Store.get(a).optJSONObject("keyapps"))) if (k != code) m.put(k.toString(), v)
                     if (t.isNotEmpty()) m.put(code.toString(), t)
@@ -103,7 +103,7 @@ object QuickKeys {
             always.visibility = if (Keys.all(a)) View.VISIBLE else View.GONE
             always.isSelected = c.optBoolean("autoall")
             // where it goes, in the words: "Luôn về khi bật TV" did not say to what
-            val to = c.optString("autoapp").let { if (c.optBoolean("autoon") && it.isNotEmpty()) Targets.label(a, it) else "TV Home" }
+            val to = Keys.powerApp(c).let { if (it.isNotEmpty()) Targets.label(a, it) else "TV Home" }
             always.pillText(a.getString(R.string.qk_always, to, said(always.isSelected)))
             hint.text = a.getString(if (!Keys.setup(a)) R.string.k_need_setup else if (!Keys.can(a)) R.string.k_need_adb else R.string.k_everywhere)
         }

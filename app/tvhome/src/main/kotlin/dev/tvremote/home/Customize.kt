@@ -7,6 +7,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.Color
@@ -1170,11 +1171,17 @@ object Customize {
             }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = gap })
         }
         door(R.drawable.ic_apps, a.getString(R.string.c_add_home), { a.getString(R.string.pk_grid_hint) }) {   // the same "+ Add" menu as the grid's tile (apps, folder, link, channels, live widgets): the bare grid picker lacked the half of it
-            val h = a as? HomeActivity
-            if (h != null) { panelDialog?.dismiss(); h.addPanel() } else Picker.show(a, Picker.Mode.GRID, a.getString(R.string.c_add_home))
+            panelDialog?.dismiss(); onHome(a, HomeConfig.ADD) { it.addPanel() }
         }
-        door(R.drawable.ic_pen, a.getString(R.string.el_edit), { a.getString(R.string.el_edit_sub) }) { panelDialog?.dismiss(); (a as? HomeActivity)?.edit() }
+        door(R.drawable.ic_pen, a.getString(R.string.el_edit), { a.getString(R.string.el_edit_sub) }) { panelDialog?.dismiss(); onHome(a, HomeConfig.EDIT) { it.edit() } }
         door(R.drawable.ic_keyboard, a.getString(R.string.c_quickkeys), { a.getString(if (Keys.setup(a)) R.string.k_everywhere else R.string.k_need_setup) }) { QuickKeys.show(a) }
+    }
+
+    /** [act] on Home itself; elsewhere (the screensaver's settings) Home is started with [action] for it ([HomeActivity.startAction]), never a copy of its screen. */
+    fun onHome(a: Activity, action: String, act: (HomeActivity) -> Unit) {
+        if (a is HomeActivity) { act(a); return }
+        try { a.startActivity(Intent(a, HomeActivity::class.java).setAction(action).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)) } catch (e: Exception) { }
+        a.finish()
     }
 
     /** The screensaver switch cannot write the setting (no WRITE_SECURE_SETTINGS yet; a phone or computer grants it): the system's own screen for it instead. */

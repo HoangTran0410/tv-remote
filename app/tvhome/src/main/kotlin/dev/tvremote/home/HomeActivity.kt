@@ -103,6 +103,8 @@ import dev.tvremote.home.ui.Zoom
  * Plain views, built in code: it has to come up at once on the weakest TV chip. What it shows is set in [Store], from here
  * (hold OK on an app) or from the phone / computer (HomeReceiver).
  */
+private val START_ACTIONS = setOf(InputOpen.INPUTS, HomeConfig.QUICK_KEYS, HomeConfig.PHOTO_QR, HomeConfig.ADD, HomeConfig.EDIT, HomeConfig.CUSTOMIZE)
+
 class HomeActivity : Activity() {
     private val bg = java.util.concurrent.ThreadPoolExecutor(1, 1, 0, java.util.concurrent.TimeUnit.MILLISECONDS, java.util.concurrent.LinkedBlockingQueue(),
         java.util.concurrent.ThreadPoolExecutor.DiscardPolicy())   // a late job after onDestroy's shutdown is dropped, not thrown (census 1d158634)
@@ -192,10 +194,9 @@ class HomeActivity : Activity() {
             dev.tvremote.home.apps.SystemSettings.open(this)
             finish(); return
         }
-        wantInputs = intent?.action == InputOpen.INPUTS
+        wantStart = intent?.takeIf { it.action in START_ACTIONS }
         Font.load(this)
         InputOpen.sync(this)
-        if (intent?.action == HomeConfig.PHOTO_QR) window.decorView.post { if (!locked) PhotoScreen.show(this) {} }
         if (android.os.Build.VERSION.SDK_INT >= 24 && getSystemService(android.os.UserManager::class.java)?.isUserUnlocked == false) {
             locked = true
             registerReceiver(unlocked, IntentFilter(Intent.ACTION_USER_UNLOCKED))
@@ -347,7 +348,7 @@ class HomeActivity : Activity() {
     override fun onResume() {
         super.onResume()
         if (locked) return
-        if (wantInputs) { wantInputs = false; bar.post { inputs() } }   // started by the Input key: the menu once the home is up
+        wantStart?.let { i -> wantStart = null; bar.post { if (!isDestroyed) startAction(i) } }   // started for one menu (the Input key, the Control Center over an app): once the home is up
         dev.tvremote.home.ui.ControlCenter.warm(this)
         Themes.refresh(this)                                          // a day old: the launcher's process outlives the check at its start
         Motion.read(this, conf)                                       // the system's "remove animations" may have changed while away
@@ -762,9 +763,7 @@ class HomeActivity : Activity() {
     override fun onNewIntent(i: Intent) {
         super.onNewIntent(i)
         if (locked) return
-        if (i.action == InputOpen.INPUTS) { inputs(); return }
-        if (i.action == HomeConfig.QUICK_KEYS) { open?.dismiss(); open = null; dev.tvremote.home.keys.QuickKeys.show(this); return }   // TV Setup's key tester: "assign this key"
-        if (i.action == HomeConfig.PHOTO_QR) { open?.dismiss(); PhotoScreen.show(this) {}; return }                  // the remote's Input key while another app is in front
+        if (startAction(i)) return
         if (open?.isShowing == true) { open?.dismiss(); open = null; return }                          // a panel or menu is open: this press closes it
         val last = if (away) lastOpened?.let { p -> tiles().firstOrNull { it.app?.pkg == p } } else null
         if (last != null) last.requestFocus() else toTop()            // back from an app: on its tile; Home on the home screen: to the top
@@ -775,7 +774,26 @@ class HomeActivity : Activity() {
 
     // Android 13+ hands the Back that closed a menu or the panel to the home too: it must not also move the focus to the dock
     private var back = 0L
-    private var wantInputs = false
+    private var wantStart: Intent? = null
+
+    /**
+     * The one way in from outside Home to one of its menus: every door that is not on the home screen (the Input key over an app, the
+     * Control Center over an app, Customize from the screensaver's settings, TV Setup's key tester) starts Home with one of these, so
+     * a job has one screen wherever it starts (the user, 2026-11-03: Customize's "Add" was a second, poorer screen).
+     */
+    private fun startAction(i: Intent): Boolean {
+        if (i.action !in START_ACTIONS) return false
+        open?.dismiss(); open = null
+        when (i.action) {
+            InputOpen.INPUTS -> inputs()
+            HomeConfig.QUICK_KEYS -> dev.tvremote.home.keys.QuickKeys.show(this)                      // TV Setup's key tester: "assign this key"
+            HomeConfig.PHOTO_QR -> PhotoScreen.show(this) {}                                          // the QR for a photo, while another app is in front
+            HomeConfig.ADD -> addPanel()
+            HomeConfig.EDIT -> edit()
+            HomeConfig.CUSTOMIZE -> customize(i.getStringExtra(HomeConfig.AT))
+        }
+        return true
+    }
     override fun onWindowFocusChanged(has: Boolean) { super.onWindowFocusChanged(has); if (has) back = SystemClock.uptimeMillis() }
 
     private fun toTop() {
@@ -796,7 +814,7 @@ class HomeActivity : Activity() {
     private fun badgeTiles() {
         val m = getString(R.string.b_m); val h = getString(R.string.b_h)
         val conf = Store.get(this)
-        val power = if (conf.optBoolean("autoon")) conf.optString("autoapp") else ""
+        val power = Keys.powerApp(conf)
         for (t in tileCache.values) t.app?.let { a -> t.mark(badges.of(a.pkg) ?: Badges.POWER.takeIf { a.pkg == power }) { Badges.label(it, m, h) } }
         // which keys open each tile: a key's target is the tile's own key (a package, "pin:…", "tile:…"), only while keys are on
         val byTile = HashMap<String, MutableList<Int>>()
@@ -2051,10 +2069,10 @@ class HomeActivity : Activity() {
         // 2. what starts it: the power-on app, a remote key
         if (!dockedPin && Tiles.Act.START in acts) {
             val start = ArrayList<TvGlass.Item>()
-            val powerApp = conf.optBoolean("autoon") && conf.optString("autoapp") == a.pkg
+            val powerApp = Keys.powerApp(conf) == a.pkg
             val me = out.size
             start.add(stays(R.drawable.ic_power, R.string.auto_on, getString(if (powerApp) R.string.am_on else R.string.am_off)) {   // the app that opens when the TV turns on: TV Setup does it (Keys.push); a toggle, so the panel stays and the row shows the new state
-                Store.change(this, if (powerApp) JSONObject().put("autoon", false) else JSONObject().put("autoapp", a.pkg).put("autoon", true))
+                Keys.setPowerApp(this, if (powerApp) "" else a.pkg)
                 if (!Keys.setup(this)) toast(R.string.auto_needs_setup)   // saved anyway: it works the day TV Setup is there
                 conf = Store.get(this)
                 sub(a, st, me, 0)

@@ -25,6 +25,10 @@ object Keys {
 
     private fun prefs(c: Context) = c.getSharedPreferences("home_keys", Context.MODE_PRIVATE)
 
+    /** The power-on app, "" for none. Read and written only here: a tile's menu turned it off by "autoon" alone while Quick keys read "autoapp" alone, and showed an app that no longer opened. */
+    fun powerApp(conf: JSONObject): String = if (conf.optBoolean("autoon")) conf.optString("autoapp") else ""
+    fun setPowerApp(c: Context, target: String) { Store.change(c, JSONObject().put("autoapp", target).put("autoon", target.isNotEmpty())) }
+
     /** Tells TV Setup the setting as it is now and keeps its answer; on a thread of its own (a binder call to another app). */
     /** TV Setup lets the remote's mapped keys through to the screen while a page that assigns them is open (an older one: they open their apps as ever). */
     fun capture(c: Context, on: Boolean) {
