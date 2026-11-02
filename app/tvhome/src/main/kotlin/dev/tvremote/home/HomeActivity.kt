@@ -216,7 +216,7 @@ class HomeActivity : Activity() {
         backdrop = Backdrop(window.decorView)
 
         Motion.read(this, conf)
-        scroll = Scroller(this) { Frost.moved(); slideCap?.translationY = -scroll.scrollY.toFloat() }.apply { isVerticalScrollBarEnabled = false; isFillViewport = true; clipChildren = false }   // the caption leaves with the top bar (it stayed and wrote over the widgets)
+        scroll = Scroller(this, { if (!touchScrolled) { touchScrolled = true; veil() } }) { Frost.moved(); slideCap?.translationY = -scroll.scrollY.toFloat() }.apply { isVerticalScrollBarEnabled = false; isFillViewport = true; clipChildren = false }   // the caption leaves with the top bar (it stayed and wrote over the widgets)
         val col = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false
             setPadding(dp(48), dp(34), dp(48), dp(48))
@@ -294,7 +294,7 @@ class HomeActivity : Activity() {
         col.addView(grid, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(40) })
         // no widgets: the grid starts low, so the first row is whole and the second is cut by the screen's edge; the wallpaper above
         grid.viewTreeObserver.addOnGlobalLayoutListener { peek(); if (tipOn) (grid.getChildAt(0) as? ViewGroup)?.let { tipPlace(it) } }  // after every layout: rows came or went, a widget opened
-        scroll.viewTreeObserver.addOnGlobalFocusChangeListener { _, _ -> veil(); tip() }
+        scroll.viewTreeObserver.addOnGlobalFocusChangeListener { _, _ -> touchScrolled = false; veil(); tip() }   // the remote again: its rule again
         scroll.addOnLayoutChangeListener { _, _, t, _, b, _, ot, _, ob -> if (b - t != ob - ot) peek() }
 
         setContentView(root)
@@ -505,14 +505,16 @@ class HomeActivity : Activity() {
             if (editing) addState(intArrayOf(), TvUi.round(Color.TRANSPARENT, dp(18).toFloat(), dp(2), EDIT_EDGE))   // at rest: the outline says "you can change this"
         }
     }
-    internal fun edit() {
+    private var editBack: (() -> Unit)? = null                         // Back ends the edit mode and goes back where it came from (Customize's door)
+    internal fun edit(back: (() -> Unit)? = null) {
         if (editing) return
+        editBack = back
         editing = true; widgets.editing = true; hint.visibility = View.VISIBLE
         paintHead(); clockAndDay(); show(); widgetsRead()            // a rebuild gives the widgets their stops; the focus comes back to the widget it was on
         ui.postDelayed({ if (!isDestroyed && currentFocus == null) settle() }, 350)
     }
     private fun endEdit() {
-        editing = false; widgets.editing = false; hint.visibility = View.GONE
+        editBack = null; editing = false; widgets.editing = false; hint.visibility = View.GONE
         paintHead(); clockAndDay(); show(); widgetsRead()             // clockAndDay: the clock stops being a stop now, not at the next tick (the focus landed on it, then on nothing)
         ui.postDelayed({ if (!isDestroyed) settle() }, 350)           // a widget that took no focus before gives it back to a neighbour
     }
@@ -689,6 +691,7 @@ class HomeActivity : Activity() {
     }
 
     /** "rows" a whole number: the rows under them stay hidden in the half row left clear until the focus goes down into them. */
+    private var touchScrolled = false
     private fun veil(glide: Boolean = true) {
         if (moving != null) {                                         // a step takes the carried tile out and back: focus leaves for a moment, and the
             for (i in 0 until grid.childCount) grid.getChildAt(i).let { it.animate().cancel(); it.alpha = 1f }   // fade it started (to 0) outlived the call that wanted 1: every other step hid the rows
@@ -698,7 +701,7 @@ class HomeActivity : Activity() {
         val n = if (r >= 1 && r - Math.floor(r) < 0.05) Math.floor(r).toInt() else Int.MAX_VALUE
         var v: View? = currentFocus
         while (v != null && v.parent !== grid) v = v.parent as? View
-        val down = v != null && grid.indexOfChild(v) >= n
+        val down = v != null && grid.indexOfChild(v) >= n || touchScrolled   // a finger (scrcpy's touch, a mouse) scrolled to them: no focus came down to show them
         for (i in 0 until grid.childCount) {
             val row = grid.getChildAt(i); val want = if (i < n || down) 1f else 0f
             if (row.alpha != want) { row.animate().cancel(); if (glide && Motion.on) row.animate().alpha(want).setDuration(220).start() else row.alpha = want }
@@ -770,7 +773,7 @@ class HomeActivity : Activity() {
     }
 
     @Deprecated("Back on a home screen goes nowhere")
-    override fun onBackPressed() { if (editing) { endEdit(); return }; if (!locked && SystemClock.uptimeMillis() - back > 500) toTop() }
+    override fun onBackPressed() { if (editing) { val b = editBack; endEdit(); b?.invoke(); return }; if (!locked && SystemClock.uptimeMillis() - back > 500) toTop() }
 
     // Android 13+ hands the Back that closed a menu or the panel to the home too: it must not also move the focus to the dock
     private var back = 0L
@@ -1306,6 +1309,7 @@ class HomeActivity : Activity() {
         val id = HomeConfig.folderId(a.pkg)
         elementMenu(a.label, listOf(
             gi(R.drawable.ic_apps, getString(R.string.folder_open)) { ui.post { openFolder(a) } },
+            gi(R.drawable.ic_folder_plus, getString(R.string.folder_pick)) { ui.post { pickFolder(id, a.label) } },   // what is in it, ticked: before, more apps went in only from each app's own menu
             gi(R.drawable.ic_expand, getString(R.string.move)) { ui.post { startMove(a.pkg) } },
             gi(R.drawable.ic_pen, getString(R.string.rename)) { ui.post { nameDialog(R.string.folder_name, a.label) { n -> folderDo(Folders.rename(conf, id, n.ifEmpty { getString(R.string.folder_default) })) } } },
             gi(R.drawable.ic_trash, getString(R.string.folder_delete)) { folderDo(Folders.delete(conf, id)) },
@@ -1335,6 +1339,12 @@ class HomeActivity : Activity() {
             }
             folderDo(change)
         }, max = HomeConfig.FOLDER_APPS_MAX) }
+    }
+
+    /** An existing folder's tiles in the same picker as a new one ([newFolder]), its own ticked; Done makes it hold what is ticked. */
+    private fun pickFolder(id: String, name: String) {
+        val now = Folders.of(conf)[id]?.apps ?: return
+        open = Picker.show(this, Picker.Mode.CHOOSE, name, pick = { chosen -> folderDo(Folders.setApps(conf, id, chosen)) }, picked = now, max = HomeConfig.FOLDER_APPS_MAX)
     }
 
     /** A name asked for with the TV's keyboard (a new folder, a rename); an empty one is passed on as "" (the caller picks the default). */
@@ -2097,10 +2107,14 @@ class HomeActivity : Activity() {
         } else if (st != null && Tiles.Act.LOCK in acts && !st.optBoolean("prot")) {
             val lock = ArrayList<TvGlass.Item>()
             val me = out.size                                         // this page's place among the groups, for coming back to it
-            val locked = st.optBoolean("locked"); val limit = st.optInt("limit")
+            // TV Home's own lock from before TV Setup came still asks its PIN: shown and undone here, or nothing could unlock that app
+            val ownLock = HomeLock.isLocked(this, a.pkg)
+            val locked = st.optBoolean("locked") || ownLock; val limit = st.optInt("limit")
             fun mins(m: Int) = if (m > 0) getString(R.string.am_limit_min, m) else getString(R.string.am_limit_off)
             lock.add(stays(R.drawable.ic_lock, if (locked) R.string.am_unlock else R.string.am_lock, if (locked) getString(R.string.am_locked) else "") {
-                AppRules.change(this, a.pkg, "lock", { put("on", !locked) }) { r -> changed(a, st, me, r) { n -> again(n, me) } }
+                if (locked && ownLock) { HomeLock.set(this, a.pkg, false); badgesSoon() }
+                if (locked && !st.optBoolean("locked")) sub(a, st, me, 0)
+                else AppRules.change(this, a.pkg, "lock", { put("on", !locked) }) { r -> changed(a, st, me, r) { n -> again(n, me) } }
             })
             lock.add(stays(R.drawable.ic_hourglass, R.string.am_limit, mins(limit), true) { limitMenu(a, st) })
             lock.add(stays(R.drawable.ic_chart, R.string.am_used, getString(R.string.am_limit_min, (st.optLong("used") + 30) / 60), true) { weekPage(a, st, "") })
@@ -2493,7 +2507,7 @@ class HomeActivity : Activity() {
     }
 
     private var panel: android.app.Dialog? = null
-    private fun customize(at: String? = null) { open = Customize.show(this, at).also { panel = it } }
+    internal fun customize(at: String? = null) { open = Customize.show(this, at).also { panel = it } }
 
     /** The remote's Menu key anywhere but on an app (an app's own Menu opens its menu) opens the settings. */
     override fun onKeyUp(code: Int, e: KeyEvent): Boolean {
@@ -2516,7 +2530,8 @@ class HomeActivity : Activity() {
      * the first run hid every app but the well-known ones, a row per hidden app pushed the rest of the list off the screen. The hidden
      * apps are the choice grid (many ticked at once), not rows here.
      */
-    fun addPanel() {
+    /** [back]: Back on the first page goes there (Customize's door) instead of Home; a row chosen does not ([Customize.backTo]). */
+    fun addPanel(back: (() -> Unit)? = null) {
         val hidden = Store.list(this, "hidden"); val onGrid = Store.list(this, "tiles") + Pins.list(this).map { it.pkg }   // a pinned shortcut is on the grid already
         fun icon(pkg: String) = try { packageManager.getApplicationIcon(pkg) } catch (e: Exception) { null }
         val live = ArrayList<TvGlass.Item>(); val pins = ArrayList<TvGlass.Item>(); val rowsOff = ArrayList<TvGlass.Item>()
@@ -2532,6 +2547,8 @@ class HomeActivity : Activity() {
                 if (k in onGrid || pins.size >= 40) continue
                 pins.add(TvGlass.Item(0, o.optString("title"), getString(R.string.add_pin), false, false) { addToGrid(k, true) }.also { it.picture = Pins.rowIcon(this, k, o.optString("app"), o.optLong("t")) ?: icon(o.optString("app")) }) }
         }
+        // the row's widgets that are off: hidden from a widget's menu, they came back only through Customize
+        val widgets = Customize.widgetsOff(this).map { (k, ic, name) -> TvGlass.Item(ic, name, getString(R.string.add), false, false) { Store.putList(this, "widgets", Store.list(this, "widgets") + k) } }
         val p = TvGlass.Panel(this, R.style.Menu, R.drawable.ic_left) { it.typeface = if (it.typeface?.isBold == true) Font.bold else Font.regular }
         fun top(at: Int) {
             val rows = ArrayList<TvGlass.Item>()
@@ -2547,7 +2564,7 @@ class HomeActivity : Activity() {
                 }.also { it.picture = icon(if (l[0].any) Links.source(this, l[0]) ?: "" else pkg) })
             if (Apps.one(this, "dev.tvremote.channels") != null)
                 chans.add(TvGlass.Item(R.drawable.ic_plus, getString(R.string.add_channel), getString(R.string.add_channel_hint), false, false) { if (!Apps.launch(this, "dev.tvremote.channels")) toast(R.string.no_open) })
-            for ((name, kind, items) in listOf(Triple(R.string.add_g_chans, R.drawable.ic_play, chans), Triple(R.string.add_g_live, R.drawable.ic_zap, live), Triple(R.string.add_g_pins, R.drawable.ic_star, pins), Triple(R.string.add_g_rows, R.drawable.ic_eye, rowsOff))) {
+            for ((name, kind, items) in listOf(Triple(R.string.add_g_chans, R.drawable.ic_play, chans), Triple(R.string.add_g_live, R.drawable.ic_zap, live), Triple(R.string.w_widgets, R.drawable.ic_gauge, widgets), Triple(R.string.add_g_pins, R.drawable.ic_star, pins), Triple(R.string.add_g_rows, R.drawable.ic_eye, rowsOff))) {
                 if (items.size == 1 && name != R.string.add_g_live) { rows.add(items[0]); continue }   // one alone: no page to open first (live widgets keep theirs)
                 if (items.isEmpty()) continue
                 val i = rows.size
@@ -2557,6 +2574,7 @@ class HomeActivity : Activity() {
         }
         top(0)
         open = p.dialog
+        if (back != null) p.dialog.setOnCancelListener { back() }       // cancel is Back or a tap outside; a row's dismiss is not
         p.show()
     }
 
@@ -2599,8 +2617,10 @@ class HomeActivity : Activity() {
     private fun shadow(t: TextView) = t.setShadowLayer(dp(6).toFloat(), 0f, dp(1).toFloat(), 0x80000000.toInt())
 
     /** Never scrolls by itself to the focused view: [tile] and the buttons say where to, so a row is not pressed to the edge. */
-    private class Scroller(c: Context, private val moved: () -> Unit) : ScrollView(c) {
+    private class Scroller(c: Context, private val dragged: () -> Unit, private val moved: () -> Unit) : ScrollView(c) {
         override fun computeScrollDeltaToGetChildRectOnScreen(rect: Rect?) = 0
+        override fun onTouchEvent(e: android.view.MotionEvent): Boolean { if (e.actionMasked == android.view.MotionEvent.ACTION_MOVE) dragged(); return super.onTouchEvent(e) }
+        override fun onGenericMotionEvent(e: android.view.MotionEvent): Boolean { if (e.actionMasked == android.view.MotionEvent.ACTION_SCROLL) dragged(); return super.onGenericMotionEvent(e) }   // a mouse wheel
         override fun onScrollChanged(l: Int, t: Int, oldl: Int, oldt: Int) { super.onScrollChanged(l, t, oldl, oldt); moved() }
     }
 

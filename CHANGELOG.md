@@ -6,6 +6,11 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: a folder's menu has "Choose what's in it" (the picker with its tiles ticked: tick to add, untick to take out); before, a folder only grew one tile at a time from each tile's menu.
+- TV Home: + Add lists the row's widgets that are off, so one hidden from its own menu comes back there too, not only through Customize.
+- TV Home: Back out of + Add or the edit mode opened from Customize returns to Customize, on the door you came through (one level; Back again goes Home).
+- TV Home: scrolling Home by touch (the phone app's touch, a mouse) shows the rows below the first; they stayed hidden until the remote's focus went down.
+- TV Home: an app locked by TV Home's own PIN before TV Setup came shows as locked in TV Setup's Lock & limits page, and Unlock there clears it.
 - TV Home: the Control Center over an app opens Home's own Customize panel and sources menu; Customize from the screensaver's settings opens Home's + Add menu and Edit mode (Edit did nothing there); turning the power-on app off from a tile's menu also clears it in Quick keys.
 - TV Home: Customize → Add to home screen opens the same + Add menu as the grid's tile (new folder, links, channels, live widgets too); a shortcut's name no longer gets cut off under its picture in the picker.
 - TV Games: arcade games (FinalBurn Neo, downloaded on the first one): upload your own .zip under its romset name (Neo Geo needs neogeo.zip beside it), Coin on the pad, Press Start puts a coin in; seven free arcade games from mamedev.org in Suggestions.

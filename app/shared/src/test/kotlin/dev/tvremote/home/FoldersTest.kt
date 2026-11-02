@@ -42,6 +42,17 @@ class FoldersTest {
 
     private fun clean(c: JSONObject) = HomeConfig.clean(c)
 
+    @Test fun choosingWhatIsInAFolderAddsAndTakesOutInOneChange() {
+        val conf = file.getJSONObject("withFolder")
+        // com.b.two stays, com.e.four goes back on the grid after the folder, com.a.one comes in
+        assertEquals("com.d.dock|com.h.hid|folder:f1,com.e.four,tile:dev.tvremote.setup/ram,com.c.three|tile:dev.tvremote.setup/ram,folder:f1|f1=Video:com.b.two,com.a.one",
+            norm(Folders.setApps(conf, "f1", listOf("com.b.two", "com.a.one"))))
+        // every old one unticked, one new: the folder stays (adds come first) with the new one alone
+        assertEquals("f1=Video:com.c.three", norm(Folders.setApps(conf, "f1", listOf("com.c.three")))!!.substringAfterLast('|'))
+        assertNull("nothing ticked: Remove folder does that", Folders.setApps(conf, "f1", emptyList()))
+        assertNull("no such folder", Folders.setApps(conf, "f9", listOf("com.a.one")))
+    }
+
     @Test fun anEmptiedFolderIsDeletedWithItsTileAndPlace() {
         val conf = file.getJSONObject("withFolder")
         val one = Folders.remove(conf, "f1", "com.b.two")!!              // two apps -> one

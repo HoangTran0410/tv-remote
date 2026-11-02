@@ -134,9 +134,9 @@ object Picker {
 
     private fun fold(t: String) = java.text.Normalizer.normalize(t, java.text.Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").replace('đ', 'd').replace('Đ', 'D').lowercase()
 
-    /** [pick]: CHOOSE for a new folder: nothing ticked at first, at most [max], Done hands the apps over instead of changing the grid. */
+    /** [pick]: CHOOSE for a folder: [picked] ticked at first (what an existing folder holds), at most [max], Done hands them over instead of changing the grid. */
     /** [only]: an app's ([Links.Item.group]) channels alone, from "+ Add"'s "Pin a VTVgo channel". [paste]: a card on top with a QR to TV Home's own page, where a link is pasted from a phone ([ManageServer.PASTE_HASH]). */
-    fun show(a: Activity, mode: Mode, title: String, now: String = "", only: String? = null, paste: Boolean = false, actions: Boolean = false, pick: ((List<String>) -> Unit)? = null, max: Int = Int.MAX_VALUE, onPick: (String) -> Unit = {}): Dialog {
+    fun show(a: Activity, mode: Mode, title: String, now: String = "", only: String? = null, paste: Boolean = false, actions: Boolean = false, pick: ((List<String>) -> Unit)? = null, picked: List<String> = emptyList(), max: Int = Int.MAX_VALUE, onPick: (String) -> Unit = {}): Dialog {
         val d = a.resources.displayMetrics.density
         fun dp(v: Number) = (v.toFloat() * d).toInt()
         val dm = a.resources.displayMetrics
@@ -344,16 +344,17 @@ object Picker {
             if (mode == Mode.TARGET) got.add(Item("", a.getString(R.string.pk_none), null, "", 0))
             if (mode == Mode.TARGET && actions) got.add(Item(Target.CONTROL, a.getString(R.string.cc_title), null, a.getString(R.string.pk_over_apps), 0, R.drawable.ic_settings))   // a key's action: the Control Center over any app
             for (p in apps) got.add(Item(p.pkg, p.label, p, if (p.pkg in hidden && mode == Mode.GRID) a.getString(R.string.pk_hidden) else "", 0))
-            if (mode == Mode.CHOOSE) { allKeys = apps.map { it.pkg }; chosen.clear(); if (pick == null) chosen.addAll(apps.map { it.pkg }.filter { it !in hidden }); a.runOnUiThread { labels() }
+            if (mode == Mode.CHOOSE) { allKeys = apps.map { it.pkg }; chosen.clear(); if (pick == null) chosen.addAll(apps.map { it.pkg }.filter { it !in hidden }) else chosen.addAll(picked); a.runOnUiThread { labels() }
                 if (pick != null) {                                    // a folder can hold what is on the grid besides apps: shortcuts and live widgets
                     // all of them, also a shortcut pinned through Android that is not in "tiles" yet (YouTube, channels): Folders.keep puts it there
                     val home = a as? dev.tvremote.home.HomeActivity
                     val there = home?.loaded().orEmpty() + home?.pinned().orEmpty()
                     val can = Tiles.folderChoices(there.map { it.pkg }, emptyList(), a.packageName).toSet()   // the one list of what a folder takes (Tiles.kt)
-                    val onGrid = there.filter { it.grid && it.pkg in can }.distinctBy { it.pkg }
+                    val onGrid = there.filter { (it.grid || it.pkg in picked) && it.pkg in can && apps.none { o -> o.pkg == it.pkg } }.distinctBy { it.pkg }   // a folder's own apps and shortcuts are not on the grid: listed, ticked
                     val live = LiveWidgets.available(a).associateBy { it.key }
                     val names = apps.associate { it.pkg to it.label }
                     for (p in onGrid) if (p.live) live[p.pkg]?.let { t -> got.add(Item(t.key, t.title.ifEmpty { p.label }, null, a.getString(R.string.pk_live_tag), 3, LiveWidgets.iconRes(a, t))) }
+                        else if (!p.grid) got.add(Item(p.pkg, p.label, p, "", 0))   // an app inside the folder: Home's list leaves it out (it is not on the grid), with the apps
                         else got.add(Item(p.pkg, p.label, p, names[Target.pkg(p.pkg)] ?: "", 1))
                 }
             }

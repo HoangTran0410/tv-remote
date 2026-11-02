@@ -908,7 +908,8 @@ object Customize {
             }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = gap })
         }
         groups[5].fill = {
-            launchPage(a, col, ::glass, ::label, gap)
+            val doors = launchPage(a, col, ::glass, ::label, gap)
+            doors.getOrNull(doorAt)?.let { v -> groups[5].start = { v } }; doorAt = -1   // come back from a door: on it
         }
         groups[6].fill = {
             // every language at once, each in its own words, the one in use ticked: one tile stepping through them hid which
@@ -1148,8 +1149,9 @@ object Customize {
      * Doors: "Add to home screen" (the grid's own "+ Add" menu, [HomeActivity.addPanel]: one menu for it everywhere) and "Quick keys" ([QuickKeys]: 0-9, colour keys and the power-on app, each shown by the logo of its [Target]).
      * They replaced a row list here that could not show logos nor shortcuts. Lines under say what needs TV Setup.
      */
-    private fun launchPage(a: Activity, col: LinearLayout, glass: (Int, Int, Int) -> GradientDrawable, label: (String, Float, Int) -> TextView, gap: Int) {
+    private fun launchPage(a: Activity, col: LinearLayout, glass: (Int, Int, Int) -> GradientDrawable, label: (String, Float, Int) -> TextView, gap: Int): List<View> {
         val d = a.resources.displayMetrics.density
+        val doors = ArrayList<View>()
         fun dp(v: Number) = (v.toFloat() * d).toInt()
         fun door(icon: Int, title: String, sub: () -> String, open: () -> Unit) {
             val line = label(sub(), 12f, DIM).apply { maxLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END }
@@ -1168,14 +1170,22 @@ object Customize {
                 }, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(12) })
                 onFocusChangeListener = View.OnFocusChangeListener { v, f -> lit(v, f) }
                 setOnClickListener { open() }
-            }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = gap })
+            }.also { doors.add(it) }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = gap })
         }
         door(R.drawable.ic_apps, a.getString(R.string.c_add_home), { a.getString(R.string.pk_grid_hint) }) {   // the same "+ Add" menu as the grid's tile (apps, folder, link, channels, live widgets): the bare grid picker lacked the half of it
-            panelDialog?.dismiss(); onHome(a, HomeConfig.ADD) { it.addPanel() }
+            panelDialog?.dismiss(); onHome(a, HomeConfig.ADD) { it.addPanel(back = { backTo(it, 0) }) }
         }
-        door(R.drawable.ic_pen, a.getString(R.string.el_edit), { a.getString(R.string.el_edit_sub) }) { panelDialog?.dismiss(); onHome(a, HomeConfig.EDIT) { it.edit() } }
+        door(R.drawable.ic_pen, a.getString(R.string.el_edit), { a.getString(R.string.el_edit_sub) }) { panelDialog?.dismiss(); onHome(a, HomeConfig.EDIT) { it.edit(back = { backTo(it, 1) }) } }
         door(R.drawable.ic_keyboard, a.getString(R.string.c_quickkeys), { a.getString(if (Keys.setup(a)) R.string.k_everywhere else R.string.k_need_setup) }) { QuickKeys.show(a) }
+        return doors
     }
+
+    /**
+     * Back out of a door's screen (+ Add's first page, the edit mode) comes here: this panel again, on the door it went through.
+     * One level only: the panel's own Back then goes Home as always (no history kept, so no loop); a job done there does not come back.
+     */
+    private var doorAt = -1
+    private fun backTo(a: Activity, door: Int) { if (a.isFinishing || a.isDestroyed) return; doorAt = door; (a as? HomeActivity)?.customize("keys") ?: show(a, "keys") }
 
     /** [act] on Home itself; elsewhere (the screensaver's settings) Home is started with [action] for it ([HomeActivity.startAction]), never a copy of its screen. */
     fun onHome(a: Activity, action: String, act: (HomeActivity) -> Unit) {
@@ -1215,6 +1225,18 @@ object Customize {
 
     private val QR_ROW = arrayOf<Any>("qr", R.drawable.ic_qr, R.string.w_qr, R.string.c_qr_sub)
 
+    /** A widget this TV can have: Private DNS is Android 9+; a QR widget is written on the phone or the web page: only those that exist. */
+    private fun canShow(k: String, qrs: JSONObject) = (k !in HomeQr.KEYS || qrs.has(k)) && (k != "adblock" || android.os.Build.VERSION.SDK_INT >= HomeConfig.ADBLOCK_MIN_SDK)
+
+    /** The widgets that are off, as + Add lists them (key, icon, name): the same rows as this panel's Widgets page, one list for both. */
+    fun widgetsOff(a: Context): List<Triple<String, Int, String>> {
+        val on = Store.list(a, "widgets"); val qrs = Store.get(a).optJSONObject("qrs") ?: JSONObject()
+        return HomeConfig.WIDGETS.filter { it !in on && canShow(it, qrs) }.map { k ->
+            val r = WIDGET_ROWS.firstOrNull { it[0] == k } ?: QR_ROW; val qr = qrs.optJSONObject(k)
+            Triple(k, r[1] as Int, if (qr != null) a.getString(R.string.w_qr_named, qr.optString("cap").ifEmpty { qrKind(a, qr) }) else a.getString(r[2] as Int))
+        }
+    }
+
     /** What a QR widget holds, in a word: "Wi-Fi", "Link" … (its fields are written on the phone or the web page). */
     private fun qrKind(a: Context, widget: JSONObject) = a.getString(when (widget.optString("tpl")) {
         "wifi" -> R.string.qr_t_wifi; "link" -> R.string.qr_t_link; "tel" -> R.string.qr_t_tel; "sms" -> R.string.qr_t_sms
@@ -1237,7 +1259,7 @@ object Customize {
             val on = Store.list(a, "widgets")
             val conf = Store.get(a)
             val qrs = conf.optJSONObject("qrs") ?: JSONObject()
-            val order = (on + HomeConfig.WIDGETS.filter { it !in on }).filter { (it !in HomeQr.KEYS || qrs.has(it)) && (it != "adblock" || android.os.Build.VERSION.SDK_INT >= HomeConfig.ADBLOCK_MIN_SDK) }   // Private DNS is Android 9+; a QR widget is written on the phone or the web page: only those that exist
+            val order = (on + HomeConfig.WIDGETS.filter { it !in on }).filter { canShow(it, qrs) }   // Private DNS is Android 9+; a QR widget is written on the phone or the web page: only those that exist
             val big = HomeConfig.bigs(conf)
             val waiting = HomeConfig.pack(on, big, conf.optString("note").isNotEmpty()).waiting.toSet()
             var want: View? = null

@@ -30,7 +30,7 @@ Run the TV check after any change to tiles, folders, pins or the tile menu. A ne
 | app | `com.x` | installed, not in `hidden` / a folder | Move, Put in a folder, Rename, **Hide**, Start, Lock, Maintenance, Play Next | `Tiles.kt:hide` (Customize's toggle) / `Tiles.kt:choose` (Choose apps' Done): into `hidden` and out of the dock and its folder (`Folders.kt:hide`; the web page the same, `HomeFolders.hide`), back through Choose apps (`Tiles.kt:hiddenShown`); a folder member in `hidden` is dropped by `HomeConfig.clean` (it shows in its folder) |
 | live widget | `tile:pkg/id` | its key in `tiles` | Move, Put in a folder, **Remove**, Start | `Tiles.kt:remove`: out of `tiles` / dock / order; + Add brings it back |
 | shortcut | `pin:pkg/id` | pinned through Android (no key in `tiles` needed), or its key in `tiles` | Move, Put in a folder, Rename, **Remove**, Start, Link | `Tiles.kt:remove` + `Pins.off` (the system pin too, or it came back) |
-| folder | `folder:id` | its key in `tiles`, holding a member | its own menu (`openFolder`) | emptied, or Delete: its tiles come back where it was |
+| folder | `folder:id` | its key in `tiles`, holding a member | its own menu (`openFolder`); Choose what's in it (`Folders.kt:setApps`: the ticked ones in, the unticked out, each through `put` / `out`) | emptied, or Delete: its tiles come back where it was |
 
 In a folder, any kind has Out of the folder / Earlier / Later instead of Move, and no Hide / Remove (out of the folder first).
 A shortcut pinned through Android that goes into a folder gets its key into `tiles` (`Folders.kt:keep`): that is what keeps it.

@@ -4,7 +4,7 @@ Gom vài ô (app, lối tắt, widget) vào một ô thư mục (hiện 4 biểu
 
 1. Giữ OK trên một app, lối tắt hay widget → **Trên màn hình chính** → **Cho vào thư mục**: chọn thư mục có sẵn hoặc **Thư mục mới** rồi đặt tên.
 2. OK trên thư mục mở một bảng các ô của nó; Back đóng. Mỗi app trong đó vẫn có menu riêng, có **Đưa ra khỏi thư mục**, chuyển sang thư mục khác, lên trước / xuống sau.
-3. Giữ OK trên ô thư mục để đổi tên, di chuyển trên lưới hoặc xóa (app trong đó về lại lưới). Thư mục trống tự biến mất.
+3. Giữ OK trên ô thư mục để **Chọn ô trong thư mục** (bỏ dấu là lấy ra), đổi tên, di chuyển trên lưới hoặc xóa (app trong đó về lại lưới). Thư mục trống tự biến mất.
 
 - Khóa PIN và giới hạn giờ của app vẫn áp dụng bên trong thư mục.
 - Ẩn một app thì app ra khỏi thư mục; **Chọn app…** đưa lại.

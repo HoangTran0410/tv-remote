@@ -153,6 +153,17 @@ object Folders {
         return s.change()
     }
 
+    /** Folder [id] holds [apps] (the folder's "Choose what's in it"): the new ones added at the end, the unticked ones back on the grid after it. Null when nothing changed. */
+    fun setApps(c: JSONObject, id: String, apps: List<String>): JSONObject? {
+        val f = of(c)[id] ?: return null
+        if (apps.isEmpty()) return null                                 // an empty folder is Remove folder's job, not a tick list's
+        val now = JSONObject(c.toString()); val change = JSONObject()
+        fun step(ch: JSONObject?) { if (ch != null) for (k in ch.keys()) { now.put(k, ch.get(k)); change.put(k, ch.get(k)) } }   // every key any step touched, at its last value
+        for (p in apps) if (p !in f.apps) step(add(now, id, p))       // adds first: removing every old one first would empty, and drop, the folder
+        for (p in f.apps) if (p !in apps) step(remove(now, id, p))
+        return change.takeIf { it.length() > 0 }
+    }
+
     /** [app] moved to place [to] inside folder [id]. */
     fun reorder(c: JSONObject, id: String, app: String, to: Int): JSONObject? {
         val s = State(c)
