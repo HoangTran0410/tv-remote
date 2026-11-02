@@ -5,7 +5,14 @@ before launcherx, check Home, roll back) come from these. Read them again now an
 `dev/sign/sign_bloat.py`, commit, push: every app reads it from the site when Optimize TV opens, no release needed), and now and
 then fold that list into Bloat.kt and empty it. The site's list can add suggestions, drop them, and only add to keep / factory.
 
-Last read: **2026-11-02**, upstream at `6e8615eb0b` (725 commits after `42fe7b09d6`; 96 `debloat.txt` changed, 47 new, 407 in all;
+Last read: **2026-11-02 (midday)**, upstream at `3cd274f866` (165 commits after `6e8615eb0b`; 38 `debloat.txt` changed, 11 new; no new PRs or
+issues). Into bloat.json: SUGGEST the Android 14 Privacy Sandbox trio `com.android.adservices.api`, `ondevicepersonalization.services`,
+`federatedcompute.services` (ad topics / measurement, off on a Xiaomi projector and an onn 4K Pro), `com.google.android.partnersetup`
+(RLZ attribution pings, off on 4 lists), `android.autoinstalls.config.fomovie` (Xiaomi projector installer), manuals `xiaomi.mitv.manualhelp`
+and `haier.emanual`. Not taken: Acer `com.apps.*` (gdpr / clear: as before), Philips NetTV market apps, VPN / game apps (the owner's own),
+`dreamx`, `tvrecommendations`, `backdrop` (screensaver and home rows: a choice), Xiaomi `mitv.toolhouse` / `tvqs.overseas` / `milegal`,
+`tcl.messagebox` / `usercenter` / `smartalexa`, Sony sensing camera, Fire OS parts, Haier launcher.
+Before that: **2026-11-02**, upstream at `6e8615eb0b` (725 commits after `42fe7b09d6`; 96 `debloat.txt` changed, 47 new, 407 in all;
 66 device notes; 123 forks with their own commits, none adding a package upstream lacks; TVSlim unchanged at `19e72fb`). Into bloat.json:
 SUGGEST `com.vt.tv.evservice` (Vu / Hisense ACR viewing data), `com.zeasn.services.general` (SHOW_AD, feed), `com.coocaa.messageprovider`
 (promo pushes), `com.htc.storeos` (an app store), `com.vestel.smartcenter` (no UI, GET_TASKS + INTERNET), `com.sony.dtv.sonytab` (partner
@@ -308,8 +315,8 @@ Sixth read, ideas that are not lists (2026-10-25, upstream `c965ef4b11..575d73f0
 ## Syncing again
 
 ```
-gh api repos/Gathin23/cleanyourtv/commits/main --jq '.sha[0:10]+" "+.commit.committer.date'   # changed since 6e8615eb0b?
-gh api repos/Gathin23/cleanyourtv/compare/6e8615eb0b...main --jq '.files[].filename'           # capped at 300 files: for a big gap diff git/trees/<sha>?recursive=1 blob shas under examples/ instead
+gh api repos/Gathin23/cleanyourtv/commits/main --jq '.sha[0:10]+" "+.commit.committer.date'   # changed since 3cd274f866?
+gh api repos/Gathin23/cleanyourtv/compare/3cd274f866...main --jq '.files[].filename'           # capped at 300 files: for a big gap diff git/trees/<sha>?recursive=1 blob shas under examples/ instead
 gh pr list -R Gathin23/cleanyourtv --state all -L 200 --search "created:>2026-11-02"
 gh issue list -R Gathin23/cleanyourtv --state all -L 200 --search "created:>2026-11-02"
 gh api repos/Gathin23/cleanyourtv/forks --paginate --jq '.[] | select(.pushed_at > "2026-11-02T00:00:00Z") | .full_name'

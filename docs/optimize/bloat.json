@@ -110,7 +110,14 @@
     "com.sony.dtv.sonytab": "Sony tab (partner rows)",
     "com.vestel.smartcenter": "Vestel app watcher (sees what you open)",
     "com.vt.tv.evservice": "Vu / Hisense viewing data (ACR)",
-    "com.zeasn.services.general": "Zeasn ads and weather feed"
+    "com.zeasn.services.general": "Zeasn ads and weather feed",
+    "android.autoinstalls.config.fomovie": "Xiaomi projector app installer",
+    "com.android.adservices.api": "Ad tracking (Privacy Sandbox)",
+    "com.android.ondevicepersonalization.services": "Ad personalisation service",
+    "com.android.federatedcompute.services": "Ad learning service",
+    "com.google.android.partnersetup": "Google partner attribution",
+    "com.xiaomi.mitv.manualhelp": "Xiaomi TV manual",
+    "com.haier.emanual": "Haier TV manual"
   },
   "drop": [
     "com.xm.webcontent"
