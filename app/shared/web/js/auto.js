@@ -90,6 +90,7 @@ function renderRules() {
   $('#lockacts').replaceChildren(...(settingsOpen ? [UI.note(T('auto.lock_settings_why'))] : []),
     act(T(lock.pin ? 'auto.pin_change' : 'auto.pin_first'), () => askPin()),
     ...(settingsOpen ? [act(T('auto.lock_settings'), () => loadRules({ do: 'lock', pkg: SETTINGS_PKGS[0], on: true }))] : []));
+  renderFamily(r);                                                     // family mode: a preset over the rules below (family.js)
   renderKids(r);                                                       // kids mode, unlock, total time (kids.js)
   // schedules; a TV Setup older than them has no "sched" in its answer
   const scheds = (r.sched || []).map((x) => {

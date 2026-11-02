@@ -972,6 +972,14 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 
 > 💡 All of it lives on the TV and needs TV Setup. It holds even with your device off.
 
+## Family mode
+
+1. Tab **⏰ Automation → 🛡️ Family mode**: pick the kids' apps, TV time a day and a bedtime.
+2. Tap **Turn on family mode**. If there is no PIN yet, set one.
+3. **Turn off family mode** removes only what it set. Rules you made stay, and so does the PIN.
+
+> 💡 It uses the Kids mode, Total TV time and Bedtime rules, so edit each on its own card. Needs a TV Setup with Kids mode.
+
 ## Lock apps with a PIN
 
 1. Tab **⏰ Automation → 🔒 Lock apps with a PIN**, tap **＋ Add**.

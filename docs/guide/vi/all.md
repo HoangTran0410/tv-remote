@@ -972,6 +972,14 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 
 > 💡 Tất cả nằm trên TV và cần TV Setup. TV ngủ hay máy bạn tắt vẫn có hiệu lực.
 
+## Chế độ gia đình
+
+1. Tab **⏰ Tự động → 🛡️ Chế độ gia đình**: chọn app cho trẻ, giờ xem TV mỗi ngày và giờ ngủ.
+2. Bấm **Bật chế độ gia đình**. Chưa có PIN thì đặt ngay.
+3. **Tắt chế độ gia đình** chỉ gỡ phần nó đã đặt. Luật bạn tự đặt vẫn giữ, PIN cũng giữ.
+
+> 💡 Dùng chính các luật Chế độ trẻ em, Tổng giờ xem TV và Giờ ngủ, nên sửa riêng từng cái ở thẻ của nó. Cần TV Setup có chế độ trẻ em.
+
 ## Khóa app bằng mã PIN
 
 1. Tab **⏰ Tự động → 🔒 Khóa app bằng mã PIN**, bấm **＋ Thêm**.

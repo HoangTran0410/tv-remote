@@ -58,6 +58,7 @@
   "sleep": {"since": "0.1.0"},
   "bedtime": {"since": "0.1.0"},
   "limits": {"since": "0.1.0"},
+  "family": {"since": "next"},
   "lock": {"since": "0.13.0", "setup": "0.13.0"},
   "schedule": {"since": "0.21.0"},
   "screen-dim": {"since": "0.13.0", "setup": "0.13.0"},
