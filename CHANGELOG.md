@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Settings: the long parts (anonymous stats, Home Assistant, Telegram, About, remote help, Get the app) fold to their title and one line of what is chosen; the short picks stay at the top. The Telegram token box is full size (a password box had no style).
 - TV Home: a folder's menu has "Choose what's in it" (the picker with its tiles ticked: tick to add, untick to take out); before, a folder only grew one tile at a time from each tile's menu.
 - TV Home: + Add lists the row's widgets as it lists live widgets: one that is off is added and focused (one hidden from its own menu comes back there too, not only through Customize); one already on says "Added" and a press goes to it. Live widgets say "Added" too (was "Already on the home screen").
 - TV Home: Back out of + Add or the edit mode opened from Customize returns to Customize, on the door you came through (one level; Back again goes Home).

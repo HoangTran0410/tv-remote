@@ -97,6 +97,16 @@ button .minispin { border-color:currentColor; border-right-color:transparent; } 
 details.card > summary { font-size:14px; font-weight:600; cursor:pointer; padding:6px 0; margin:-6px 0; }   /* every fold-out card reads the same */
 details.card[open] > summary { margin-bottom:var(--gap); }
 details.card > :not(summary) + :not(summary) { margin-top:var(--gap); }
+/* A long part of a dialog (Settings), folded to its title and one line of what is on: a list to scan, open one at a time */
+details.sect { border-top:1px solid var(--line); padding-top:10px; }
+details.sect > summary { list-style:none; cursor:pointer; position:relative; padding:2px 28px 2px 0; border-radius:6px; }
+details.sect > summary::-webkit-details-marker { display:none; }
+details.sect > summary::after { content:''; position:absolute; right:6px; top:7px; width:8px; height:8px; border:solid var(--muted); border-width:0 2px 2px 0; transform:rotate(45deg); transition:transform .15s; }
+details.sect[open] > summary::after { transform:rotate(-135deg); top:11px; }
+details.sect > summary:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
+details.sect > summary .sum { display:block; margin-top:3px; font-size:13px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+details.sect > summary .sum:empty, details.sect[open] > summary .sum { display:none; }
+details.sect[open] > summary { margin-bottom:8px; }
 details.adv > summary { cursor:pointer; font-size:14px; font-weight:600; color:var(--muted); padding:6px 0; }   /* the advanced part of a card, folded */
 details.adv[open] > summary { margin-bottom:var(--gap); }
 details.adv > :not(summary) + :not(summary) { margin-top:var(--gap); }

@@ -463,13 +463,13 @@
     <div class="group"><h3 data-i18n="about.language">Ngôn ngữ</h3><div class="places" id="langpick"></div></div>
     <div class="group" id="buzzgroup" hidden><h3 data-i18n="about.when_pressing_a_key">Khi bấm nút</h3><div class="places" id="buzzpick"><button data-v="1" data-i18n="about.vibrate">Rung</button><button data-v="0" data-i18n="about.no_vibration">Không rung</button></div></div>
     <div class="group" id="kbdgroup" data-needs="adb"><h3 data-i18n="about.tv_keyboard">Bàn phím của TV</h3><div class="places" id="kbdautopick"><button data-v="1" data-i18n="about.tv_keyboard_auto">Tự mở ô gõ</button><button data-v="0" data-i18n="about.tv_keyboard_manual">Không tự mở</button></div></div>
-    <div class="group" id="censusgroup" data-for="pc tv"><h3 data-i18n="about.census">Gửi thống kê ẩn danh</h3>
-      <div class="places" id="censuspick"><button data-v="1" data-i18n="about.census_send">Gửi</button><button data-v="0" data-i18n="about.census_none">Không gửi</button></div>
-      <p class="note" data-i18n="about.census_note">Mỗi ngày gửi một lần: hãng, model, chip và bản Android của TV, bản của app, ADB / hình / Tối ưu TV có chạy được không, và một mã ngẫu nhiên. Lỗi của app cũng được gửi, đã xóa IP và đường dẫn. Không có địa chỉ IP, tên TV, app đã cài hay tài khoản.</p></div>
     <div class="group" data-for="pc"><h3 data-i18n="about.app_on_this_computer">App trên máy tính</h3>
       <div class="actions"><button class="small" id="updcheck" data-i18n="about.check_for_a_new">🔄 Kiểm tra bản mới</button><button class="small danger" id="quit" data-asks title="Dừng chương trình trên máy tính này (TV không bị ảnh hưởng)" data-i18n-title="about.stop_the_program_on" data-i18n="about.quit">⏻ Tắt</button></div>
       <p class="note" id="updcheckmsg"></p></div>
-    <div class="group" id="hookgroup" data-for="pc tv"><h3 data-i18n="about.home_assistant_shortcuts">Home Assistant · Phím tắt</h3>
+    <details class="sect" id="censusgroup" data-for="pc tv"><summary><h3 data-i18n="about.census">Gửi thống kê ẩn danh</h3><span class="sum"></span></summary><div class="group">
+      <div class="places" id="censuspick"><button data-v="1" data-i18n="about.census_send">Gửi</button><button data-v="0" data-i18n="about.census_none">Không gửi</button></div>
+      <p class="note" data-i18n="about.census_note">Mỗi ngày gửi một lần: hãng, model, chip và bản Android của TV, bản của app, ADB / hình / Tối ưu TV có chạy được không, và một mã ngẫu nhiên. Lỗi của app cũng được gửi, đã xóa IP và đường dẫn. Không có địa chỉ IP, tên TV, app đã cài hay tài khoản.</p></div></details>
+    <details class="sect" id="hookgroup" data-for="pc tv"><summary><h3 data-i18n="about.home_assistant_shortcuts">Home Assistant · Phím tắt</h3><span class="sum"></span></summary><div class="group">
       <p class="note" data-i18n="about.lets_home_assistant_and">Cho Home Assistant và Phím tắt (Siri) bấm phím trên TV trong nhà. Chỉ dùng trong mạng nhà, đừng mở ra Internet.</p>
       <div class="places" id="hookpick"><button data-v="off" data-i18n="about.off">Không bật</button><button data-v="on" data-i18n="about.on">Cho dùng</button></div>
       <div class="group" id="hookbody" hidden>
@@ -478,8 +478,8 @@
         <div class="actions"><button class="small" id="hookcopyyaml" data-i18n="about.yaml_for_home_assistant">📋 YAML cho Home Assistant</button><button class="small danger" id="hooknew" data-i18n="about.new_token">🔄 Đổi mã mới</button></div>
         <p class="note" data-i18n="about.anyone_with_this_link">Ai có đường dẫn này bấm được phím trên TV. Đổi mã mới thì đường dẫn cũ hết dùng.</p>
       </div>
-    </div>
-    <div class="group" id="tggroup"><h3 data-i18n="telegram_ui.title">💬 Điều khiển bằng Telegram</h3>
+    </div></details>
+    <details class="sect" id="tggroup"><summary><h3 data-i18n="telegram_ui.title">💬 Điều khiển bằng Telegram</h3><span class="sum"></span></summary><div class="group">
       <p class="note" data-i18n="telegram_ui.why">Nhắn tin cho bot của bạn để tắt/bật TV, chỉnh tiếng, mở app, chụp màn hình. Bot do bạn tự tạo, chạy ngay trên TV, không cần mở cổng. Ảnh chụp màn hình đi qua máy chủ Telegram.</p>
       <div class="places" id="tgpick"><button data-v="off" data-i18n="about.off">Không bật</button><button data-v="on" data-i18n="about.on">Cho dùng</button></div>
       <div class="group" id="tgbody" hidden>
@@ -512,24 +512,24 @@
         <p class="note" data-i18n="telegram_ui.off_note">Tắt là bot dừng ngay, token và chat vẫn giữ. Xoá token là quên hết.</p>
         <div class="actions"><button class="small danger" id="tgremove" data-i18n="telegram_ui.remove">Xoá token</button></div>
       </div>
-    </div>
-    <div class="group" id="tghint" hidden><h3 data-i18n="telegram_ui.title">💬 Điều khiển bằng Telegram</h3>
+    </div></details>
+    <details class="sect" id="tghint" hidden><summary><h3 data-i18n="telegram_ui.title">💬 Điều khiển bằng Telegram</h3><span class="sum"></span></summary><div class="group">
       <p class="note" data-i18n="telegram_ui.hint">Bot Telegram chạy trong TV Setup trên TV. TV Setup ở đó chưa có hoặc quá cũ: bấm Kiểm tra để cài hoặc cập nhật, rồi quản lý bot ngay tại đây.</p>
       <div class="actions"><button class="small" id="tgcheck" data-i18n="telegram_ui.check">Kiểm tra TV Setup</button></div>
-    </div>
-    <div class="group about"><h3 data-i18n="about.about">Giới thiệu</h3>
+    </div></details>
+    <details class="sect" id="aboutpart"><summary><h3 data-i18n="about.about">Giới thiệu</h3><span class="sum"></span></summary><div class="group about">
     <p><b>TV Remote</b> <span class="muted" id="aboutver"></span></p>
     <p data-i18n="about.control_an_android_tv">Điều khiển Android TV / Google TV từ máy tính và điện thoại: nút remote, xem màn hình, ứng dụng, tệp, cài APK.</p>
     <p><b data-i18n="about.author">Tác giả:</b> Hoang Tran · <a href="https://github.com/HoangTran0410" target="_blank" rel="noopener">@HoangTran0410</a></p>
     <p><b data-i18n="about.website">Trang chủ:</b> <a href="https://tvremote.pages.dev" target="_blank" rel="noopener">tvremote.pages.dev</a> · <a href="https://tvremote.pages.dev/guide" target="_blank" rel="noopener" data-i18n="about.guide_link">Hướng dẫn</a></p>
     <p><a href="https://tvremote.pages.dev/#install" target="_blank" rel="noopener" data-i18n="about.releases">Tải app</a> · <a href="https://github.com/HoangTran0410/tv-remote/blob/main/CHANGELOG.md" target="_blank" rel="noopener" data-i18n="about.change_log">Nhật ký thay đổi</a> · <a href="https://tvremote.pages.dev/log" target="_blank" rel="noopener" data-i18n="about.report_a_problem">Báo lỗi</a></p>
     <p class="muted" data-i18n-html="about.the_live_picture_and">Hình trực tiếp và chuột dùng <a href="https://github.com/Genymobile/scrcpy" target="_blank" rel="noopener">scrcpy</a> (Genymobile, Apache-2.0). Nút remote dùng giao thức Android TV Remote.</p>
-    <div class="actions"><button class="small" id="sendlog" title="App làm sai? Chép các lệnh đã gửi tới TV, câu TV trả lời và các lỗi (không có mã ghép đôi, địa chỉ MAC, chữ đã gõ), rồi mở trang gửi nhật ký: dán vào đó và gửi qua GitHub hoặc Facebook." data-i18n-title="about.something_wrong_send_what" data-i18n="about.send_the_log">📋 Gửi nhật ký</button></div></div>
-    <div class="group" id="supgroup" data-for="pc"><h3 data-i18n="support.title">👁️ Hỗ trợ từ xa</h3>
+    <div class="actions"><button class="small" id="sendlog" title="App làm sai? Chép các lệnh đã gửi tới TV, câu TV trả lời và các lỗi (không có mã ghép đôi, địa chỉ MAC, chữ đã gõ), rồi mở trang gửi nhật ký: dán vào đó và gửi qua GitHub hoặc Facebook." data-i18n-title="about.something_wrong_send_what" data-i18n="about.send_the_log">📋 Gửi nhật ký</button></div></div></details>
+    <details class="sect" id="supgroup" data-for="pc"><summary><h3 data-i18n="support.title">👁️ Hỗ trợ từ xa</h3><span class="sum"></span></summary><div class="group">
       <p class="note" id="supnote" data-i18n="support.page_note">Khi có lỗi, người hỗ trợ xem trạng thái và nhật ký 30 phút, không đổi gì. Bạn đọc cho họ mã 8 số.</p>
       <div class="actions"><button class="small" id="supapp" data-i18n="support.this_app">Cho xem app này</button></div>
-    </div>
-    <div class="group"><h3 data-i18n="about.get_the_app">Tải app</h3><div class="qrs" id="qrs"></div></div>
+    </div></details>
+    <details class="sect" id="qrpart"><summary><h3 data-i18n="about.get_the_app">Tải app</h3><span class="sum"></span></summary><div class="group"><div class="qrs" id="qrs"></div></div></details>
   </div>
 </dialog>
 <dialog id="assist"><div class="card assistbox"><div class="card-head"><h2 id="assisttitle"></h2><button class="small iconbtn" id="assistclose" title="Đóng" aria-label="Đóng" data-i18n-title="common.close" data-i18n-aria-label="common.close">✕</button></div><div id="assistbody"></div></div></dialog>

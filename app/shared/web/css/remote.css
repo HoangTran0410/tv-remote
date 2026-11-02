@@ -163,7 +163,7 @@ fieldset#kbd:disabled { opacity:.4; pointer-events:none; }
 .plbar input:disabled { cursor:default; }
 /* One size per kind of control, in every tab but the remote (whose keys are made to be hit without looking):
    a field and the button beside it --ctl, a card's own actions .small (--ctl-sm), a choice among several a chip (--chip). */
-.panel:not([data-panel=remote]) :is(button, select, input[type=text], input:not([type]), input[type=url], input[type=search], input[type=time]):not(.small):not(.iconbtn):not(.places button):not(.fchips button):not(.seg button):not(.drop):not(.st-key):not(.crumbs button) { min-height:var(--ctl); }
+.panel:not([data-panel=remote]) :is(button, select, input[type=text], input:not([type]), input[type=url], input[type=search], input[type=password], input[type=time]):not(.small):not(.iconbtn):not(.places button):not(.fchips button):not(.seg button):not(.drop):not(.st-key):not(.crumbs button) { min-height:var(--ctl); }
 .panel:not([data-panel=remote]) button:not(.small):not(.iconbtn):not(.places button):not(.fchips button):not(.seg button):not(.st-key):not(.crumbs button) { font-size:14px; padding:0 16px; }
 @media (max-width:640px) {
   #places { margin:-6px -14px; padding:6px 14px; }   /* one row to swipe, to the screen's edges */

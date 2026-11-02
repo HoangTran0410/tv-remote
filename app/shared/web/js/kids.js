@@ -82,7 +82,7 @@ function renderKids(r) {
     }, T('auto.kids_m_totp_note')),
     kidsMethodRow(T('auto.kids_m_ask'), k.methods.ask && !!canAsk, async (on) => { await kidsSave(k, { methods: { ...k.methods, ask: on } }); },
       canAsk ? T('auto.kids_m_ask_note') : T('auto.kids_m_ask_none'), !canAsk),
-    canAsk ? null : UI.actions(act(T('auto.kids_open_telegram'), () => { $('#aboutbtn').click(); setTimeout(() => { const g = $('#tggroup'); if (g) g.scrollIntoView({ block: 'center' }); }, 300); })))))
+    canAsk ? null : UI.actions(act(T('auto.kids_open_telegram'), () => { $('#aboutbtn').click(); setTimeout(() => { const g = $('#tggroup'); if (g) g.open = true; if (g) g.scrollIntoView({ block: 'center' }); }, 300); })))))
   const left = r.lock && r.lock.recovery_left;
   if (k.methods.totp && left !== undefined) unlockPart.push(UI.group(null, UI.state(T('auto.kids_recovery_left', { n: left })),
     UI.actions(act(T('auto.kids_recovery_new'), async () => { if (!await kidsGate()) return; const res = await kidsRaw({ do: 'recovery_new' }); if (res.recovery) { await showRecovery(res.recovery); loadRules(null, true); } else toast(friendly(res.error)); }))));

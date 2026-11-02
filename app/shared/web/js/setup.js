@@ -218,6 +218,17 @@ $('#censuspick').addEventListener('click', async (e) => {
   if (c) censusShow(c);
 });
 $('#aboutclose').addEventListener('click', () => $('#about').close());
+// Settings' long parts fold to a title and one line (the user, 2026-11-03: too much text at once): what is chosen
+// (Allow / Off), else what it says now, else its first note. One observer on the dialog: the renderers above stay as they are.
+function sectSums() {
+  for (const d of document.querySelectorAll('#about details.sect')) {
+    const pick = d.querySelector('.places button.on'), st = d.querySelector('p.state:not(:empty)'), ver = d.querySelector('#aboutver'), note = d.querySelector('p.note');
+    const t = ((pick && pick.textContent) || (st && !st.closest('[hidden]') && st.textContent) || (ver && ver.textContent) || (note && note.textContent) || '').trim();
+    const s = d.querySelector(':scope > summary .sum'); if (s && s.textContent !== t) s.textContent = t;
+  }
+}
+new MutationObserver(sectSums).observe($('#about'), { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class', 'hidden'] });
+sectSums();
 $('#sendlog').addEventListener('click', sendWireLog);
 // ---------- Let support look (SupportRelay), 30 min, read only: this computer app (About), or the TV (the TV card; TV Setup, over ADB but on the TV) ----------
 const supPath = (what) => '/api/support/' + (what === 'app' ? 'app' : 'tv');

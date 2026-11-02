@@ -43,7 +43,7 @@ test('a button beside a field is as tall as the field', () => {
 test('control heights come from the tokens', () => {
   // made to be hit without looking (the remote), the page's base sizes, or a box of their own (not a control)
   const ok = new Set(['.chips button.small', '#pairerr', '.tabs button', 'button', '.screenbox', '.rb', '.rb.lab',
-    'input[type=text], input:not([type]), input[type=url], input[type=search]', '.pill button', '.seg button', '.seg.mini button',
+    'input[type=text], input:not([type]), input[type=url], input[type=search], input[type=password]', '.pill button', '.seg button', '.seg.mini button',
     '.setpick', '.vol button', '#screeninfo', '.drop', '.tsbox .go', '.scene', '.mitem', 'dialog.ask textarea']);
   const bad = [...css.matchAll(/([^{}]*)\{([^{}]*\bmin-height:\s*\d+px[^{}]*)\}/g)]
     .map((m) => m[1].trim().split('\n').pop().replace(/^.*\*\/\s*/, '').trim()).filter((sel) => !ok.has(sel));
