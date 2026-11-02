@@ -13,7 +13,8 @@ REL=https://github.com/HoangTran0410/tv-remote/releases/download/cores-1
 # system | buildbot core | name | licence | extensions | pad layout
 CORES='snes|bsnes_mercury_performance|SNES (bsnes-mercury performance)|GPL-3.0|sfc,smc|snes
 gba|mgba|Game Boy Advance (mGBA)|MPL-2.0|gba|gba
-psx|pcsx_rearmed|PlayStation (PCSX ReARMed)|GPL-2.0|cue,chd,pbp|ps'
+psx|pcsx_rearmed|PlayStation (PCSX ReARMed)|GPL-2.0|cue,chd,pbp|ps
+arcade|fbneo|Arcade (FinalBurn Neo)|LicenseRef-FBNeo-noncommercial|zip|arcade'
 ENTRIES=""
 while IFS='|' read -r id core name lic exts lay; do
   [ -n "$1" ] && [ "$1" != "$id" ] && continue

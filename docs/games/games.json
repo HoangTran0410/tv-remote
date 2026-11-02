@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "updated": "2026-10-27",
+  "updated": "2026-11-02",
   "cores": {
     "snes": {
       "name": "SNES (bsnes-mercury performance)",
@@ -70,6 +70,28 @@
       ],
       "layout": "ps",
       "file": "pcsx_rearmed_libretro_android.so"
+    },
+    "arcade": {
+      "name": "Arcade (FinalBurn Neo)",
+      "on": true,
+      "abi": {
+        "arm64-v8a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/fbneo_libretro_android-arm64-v8a.so.zip",
+          "sha256": "48cf6a2c7d8b07c3048a5b351e40c9db456f83d5b6791e88088719705517b1b1",
+          "size": 16599072
+        },
+        "armeabi-v7a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/fbneo_libretro_android-armeabi-v7a.so.zip",
+          "sha256": "b0c3c13c7b99aa4739eb56f4caabcea274ba32493c7befcf71fd80e34278f284",
+          "size": 15262226
+        }
+      },
+      "license": "LicenseRef-FBNeo-noncommercial",
+      "exts": [
+        "zip"
+      ],
+      "layout": "arcade",
+      "file": "fbneo_libretro_android.so"
     }
   },
   "web": [
@@ -516,6 +538,97 @@
       "sha256": "86ab7ce4995b13975766978c1c05415bf8bda310f3583899d516825687197004",
       "license": "Zlib",
       "source": "https://github.com/sebastiandine/openNES-Pong",
+      "on": true
+    },
+    {
+      "id": "mame-robby",
+      "name": "The Adventures of Robby Roto!",
+      "system": "arcade",
+      "file": "robby.zip",
+      "players": 1,
+      "genre": "action",
+      "url": "https://www.mamedev.org/roms/robby/robby.zip",
+      "sha256": "d3f7ae3afeeedb7d2476ea05e326a6a6f6e851c969f07a1de36133fcb4d0a8d8",
+      "license": "Free for non-commercial use, by the copyright holders' permission (mamedev.org)",
+      "source": "https://www.mamedev.org/roms/robby/",
+      "on": true
+    },
+    {
+      "id": "mame-gridlee",
+      "name": "Gridlee",
+      "system": "arcade",
+      "file": "gridlee.zip",
+      "players": 1,
+      "genre": "shooter",
+      "url": "https://www.mamedev.org/roms/gridlee/gridlee.zip",
+      "sha256": "df977ceba0ae1c8d0ecf489ae8423390ff5c7c76ce95f5ee6ba9bc892b18056e",
+      "license": "Free for non-commercial use, by the copyright holders' permission (mamedev.org)",
+      "source": "https://www.mamedev.org/roms/gridlee/",
+      "on": true
+    },
+    {
+      "id": "mame-hardhat",
+      "name": "Hard Hat",
+      "system": "arcade",
+      "file": "hardhat.zip",
+      "players": 1,
+      "genre": "action",
+      "url": "https://www.mamedev.org/roms/hardhat/hardhat.zip",
+      "sha256": "6bb042c5a45ff1d60b4115d0ecfd58eef3e060b3c7a83670c3b197d9312fc9a4",
+      "license": "Free for non-commercial use, by the copyright holders' permission (mamedev.org)",
+      "source": "https://www.mamedev.org/roms/hardhat/",
+      "on": true
+    },
+    {
+      "id": "mame-targ",
+      "name": "Targ",
+      "system": "arcade",
+      "file": "targ.zip",
+      "players": 1,
+      "genre": "shooter",
+      "url": "https://www.mamedev.org/roms/targ/targ.zip",
+      "sha256": "a24eb4fec6487c8d09ac44d87a4fefb1b453b8eb1ca5fdeb1dd73b98eaf272e3",
+      "license": "Free for non-commercial use, by the copyright holders' permission (mamedev.org)",
+      "source": "https://www.mamedev.org/roms/targ/",
+      "on": true
+    },
+    {
+      "id": "mame-spectar",
+      "name": "Spectar",
+      "system": "arcade",
+      "file": "spectar.zip",
+      "players": 1,
+      "genre": "shooter",
+      "url": "https://www.mamedev.org/roms/spectar/spectar.zip",
+      "sha256": "222e4fb639571ffb0d73f4ad19376211ecfe9798067826b20e4b1790886705ba",
+      "license": "Free for non-commercial use, by the copyright holders' permission (mamedev.org)",
+      "source": "https://www.mamedev.org/roms/spectar/",
+      "on": true
+    },
+    {
+      "id": "mame-circus",
+      "name": "Circus",
+      "system": "arcade",
+      "file": "circus.zip",
+      "players": 1,
+      "genre": "action",
+      "url": "https://www.mamedev.org/roms/circus/circus.zip",
+      "sha256": "27d3952dba171d50ef63a7a651e063f83830d2e07e4799dadcc5c42e0371d424",
+      "license": "Free for non-commercial use, by the copyright holders' permission (mamedev.org)",
+      "source": "https://www.mamedev.org/roms/circus/",
+      "on": true
+    },
+    {
+      "id": "mame-teetert",
+      "name": "Teeter Torture",
+      "system": "arcade",
+      "file": "teetert.zip",
+      "players": 1,
+      "genre": "shooter",
+      "url": "https://www.mamedev.org/roms/teetert/teetert.zip",
+      "sha256": "6bc87b12deaec9b528513ccba37bca1fc04236b97725190b5463942d5046b2b6",
+      "license": "Free for non-commercial use, by the copyright holders' permission (mamedev.org)",
+      "source": "https://www.mamedev.org/roms/teetert/",
       "on": true
     }
   ],
