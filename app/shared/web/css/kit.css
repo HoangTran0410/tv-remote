@@ -72,9 +72,10 @@ button .minispin { border-color:currentColor; border-right-color:transparent; } 
 .foldable h2[aria-expanded]::before { content:''; float:right; width:8px; height:8px; margin:4px 4px 0 12px; border:solid var(--muted); border-width:0 2px 2px 0; transform:rotate(45deg); transition:transform .15s; }
 .foldable h2[aria-expanded=true]::before { transform:rotate(-135deg); margin-top:8px; }
 .foldable h2[aria-expanded]:focus-visible { outline:2px solid var(--accent); outline-offset:4px; border-radius:6px; }
-.foldable.folded h2[aria-expanded]::after { content:attr(data-sum); display:block; margin-top:3px; font-size:13px; font-weight:400; color:var(--muted); text-transform:none; letter-spacing:normal; }
+.foldable.folded h2[aria-expanded]::after { content:attr(data-sum); display:block; margin-top:3px; font-size:13px; font-weight:400; color:var(--muted); text-transform:none; letter-spacing:normal; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .foldable.folded > :not(h2):not(.card-head) { display:none !important; }   /* over a tab's own layout (#rulecards .actions)*/
 .foldable > .card-head > h2[aria-expanded] { flex:1; }   /* the chevron at the same place in every card, before the head's tools */
+.foldable.folded > .card-head > :not(h2) { display:none !important; }   /* a folded card is one row: its tools (+ Add) show once open */
 .part { display:flex; flex-direction:column; gap:var(--gap); padding:12px; border:1px solid var(--line); border-radius:12px; }   /* a part set apart inside a card (Kids mode's Quick setup) */
 .part:empty { display:none; }
 .state { font-size:16px; font-weight:600; margin:0 0 10px; }

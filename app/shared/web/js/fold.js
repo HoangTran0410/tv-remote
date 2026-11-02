@@ -1,7 +1,7 @@
 // Long tabs (Automation, Setup) read as a list: each card with an id folds to its title and one line of what is on (the user,
 // 2026-11-02: eleven cards in a row were too much to take in). A card that is on starts open; a tap on a title opens or folds it,
 // and that choice is kept in this browser only (a convenience, never needed). A renderer says what is on with foldSum(id, words, on);
-// a card without one shows its p.state. Nothing runs until a tab with cards is drawn: one MutationObserver per panel, no timer.
+// a card without one shows its p.state, else its p.note (one line). Nothing runs until a tab with cards is drawn: one MutationObserver per panel, no timer.
 
 const FOLD_PANELS = '[data-panel=auto], [data-panel=tv]';
 const FOLD_CARD = 'section.card[id]:not([data-nofold])';
@@ -18,7 +18,7 @@ const foldHead = (card) => card.querySelector(':scope > h2, :scope > .card-head 
 function foldMark() {
   for (const card of document.querySelectorAll(`:is(${FOLD_PANELS}) ${FOLD_CARD}`)) {
     const h = foldHead(card); if (!h) continue;
-    const s = foldSums[card.id], st = card.querySelector('p.state');
+    const s = foldSums[card.id], st = card.querySelector('p.state') || card.querySelector(':scope > p.note');   // no state: what the card is for
     const open = card.id in foldMine ? foldMine[card.id] : !!(s && s.on);
     if (card.classList.contains('folded') === open) card.classList.toggle('folded', !open);
     if (!card.classList.contains('foldable')) card.classList.add('foldable');
