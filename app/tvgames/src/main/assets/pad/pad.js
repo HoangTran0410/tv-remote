@@ -93,6 +93,7 @@ const SYS = {
   nes:  { stick: false, face: 'pair',    sh: [[], []],                    mid: ['SELECT', 'START'] },
   snes: { stick: false, face: 'diamond', sh: [['L'], ['R']],              mid: ['SELECT', 'START'] },
   gba:  { stick: false, face: 'pair',    sh: [['L'], ['R']],              mid: ['SELECT', 'START'] },
+  arcade: { stick: false, face: 'diamond', sh: [['L'], ['R']], mid: ['SELECT', 'START'] },
   ps:   { stick: true,  face: 'diamond', sh: [['L2', 'L'], ['R', 'R2']],  mid: ['SELECT', 'START'] },
 };
 SYS.web = SYS.ps;
@@ -101,7 +102,7 @@ const SKIN = {                                                // face colours, p
   snes: { X: '#3b6fe0', Y: '#2fa05a', A: '#e5484d', B: '#e0a100' },
   ps: { X: '#2fa05a', Y: '#d65aa8', A: '#e5484d', B: '#3b6fe0' },
 };
-const GLYPH = { ps: { X: '△', Y: '□', A: '○', B: '✕', L: 'L1', R: 'R1' } };
+const GLYPH = { arcade: { SELECT: 'Coin' }, ps: { X: '△', Y: '□', A: '○', B: '✕', L: 'L1', R: 'R1' } };
 const look = () => (sysName === 'web' ? 'ps' : SYS[sysName] ? sysName : 'ps');
 let stickOn = false;
 const stickKey = () => 'tvg-stick-' + look();

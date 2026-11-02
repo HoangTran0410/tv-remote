@@ -274,7 +274,7 @@ class LibraryActivity : ComponentActivity() {
         val l = ArrayList<Item>()
         for (g in games) {
             val pc = Catalog.players(this, g.file.name, null, Systems.maxPlayers(g.sys.id))
-            l += Item("g:" + g.file.name, g.name, g.sys.label, g.sys.id, g.sys.color, Thumbs.catalog(this, g.file.name) ?: Thumbs.src(this, g.sys, g.file.name),
+            l += Item("g:" + g.file.name, Catalog.entryOf(this, g.file.name, null)?.optString("name")?.ifEmpty { null } ?: g.name, g.sys.label, g.sys.id, g.sys.color, Thumbs.catalog(this, g.file.name) ?: Thumbs.src(this, g.sys, g.file.name),
                 pc.first, pc.second, genreOf(Catalog.entryOf(this, g.file.name, null), other), true,
                 play = { try { startActivity(Intent(this, GameActivity::class.java).putExtra("path", g.file.path)) } catch (e: Exception) { } }, file = g.file)
         }
@@ -759,7 +759,8 @@ class LibraryActivity : ComponentActivity() {
                     val sum = java.security.MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
                     val ext = h.getString("url").substringAfterLast('.').takeIf { it in s.exts } ?: s.exts.first()
                     if (sum != h.optString("sha256").lowercase()) msg = getString(R.string.rom_bad)
-                    else { saved = h.optString("name").replace(Regex("[^A-Za-z0-9 ._-]"), "") + ".$ext"; writeWhole(File(Systems.romsDir(this), saved), bytes) }
+                    else { saved = h.optString("file").replace(Regex("[^A-Za-z0-9._-]"), "").takeIf { it.endsWith(".$ext") }   // arcade: the core knows a game by its zip's name
+                        ?: (h.optString("name").replace(Regex("[^A-Za-z0-9 ._-]"), "") + ".$ext"); writeWhole(File(Systems.romsDir(this), saved), bytes) }
                 }
             } catch (e: java.io.IOException) { msg = getString(if (e.message == "too big") R.string.rom_big else R.string.rom_net) }
             catch (e: Exception) { msg = getString(R.string.rom_net) }

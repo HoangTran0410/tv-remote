@@ -10,16 +10,21 @@ object Systems {
               val need: org.json.JSONObject? = null,
               val repo: String = "")                                // repo: the system's libretro-thumbnails repo (box art)                // need: the catalog's entry when the core is downloaded on first use
 
+    // each system's colour (its tiles and chips): the console's own brand hue
+    private val C_NES = 0xFFE11D48.toInt(); private val C_SNES = 0xFF7C3AED.toInt(); private val C_GBA = 0xFF2563EB.toInt()
+    private val C_PS1 = 0xFF64748B.toInt(); private val C_ARCADE = 0xFFF59E0B.toInt()
     private val PAD = listOf("A", "B", "START", "SELECT")
     val ALL = listOf(
-        Sys("nes", "NES", 0xFFE11D48.toInt(), "libfceumm_libretro_android.so", listOf("nes"), PAD, repo = "Nintendo_-_Nintendo_Entertainment_System"),
-        Sys("snes", "SNES", 0xFF7C3AED.toInt(), null, listOf("sfc", "smc"), PAD + listOf("X", "Y", "L", "R"), repo = "Nintendo_-_Super_Nintendo_Entertainment_System"),
-        Sys("gba", "GBA", 0xFF2563EB.toInt(), null, listOf("gba"), PAD + listOf("L", "R"), repo = "Nintendo_-_Game_Boy_Advance"),
-        Sys("psx", "PS1", 0xFF64748B.toInt(), null, listOf("cue", "chd", "pbp"), PAD + listOf("X", "Y", "L", "R", "L2", "R2"), pad = "ps", analog = true, repo = "Sony_-_PlayStation"),
+        Sys("nes", "NES", C_NES, "libfceumm_libretro_android.so", listOf("nes"), PAD, repo = "Nintendo_-_Nintendo_Entertainment_System"),
+        Sys("snes", "SNES", C_SNES, null, listOf("sfc", "smc"), PAD + listOf("X", "Y", "L", "R"), repo = "Nintendo_-_Super_Nintendo_Entertainment_System"),
+        Sys("gba", "GBA", C_GBA, null, listOf("gba"), PAD + listOf("L", "R"), repo = "Nintendo_-_Game_Boy_Advance"),
+        Sys("psx", "PS1", C_PS1, null, listOf("cue", "chd", "pbp"), PAD + listOf("X", "Y", "L", "R", "L2", "R2"), pad = "ps", analog = true, repo = "Sony_-_PlayStation"),
+        // FinalBurn Neo: a game is a MAME-style zip named after its romset (sfa3.zip), so the file is never renamed; SELECT = Coin
+        Sys("arcade", "Arcade", C_ARCADE, null, listOf("zip"), PAD + listOf("X", "Y", "L", "R"), pad = "arcade", repo = "FBNeo_-_Arcade_Games"),
     )
 
     private val LAYOUT_BUTTONS = mapOf("nes" to PAD, "snes" to PAD + listOf("X", "Y", "L", "R"), "gba" to PAD + listOf("L", "R"),
-        "ps" to PAD + listOf("X", "Y", "L", "R", "L2", "R2"))
+        "arcade" to PAD + listOf("X", "Y", "L", "R"), "ps" to PAD + listOf("X", "Y", "L", "R", "L2", "R2"))
 
     /** The systems this device can play: the ones with a core packed in the APK, and those the catalog has a core for (this ABI, "on"). */
     fun list(ctx: Context): List<Sys> {
@@ -45,6 +50,10 @@ object Systems {
     fun romsDir(ctx: Context) = File(ctx.getExternalFilesDir(null), "roms").also { it.mkdirs() }
     fun savesDir(ctx: Context) = File(ctx.getExternalFilesDir(null), "saves").also { it.mkdirs() }
 
+    /** FinalBurn Neo's BIOS and shared-ROM zips: they go in the games folder (where the core looks) but are not games. */
+    private val BIOS = setOf("neogeo", "neocdz", "pgm", "skns", "isgsm", "nmk004", "decocass", "ym2608", "cchip", "bubsys", "namcoc69", "namcoc70",
+        "namcoc75", "coleco", "msx", "spectrum", "spec128", "fdsbios", "ngp", "channelf", "midssio", "hiscore")
+
     /** "Robo Run (USA) [!].nes" -> "Robo Run" */
     fun clean(file: String): String =
         file.substringBeforeLast('.').replace(Regex("\\s*[(\\[][^)\\]]*[)\\]]"), "").replace('_', ' ').trim().ifEmpty { file.substringBeforeLast('.') }
@@ -59,6 +68,7 @@ object Systems {
             for (f in fs) {
                 if (!f.isFile || f.name.startsWith(".")) continue
                 val sys = byExt(ctx, f.extension) ?: continue
+                if (sys.id == "arcade" && (dir != romsDir(ctx) || f.nameWithoutExtension.lowercase() in BIOS)) continue   // any zip in Download is no game; a BIOS sits beside the games
                 if (seen.add(f.name.lowercase())) out.add(Game(f, clean(f.name), sys))
             }
         }

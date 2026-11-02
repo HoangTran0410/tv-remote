@@ -18,7 +18,7 @@ const RAW = {
     'Widgets.kt': 4, 'CalendarWidget.kt': 7, 'ClockWidget.kt': 7, 'LunarWidget.kt': 2, 'SystemWidget.kt': 2, 'UsageWidget.kt': 2,
     'WeatherWidget.kt': 6, 'WidgetViews.kt': 2, 'Zoom.kt': 3 },
   tvchannels: { 'BrowseActivity.kt': 4, 'Pins.kt': 2, 'PlayActivity.kt': 8, 'ReminderNotice.kt': 1 },
-  tvgames: { 'GameActivity.kt': 4, 'GameCards.kt': 4, 'LibraryActivity.kt': 34, 'LobbyTheme.kt': 1, 'LobbyView.kt': 46, 'Pins.kt': 3, 'Systems.kt': 4,
+  tvgames: { 'GameActivity.kt': 4, 'GameCards.kt': 4, 'LibraryActivity.kt': 34, 'LobbyTheme.kt': 1, 'LobbyView.kt': 46, 'Pins.kt': 3,
     'WebGameActivity.kt': 4 },
   tvapps: {},
 };

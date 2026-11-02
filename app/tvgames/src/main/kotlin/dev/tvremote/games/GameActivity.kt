@@ -101,12 +101,12 @@ class GameActivity : ComponentActivity() {
         retro = GLRetroView(this, data)
         lifecycle.addObserver(retro)                                  // GLRetroView is a LifecycleObserver; it also needs onCreate
         retro.onCreate(this)
-        lifecycleScope.launch { retro.getGLRetroErrors().collect { if (!isDestroyed) failed(getString(R.string.cant_open), Systems.clean(file.name)) } }   // a broken ROM or core: the reason and Back, not a black screen
+        lifecycleScope.launch { retro.getGLRetroErrors().collect { if (!isDestroyed) failed(getString(R.string.cant_open), gameName) } }   // a broken ROM or core: the reason and Back, not a black screen
         val root = FrameLayout(this).apply { addView(retro) }
         setContentView(root)
         if (!::server.isInitialized) server = GameServer.acquire(this)   // once: onDestroy releases it once
         keys = RemoteMap(this, root) { retro.frameSpeed = if (it) 0 else 1; still(it) }
-        cards = GameCards(this, root, server, Systems.clean(file.name), null,
+        cards = GameCards(this, root, server, gameName, null,
             onPause = { retro.frameSpeed = if (it) 0 else 1; still(it) }, onSave = { quickSave() }, onLoad = { quickLoad() }, onQuit = { finish() },
             withLobby = true, kind = sys.label, art = Thumbs.catalog(this, file.name) ?: Thumbs.src(this, sys, file.name), maxPlayers = players.first, minPlayers = players.second,
             onStart = { tapStart() }, onMap = { keys.learn() },
@@ -120,7 +120,13 @@ class GameActivity : ComponentActivity() {
     private fun still(on: Boolean) { try { retro.renderMode = if (on) android.opengl.GLSurfaceView.RENDERMODE_WHEN_DIRTY else android.opengl.GLSurfaceView.RENDERMODE_CONTINUOUSLY } catch (e: Throwable) { } }
 
     /** Start down, then up a moment later: a core reads the pad once a frame, so a press within one frame is missed. */
-    private fun tapStart() { press(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BUTTON_START); press(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BUTTON_START) }
+    private fun tapStart() {
+        if (sys.id == "arcade") {                                     // an arcade board starts nothing without a credit: Coin (SELECT), then Start once it counted
+            tap(KeyEvent.KEYCODE_BUTTON_SELECT); window.decorView.postDelayed({ if (!isDestroyed && !broken) tap(KeyEvent.KEYCODE_BUTTON_START) }, 700); return
+        }
+        tap(KeyEvent.KEYCODE_BUTTON_START)
+    }
+    private fun tap(code: Int) { press(KeyEvent.ACTION_DOWN, code); press(KeyEvent.ACTION_UP, code) }
 
     private lateinit var keys: RemoteMap
     private val downAt = HashMap<Int, Long>()
@@ -132,6 +138,8 @@ class GameActivity : ComponentActivity() {
         if (wait > 0) retro.postDelayed({ retro.sendKeyEvent(action, code, 0) }, wait) else retro.sendKeyEvent(action, code, 0)
     }
 
+    /** The catalog's name for a ROM it suggested (an arcade zip is only "robby"), else the file's. */
+    private val gameName by lazy { Catalog.entryOf(this, file.name, null)?.optString("name")?.ifEmpty { null } ?: Systems.clean(file.name) }
     private val players by lazy { Catalog.players(this, file.name, null, Systems.maxPlayers(sys.id)) }
 
     override fun onResume() {

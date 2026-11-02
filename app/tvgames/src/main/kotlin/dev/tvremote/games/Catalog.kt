@@ -78,7 +78,7 @@ object Catalog {
     private fun homebrewByFile(cat: JSONObject): Map<String, JSONObject> {
         hb?.let { if (it.first === cat) return it.second }
         val a = cat.optJSONArray("homebrew")
-        val m = byFile((0 until (a?.length() ?: 0)).mapNotNull { i -> a?.optJSONObject(i)?.let { it.optString("name") to it } })
+        val m = byFile((0 until (a?.length() ?: 0)).mapNotNull { i -> a?.optJSONObject(i)?.let { e -> listOfNotNull(e.optString("name") to e, e.optString("file").takeIf { it.isNotEmpty() }?.let { it.substringBeforeLast('.') to e }) }.orEmpty() }.flatten())
         return m.also { hb = cat to it }
     }
     @Volatile private var hb: Pair<JSONObject, Map<String, JSONObject>>? = null   // tied to the list object, so a new [mem] drops it

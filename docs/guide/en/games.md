@@ -4,12 +4,13 @@ An app on the TV that plays retro and web games, with phones as pads (up to 4). 
 
 TV remote only: Downloader, code **2294968**. Direct link: [tv-games.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-games.apk).
 
-1. **TV** tab → **TV games** card → **Install TV Games** (needs ADB, only to install). Not in the latest release yet: the card says so.
+1. **TV** tab → **TV games** card → **Install TV Games** (needs ADB, only to install).
 2. Press **Open TV Games**, then scan the QR on the TV with a phone to use it as a pad.
 3. Card and board games (Tiến lên, Color Cards, Tycoon…): each player holds their hand on their phone, taps or swipes to pick cards, then presses a button. Bots take empty seats.
 4. Alone with the TV remote: OK is the A button. Start, Select, B: **Back → Map remote keys**, then press the keys you want (color keys, ⏯…). Or **🎮 Gamepad** on the remote.
-5. Send someone out of the lobby: ▲ picks them, OK.
-6. Tilt games (Balloons, Pool, Paper Planes…): on the pad tap **Turn on tilt**. The browser warns as the pad switches to https: tap **Advanced** then **Proceed** (iPhone adds **Allow**). You keep your seat.
-7. A web game stuck or just updated? On the TV hold OK on the web game → **Open the latest version**; on the phone the ⚙ menu → **Reload the game**. Phones stay connected.
+5. Arcade: upload the **.zip** under its own name (**sfa3.zip**); Neo Geo also needs **neogeo.zip**. **Coin**, then **Start**.
+6. Send someone out of the lobby: ▲ picks them, OK.
+7. Tilt games (Balloons, Pool, Paper Planes…): on the pad tap **Turn on tilt**. The browser warns as the pad switches to https: tap **Advanced** then **Proceed** (iPhone adds **Allow**).
+8. A web game stuck or just updated? On the TV hold OK on the web game → **Open the latest version**; on the phone the ⚙ menu → **Reload the game**.
 
 ### Tips

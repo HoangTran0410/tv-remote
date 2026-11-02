@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Games: arcade games (FinalBurn Neo, downloaded on the first one): upload your own .zip under its romset name (Neo Geo needs neogeo.zip beside it), Coin on the pad, Press Start puts a coin in; seven free arcade games from mamedev.org in Suggestions.
 - TV Home folders: Right at the end of a row goes on to the next row and Left at its start back to the previous one, as on the home grid.
 - TV Home: the clock no longer stops on TVs whose firmware stops the minute tick after standby (a TCL on Android 9); before Android 12 it checks itself once a minute.
 - Optimize TV: four more suggestions (Hisense hotel menu, AI picture book, Migu preload; Changhong retail demo); never offered to turn off: Philips Mimi sound, Skyworth remote updater, Hisense voice and smart-home parts, the Android 14 SDK sandbox.

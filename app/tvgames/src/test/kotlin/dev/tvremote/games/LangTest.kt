@@ -8,7 +8,7 @@ class LangTest {
         assertEquals("vi", Lang.decide("", "vi"))
         assertEquals("en", Lang.decide("", "en"))
         assertEquals("ru", Lang.decide("", "ru"))
-        assertEquals("en", Lang.decide("", "fr"))                     // English is every other language's fallback
+        assertEquals("en", Lang.decide("", "zz"))                     // English is every other language's fallback
     }
 
     @Test fun aChoiceBeatsTheTv() {
