@@ -17,7 +17,7 @@ html[data-theme=dark] { color-scheme:dark; }
 body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; }
 main { max-width:1360px; transition:max-width .15s; margin:0 auto; padding:16px; display:flex; flex-direction:column; gap:14px; }
 h1 { font-size:18px; margin:0; }
-h2 { font-size:12px; margin:0 0 8px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+h2 { font-size:16px; margin:0 0 8px; color:var(--ink); font-weight:650; }   /* sentence case, readable with accents (the user, 2026-11-02) */
 .card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px; }
 .muted { color:var(--muted); font-size:13px; }
 button.busy { position:relative; pointer-events:none; }   /* core.js api(): the clicked button, while its call runs */

@@ -527,9 +527,8 @@ function buildBanner() {
   }
   const helpMe = ADB.state === 'closed' || ADB.state === 'error' ? el('button', { className: 'small primary', textContent: T('core.adb_help_me'), onclick: () => adbHelp() }) : null;
   if (helpMe) retry.className = 'small';
-  const loss = el('p'); loss.append(el('b', { textContent: T('core.lost_features') + ' ' }), T('core.lost_features_list'));
-  return el('div', { className: 'banner ' + cls }, el('b', { textContent: title }), el('p', { textContent: text }), loss,
-    el('div', { className: 'actions' }, helpMe, retry, el('button', { className: 'small', textContent: T('core.how_adb'), onclick: () => { const h = $('#help'); h.open = true; h.scrollIntoView({ behavior: 'smooth', block: 'center' }); } })));
+  return el('div', { className: 'banner ' + cls }, el('b', { textContent: title }), el('p', { textContent: text }),   // by hand: inside Turn on for me (adbHelp)
+    el('div', { className: 'actions' }, helpMe, retry));
 }
 function applyAdb() {
   const ready = ADB.state === 'ready';

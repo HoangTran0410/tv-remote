@@ -8,6 +8,9 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 - TV Setup: the phone app's download QR sits behind a button (it opens on a card), so the screen shows one QR: "scan the QR" can no longer be read off the wrong one.
 - TV Setup: with ADB debugging on, no network ADB port and Wireless debugging off (Android 11+), the TV opens the Wireless debugging page by itself, once (Developer options if that page is missing)
+- Card titles in sentence case, larger and dark instead of small grey capitals (easier to read with accents).
+- ADB banners in plain words ("Some features are off · The remote buttons still work", "Look at the TV"), two buttons, one banner at a time: hidden while the self-check banner shows and on first setup, whose step 1 says the same.
+- First-time setup steps in one plain line each.
 - Kids mode: clearer choices ("Lock some apps" / "Kids' apps only"), Google Authenticator and Telegram folded under "Other ways to unlock", and a line saying what Open for a while does.
 - Automation and Setup tabs: each card folds to its title and one line: what is on ("Off at 22:30", "3 apps"), else what the card is for; a card that is on starts open, a tap on a title opens or folds it, and the choice is kept in that browser. Automation's cards sit in columns again on a wide screen (a CSS rule meant to weigh nothing outweighed them).
 - Kids mode: a Quick setup at the top of its card sets a parent's preset in one go (apps for kids, TV time a day, a bedtime, a PIN) through the existing Kids mode, Total TV time and Bedtime rules, and "Undo" takes back only what it set, leaving rules made by hand. What it set is kept on the TV, so every phone and computer shows the same. The Kids mode card is now split into boxed parts with icons (Quick setup, App lock, Unlock on the TV with, Open for a while). Needs the next TV Setup.

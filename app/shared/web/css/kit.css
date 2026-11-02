@@ -69,8 +69,8 @@ button .minispin { border-color:currentColor; border-right-color:transparent; } 
 @keyframes flash { 0% { box-shadow:0 0 0 0 var(--accent); } 10%, 60% { box-shadow:0 0 0 3px var(--accent), 0 0 24px var(--accent); } 100% { box-shadow:0 0 0 3px transparent; } }
 /* a long tab's cards fold to their title and one line of what is on (js/fold.js) */
 .foldable h2[aria-expanded] { cursor:pointer; }
-.foldable h2[aria-expanded]::before { content:''; float:right; width:8px; height:8px; margin:4px 4px 0 12px; border:solid var(--muted); border-width:0 2px 2px 0; transform:rotate(45deg); transition:transform .15s; }
-.foldable h2[aria-expanded=true]::before { transform:rotate(-135deg); margin-top:8px; }
+.foldable h2[aria-expanded]::before { content:''; float:right; width:8px; height:8px; margin:6px 4px 0 12px; border:solid var(--muted); border-width:0 2px 2px 0; transform:rotate(45deg); transition:transform .15s; }
+.foldable h2[aria-expanded=true]::before { transform:rotate(-135deg); margin-top:10px; }
 .foldable h2[aria-expanded]:focus-visible { outline:2px solid var(--accent); outline-offset:4px; border-radius:6px; }
 .foldable.folded h2[aria-expanded]::after { content:attr(data-sum); display:block; margin-top:3px; font-size:13px; font-weight:400; color:var(--muted); text-transform:none; letter-spacing:normal; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .foldable.folded > :not(h2):not(.card-head) { display:none !important; }   /* over a tab's own layout (#rulecards .actions)*/
@@ -100,7 +100,7 @@ details.card > :not(summary) + :not(summary) { margin-top:var(--gap); }
 details.adv > summary { cursor:pointer; font-size:14px; font-weight:600; color:var(--muted); padding:6px 0; }   /* the advanced part of a card, folded */
 details.adv[open] > summary { margin-bottom:var(--gap); }
 details.adv > :not(summary) + :not(summary) { margin-top:var(--gap); }
-h2 .lower { text-transform:none; letter-spacing:0; font-weight:500; }   /* "· cần ADB", a TV's name: words beside a title */
+h2 .lower { font-size:13px; font-weight:400; color:var(--muted); }   /* "· cần ADB", a TV's name: words beside a title */
 .group { display:flex; flex-direction:column; gap:6px; }
 .group > * { margin:0; }
 .note, .empty { color:var(--muted); font-size:13px; margin:0; line-height:1.45; }

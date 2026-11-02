@@ -178,6 +178,8 @@ html:not(.tabbed) .panel { visibility:hidden; }   /* theme.js, setup.js */
 .banner.wait > span:nth-child(2) { flex:1; }
 .banner.wait button { padding:4px 10px; }
 .banner > b { font-size:15px; }
+body:has(#diag:not([hidden])) [data-adb-banner],                      /* one banner at a time: the self-check already says what is wrong */
+[data-panel=tv]:has(#steps > .step.todo:first-child) [data-adb-banner] { display:none; }   /* first setup's step 1 says it, with the same buttons */
 .banner.line { flex-direction:row; align-items:center; gap:10px; padding:8px 8px 8px 14px; }   /* an update on offer: one row, not a card */
 .banner.line > b { flex:1; min-width:0; font-size:14px; }
 .banner.line > span:empty { display:none; }

@@ -58,7 +58,7 @@ Type scale (system-ui; body `16px/1.45`):
 | 16px / 600 | `p.state` |
 | 14px | `h3` (600), `details.card > summary` (600), `.item .name`, panel buttons, `.kv` |
 | 13px | `p.note`, `p.empty`, `.warnline`, `.small`, `select`, chips, `.muted` |
-| 12px uppercase 700, `.05em` | `h2` card titles, in `--muted` (`css/base.css:20`); words beside it `h2 .lower` |
+| 16px / 650, sentence case, `--ink` | `h2` card titles (`css/base.css:20`); words beside it `h2 .lower` (13px, `--muted`) |
 | 12px | `.item .name small`, `.mitem small` |
 
 Breakpoints: `max-width:640px` is the phone layout (icon-only `.lbl` in heads/acts/top, tabs as icon over 10px label,
