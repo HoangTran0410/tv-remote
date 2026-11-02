@@ -519,6 +519,8 @@ class HomeActivity : Activity() {
         ui.postDelayed({ if (!isDestroyed) settle() }, 350)           // a widget that took no focus before gives it back to a neighbour
     }
 
+    private var focusWidget: String? = null                           // a widget just added from + Add: the focus goes to it once the row shows it
+    private fun widgetView(k: String) = widgets.hot.firstOrNull { it.tag == k && it.isShown }
     private var wantTag: String? = null                               // the widget next to one just hidden
     /** After a menu: an element that went leaves the focus nowhere; it lands on its nearest neighbour. */
     private fun settle() {
@@ -721,6 +723,7 @@ class HomeActivity : Activity() {
             runOnUiThread {
                 if (isDestroyed) return@runOnUiThread
                 widgets.show(want, f, note, { p -> apps.firstOrNull { it.pkg == p }?.label ?: p.substringAfterLast('.') }, sizes, conf.optJSONObject("qrs") ?: JSONObject())
+                focusWidget?.let { k -> ui.post { widgetView(k)?.let { focusWidget = null; go(it) } } }
                 if (widgets.speed != null) { ui.removeCallbacks(netTick); ui.postDelayed(netTick, Widgets.SAMPLE_MS) }   // the graph was just added: its tick starts
                 // TV Setup answers the CPU with its last measure and starts the next: the first time there is none, so ask again soon, once
                 if ("system" in want && f.cpu == null && !cpuAgain) { cpuAgain = true; ui.postDelayed({ if (!isDestroyed) widgetsRead() }, 2500) }
@@ -2537,7 +2540,7 @@ class HomeActivity : Activity() {
         val live = ArrayList<TvGlass.Item>(); val pins = ArrayList<TvGlass.Item>(); val rowsOff = ArrayList<TvGlass.Item>()
         // every live widget, the ones on the grid too (a press goes to it, once the sheet gave the focus back): with all but one placed, that one alone said nothing of what it was
         if (LiveWidgets.status(this) == LiveWidgets.OK) for (t in LiveWidgets.available(this)) { val on = t.key in onGrid
-            live.add(TvGlass.Item(LiveWidgets.iconRes(this, t), t.title.ifEmpty { HomeConfig.liveId(t.key) }, getString(if (on) R.string.watch_pin_same else R.string.add), false, false) {
+            live.add(TvGlass.Item(LiveWidgets.iconRes(this, t), t.title.ifEmpty { HomeConfig.liveId(t.key) }, getString(if (on) R.string.add_have else R.string.add), false, false) {
                 if (on) grid.postDelayed({ tiles().firstOrNull { it.app?.pkg == t.key }?.let { go(it) } }, 200) else addToGrid(t.key, true) }.also { it.picture = icon(HomeConfig.liveProvider(t.key)) }) }
         for (p in Store.rowsOff(this)) { val l = try { packageManager.getApplicationLabel(packageManager.getApplicationInfo(p, 0)).toString() } catch (e: Exception) { continue }
             rowsOff.add(TvGlass.Item(0, l, getString(R.string.add_row), false, false) { Store.rowsOn(this, p); open?.dismiss(); watchRead() }.also { it.picture = icon(p) }) }   // a row hidden from its menu comes back here
@@ -2547,8 +2550,11 @@ class HomeActivity : Activity() {
                 if (k in onGrid || pins.size >= 40) continue
                 pins.add(TvGlass.Item(0, o.optString("title"), getString(R.string.add_pin), false, false) { addToGrid(k, true) }.also { it.picture = Pins.rowIcon(this, k, o.optString("app"), o.optLong("t")) ?: icon(o.optString("app")) }) }
         }
-        // the row's widgets that are off: hidden from a widget's menu, they came back only through Customize
-        val widgets = Customize.widgetsOff(this).map { (k, ic, name) -> TvGlass.Item(ic, name, getString(R.string.add), false, false) { Store.putList(this, "widgets", Store.list(this, "widgets") + k) } }
+        // the row's widgets, as the live widgets above: one already on is a press away (the focus goes to it), one off is added and focused
+        // (hidden from a widget's menu, it came back only through Customize)
+        val widgets = Customize.widgetList(this).map { w -> TvGlass.Item(w.icon, w.name, getString(if (w.on) R.string.add_have else R.string.add), false, false) {
+            if (w.on) ui.postDelayed({ widgetView(w.key)?.let { go(it) } }, 200)
+            else { focusWidget = w.key; Store.putList(this, "widgets", Store.list(this, "widgets") + w.key) } } }
         val p = TvGlass.Panel(this, R.style.Menu, R.drawable.ic_left) { it.typeface = if (it.typeface?.isBold == true) Font.bold else Font.regular }
         fun top(at: Int) {
             val rows = ArrayList<TvGlass.Item>()

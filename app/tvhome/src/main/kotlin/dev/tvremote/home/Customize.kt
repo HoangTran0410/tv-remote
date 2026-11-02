@@ -1228,12 +1228,13 @@ object Customize {
     /** A widget this TV can have: Private DNS is Android 9+; a QR widget is written on the phone or the web page: only those that exist. */
     private fun canShow(k: String, qrs: JSONObject) = (k !in HomeQr.KEYS || qrs.has(k)) && (k != "adblock" || android.os.Build.VERSION.SDK_INT >= HomeConfig.ADBLOCK_MIN_SDK)
 
-    /** The widgets that are off, as + Add lists them (key, icon, name): the same rows as this panel's Widgets page, one list for both. */
-    fun widgetsOff(a: Context): List<Triple<String, Int, String>> {
+    class Widget(val key: String, val icon: Int, val name: String, val on: Boolean)
+    /** Every widget this TV can have, as + Add lists them, the ones on the row too: the same rows as this panel's Widgets page, one list for both. */
+    fun widgetList(a: Context): List<Widget> {
         val on = Store.list(a, "widgets"); val qrs = Store.get(a).optJSONObject("qrs") ?: JSONObject()
-        return HomeConfig.WIDGETS.filter { it !in on && canShow(it, qrs) }.map { k ->
+        return HomeConfig.WIDGETS.filter { canShow(it, qrs) }.map { k ->
             val r = WIDGET_ROWS.firstOrNull { it[0] == k } ?: QR_ROW; val qr = qrs.optJSONObject(k)
-            Triple(k, r[1] as Int, if (qr != null) a.getString(R.string.w_qr_named, qr.optString("cap").ifEmpty { qrKind(a, qr) }) else a.getString(r[2] as Int))
+            Widget(k, r[1] as Int, if (qr != null) a.getString(R.string.w_qr_named, qr.optString("cap").ifEmpty { qrKind(a, qr) }) else a.getString(r[2] as Int), k in on)
         }
     }
 
