@@ -1356,16 +1356,23 @@ class HomeActivity : Activity() {
             if (!dlg.isShowing) return
             if (first) { first = false; Motion.appear(card) }            // with its tiles, not as an empty card
             body.removeAllViews()
-            val lives = ArrayList<Tile>()
+            val lives = ArrayList<Tile>(); val shown = ArrayList<View>()
             var row: LinearLayout? = null
             mem.forEachIndexed { i, m ->
                 if (i % cols == 0) { row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; clipChildren = false }; body.addView(row, LinearLayout.LayoutParams(-2, -2).apply { if (i > 0) topMargin = dp(GRID_GAP) }) }
                 val t = PanelTile(this, m, w, m.label, ::dp).apply {
                     setOnClickListener { dlg.dismiss(); ui.post { launch(m) } }
                     setOnLongClickListener { menu(m); true }
-                    setOnKeyListener { _, code, e -> if (code == KeyEvent.KEYCODE_MENU) { if (e.action == KeyEvent.ACTION_UP) menu(m); true } else false }
+                    setOnKeyListener { _, code, e ->
+                        // Right at a row's end / Left at its start goes on to the next / previous row, as the home grid does
+                        val to = when (code) { KeyEvent.KEYCODE_DPAD_RIGHT -> if (i % cols == cols - 1) i + 1 else -1
+                            KeyEvent.KEYCODE_DPAD_LEFT -> if (i % cols == 0) i - 1 else -1; else -> -1 }
+                        if (code == KeyEvent.KEYCODE_MENU) { if (e.action == KeyEvent.ACTION_UP) menu(m); true }
+                        else if (to in shown.indices) { if (e.action == KeyEvent.ACTION_DOWN) shown[to].requestFocus(); true }
+                        else false }
                     onFocusChangeListener = View.OnFocusChangeListener { v, f -> (v as Tile).focus(f) }
                 }
+                shown.add(t)
                 row!!.addView(t, LinearLayout.LayoutParams(-2, -2).apply { if (i % cols > 0) leftMargin = gap })
                 if (m.live) lives.add(t)
             }
