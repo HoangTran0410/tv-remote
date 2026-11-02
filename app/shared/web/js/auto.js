@@ -120,6 +120,15 @@ function renderRules() {
   $('#rampct').replaceChildren(...[80, 85, 90, 95].map((p) => el('button', { type: 'button', className: p === ram.pct ? 'on' : '', textContent: p + '%',
     onclick: () => saveRam(true, p) })));
   put('#ramstate', 'textContent', ram.on ? T('auto.ram_on', { pct: ram.pct }) : '');
+  // folded, each card says what is on (js/fold.js); one that is on starts open
+  const off = T('fold.off'), nApps = (n) => T('fold.apps', { n }), ranges = (xs) => xs.map((v) => v.from + ' – ' + v.to).join(', ');
+  foldSum('sleepcard', r.sleep_at ? T('fold.sleep', { at: clock(r.sleep_at) }) : off, !!r.sleep_at);
+  foldSum('bedcard', b.on && beds.length ? ranges(beds) : off, !!b.on);
+  foldSum('limitcard', rows.length ? nApps(rows.length) : off, rows.length > 0);
+  foldSum('lockcard', lock.apps.length ? nApps(lock.apps.length) : off, lock.apps.length > 0);
+  foldSum('schedcard', scheds.length ? nApps(scheds.length) : off, scheds.length > 0);
+  foldSum('volcard', vols.length ? ranges(vols) : off, vols.length > 0);
+  foldSum('ramcard', ram.on ? T('fold.ram', { pct: ram.pct }) : off, !!ram.on);
   if (CORE === 'tv' && r.adb && r.adb !== 'ready') $('#bedstate').append(el('span', { className: 'warnline', textContent: T('auto.setup_no_adb') }));
 }
 
@@ -471,6 +480,7 @@ function renderScenes() {
     });
   }
   put('#sceneexport', 'hidden', !SCENES.length);
+  foldSum('scenecard', SCENES.length ? T('fold.scenes', { n: SCENES.length }) : T('fold.off'), SCENES.length > 0);
   $('#scenelist').replaceChildren(...(SCENES.length ? SCENES.map((sc) => el('div', { className: 'item' },
     el('div', { className: 'ficon', textContent: sc.icon || '🎬' }),
     el('div', { className: 'name' }, el('span', { textContent: sc.name }), el('small', { textContent: sc.steps.map(stepText).join(' → ') })),

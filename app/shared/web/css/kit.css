@@ -36,8 +36,9 @@ form.line button { padding:0 16px; }
 .bar i { display:block; height:100%; width:0; background:var(--accent); transition:width .3s; }
 .stack { display:flex; flex-direction:column; gap:14px; min-width:0; }
 /* any plain wrapper that holds two or more cards (a slot a script fills with UI.card) spaces them like .stack, so a new slot
-   cannot leave them glued; :where() = no weight, so .two-up / #hnow / .panel and every explicit layout win (tests/ui.test.js, layout.js) */
-:where(div:not([class]), div[id]):has(> .card ~ .card) { display:flex; flex-direction:column; gap:14px; min-width:0; }
+   cannot leave them glued; all inside :where() = no weight (a :has() outside it weighs as its argument, 0,2,0, and made
+   Automation's #rulecards one column), so .two-up / #hnow / .panel and every explicit layout win (tests/ui.test.js, layout.js) */
+:where(:is(div:not([class]), div[id]):has(> .card ~ .card)) { display:flex; flex-direction:column; gap:14px; min-width:0; }
 .kv { display:grid; grid-template-columns:fit-content(55%) minmax(0,1fr); gap:6px 14px; font-size:14px; }
 .kv dt, .kv .k { color:var(--muted); overflow-wrap:anywhere; min-width:0; }
 .kv .v { font-weight:600; overflow-wrap:anywhere; text-align:right; }
@@ -66,6 +67,14 @@ button .minispin { border-color:currentColor; border-right-color:transparent; } 
 @keyframes spin { to { transform:rotate(360deg); } }
 .flash { animation:flash 3s ease-out; }                             /* goTo(): the card a jump was about */
 @keyframes flash { 0% { box-shadow:0 0 0 0 var(--accent); } 10%, 60% { box-shadow:0 0 0 3px var(--accent), 0 0 24px var(--accent); } 100% { box-shadow:0 0 0 3px transparent; } }
+/* a long tab's cards fold to their title and one line of what is on (js/fold.js) */
+.foldable h2[aria-expanded] { cursor:pointer; }
+.foldable h2[aria-expanded]::before { content:''; float:right; width:8px; height:8px; margin:4px 4px 0 12px; border:solid var(--muted); border-width:0 2px 2px 0; transform:rotate(45deg); transition:transform .15s; }
+.foldable h2[aria-expanded=true]::before { transform:rotate(-135deg); margin-top:8px; }
+.foldable h2[aria-expanded]:focus-visible { outline:2px solid var(--accent); outline-offset:4px; border-radius:6px; }
+.foldable.folded h2[aria-expanded]::after { content:attr(data-sum); display:block; margin-top:3px; font-size:13px; font-weight:400; color:var(--muted); text-transform:none; letter-spacing:normal; }
+.foldable.folded > :not(h2):not(.card-head) { display:none !important; }   /* over a tab's own layout (#rulecards .actions)*/
+.foldable > .card-head > h2[aria-expanded] { flex:1; }   /* the chevron at the same place in every card, before the head's tools */
 .part { display:flex; flex-direction:column; gap:var(--gap); padding:12px; border:1px solid var(--line); border-radius:12px; }   /* a part set apart inside a card (Kids mode's Quick setup) */
 .part:empty { display:none; }
 .state { font-size:16px; font-weight:600; margin:0 0 10px; }

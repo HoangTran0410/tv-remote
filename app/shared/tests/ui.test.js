@@ -90,7 +90,7 @@ test('the chart legend keeps its small keys', () => {
 test('cards put side by side in one slot are spaced (never glued)', () => {
   // kit.css spaces any plain div holding 2+ cards (a script's slot); this keeps that rule, and keeps scripts from filling
   // a slot that is not a plain div (a class of its own would lose the rule) with several cards at once
-  assert.match(css, /:where\(.*\):has\(> \.card ~ \.card\)\s*\{[^}]*gap:\s*14px/, 'kit.css lost the rule that spaces a wrapper of cards');
+  assert.match(css, /:where\(.*:has\(> \.card ~ \.card\)\)\s*\{[^}]*gap:\s*14px/, 'kit.css lost the rule that spaces a wrapper of cards');
   const bad = [];
   for (const [f, s] of scripts) for (const m of s.matchAll(/\$\('#([\w-]+)'\)\.(?:replaceChildren|append)\(([^;\n]*)/g)) {
     if ((m[2].match(/\bUI\.(?:card|say)\(/g) || []).length < 2) continue;

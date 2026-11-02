@@ -46,6 +46,7 @@ function welcomeShow() {
     input.addEventListener('change', () => { const f = input.files[0]; input.value = ''; welcomePick(f, l); });
     return l;
   };
+  foldSum('welcomecard', w.has && w.on ? T('fold.on') : T('fold.off'), !!(w.has && w.on));
   if (!w.has) {
     box.replaceChildren(UI.empty(T('welcome.none')), UI.note(T('welcome.limits', { max: fmtSize(WELCOME_MAX) })), UI.actions(pick(T('welcome.choose'), 'primary')));
     return;

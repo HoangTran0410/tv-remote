@@ -372,7 +372,7 @@
 
   <div class="panel" data-panel="tv" hidden>
     <div data-adb-banner></div>
-    <section class="card chk" id="checkcard" data-needs="adb" hidden></section>
+    <section class="card chk" id="checkcard" data-nofold data-needs="adb" hidden></section>
     <div class="two-up">
       <section class="card" data-adb-gated id="tvsetcard">
         <div class="card-head"><h2>📺 TV</h2><button class="small" id="tvreboot" data-asks><span class="ico">🔁</span><span class="lbl" data-i18n="tv.restart_the_tv"> Khởi động lại TV</span></button></div>
@@ -384,7 +384,7 @@
         <p class="note" id="tsstate" data-i18n="tv.checking_whether_the_tv">Đang xem TV đã có Tailscale chưa...</p>
         <div class="actions"><button class="primary" id="tsgo" data-i18n="tv.install_and_sign_in">⚡ Cài và đăng nhập Tailscale</button></div>
       </section>
-      <section class="card" data-adb-gated>
+      <section class="card" data-adb-gated id="optcard">
         <h2 data-i18n="common.optimize_tv">⚡ Tối ưu TV</h2>
         <div class="actions">
           <button class="primary" id="setupapply" data-i18n="common.optimize_tv">⚡ Tối ưu TV</button>
@@ -636,6 +636,7 @@
 <script src="js/auto.js"></script>
 <script src="js/kids.js"></script>
 <script src="js/family.js"></script>
+<script src="js/fold.js"></script>
 <script src="js/welcome.js"></script>
 <script src="js/diagnose.js"></script>
 <script src="js/setup.js"></script>

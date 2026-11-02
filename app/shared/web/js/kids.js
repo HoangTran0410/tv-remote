@@ -47,6 +47,7 @@ function renderKids(r) {
   const card = $('#kidscard'); if (!card) return;
   const k = kidsOf(r) || { mode: 'list', allow: [], methods: { pin: true, totp: false, ask: false } };
   const kids = k.mode === 'kids', pin = !!(r.lock && r.lock.pin), wait = k.wait_until > r.now;
+  foldSum('kidscard', kids ? T('fold.kids', { n: k.allow.length }) : T('fold.off'), kids);
   const part = (...kids) => el('div', { className: 'part' }, ...kids.filter(Boolean));   // each block in its own box: the card reads at a glance
   const body = [UI.note(T('auto.kids_note')), el('div', { id: 'familybox', className: 'part' })];   // Quick setup (family.js) first: a parent's one tap
   const lockPart = [UI.group(T('auto.kids_lock_title'), UI.chips([
@@ -108,6 +109,7 @@ function renderTotal(r) {
   const card = $('#totalcard'); if (!card) return;
   const t = r.total || {}, min = t.min || 0, extra = t.extra || 0, used = t.used || 0;
   const days = t.days && t.days.length ? t.days : TOTAL_DAYS_ALL;
+  foldSum('totalcard', min ? T('fold.per_day', { time: minsShort(min) }) : T('fold.off'), min > 0);
   const body = [UI.note(T('auto.kids_total_note'))];
   if (min) {
     const all = min + extra, left = Math.max(0, all - used), pct = Math.min(100, Math.round(used * 100 / Math.max(1, all)));
