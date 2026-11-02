@@ -60,12 +60,16 @@ import java.util.concurrent.atomic.AtomicBoolean
  * footer with CPU and RAM, read every [TICK_MS] only while it is open. It is the top bar's settings button: only what people use often is here (the owner,
  * 2026-10-25: a 24-hour clock or the sound screen is set once in a TV's life), the rest stays in TV settings and Customize. TV Home does the
  * network line and the settings screens itself; the sleep timer, kids mode, the power buttons and the CPU go through TV Setup's HomeInfo (it answers only TV Home): named words, never a
- * command line from here. Without TV Setup, or an old one, those say "Needs TV Setup" greyed. No brightness slider: measured on a real box,
- * the system brightness does nothing on TVs.
+ * command line from here. Without TV Setup, or an old one, those say "Needs TV Setup" greyed. The brightness bar is TV Setup's tint, not the
+ * system brightness: measured on a real box, that does nothing on TVs.
  */
 object ControlCenter {
     private const val TICK_MS = 2000L
     private const val R_TILE = 16                                      // a row of the glass panel: Customize's and the long-press menu's
+    private const val ON = 0xFF8AB4F8.toInt()                          // a tile that is on: its icon's disc (Android's quick settings; Customize's accent)
+    private const val ON_INK = 0xFF202124.toInt()                      // the icon on that disc, and on the brightness bar's fill
+    private const val FILL = 0xFFE8EAED.toInt()                        // the brightness bar's fill: light, as Android's
+    private fun disc(color: Int) = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(color) }
     /** What the last reading found, kept for the session: the panel then opens without asking the system on the UI thread (a cold open cost ~25 ms of it on the FPT box). */
     private class Seen(val inputs: Boolean, val net: Pair<Int, String>, val line: String?)
     @Volatile private var seen: Seen? = null
@@ -75,7 +79,7 @@ object ControlCenter {
     /** Reads it on a thread of its own once the home is up, so the first open is as quick as the next. */
     fun warm(a: Activity) {
         if (seen != null) return
-        Thread({ try { for (r in ICONS26) glyph(a, r, 26); glyph(a, R.drawable.ic_eraser, 22); glyph(a, R.drawable.ic_power, 22); val ins = Inputs.rows(a) { }; seen = Seen(Inputs.showTile(ins.size, Inputs.liveApp(a) != null, Inputs.isBox()), network(a), inputsLine(a, ins)) } catch (e: Exception) { } }, "home-cc-warm").apply { isDaemon = true }.start()
+        Thread({ try { for (r in ICONS) { glyph(a, r, 22); glyph(a, r, 20) }; glyph(a, R.drawable.ic_sun, 22); glyph(a, R.drawable.ic_eraser, 22); glyph(a, R.drawable.ic_power, 22); val ins = Inputs.rows(a) { }; seen = Seen(Inputs.showTile(ins.size, Inputs.liveApp(a) != null, Inputs.isBox()), network(a), inputsLine(a, ins)) } catch (e: Exception) { } }, "home-cc-warm").apply { isDaemon = true }.start()
     }
 
     /**
@@ -103,7 +107,7 @@ object ControlCenter {
         }
         return BitmapDrawable(c.resources, bmp)
     }
-    private val ICONS26 = intArrayOf(R.drawable.ic_wifi, R.drawable.ic_mic, R.drawable.ic_router, R.drawable.ic_input, R.drawable.ic_bluetooth, R.drawable.ic_timer, R.drawable.ic_lock,
+    private val ICONS = intArrayOf(R.drawable.ic_wifi, R.drawable.ic_mic, R.drawable.ic_router, R.drawable.ic_input, R.drawable.ic_bluetooth, R.drawable.ic_timer, R.drawable.ic_lock,
         R.drawable.ic_settings, R.drawable.ic_sliders, R.drawable.ic_clock, R.drawable.ic_eye_off, R.drawable.ic_refresh, R.drawable.ic_power)
 
     private fun inputsLine(a: Context, rows: List<Drop.Row>): String {
@@ -134,20 +138,29 @@ object ControlCenter {
                 addState(intArrayOf(android.R.attr.state_focused), TvGlass.glass(c, R_TILE, TvGlass.ROW_FOCUS, Color.WHITE))
                 addState(intArrayOf(), TvGlass.glass(c, R_TILE, TvGlass.ROW_FILL, TvGlass.ROW_EDGE))
             }
-            addView(pic.apply { setImageDrawable(glyph(c, icon, 26)); imageTintList = ColorStateList.valueOf(Color.WHITE) }, LayoutParams(dp(if (small) 22 else 26), dp(if (small) 22 else 26)))
+            // the icon on a disc of its own (Android's quick settings): lit when the tile is on, see on()
+            val d = if (small) 36 else 40; val p = (d - if (small) 20 else 22) / 2
+            addView(pic.apply { setImageDrawable(glyph(c, icon, if (small) 20 else 22)); imageTintList = ColorStateList.valueOf(Color.WHITE); background = disc(TvGlass.ROW_FOCUS); setPadding(dp(p), dp(p), dp(p), dp(p)) }, LayoutParams(dp(d), dp(d)))
             val words = LinearLayout(c).apply { orientation = VERTICAL; if (small) gravity = Gravity.CENTER_HORIZONTAL }
             words.addView(title.apply { text = name; textSize = if (small) 12.5f else 16f; setTextColor(Color.WHITE); maxLines = 1; ellipsize = TextUtils.TruncateAt.END })
-            words.addView(sub.apply { textSize = if (small) 11f else 12f; setTextColor(TvGlass.HINT); maxLines = 1; ellipsize = TextUtils.TruncateAt.END; visibility = GONE })
-            if (small) addView(words, LayoutParams(-1, -2).apply { topMargin = dp(6) }) else addView(words, LayoutParams(0, -2, 1f).apply { leftMargin = dp(12) })
+            words.addView(sub.apply { textSize = if (small) 11.5f else 12f; setTextColor(TvGlass.HINT); maxLines = 1; ellipsize = TextUtils.TruncateAt.END; visibility = GONE })
+            if (small) addView(words, LayoutParams(-1, -2).apply { topMargin = dp(8) }) else addView(words, LayoutParams(0, -2, 1f).apply { leftMargin = dp(12) })
             if (small) { title.gravity = Gravity.CENTER; sub.gravity = Gravity.CENTER }
             setOnClickListener { press() }
             setOnLongClickListener { hold?.let { if (need) press() else it() }; hold != null }
             // no pop: the white edge and lighter fill say focus; scaled, a tile at the panel's edge came out cut (the user, 2026-10-25)
         }
 
-        fun icon(res: Int) = pic.setImageDrawable(glyph(pic.context, res, if (small) 22 else 26))
+        fun icon(res: Int) = pic.setImageDrawable(glyph(pic.context, res, if (small) 20 else 22))
         /** A colour's dot in the icon's place (the tint's colours). */
-        fun swatch(color: Int) { pic.imageTintList = null; pic.setImageDrawable(dot(color, dp(22), dp(2))) }
+        fun swatch(color: Int) { pic.imageTintList = null; pic.background = null; pic.setPadding(0, 0, 0, 0); pic.setImageDrawable(dot(color, dp(22), dp(2))) }
+
+        private var lit: Boolean? = null
+        /** On: the disc lit and the icon dark, as an Android tile that is on (the timer running, kids mode, a network, the mic ours). */
+        fun on(yes: Boolean) {
+            if (lit == yes || pic.imageTintList == null) return
+            lit = yes; pic.background = disc(if (yes) ON else TvGlass.ROW_FOCUS); pic.imageTintList = ColorStateList.valueOf(if (yes) ON_INK else Color.WHITE)
+        }
 
         /** The state line; empty hides it (an action's tile is then one line). */
         fun say(text: String) { if (sub.text.toString() != text) sub.text = text; val v = if (text.isEmpty()) GONE else VISIBLE; if (sub.visibility != v) sub.visibility = v }   // the same words again (every 2 s) must not ask for a layout
@@ -159,43 +172,46 @@ object ControlCenter {
     }
 
     /**
-     * The screen's brightness as TV Setup's tint takes it away ([b] 100 = no tint, down to 10 = the tint at its 90 %): one glass row like a
-     * tile, the bar filled to [b]; Left / Right move it a step of 10 while it has the focus, [moved] gets each new value.
+     * The screen's brightness as TV Setup's tint takes it away ([b] 100 = no tint, down to 10 = the tint at its 90 %): Android's quick
+     * settings slider, a thick pill filled light to [b] with the sun inside the fill and the value at the end; Left / Right move it a
+     * step of 10 while it is being changed, [moved] gets each new value. Built from views (the pill, its fill, the sun, the value), no drawing.
      */
-    private class DimBar(c: Context, val dp: (Number) -> Int, name: String) : LinearLayout(c) {   // a sun, the track and the value: no words (the user, 2026-10-30: too many)
+    private class DimBar(c: Context, val dp: (Number) -> Int, name: String) : FrameLayout(c) {   // a sun, the bar and the value: no words (the user, 2026-10-30: too many)
         var b = 100; private set
         var moved: (Int) -> Unit = {}
+        private val fill = View(c)
         private val value = Font.on(TextView(c))
-        // a stock bar with a pill track and fill: no view of its own to draw
-        private val track = android.widget.ProgressBar(c, null, android.R.attr.progressBarStyleHorizontal).apply {
-            max = 100; isFocusable = false
-            fun pill(color: Int) = GradientDrawable().apply { setColor(color); cornerRadius = dp(4).toFloat() }
-            progressDrawable = android.graphics.drawable.LayerDrawable(arrayOf(pill(TvGlass.ROW_EDGE),
-                android.graphics.drawable.ClipDrawable(pill(Color.WHITE), Gravity.START, android.graphics.drawable.ClipDrawable.HORIZONTAL))).apply {
-                setId(0, android.R.id.background); setId(1, android.R.id.progress)
-            }
-        }
+        private fun pill(color: Int, ring: Int = 0, ringColor: Int = 0) = GradientDrawable().apply { setColor(color); cornerRadius = dp(26).toFloat(); if (ring > 0) setStroke(ring, ringColor) }
 
         init {
-            orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; isFocusable = true; isClickable = true
-            setPadding(dp(14), dp(12), dp(14), dp(12))
-            background = StateListDrawable().apply {
-                addState(intArrayOf(android.R.attr.state_activated), TvGlass.glass(c, R_TILE, TvGlass.ROW_FOCUS, TvUi.RING_ACCENT))
-                addState(intArrayOf(android.R.attr.state_focused), TvGlass.glass(c, R_TILE, TvGlass.ROW_FOCUS, Color.WHITE))
-                addState(intArrayOf(), TvGlass.glass(c, R_TILE, TvGlass.ROW_FILL, TvGlass.ROW_EDGE))
+            isFocusable = true; isClickable = true; contentDescription = name
+            background = pill(TvGlass.ROW_FOCUS)
+            foreground = StateListDrawable().apply {                  // the ring over the fill: white focused, the accent while OK has it changing
+                addState(intArrayOf(android.R.attr.state_activated), pill(0, dp(2), TvUi.RING_ACCENT))
+                addState(intArrayOf(android.R.attr.state_focused), pill(0, dp(2), Color.WHITE))
             }
-            contentDescription = name
-            addView(ImageView(c).apply { setImageDrawable(glyph(c, R.drawable.ic_sun, 26)); imageTintList = ColorStateList.valueOf(Color.WHITE) }, LayoutParams(dp(26), dp(26)))
-            addView(track, LayoutParams(0, dp(8), 1f).apply { leftMargin = dp(16); rightMargin = dp(12) })
-            addView(value.apply { textSize = 13f; setTextColor(TvGlass.HINT); gravity = Gravity.END; fontFeatureSettings = "tnum" }, LayoutParams(dp(44), -2))
+            addView(fill.apply { background = pill(FILL) }, LayoutParams(-1, -1))
+            addView(ImageView(c).apply { setImageDrawable(glyph(c, R.drawable.ic_sun, 22)); imageTintList = ColorStateList.valueOf(ON_INK) },
+                LayoutParams(dp(22), dp(22), Gravity.START or Gravity.CENTER_VERTICAL).apply { leftMargin = dp(15) })   // centred in the fill's end disc at 10 %
+            addView(value.apply { textSize = 13f; typeface = Font.bold; fontFeatureSettings = "tnum"; gravity = Gravity.END }, LayoutParams(-2, -2, Gravity.END or Gravity.CENTER_VERTICAL).apply { rightMargin = dp(16) })
             show(100)
         }
 
-        fun show(v: Int) { b = v; value.text = "$v%"; track.progress = v }
+        fun show(v: Int) { b = v; value.text = "$v%"; place() }
+
+        /** The fill's width for [b]: at 10 % a disc round the sun, never nothing; the value dark on the fill, dim on the glass. */
+        private fun place() {
+            if (width == 0) return
+            val w = height + (width - height) * (b - 10) / 90
+            if (fill.layoutParams.width != w) { fill.layoutParams = fill.layoutParams.apply { width = w }; }
+            value.setTextColor(if (w > width - dp(64)) ON_INK else TvGlass.HINT)
+        }
+
+        override fun onSizeChanged(w: Int, h: Int, ow: Int, oh: Int) { super.onSizeChanged(w, h, ow, oh); post { place() } }
 
         // OK starts changing the value, OK / Back / Up / Down end it (the user, 2026-10-30): at rest Left / Right
         // move the focus like on any row, so the colour button beside it is one press away
-        private fun edit(on: Boolean) { isActivated = on; value.setTextColor(if (on) Color.WHITE else TvGlass.HINT) }
+        private fun edit(on: Boolean) { isActivated = on }
 
         override fun onFocusChanged(gain: Boolean, dir: Int, prev: android.graphics.Rect?) { super.onFocusChanged(gain, dir, prev); if (!gain) edit(false) }
 
@@ -372,7 +388,7 @@ object ControlCenter {
             }, "home-cc-control").apply { isDaemon = true }.start()
         }
 
-        private fun paintNet(n: Pair<Int, String>) { net.icon(if (n.first == 2) R.drawable.ic_router else R.drawable.ic_wifi); net.state(when (n.first) {
+        private fun paintNet(n: Pair<Int, String>) { net.icon(if (n.first == 2) R.drawable.ic_router else R.drawable.ic_wifi); net.on(n.first != 0); net.state(when (n.first) {
             2 -> a.getString(R.string.cc_net_eth); 1 -> n.second.ifEmpty { a.getString(R.string.wifi) }; else -> a.getString(R.string.cc_net_none) }) }
 
         /** The Inputs tile's line, from the one reading the menu uses: what is connected, else how many there are. */
@@ -394,7 +410,7 @@ object ControlCenter {
             } catch (e: Exception) { null }
             return pad ?: a.getString(R.string.cc_bt_on)
         }
-        private fun paintBt() { btTile?.state(btState()) }
+        private fun paintBt() { btTile?.let { t -> val st = btState(); t.state(st); t.on(st != a.getString(R.string.cc_off)) } }
 
         /** The bar from TV Setup's tint; hidden while TV Setup is missing or too old to take "dim:" (its answer has no `dim`). */
         private fun paintDim() {
@@ -421,9 +437,9 @@ object ControlCenter {
             val c = ctl
             if (c == null) { kids.state(a.getString(R.string.cc_need_setup), true); sleep.state(a.getString(R.string.cc_need_setup), true); mic?.state(a.getString(R.string.cc_need_setup), true); return }
             mic?.state(if (!c.has("mic")) a.getString(R.string.cc_need_setup) else a.getString(if (c.optBoolean("mic")) R.string.cc_mic_ours else R.string.cc_mic_tv), !c.has("mic"))   // who answers the button, not On / Off (the user, 2026-11-01)   // an older TV Setup has no switch for it
-            kids.state(a.getString(if (c.optBoolean("kids")) R.string.cc_on else R.string.cc_off))   // a small tile: one word; with no PIN a press opens the card where it is set
+            kids.state(a.getString(if (c.optBoolean("kids")) R.string.cc_on else R.string.cc_off)); kids.on(c.optBoolean("kids")); mic?.on(c.optBoolean("mic"))   // a small tile: one word; with no PIN a press opens the card where it is set
             val left = (c.optLong("sleep_at") - System.currentTimeMillis()).let { if (it > 0) (it + 59_999) / 60_000 else 0L }
-            sleep.state(if (left > 0) a.getString(R.string.cc_sleep_left, left.toString()) else a.getString(R.string.cc_off))
+            sleep.state(if (left > 0) a.getString(R.string.cc_sleep_left, left.toString()) else a.getString(R.string.cc_off)); sleep.on(left > 0)
         }
 
         /** One read of everything that moves, on a thread of its own (TV Setup is a binder call): the network, RAM, CPU, the timer. */
@@ -491,16 +507,17 @@ object ControlCenter {
             tintDot = ImageView(a)
             val tint = FrameLayout(a).apply {
                 isFocusable = true; isClickable = true; contentDescription = a.getString(R.string.cc_tint); id = View.generateViewId()
-                background = StateListDrawable().apply {
-                    addState(intArrayOf(android.R.attr.state_focused), TvGlass.glass(a, R_TILE, TvGlass.ROW_FOCUS, Color.WHITE))
-                    addState(intArrayOf(), TvGlass.glass(a, R_TILE, TvGlass.ROW_FILL, TvGlass.ROW_EDGE))
+                background = StateListDrawable().apply {                 // round, as the round actions: a square beside the pill looked stuck on
+                    addState(intArrayOf(android.R.attr.state_focused), GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(TvGlass.ROW_FOCUS); setStroke(dp(2), Color.WHITE) })
+                    addState(intArrayOf(), GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(TvGlass.ROW_FOCUS) })
                 }
                 addView(tintDot, FrameLayout.LayoutParams(dp(24), dp(24), Gravity.CENTER))
                 setOnClickListener { tintMenu() }
             }
             dimRow = LinearLayout(a).apply { clipChildren = false; clipToPadding = false
-                addView(dim, LinearLayout.LayoutParams(0, -1, 1f))
-                addView(tint, LinearLayout.LayoutParams(dp(64), -1).apply { leftMargin = dp(8) })
+                gravity = Gravity.CENTER_VERTICAL
+                addView(dim, LinearLayout.LayoutParams(0, dp(52), 1f))
+                addView(tint, LinearLayout.LayoutParams(dp(52), dp(52)).apply { leftMargin = dp(8) })
             }
             paintCtl(); paintNet(known.net)           // the last reading; refresh() below corrects it off the UI thread
             val info = tiles.size
@@ -527,7 +544,7 @@ object ControlCenter {
                 for (j in 0 until n) row.addView(tiles.getOrNull(at + j) ?: View(a), LinearLayout.LayoutParams(0, if (at + j < info) -1 else 1, 1f).apply { if (j > 0) leftMargin = dp(8) })
                 grid.addView(row, LinearLayout.LayoutParams(-1, -2).apply { if (at > 0) topMargin = dp(8) })
             }
-            grid.addView(dimRow, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })   // full width under the tiles: a bar wants room, one more row would push it over the round buttons
+            grid.addView(dimRow, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(12) })   // full width under the tiles: a bar wants room, one more row would push it over the round buttons
             // the bar keeps Left / Right, so the colour button is reached from the tile above it (and Left from the button is the bar)
             tiles.last().id = View.generateViewId(); tiles.last().nextFocusDownId = tint.id; tint.nextFocusUpId = tiles.last().id
             val at = IntArray(2).also { if (anchor != null) anchor.getLocationOnScreen(it) else { it[0] = dm.widthPixels - dp(48); it[1] = dp(48) } }   // no anchor (over another app, ControlCenterActivity): where the top bar's would be
