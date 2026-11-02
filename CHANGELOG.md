@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Settings: each part is its own card on a darker (or greyer) background, so the parts no longer run together; the language chips wrap instead of hiding the last one.
 - Settings: the Home Assistant · Shortcuts card says it works from Android too (the HTTP Shortcuts app), not only iPhone; the guide has the steps for both in one table.
 - TV Setup: Cancel on its own "Allow USB debugging?" no longer brings the question back without end: its background jobs (guards, updates, keys) wait a minute after a refused or failed connection before asking again; "Try again" on the page still asks at once.
 - TV Home: back to "Same as the TV" after another language, the date and the language page followed the TV's language again only after a restart (they read TV Home's own last choice back as the TV's).

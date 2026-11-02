@@ -17,6 +17,6 @@ Không bắt buộc, và thường không cần làm: TV Setup tự mở chỗ b
 
 > 💡 Địa chỉ TV: TV Setup hiện sẵn. Tự tìm: **Cài đặt → Mạng & Internet** → bấm tên Wi-Fi, dạng `192.168.1.20`. Tên các mục có thể khác chút tùy hãng.
 
-> 💡 TV Xiaomi bản nội địa: **Cài đặt → Tài khoản & Bảo mật → ADB调试**. Nút **Cách bật ADB trên TV** trong app chia từng bước theo hãng.
+> 💡 TV Xiaomi bản nội địa: **Cài đặt → Tài khoản & Bảo mật → ADB调试**. Nút **Các bước bật ADB** trong app chia từng bước theo hãng.
 
 > 💡 Trong **🧭 Bật ADB giúp tôi**, danh sách **Mở Cài đặt qua màn hình chính khác** có **TV Home** đứng đầu. Trang báo “không dùng được” ở box nhà mạng: nhà mạng đã khóa, hỏi tổng đài.

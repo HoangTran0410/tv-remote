@@ -93,7 +93,7 @@ Direct links: [tv-setup.apk](https://github.com/HoangTran0410/tv-remote/releases
 ### Tips
 
 - A TV with **Wireless debugging** only (no port 5555)? Open the TV's web page and press **📡 Pair with Wireless debugging**: see “[Wireless debugging](#wireless)”.
-- TV Setup's main screen shows the pairing code (6 digits) and its menu has **Forget all ADB keys**.
+- TV Setup's main screen shows the pairing code (6 digits); **Connection** has **Forget all ADB keys**.
 - TV Setup on a phone by mistake? It offers the phone app, or **Use it here anyway**.
 - The row of four tiles on the main screen, **TV Home**, **TV Channels**, **TV Games** and **TV Apps**, shows **the version** (e.g. v0.9.0), **Not installed** or **Update**: press to open, install or update, no ADB needed.
 
@@ -172,7 +172,7 @@ Optional, and usually not needed: TV Setup opens the switch itself. Without ADB 
 
 > 💡 The TV’s address: TV Setup shows it. By hand: **Settings → Network & Internet** → the Wi-Fi name, like `192.168.1.20`. Menu names vary a little by brand.
 
-> 💡 Xiaomi TV (China version): **Settings → Account & Security → ADB调试**. The app's **How to turn on ADB on the TV** button gives steps by brand.
+> 💡 Xiaomi TV (China version): **Settings → Account & Security → ADB调试**. The app's **Steps to turn on ADB** button gives steps by brand.
 
 > 💡 In **🧭 Turn ADB on for me**, the **Open Settings through another home screen** list has **TV Home** first. “Not available” on a provider box: the provider locked it, ask them.
 
@@ -481,13 +481,13 @@ Pick several; **Change background** rotates them.
 | On TV Home | What it is |
 | --- | --- |
 | Top bar | Two buttons: **Network** (status) and **Settings** = the [Quick settings](#home-control), which holds Inputs and Power off / Restart / Screen off / Standby. |
-| Customize | A list of groups, OK opens each: Background, **Look**, **Layout**, Widgets, **System** (screensaver, **Home screen**), **Keys & startup**, Language. |
+| Customize | A list of groups, OK opens each: **Themes**, Background, **Look** (layout too), Widgets, **System** (screensaver, **Home screen**), **Keys & startup**, Language. |
 | Home screen | In **System**: opens TV Setup's launcher picker to switch to another launcher (needs TV Setup) |
 | Keys & startup | Remote keys that open apps, an app at power-on |
 
 ### Tips
 
-- On the TV: the gear icon at the top right → Customize TV Home, or the Menu key.
+- On the TV: the gear at the top right → Quick settings → Customize, or the Menu key.
 - Hold OK on an app: open, pin, move, hide, rename, assign a key, lock or limit its time (asks the parent PIN), force stop, clear cache.
 - Each widget **Big** or **Small**; two small ones share a column.
 - **Columns**: 4 to 8 apps per row (default 5).
@@ -545,7 +545,7 @@ Big QR codes on the home screen, readable from the sofa: guest Wi-Fi, a menu lin
 A live widget is a tile in the app grid with live numbers; press it and it does the job. Provided by TV Setup and TV Channels.
 
 1. **TV** tab → **Customize TV Home** → **Add to home screen**.
-2. Under **Live widgets**: press a live widget to put it on the grid, press again to take it off.
+2. Under **Live widgets**: press a live widget to put it on the grid; one already there says **Added** and a press goes to it.
 
 | Live widget | Pressing it |
 | --- | --- |
@@ -575,12 +575,12 @@ One panel for all you can pin to the grid, the Play Next row and apps left out a
 | Scenes & shortcuts | Apps' shortcuts (a VTV1 channel…) and your [scenes](#scenes) |
 
 1. On the grid press the **＋ Add** tile (or TV tab → Customize → **Add to home screen**).
-2. Pinned shortcuts (VTV1...) show with a check mark: press to unpin or pin again. A new item lands at the end of the grid, picked, ready to move.
+2. Pinned shortcuts (VTV1...) show with a check mark: press to unpin or pin again. One already on says **Added**; a press goes to it. A new item lands at the end of the grid, ready to move.
 3. Remove: hold OK on a tile → **On the home screen** → **Remove from the grid**. A shortcut stays gone, its system pin too.
 
 - Tile corner: 🔒 locked, ⏳ limit, ⏻ power-on app, its remote key.
 - Only apps hide; shortcuts and live widgets are removed.
-- Uninstall an app (such as TV Channels) and its shortcuts and live widgets leave the grid, dock, order and picker by themselves, even if it was removed while TV Home was not running.
+- Uninstall an app (such as TV Channels) and its shortcuts and live widgets leave the grid, dock, order and picker by themselves.
 - The **Play Next** row is what you left half-watched in other apps, scrolling sideways. Hold OK on one: **Row position**, **Pin to the grid**, or **Don't show** that app's items.
 - To show an app's items again: hold OK on the app > **On the home screen**, or **＋ Add**.
 - Hold OK on any element (weather, the top buttons, ＋ Add) for its small menu, changes show at once. **Edit home screen** lets you pick the clock and widgets too; Back leaves it.
@@ -613,7 +613,7 @@ Paste a web or YouTube link, or an app's deep link (`app://…`): see which app 
 
 A theme changes the whole home screen in one press: background, widgets, widget style, columns and rows, live widgets.
 
-1. On the TV: ⚙ → **Customize TV Home** → **Themes**. Phone, computer: **TV** tab → **Customize TV Home** → **Themes**.
+1. On the TV: ⚙ → **Quick settings** → **Customize** → **Themes**. Phone, computer: **TV** tab → **Customize TV Home** → **Themes**.
 2. Each tile is the home screen in miniature: the real background, where the widgets go, the app grid. Pick one and the TV changes at once.
 3. Like the current look: **Save the current look as a theme** and name it. Your photo, video or web page is captured small for its preview.
 4. Share: tap ⓘ on a theme → **Export theme** gives a `.tvtheme.json` file; **Import theme** reads it back (**Include photos/videos** carries your own photos and videos, 60 MB each).
@@ -644,7 +644,7 @@ Two options for TV Home's look, worked out on the TV with no network.
 
 ## Quick settings (TV Home)
 
-The Settings button on the top bar opens a panel in Customize's style. Big tiles: Customize, Sleep timer.
+The Settings button (gear) on the top bar opens a panel in Android's look. Big tiles: Customize, Sleep timer.
 
 Small tiles: Network (Wi-Fi name), Inputs (or Bluetooth when the TV has no inputs), Mic button (TV Remote or Default; only when the remote has a mic button), Kids mode.
 
@@ -991,8 +991,8 @@ Once unlocked it stays open until another app comes up or the TV turns off; open
 
 > 💡 Needs TV Setup. The PIN is kept only on the TV (hashed), never sent anywhere.
 
-1. **🛡️ Kids mode** (same Automation tab): when on, every app asks for a code except the few you allow; TV settings stay locked.
-2. Pick the ways to unlock: PIN, **Google Authenticator** (scan the QR, type 6 digits; the TV clock must be right, the page warns if off) or ask a parent on Telegram.
+1. **🛡️ Kids mode** (same Automation tab): **⚡ Quick setup** does it in one tap, or pick **Lock some apps** / **Kids' apps only**. Other apps ask for a code; TV settings stay locked.
+2. Open **Other ways to unlock** to add **Google Authenticator** (scan the QR, type 6 digits; the TV clock must be right, the page warns if off) or ask a parent on Telegram.
 3. Save the 8 **backup codes** when adding Authenticator (each works once). If a child may know the PIN: change it, or turn it off once Authenticator is on.
 4. **Open 30 min / 1 hour / 2 hours / Rest of today**, **Lock now**, and the **📺 Total TV time** card per day (+30 min when needed).
 
@@ -1239,7 +1239,7 @@ Menu paths from [cleanyour.tv](https://cleanyour.tv/not-android).
 2. **Theme**: system, light or dark. **Language**: Tiếng Việt, English, Русский or Français.
 3. **When pressing a key** (phone): vibrate or not. **The TV’s keyboard**: whether the [typing box opens by itself](#typing) when the TV selects a text field.
 4. **App on this computer**: **🔄 Check for a new version** and **Quit** (stops the program; the TV is not affected).
-5. Further down: [Home Assistant · Shortcuts](#hook), and About has [Send the log](#log).
+5. Long parts fold (tap a title to open). Further down: [Home Assistant · Shortcuts](#hook), and About has [Send the log](#log).
 
 ### Tips
 

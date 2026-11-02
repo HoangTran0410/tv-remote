@@ -2,7 +2,7 @@
 
 A theme changes the whole home screen in one press: background, widgets, widget style, columns and rows, live widgets.
 
-1. On the TV: ⚙ → **Customize TV Home** → **Themes**. Phone, computer: **TV** tab → **Customize TV Home** → **Themes**.
+1. On the TV: ⚙ → **Quick settings** → **Customize** → **Themes**. Phone, computer: **TV** tab → **Customize TV Home** → **Themes**.
 2. Each tile is the home screen in miniature: the real background, where the widgets go, the app grid. Pick one and the TV changes at once.
 3. Like the current look: **Save the current look as a theme** and name it. Your photo, video or web page is captured small for its preview.
 4. Share: tap ⓘ on a theme → **Export theme** gives a `.tvtheme.json` file; **Import theme** reads it back (**Include photos/videos** carries your own photos and videos, 60 MB each).

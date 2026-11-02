@@ -1,6 +1,6 @@
 # Cài đặt nhanh (TV Home)
 
-Nút Cài đặt trên thanh trên mở bảng cùng kiểu Tùy chỉnh. Ô lớn: Tùy chỉnh, Hẹn giờ tắt.
+Nút Cài đặt (bánh răng) trên thanh trên mở bảng theo kiểu Android. Ô lớn: Tùy chỉnh, Hẹn giờ tắt.
 
 Ô nhỏ: Mạng (tên Wi-Fi), Nguồn vào (hoặc Bluetooth nếu TV không có nguồn vào), Nút mic (TV Remote hay Mặc định; chỉ hiện khi remote có nút mic), Khoá trẻ em.
 

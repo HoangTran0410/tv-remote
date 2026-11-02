@@ -2,7 +2,7 @@
 
 Một chủ đề đổi cả màn hình chính trong một lần bấm: hình nền, widget, kiểu widget, số cột và hàng, live widget.
 
-1. Trên TV: ⚙ → **Tùy chỉnh TV Home** → **Chủ đề**. Điện thoại, máy tính: tab **TV** → **Tùy chỉnh TV Home** → **Chủ đề**.
+1. Trên TV: ⚙ → **Cài đặt nhanh** → **Tùy chỉnh** → **Chủ đề**. Điện thoại, máy tính: tab **TV** → **Tùy chỉnh TV Home** → **Chủ đề**.
 2. Mỗi ô là màn hình chính thu nhỏ: nền thật, chỗ widget, lưới app. Chọn một ô là TV đổi ngay.
 3. Thích giao diện đang có: **Lưu giao diện đang có thành chủ đề**, đặt tên. Ảnh, video hay trang web của bạn được chụp nhỏ làm ảnh xem trước.
 4. Chia sẻ: bấm ⓘ trên một chủ đề → **Xuất chủ đề** ra tệp `.tvtheme.json`; **Nhập chủ đề** đọc lại tệp đó (hộp **Kèm ảnh/video** mang theo ảnh, video riêng, tối đa 60 MB mỗi mục).

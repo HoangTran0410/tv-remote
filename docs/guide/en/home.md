@@ -35,13 +35,13 @@ Pick several; **Change background** rotates them.
 | On TV Home | What it is |
 | --- | --- |
 | Top bar | Two buttons: **Network** (status) and **Settings** = the [Quick settings](home-control.md), which holds Inputs and Power off / Restart / Screen off / Standby. |
-| Customize | A list of groups, OK opens each: Background, **Look**, **Layout**, Widgets, **System** (screensaver, **Home screen**), **Keys & startup**, Language. |
+| Customize | A list of groups, OK opens each: **Themes**, Background, **Look** (layout too), Widgets, **System** (screensaver, **Home screen**), **Keys & startup**, Language. |
 | Home screen | In **System**: opens TV Setup's launcher picker to switch to another launcher (needs TV Setup) |
 | Keys & startup | Remote keys that open apps, an app at power-on |
 
 ### Tips
 
-- On the TV: the gear icon at the top right → Customize TV Home, or the Menu key.
+- On the TV: the gear at the top right → Quick settings → Customize, or the Menu key.
 - Hold OK on an app: open, pin, move, hide, rename, assign a key, lock or limit its time (asks the parent PIN), force stop, clear cache.
 - Each widget **Big** or **Small**; two small ones share a column.
 - **Columns**: 4 to 8 apps per row (default 5).

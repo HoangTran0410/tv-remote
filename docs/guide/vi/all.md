@@ -93,7 +93,7 @@ Link trực tiếp: [tv-setup.apk](https://github.com/HoangTran0410/tv-remote/re
 ### Mẹo
 
 - TV chỉ có **Gỡ lỗi không dây** (không có cổng 5555)? Mở trang web của TV, bấm **📡 Ghép bằng Gỡ lỗi không dây**: xem “[Gỡ lỗi không dây](#wireless)”.
-- Màn hình chính của TV Setup có dòng mã ghép (6 số) và menu có mục **Quên mọi khóa ADB**.
+- Màn hình chính của TV Setup có dòng mã ghép (6 số); mục **Kết nối** có **Quên mọi khóa ADB**.
 - Cài nhầm TV Setup lên điện thoại? App mời mở app điện thoại, hoặc chọn **Vẫn dùng ở đây**.
 - Hàng bốn ô **TV Home**, **TV Channels**, **TV Games**, **TV Apps** trên màn hình chính ghi **số bản** (vd v0.9.0), **Chưa cài** hoặc **Có bản mới**: bấm để mở, cài hay cập nhật, không cần ADB.
 
@@ -172,7 +172,7 @@ Không bắt buộc, và thường không cần làm: TV Setup tự mở chỗ b
 
 > 💡 Địa chỉ TV: TV Setup hiện sẵn. Tự tìm: **Cài đặt → Mạng & Internet** → bấm tên Wi-Fi, dạng `192.168.1.20`. Tên các mục có thể khác chút tùy hãng.
 
-> 💡 TV Xiaomi bản nội địa: **Cài đặt → Tài khoản & Bảo mật → ADB调试**. Nút **Cách bật ADB trên TV** trong app chia từng bước theo hãng.
+> 💡 TV Xiaomi bản nội địa: **Cài đặt → Tài khoản & Bảo mật → ADB调试**. Nút **Các bước bật ADB** trong app chia từng bước theo hãng.
 
 > 💡 Trong **🧭 Bật ADB giúp tôi**, danh sách **Mở Cài đặt qua màn hình chính khác** có **TV Home** đứng đầu. Trang báo “không dùng được” ở box nhà mạng: nhà mạng đã khóa, hỏi tổng đài.
 
@@ -481,13 +481,13 @@ Chọn nhiều hình rồi đặt **Đổi hình nền** (30 phút → mỗi l�
 | Trên TV Home | Là gì |
 | --- | --- |
 | Thanh trên cùng | Hai nút: **Mạng** (trạng thái) và **Cài đặt** = [Cài đặt nhanh](#home-control), nơi có Nguồn vào và các nút Tắt nguồn / Khởi động lại / Tắt màn hình / Chế độ chờ. |
-| Tùy chỉnh | Danh sách nhóm, OK để vào từng nhóm: Hình nền, **Giao diện**, **Bố cục**, Widget, **Hệ thống** (màn chờ, **Màn hình chính**), **Phím & khởi động**, Ngôn ngữ. |
+| Tùy chỉnh | Danh sách nhóm, OK để vào từng nhóm: **Chủ đề**, Hình nền, **Giao diện** (gồm bố cục), Widget, **Hệ thống** (màn chờ, **Màn hình chính**), **Phím & khởi động**, Ngôn ngữ. |
 | Màn hình chính | Trong **Hệ thống**: mở bộ chọn launcher của TV Setup để đổi sang launcher khác (cần TV Setup) |
 | Phím & khởi động | Phím remote mở app, app tự mở khi bật TV |
 
 ### Mẹo
 
-- Trên TV: biểu tượng bánh răng góc trên phải → Tùy chỉnh TV Home, hoặc phím Menu.
+- Trên TV: bánh răng góc trên phải → Cài đặt nhanh → Tùy chỉnh, hoặc phím Menu.
 - Giữ OK trên app: mở, ghim, dời, ẩn, đổi tên, gán phím, khóa hoặc giới hạn giờ (hỏi mã PIN phụ huynh), dừng, xóa bộ nhớ đệm.
 - Mỗi widget **To** hoặc **Nhỏ**; hai widget nhỏ chung một cột.
 - **Số cột**: 4 đến 8 app mỗi hàng (mặc định 5).
@@ -545,7 +545,7 @@ Mã QR to ngay màn hình chính, quét từ ghế sofa: Wi-Fi cho khách, link 
 Live widget là một ô trong lưới app có số liệu thật, bấm là làm việc luôn. Do TV Setup và TV Channels cung cấp.
 
 1. Tab **TV** → **Tùy chỉnh TV Home** → **Thêm vào màn hình chính**.
-2. Mục **Live widget**: bấm một live widget để đưa lên lưới app, bấm lại để gỡ.
+2. Mục **Live widget**: bấm live widget chưa thêm để đưa lên lưới app; cái đã có ghi **Đã thêm**, bấm là tới nó.
 
 | Live widget | Bấm thì |
 | --- | --- |
@@ -575,12 +575,12 @@ Một bảng cho mọi thứ ghim được lên lưới, kể cả hàng Xem ti�
 | Cảnh & lối tắt | Lối tắt của app (kênh VTV1…) và [cảnh](#scenes) của bạn |
 
 1. Trên lưới, bấm ô **＋ Thêm** (hoặc tab TV → Tùy chỉnh → **Thêm vào màn hình chính**).
-2. Lối tắt đã ghim (VTV1...) hiện trong danh sách có dấu tích: bấm để gỡ hoặc ghim lại. Mục vừa thêm nằm cuối lưới, chọn sẵn để di chuyển.
+2. Lối tắt đã ghim (VTV1...) hiện có dấu tích: bấm để gỡ hoặc ghim lại. Cái đã có ghi **Đã thêm**: bấm là tới nó. Mục mới nằm cuối lưới, chọn sẵn để di chuyển.
 3. Gỡ: giữ OK trên ô → **Trên màn hình chính** → **Bỏ khỏi màn hình chính**. Lối tắt gỡ là gỡ hẳn, kể cả ghim của hệ thống.
 
 - Góc ô: 🔒 khóa, ⏳ giới hạn giờ, ⏻ tự mở khi bật TV, phím remote đang gán.
 - Chỉ app ẩn được; lối tắt và widget thì gỡ đi.
-- Gỡ cài đặt một app (như TV Channels) thì lối tắt và live widget của nó tự rời lưới, dock, thứ tự và bảng chọn, cả khi gỡ lúc TV Home không chạy.
+- Gỡ cài đặt một app (như TV Channels) thì lối tắt và live widget của nó tự rời lưới, dock, thứ tự và bảng chọn.
 - Hàng **Xem tiếp** là phim xem dở ở app khác, cuộn ngang. Giữ OK trên một ô: **Vị trí hàng**, **Ghim vào lưới**, hoặc **Không hiện mục của** app đó.
 - Hiện lại mục của app: giữ OK trên app > **Trên màn hình chính**, hoặc **＋ Thêm**.
 - Giữ OK trên bất kỳ phần tử nào (thời tiết, nút trên cùng, ＋ Thêm) mở menu nhỏ của nó, đổi là thấy ngay. **Sửa màn hình chính** cho chọn cả đồng hồ và widget; Back để thoát.
@@ -613,7 +613,7 @@ Dán link web, YouTube hoặc deeplink của app (`app://…`): xem TV mở bằ
 
 Một chủ đề đổi cả màn hình chính trong một lần bấm: hình nền, widget, kiểu widget, số cột và hàng, live widget.
 
-1. Trên TV: ⚙ → **Tùy chỉnh TV Home** → **Chủ đề**. Điện thoại, máy tính: tab **TV** → **Tùy chỉnh TV Home** → **Chủ đề**.
+1. Trên TV: ⚙ → **Cài đặt nhanh** → **Tùy chỉnh** → **Chủ đề**. Điện thoại, máy tính: tab **TV** → **Tùy chỉnh TV Home** → **Chủ đề**.
 2. Mỗi ô là màn hình chính thu nhỏ: nền thật, chỗ widget, lưới app. Chọn một ô là TV đổi ngay.
 3. Thích giao diện đang có: **Lưu giao diện đang có thành chủ đề**, đặt tên. Ảnh, video hay trang web của bạn được chụp nhỏ làm ảnh xem trước.
 4. Chia sẻ: bấm ⓘ trên một chủ đề → **Xuất chủ đề** ra tệp `.tvtheme.json`; **Nhập chủ đề** đọc lại tệp đó (hộp **Kèm ảnh/video** mang theo ảnh, video riêng, tối đa 60 MB mỗi mục).
@@ -644,7 +644,7 @@ Hai tùy chọn cho nền của TV Home, tính trên TV, không cần mạng.
 
 ## Cài đặt nhanh (TV Home)
 
-Nút Cài đặt trên thanh trên mở bảng cùng kiểu Tùy chỉnh. Ô lớn: Tùy chỉnh, Hẹn giờ tắt.
+Nút Cài đặt (bánh răng) trên thanh trên mở bảng theo kiểu Android. Ô lớn: Tùy chỉnh, Hẹn giờ tắt.
 
 Ô nhỏ: Mạng (tên Wi-Fi), Nguồn vào (hoặc Bluetooth nếu TV không có nguồn vào), Nút mic (TV Remote hay Mặc định; chỉ hiện khi remote có nút mic), Khoá trẻ em.
 
@@ -991,8 +991,8 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 
 > 💡 Cần TV Setup. Mã PIN chỉ lưu trên TV (dạng băm), không gửi đi đâu.
 
-1. **🛡️ Chế độ trẻ em** (cùng tab Tự động): bật thì mọi app đều hỏi mã trừ vài app bạn cho phép; Cài đặt TV luôn khóa.
-2. Chọn cách mở khóa: PIN, **Google Authenticator** (quét QR, nhập mã 6 số; đồng hồ TV phải đúng, trang báo nếu lệch) hoặc hỏi bố mẹ qua Telegram.
+1. **🛡️ Chế độ trẻ em** (cùng tab Tự động): **⚡ Thiết lập nhanh** đặt mọi thứ một lần, hoặc chọn **Khóa vài app** / **Chỉ app của trẻ**. App khác hỏi mã; Cài đặt TV luôn khóa.
+2. Mở **Cách mở khóa khác** để chọn: **Google Authenticator** (quét QR, nhập mã 6 số; đồng hồ TV phải đúng, trang báo nếu lệch) hoặc hỏi bố mẹ qua Telegram.
 3. Lưu 8 **mã dự phòng** khi thêm Authenticator (mỗi mã dùng 1 lần). Nghi trẻ biết PIN: đổi PIN, hoặc tắt PIN khi đã có Authenticator.
 4. **Mở khóa 30 phút / 1 giờ / 2 giờ / Hết hôm nay**, **Khóa lại ngay**, và thẻ **📺 Tổng giờ xem TV** mỗi ngày (+30p khi cần).
 
@@ -1239,7 +1239,7 @@ Trong app điện thoại hay máy tính: **Thêm** › **Tiện ích** › **T�
 2. **Giao diện**: theo máy, sáng hoặc tối. **Ngôn ngữ**: Tiếng Việt, English, Русский hoặc Français.
 3. **Khi bấm nút** (điện thoại): rung hoặc không rung. **Bàn phím của TV**: có [tự mở ô gõ](#typing) khi TV chọn ô chữ hay không.
 4. **App trên máy tính**: **🔄 Kiểm tra bản mới** và **Tắt** (dừng chương trình, TV không bị ảnh hưởng).
-5. Cuối trang: [Home Assistant · Phím tắt](#hook), và mục Giới thiệu có [Gửi nhật ký](#log).
+5. Các phần dài tự gập (chạm tiêu đề để mở). Cuối trang: [Home Assistant · Phím tắt](#hook), và mục Giới thiệu có [Gửi nhật ký](#log).
 
 ### Mẹo
 

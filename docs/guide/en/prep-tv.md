@@ -17,6 +17,6 @@ Optional, and usually not needed: TV Setup opens the switch itself. Without ADB 
 
 > 💡 The TV’s address: TV Setup shows it. By hand: **Settings → Network & Internet** → the Wi-Fi name, like `192.168.1.20`. Menu names vary a little by brand.
 
-> 💡 Xiaomi TV (China version): **Settings → Account & Security → ADB调试**. The app's **How to turn on ADB on the TV** button gives steps by brand.
+> 💡 Xiaomi TV (China version): **Settings → Account & Security → ADB调试**. The app's **Steps to turn on ADB** button gives steps by brand.
 
 > 💡 In **🧭 Turn ADB on for me**, the **Open Settings through another home screen** list has **TV Home** first. “Not available” on a provider box: the provider locked it, ask them.

@@ -3,7 +3,7 @@
 A live widget is a tile in the app grid with live numbers; press it and it does the job. Provided by TV Setup and TV Channels.
 
 1. **TV** tab → **Customize TV Home** → **Add to home screen**.
-2. Under **Live widgets**: press a live widget to put it on the grid, press again to take it off.
+2. Under **Live widgets**: press a live widget to put it on the grid; one already there says **Added** and a press goes to it.
 
 | Live widget | Pressing it |
 | --- | --- |

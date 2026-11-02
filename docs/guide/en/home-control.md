@@ -1,6 +1,6 @@
 # Quick settings (TV Home)
 
-The Settings button on the top bar opens a panel in Customize's style. Big tiles: Customize, Sleep timer.
+The Settings button (gear) on the top bar opens a panel in Android's look. Big tiles: Customize, Sleep timer.
 
 Small tiles: Network (Wi-Fi name), Inputs (or Bluetooth when the TV has no inputs), Mic button (TV Remote or Default; only when the remote has a mic button), Kids mode.
 
