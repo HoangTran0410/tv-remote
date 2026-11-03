@@ -1855,29 +1855,29 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "a468264ed0a50f4f2ddd7dce|0.26.3": {
-  "at": "2026-10-30T09:07:58+07:00",
+  "at": "2026-11-03T12:14:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "Strong 4K box (Skyworth, A14), TV Setup 0.34.1: Allow not pressed / timeout, a user step, not a code fault"
  },
  "a468264ed0a50f4f2ddd7dce|0.30.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T12:14:11+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Strong 4K box (Skyworth, A14), TV Setup 0.34.1: Allow not pressed / timeout, a user step, not a code fault"
  },
  "a468264ed0a50f4f2ddd7dce|0.34.1": {
-  "at": "2026-11-02T22:17:48+07:00",
-  "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "at": "2026-11-03T12:14:11+07:00",
+  "n": 3,
+  "note": "Strong 4K box (Skyworth, A14), TV Setup 0.34.1: Allow not pressed / timeout, a user step, not a code fault"
  },
  "a468264ed0a50f4f2ddd7dce|0.35.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T12:14:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Strong 4K box (Skyworth, A14), TV Setup 0.34.1: Allow not pressed / timeout, a user step, not a code fault"
  },
  "a468264ed0a50f4f2ddd7dce|0.37.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T12:14:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Strong 4K box (Skyworth, A14), TV Setup 0.34.1: Allow not pressed / timeout, a user step, not a code fault"
  },
  "a54cc4711ab55a41b38bd0ab|0.29.0": {
   "at": "2026-11-03T10:16:41+07:00",
@@ -2200,24 +2200,24 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "c373576682d59c3aa492f81e|0.26.3": {
-  "at": "2026-10-30T09:07:59+07:00",
+  "at": "2026-11-03T12:14:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "same Strong box: ADB timeout while waiting for Allow"
  },
  "c373576682d59c3aa492f81e|0.30.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T12:14:11+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "same Strong box: ADB timeout while waiting for Allow"
  },
  "c373576682d59c3aa492f81e|0.34.1": {
-  "at": "2026-11-02T22:17:48+07:00",
-  "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "at": "2026-11-03T12:14:11+07:00",
+  "n": 3,
+  "note": "same Strong box: ADB timeout while waiting for Allow"
  },
  "c373576682d59c3aa492f81e|0.35.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T12:14:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "same Strong box: ADB timeout while waiting for Allow"
  },
  "c478fe63f0120d08264658ae|0.29.0": {
   "at": "2026-10-28T14:05:50+07:00",
@@ -2295,24 +2295,34 @@
   "note": "dev only: 8769, same"
  },
  "cc0ca3bfdda49c7e255d18ca|0.29.0": {
-  "at": "2026-10-29T17:19:50+07:00",
+  "at": "2026-11-03T12:14:12+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "Viettel IP151N (KaoS ATV ROM, A11): 5555 refused, network ADB off on the box; not a code fault"
  },
  "cc0ca3bfdda49c7e255d18ca|0.33.1": {
-  "at": "2026-10-29T17:19:50+07:00",
+  "at": "2026-11-03T12:14:12+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "Viettel IP151N (KaoS ATV ROM, A11): 5555 refused, network ADB off on the box; not a code fault"
+ },
+ "cc0ca3bfdda49c7e255d18ca|0.35.0": {
+  "at": "2026-11-03T12:14:12+07:00",
+  "n": 1,
+  "note": "Viettel IP151N (KaoS ATV ROM, A11): 5555 refused, network ADB off on the box; not a code fault"
  },
  "cc0ca3bfdda49c7e255d18ca|0.37.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T12:14:12+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Viettel IP151N (KaoS ATV ROM, A11): 5555 refused, network ADB off on the box; not a code fault"
  },
  "cc0ca3bfdda49c7e255d18ca|0.38.4": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T12:14:12+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Viettel IP151N (KaoS ATV ROM, A11): 5555 refused, network ADB off on the box; not a code fault"
+ },
+ "cc0ca3bfdda49c7e255d18ca|0.40.0": {
+  "at": "2026-11-03T12:14:12+07:00",
+  "n": 1,
+  "note": "Viettel IP151N (KaoS ATV ROM, A11): 5555 refused, network ADB off on the box; not a code fault"
  },
  "cdc88b4f64446e3dd3fda07e|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
