@@ -14,6 +14,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "00ec9cc9c9c00b29ffa500e9|0.40.0": {
+  "at": "2026-11-03T15:54:18+07:00",
+  "n": 1,
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+ },
  "017d528e6843bf9047e126a7|0.35.0": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
@@ -163,6 +168,11 @@
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "118d8ad927f1816de590f11f|0.40.0": {
+  "at": "2026-11-03T15:54:04+07:00",
+  "n": 1,
+  "note": "same as 328e5f39 (fold.js :is())"
  },
  "11dae087510cdce770d7ff44|0.31.0": {
   "at": "2026-10-29T17:19:55+07:00",
@@ -553,6 +563,11 @@
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "328e5f3956d4038c74a6b2b4|0.40.0": {
+  "at": "2026-11-03T15:54:04+07:00",
+  "n": 1,
+  "note": "fixed: fold.js :is() selector on Chrome<88"
  },
  "330d8f5d7bec6332a86acee7|0.38.4": {
   "at": "2026-11-03T03:42:50+07:00",
@@ -1540,49 +1555,64 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.30.0": {
-  "at": "2026-10-30T09:08:18+07:00",
+  "at": "2026-11-03T15:54:20+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
  },
  "86e0f0317c01d63472f141c3|0.31.0": {
-  "at": "2026-10-30T09:08:18+07:00",
+  "at": "2026-11-03T15:54:20+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
  },
  "86e0f0317c01d63472f141c3|0.32.1": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T15:54:20+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
  },
  "86e0f0317c01d63472f141c3|0.34.0": {
-  "at": "2026-10-30T09:08:18+07:00",
+  "at": "2026-11-03T15:54:20+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
  },
  "86e0f0317c01d63472f141c3|0.34.1": {
-  "at": "2026-10-30T09:08:18+07:00",
+  "at": "2026-11-03T15:54:20+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+ },
+ "86e0f0317c01d63472f141c3|0.34.2": {
+  "at": "2026-11-03T15:54:20+07:00",
+  "n": 1,
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+ },
+ "86e0f0317c01d63472f141c3|0.35.0": {
+  "at": "2026-11-03T15:54:20+07:00",
+  "n": 1,
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
  },
  "86e0f0317c01d63472f141c3|0.37.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T15:54:20+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
  },
  "86e0f0317c01d63472f141c3|0.38.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T15:54:20+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
  },
  "86e0f0317c01d63472f141c3|0.38.2": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T15:54:20+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
  },
  "86e0f0317c01d63472f141c3|0.38.4": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T15:54:20+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+ },
+ "86e0f0317c01d63472f141c3|0.40.0": {
+  "at": "2026-11-03T15:54:20+07:00",
+  "n": 1,
+  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
  },
  "897eccbc3b0589286bfafdf9|0.34.1": {
   "at": "2026-10-30T09:08:18+07:00",

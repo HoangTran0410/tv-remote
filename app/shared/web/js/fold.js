@@ -21,7 +21,7 @@ function foldSum(id, text, on) {
 }
 const foldHead = (card) => card.querySelector(':scope > h2, :scope > .card-head > h2');
 function foldMark() {
-  for (const card of document.querySelectorAll(`:is(${FOLD_PANELS}) ${FOLD_CARD}`)) {
+  for (const card of document.querySelectorAll(FOLD_PANELS.split(', ').map((p) => p + ' ' + FOLD_CARD).join(', '))) {   // no :is(): Chrome 88+, a MiTV's WebView threw (census 328e5f39)
     const h = foldHead(card); if (!h) continue;
     const s = foldSums[card.id], st = card.querySelector('p.state:not([hidden])'), note = card.querySelector(':scope > p.note');
     const open = card.id in foldMine ? foldMine[card.id] : !!(s && s.on);

@@ -29,3 +29,13 @@ test('no page script uses a lookbehind or a named group (old WebView, old Safari
     .map((f) => path.relative(path.join(__dirname, '../..'), f));
   assert.deepEqual(bad, []);
 });
+
+// A selector a script hands to querySelector with :is() / :where() (Chrome 88) or :has() (Chrome 105) throws on the old WebViews the
+// page still runs on (Chrome 80, js/old.js): fold.js's threw on a Xiaomi MiTV (census 328e5f39) and the Setup tab's cards never folded.
+// In CSS the same selector only drops its rule.
+test('no page script uses :is(), :where() or :has() in a selector (old WebView)', () => {
+  const d = path.join(__dirname, '../web/js');
+  const bad = fs.readdirSync(d).filter((f) => f.endsWith('.js'))
+    .filter((f) => /:(is|where|has)\(/.test(fs.readFileSync(path.join(d, f), 'utf8').replace(/^\s*\/\/.*$/gm, '').replace(/ \/\/ .*$/gm, '')));
+  assert.deepEqual(bad, []);
+});
