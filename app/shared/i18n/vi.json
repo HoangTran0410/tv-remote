@@ -3789,6 +3789,7 @@
  "telegram.open_none": "Không thấy app đó trên màn hình chính của TV.",
  "telegram.open_done": "✅ Đang mở {app}",
  "telegram.shot_failed": "Không chụp được màn hình (TV đang tắt hoặc chưa sẵn sàng).",
+ "telegram.shot_black": "Ảnh đen? YouTube, Netflix và app phim có bản quyền chặn chụp màn hình. Không phải lỗi.",
  "telegram.remote_title": "🎮 Điều khiển TV",
  "telegram.already": "Chat này đã ghép đôi rồi.",
  "telegram.unknown": "Không có lệnh /{c}. Gửi /help.",

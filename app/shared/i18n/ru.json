@@ -3915,6 +3915,7 @@
  "telegram.open_none": "Такого приложения нет на домашнем экране ТВ.",
  "telegram.open_done": "✅ Открываем {app}",
  "telegram.shot_failed": "Не удалось сделать скриншот (ТВ выключен или не готов).",
+ "telegram.shot_black": "Чёрный экран? YouTube, Netflix и защищённое видео запрещают скриншоты. Это не ошибка.",
  "telegram.remote_title": "🎮 Пульт ТВ",
  "telegram.already": "Этот чат уже сопряжён.",
  "telegram.unknown": "Нет команды /{c}. Отправьте /help.",

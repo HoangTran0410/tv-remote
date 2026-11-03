@@ -24,6 +24,7 @@ class TelegramTest {
     private class Fake : Telegram.Api {
         val calls = ArrayList<Pair<String, JSONObject>>()
         val photos = ArrayList<Pair<Long, Int>>()
+        val captions = ArrayList<String>()
         val queue = HashMap<String, ArrayDeque<() -> Telegram.Reply>>()
         var aborted = 0
         fun on(method: String, r: () -> Telegram.Reply) { queue.getOrPut(method) { ArrayDeque() }.addLast(r) }
@@ -31,7 +32,7 @@ class TelegramTest {
             calls.add(method to params)
             return queue[method]?.removeFirstOrNull()?.invoke() ?: Telegram.Reply(200, JSONObject("""{"ok":true,"result":[]}"""))
         }
-        override fun photo(token: String, chat: Long, png: ByteArray, caption: String): Telegram.Reply { photos.add(chat to png.size); return Telegram.Reply(200, JSONObject("""{"ok":true}""")) }
+        override fun photo(token: String, chat: Long, png: ByteArray, caption: String): Telegram.Reply { photos.add(chat to png.size); captions.add(caption); return Telegram.Reply(200, JSONObject("""{"ok":true}""")) }
         override fun abort() { aborted++ }
         fun sent(chat: Long) = calls.filter { it.first == "sendMessage" && it.second.optLong("chat_id") == chat }.map { it.second.optString("text") }
         fun named(m: String) = calls.filter { it.first == m }.map { it.second }
@@ -229,6 +230,21 @@ class TelegramTest {
         bot.onUpdate(msg(42, "/shot"))
         assertEquals("/api/screen", seen[0].path); assertEquals("GET", seen[0].method)
         assertEquals(listOf(42L to 1234), api.photos)
+    }
+
+    /** A PNG head (signature + IHDR's width and height), padded to [size] bytes. */
+    private fun png(w: Int, h: Int, size: Int) = ByteArray(size).also {
+        byteArrayOf(0x89.toByte(), 'P'.code.toByte(), 'N'.code.toByte(), 'G'.code.toByte()).copyInto(it)
+        java.nio.ByteBuffer.wrap(it, 16, 8).putInt(w).putInt(h)
+    }
+
+    @Test fun aBlackShotSaysWhyItIsBlack() {
+        pairChat()
+        answer = { HttpServer.Response.of("image/png", png(1920, 1080, 10_728)) }      // a black 1080p RGBA PNG at zlib 6
+        bot.onUpdate(msg(42, "/shot"))
+        assertTrue(api.captions.last().contains("YouTube"))
+        assertFalse(bot.looksBlack(png(1920, 1080, 2_526_541)))                       // the FPT box's home screen
+        assertFalse(bot.looksBlack(ByteArray(1234)))                                    // not a PNG: no guess
     }
 
     @Test fun whenTheCoreRefusesTheScopeTheChatIsToldAndNothingIsHidden() {

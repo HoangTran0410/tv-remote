@@ -394,9 +394,19 @@ class Telegram(
         val out = get(c, "/api/screen")
         if (out.status !in 200..299 || out.body.isEmpty()) return send(c.id, if (out.status == 403) w("telegram.scope_denied") else w("telegram.shot_failed"))
         try {
-            val r = api.photo(store.token, c.id, out.body, "")
+            val r = api.photo(store.token, c.id, out.body, if (looksBlack(out.body)) w("telegram.shot_black") else "")
             if (!r.ok) send(c.id, w("telegram.shot_failed"))
         } catch (e: IOException) { WireLog.all.add("·", "telegram photo: " + clean(e.message ?: "")); }
+    }
+
+    /** A screenshot that is (nearly) all black: YouTube, Netflix and other copy-protected video come out black (the TV hides
+     *  them from screenshots), and a person reading it in Telegram thinks the bot is broken. A black 1080p PNG is ~10 KB, a
+     *  real screen ~2.5 MB (FPT box, 2026-11-03): under 0.04 bytes a pixel is black, give or take a small overlay. */
+    internal fun looksBlack(png: ByteArray): Boolean {
+        if (png.size < 24 || png[1] != 'P'.code.toByte() || png[2] != 'N'.code.toByte() || png[3] != 'G'.code.toByte()) return false
+        val bb = java.nio.ByteBuffer.wrap(png, 16, 8)
+        val px = bb.int.toLong() * bb.int.toLong()
+        return px > 0 && png.size < px * 4 / 100
     }
 
     private fun statusText(): String {

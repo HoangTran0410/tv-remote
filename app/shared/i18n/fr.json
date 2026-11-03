@@ -3957,6 +3957,7 @@
   "telegram.open_none": "Aucune application de ce nom sur l'écran d'accueil de la TV.",
   "telegram.open_done": "✅ Ouverture de {app}",
   "telegram.shot_failed": "Impossible de faire la capture d'écran (TV éteinte ou pas prête).",
+  "telegram.shot_black": "Image noire ? YouTube, Netflix et les vidéos protégées bloquent les captures. Rien n'est cassé.",
   "telegram.remote_title": "🎮 Télécommande TV",
   "telegram.already": "Cette discussion est déjà associée.",
   "telegram.unknown": "La commande /{c} n'existe pas. Envoyez /help.",

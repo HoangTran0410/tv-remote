@@ -3930,6 +3930,7 @@
  "telegram.open_none": "No such app on the TV's home screen.",
  "telegram.open_done": "✅ Opening {app}",
  "telegram.shot_failed": "Could not take the screenshot (the TV is off or not ready).",
+ "telegram.shot_black": "All black? YouTube, Netflix and other protected video block screenshots. Nothing is broken.",
  "telegram.remote_title": "🎮 TV remote",
  "telegram.already": "This chat is paired already.",
  "telegram.unknown": "No command /{c}. Send /help.",

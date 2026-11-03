@@ -1084,6 +1084,8 @@ Commands:
 
 A new chat gets **Remote only** rights; the owner can raise it to **Full access** in the chat list.
 
+YouTube, Netflix and other apps with protected video block screenshots: **/shot** sends a black picture, with a line saying why.
+
 Screenshots pass through Telegram's servers. Stop any time: **Off**, **Remove token** (forgets chats too) or remove one chat.
 
 ## Telegram: alerts and bedtime
