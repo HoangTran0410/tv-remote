@@ -65,7 +65,7 @@ async function render(res, env, url, lang, page) {
   const q = topic && topic.vi ? "?t=" + id : "";
   const at = (l) => ORIGIN + (l === "en" ? "/en" : "") + page + q;
   let title = "", desc = "";
-  if (q) { title = topic[lang] + " · TV Remote"; desc = (lang === "en" ? topic.pen : topic.pvi).slice(0, 300); }
+  if (q) { title = (topic["t" + lang] || topic[lang]) + " · TV Remote"; desc = (lang === "en" ? topic.pen : topic.pvi).slice(0, 300); }
   const set = (v) => ({ element(e) { if (v()) e.setAttribute("content", v()); } });
   return new HTMLRewriter()
     .on("html", { element(e) { e.setAttribute("lang", lang); e.setAttribute("data-lang", lang); e.setAttribute("data-fixed", lang); } })
@@ -89,14 +89,16 @@ async function render(res, env, url, lang, page) {
     .transform(res);
 }
 
-// The topic's heading (vi, en) and its first paragraph that is not a tip (vi, en), read from the page itself: nothing to keep in step
+// The topic's search title (data-title-vi/en: the words people type, "remove bloatware android tv without pc", where the heading
+// is the feature's name), its heading (vi, en) and its first paragraph that is not a tip (vi, en), read from the page itself: nothing to keep in step
 async function find(res, id) {
-  const t = { vi: "", en: "", pvi: "", pen: "" };
+  const t = { vi: "", en: "", pvi: "", pen: "", tvi: "", ten: "" };
   let inTopic = false, paras = 0;
   const grab = (key, only) => ({ text(x) { if (inTopic && (!only || only())) t[key] += x.text; } });
   await new HTMLRewriter()
     .on("article.topic", { element(e) {
       inTopic = e.getAttribute("id") === id; paras = 0;
+      if (inTopic) { t.tvi = e.getAttribute("data-title-vi") || ""; t.ten = e.getAttribute("data-title-en") || ""; }
     } })
     .on("article.topic > p:not(.gnote)", { element() { if (inTopic) paras++; } })
     .on("article.topic h3 span.vi", grab("vi"))
