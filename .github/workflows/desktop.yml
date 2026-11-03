@@ -53,7 +53,7 @@ jobs:
           for i in $(seq 60); do curl -H "x-tvr-pass: $TVR_PASS" -s http://127.0.0.1:8765/api/about >/dev/null || break; sleep 1; done   # the Intel Mac runner took >20 s once (v0.36.1)
           ! curl -H "x-tvr-pass: $TVR_PASS" -s http://127.0.0.1:8765/api/about
           for i in $(seq 20); do grep -q "Window closed" "$log" && break; sleep 1; done   # written after the port closes: Windows took >0 s (v0.39.0)
-          grep -q "Window closed" "$log"
+          grep -q "Window closed" "$log" || { cat "$log"; false; }   # else the log says where it was stuck (Main.kt's quit thread)
       - name: update itself                                            # Updater.kt: a copy that says 0.0.1, a fake GitHub serving this build
         run: |
           set -x
@@ -133,7 +133,7 @@ jobs:
           for i in $(seq 60); do curl -H "x-tvr-pass: $TVR_PASS" -s http://127.0.0.1:8765/api/about >/dev/null || break; sleep 1; done   # the Intel Mac runner took >20 s once (v0.36.1)
           ! curl -H "x-tvr-pass: $TVR_PASS" -s http://127.0.0.1:8765/api/about
           for i in $(seq 20); do grep -q "Window closed" "$log" && break; sleep 1; done   # written after the port closes: Windows took >0 s (v0.39.0)
-          grep -q "Window closed" "$log"
+          grep -q "Window closed" "$log" || { cat "$log"; false; }   # else the log says where it was stuck (Main.kt's quit thread)
       - if: inputs.tag != '' && matrix.runner == 'macos-15'
         env: { GH_TOKEN: "${{ github.token }}" }
         run: gh release upload "${{ inputs.tag }}" TV-Remote-mac.zip --clobber

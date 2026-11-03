@@ -67,7 +67,15 @@ fun main(args: Array<String>) {
     Runtime.getRuntime().addShutdownHook(Thread { http.stop(); server.close() })   // Ctrl+C, logging out: the TV's sessions end too
     if (packaged) Thread({ Thread.sleep(2500); Mover.offer(server.updater.bundle, server.version) { done.countDown() } }, "move").apply { isDaemon = true }.start()
     if (window) {
-        Thread({ done.await(); Window.close() }, "quit").apply { isDaemon = true }.start()   // the page's "Tắt" closes the window too
+        Thread({
+            done.await(); Window.close()                              // the page's "Tắt" closes the window too
+            // a window that does not close (Windows, v0.43.0's CI: the port stayed open 60 s) must not keep the app running
+            // after Tắt: say where it is stuck, then quit anyway
+            Thread.sleep(5000)
+            println("Window did not close in 5 s; quitting. Threads:")
+            Thread.getAllStackTraces().forEach { (t, st) -> println("  ${t.name} ${t.state}"); st.take(12).forEach { println("    at $it") } }
+            server.updater.quitting(); System.exit(0)
+        }, "quit").apply { isDaemon = true }.start()
         if (Window.show(repo, link, pass.key)) { println("Window closed."); server.updater.quitting(); System.exit(0) }
     }
     if (packaged) App.browse(link)
