@@ -84,7 +84,7 @@ the same classes.
 | The advanced part inside a card | `details.adv > summary` (muted 600), open when something in it is on | a second card |
 | A part of Settings | each `.group` and `details.sect` is its own `--card` box on the dialog's `--bg` (`.aboutbox` in `css/page.css`), chips wrap; a long part is `details.sect > summary > h3 + span.sum`: chevron, one muted line under the title (`sectSums()` in `js/setup.js` fills it: the chosen chip, else `p.state`, else the first note); short picks stay open above them | lines between parts (they ran together); a card in a part |
 | A card that only says one thing | `UI.say(text, cls)` ("reading…", "nothing", "cannot") | an empty card with a spinner only |
-| A tab of many cards (Automation, Setup) | a `section.card` with an `id` folds by itself (`js/fold.js`: title + one line, chevron); the renderer calls `foldSum(id, words, on)`, else its `p.state` is the line; `data-nofold` keeps one open | a hand-made toggle per card |
+| A tab of many cards (Automation, Setup) | a `section.card` with an `id` folds by itself (`js/fold.js`: title + one line, chevron); the renderer calls `foldSum(id, words, on)`, else its `p.state` is the line; `data-nofold` keeps one open; the head's tools show only open, on their own row under the title | a hand-made toggle per card; a tool beside a fold title |
 | A part set apart inside a card (a preset at its top: Kids mode's Quick setup) | `div.part` (line edge, 12px radius, gap `--gap`) | a card in a card |
 | One setting / one part of a card | `UI.group(h3Title, ...controls)` → `div.group` (gap 6) | margins |
 | Why, under a title or control | `UI.note(t)` → `p.note` | `<small>`, inline colour |
