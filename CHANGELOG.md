@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.44.0 - 2026-11-03
+
+Web 0.44.0 · Phone app 0.41.0 · TV app 0.42.0 · TV Home 0.26.0 · TV Channels 0.18.2 · TV Games 0.19.0 · TV Apps 0.4.0
 
 - TV Games, Pool: losing on the 8-ball with a foul now says which foul (the cue ball fell, or another ball was hit first).
 - Video on the TV (More keys → Tools): a video file or the phone's / computer's camera plays in a box over every app; drag the box to move it and its corner to resize it while it plays. Needs TV Setup 0.42.0.
