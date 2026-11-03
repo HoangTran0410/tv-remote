@@ -27,6 +27,22 @@
       }
     },
     {
+      "id": "home",
+      "name": {
+        "vi": "Màn hình chính",
+        "en": "Home screen",
+        "ru": "Главный экран"
+      }
+    },
+    {
+      "id": "web",
+      "name": {
+        "vi": "Web và mạng",
+        "en": "Web and network",
+        "ru": "Веб и сеть"
+      }
+    },
+    {
       "id": "tools",
       "name": {
         "vi": "Tiện ích",
@@ -368,6 +384,129 @@
       "icon_sha": "db0df6b9cf0642480cd45936f292bbbb709a5f78ac34e4df0596c47c5949af52"
     },
     {
+      "id": "wholphin",
+      "pkg": "com.github.damontecres.wholphin",
+      "name": "Wholphin",
+      "cat": "watch",
+      "desc": {
+        "vi": "Xem phim và chương trình từ máy chủ Jellyfin của bạn, giao diện làm riêng cho TV.",
+        "en": "Your Jellyfin server's movies and shows, on a screen made for the TV.",
+        "ru": "Фильмы и сериалы с вашего сервера Jellyfin на экране, сделанном для ТВ."
+      },
+      "notes": {
+        "vi": "Cần máy chủ Jellyfin của bạn.",
+        "en": "Needs your own Jellyfin server.",
+        "ru": "Нужен ваш сервер Jellyfin."
+      },
+      "icon": "icons/wholphin.png",
+      "source": "https://github.com/damontecres/Wholphin",
+      "license": "GPL-2.0",
+      "min_sdk": 23,
+      "certs": [
+        "e54fda99b452214b3522deb5de14e2dddc06da8de5db1fa7591dce2d80af96a8"
+      ],
+      "apk": {
+        "arm64-v8a": {
+          "repo": "damontecres/Wholphin",
+          "match": "Wholphin-arm64-v8a.apk"
+        },
+        "armeabi-v7a": {
+          "repo": "damontecres/Wholphin",
+          "match": "Wholphin-armeabi-v7a.apk"
+        },
+        "x86_64": {
+          "repo": "damontecres/Wholphin",
+          "match": "Wholphin-x86_64.apk"
+        }
+      },
+      "icon_sha": "da03dfcb325831410a96366575111019575538dc649aec4ff1cb9619c9e92de2"
+    },
+    {
+      "id": "smarttwitch",
+      "pkg": "com.fgl27.twitch",
+      "name": "SmartTV Twitch",
+      "cat": "watch",
+      "desc": {
+        "vi": "Xem Twitch trên TV, dùng remote là đủ.",
+        "en": "Watch Twitch on the TV with just the remote.",
+        "ru": "Twitch на ТВ: достаточно пульта."
+      },
+      "icon": "icons/smarttwitch.png",
+      "source": "https://github.com/fgl27/SmartTwitchTV",
+      "license": "GPL-3.0",
+      "min_sdk": 21,
+      "certs": [
+        "838d9d90b5bcaa89c7376948b0d8da141c2d0cbba3b983b02a0c443dd63744d9"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "fgl27/SmartTwitchTV",
+          "match": "SmartTV_twitch_.*\\.apk"
+        }
+      },
+      "icon_sha": "613762009c2f7ddcedbb9fce92d8cd336da79294c9f078bcdf0e549205ee4b34"
+    },
+    {
+      "id": "owntv",
+      "pkg": "tv.own.owntv",
+      "name": "OwnTV",
+      "cat": "watch",
+      "desc": {
+        "vi": "Xem truyền hình qua danh sách kênh M3U hoặc Xtream của bạn, chuyển kênh nhanh.",
+        "en": "Live TV from your own M3U or Xtream lists, with fast channel switching.",
+        "ru": "Прямой эфир из ваших списков M3U или Xtream, быстрое переключение каналов."
+      },
+      "notes": {
+        "vi": "Không kèm kênh nào, bạn tự thêm danh sách. Kênh miễn phí có sẵn trong TV Channels.",
+        "en": "Comes with no channels: you add your own list. Free channels are in TV Channels.",
+        "ru": "Каналов нет: вы добавляете свой список. Бесплатные каналы есть в TV Channels."
+      },
+      "icon": "icons/owntv.png",
+      "source": "https://github.com/ahXN00/OwnTV",
+      "license": "GPL-3.0",
+      "min_sdk": 26,
+      "certs": [
+        "e8fbd2f2f7d0823fa78752cf24ce67f44656d6a6d5174e317acab5ac25652ce7"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "ahXN00/OwnTV",
+          "match": "OwnTV\\.apk"
+        }
+      },
+      "icon_sha": "5f576965a943e900ad24d4e208e6737b6083cfcd6cbc428c035932972fab1ce4"
+    },
+    {
+      "id": "immich-tv",
+      "pkg": "nl.giejay.android.tv.immich",
+      "name": "Immich TV",
+      "cat": "watch",
+      "desc": {
+        "vi": "Xem ảnh và video từ máy chủ Immich của bạn trên màn hình TV.",
+        "en": "Your Immich server's photos and videos on the big screen.",
+        "ru": "Фото и видео с вашего сервера Immich на большом экране."
+      },
+      "notes": {
+        "vi": "Cần máy chủ Immich (bản 3 trở lên).",
+        "en": "Needs an Immich server (version 3 or newer).",
+        "ru": "Нужен сервер Immich (версии 3 и новее)."
+      },
+      "icon": "icons/immich-tv.png",
+      "source": "https://github.com/giejay/Immich-Android-TV",
+      "license": "GPL-3.0",
+      "min_sdk": 24,
+      "certs": [
+        "7a93fe91a13acf08b6a03ac30dba58eebf0b6d6641fabd945afb0e8554d39866"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "giejay/Immich-Android-TV",
+          "match": "ImmichTV-.*\\.apk"
+        }
+      },
+      "icon_sha": "b43b8792d71ca1eae00f75ccb137ba1231c47891f07e6dda40d077a9a9238668"
+    },
+    {
       "id": "moonlight",
       "pkg": "com.limelight",
       "name": "Moonlight",
@@ -393,6 +532,411 @@
         "universal": "https://github.com/moonlight-stream/moonlight-android/releases/latest/download/app-nonRoot-release.apk"
       },
       "icon_sha": "e43465bce5ffbf8349347caab3f28047edb0fee32804f3500c4c327288f85c13"
+    },
+    {
+      "id": "lemuroid",
+      "pkg": "com.swordfish.lemuroid",
+      "name": "Lemuroid",
+      "cat": "play",
+      "desc": {
+        "vi": "Chơi game cổ điển (NES, SNES, Mega Drive, PlayStation...) bằng tay cầm.",
+        "en": "Classic games (NES, SNES, Mega Drive, PlayStation...) with a game controller.",
+        "ru": "Классические игры (NES, SNES, Mega Drive, PlayStation...) с геймпадом."
+      },
+      "notes": {
+        "vi": "Bạn tự chép game của mình vào TV.",
+        "en": "You copy your own game files to the TV.",
+        "ru": "Файлы игр вы копируете на ТВ сами."
+      },
+      "icon": "icons/lemuroid.png",
+      "source": "https://github.com/Swordfish90/Lemuroid",
+      "license": "GPL-3.0",
+      "min_sdk": 23,
+      "certs": [
+        "4fa1cb59ea4d8ca8555315eba215205f667975ba8985bbe736904f21bfebbeaf"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "Swordfish90/Lemuroid",
+          "match": "lemuroid-app-free-dynamic-release\\.apk"
+        }
+      },
+      "icon_sha": "110512a83b976de7c136756a2f064f7756b90d9cfc3761a520a649f2b0a565ad"
+    },
+    {
+      "id": "artemis",
+      "pkg": "com.limelight.noir",
+      "name": "Artemis",
+      "cat": "play",
+      "desc": {
+        "vi": "Chơi game từ máy tính lên TV qua mạng nhà (Sunshine hoặc Apollo), như Moonlight.",
+        "en": "Play your PC's games on the TV over your home network (Sunshine or Apollo), like Moonlight.",
+        "ru": "Игры с ПК на ТВ по домашней сети (Sunshine или Apollo), как Moonlight."
+      },
+      "notes": {
+        "vi": "Cần máy tính chạy Sunshine hoặc Apollo.",
+        "en": "Needs a PC running Sunshine or Apollo.",
+        "ru": "Нужен ПК с Sunshine или Apollo."
+      },
+      "icon": "icons/artemis.png",
+      "source": "https://github.com/ClassicOldSong/moonlight-android",
+      "license": "GPL-3.0",
+      "min_sdk": 21,
+      "certs": [
+        "d06f9a5fadeddef3910b1506e7a24d1c628ce42e72ba3660340dbb9f5dea81d6"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "ClassicOldSong/moonlight-android",
+          "match": "artemis-nonRoot_game-release\\.apk"
+        }
+      },
+      "icon_sha": "af24454b286875779e3841111a3559eb48881f4fd32b4766e4c26eda9cedf7af"
+    },
+    {
+      "id": "retroarch",
+      "pkg": "com.retroarch.aarch64",
+      "name": "RetroArch",
+      "cat": "play",
+      "desc": {
+        "vi": "Giả lập nhiều máy chơi game trong một app, bằng tay cầm.",
+        "en": "Many game consoles in one app, played with a game controller.",
+        "ru": "Эмуляторы многих консолей в одном приложении, с геймпадом."
+      },
+      "notes": {
+        "vi": "Nặng (~180 MB), chỉ bản 64-bit. Tải thêm \"lõi\" cho từng máy trong app.",
+        "en": "Large (~180 MB), 64-bit only. Download a \"core\" for each console inside the app.",
+        "ru": "Большой (~180 МБ), только 64-бит. «Ядро» для каждой консоли скачивается в приложении."
+      },
+      "icon": "icons/retroarch.png",
+      "source": "https://github.com/libretro/RetroArch",
+      "license": "GPL-3.0",
+      "min_sdk": 16,
+      "certs": [
+        "d7a5eab30902c9b2775af6fb4eac2d294a64634fb47dd1382bc3ac5bf669982e"
+      ],
+      "apk": {
+        "arm64-v8a": "https://buildbot.libretro.com/stable/1.22.2/android/RetroArch_aarch64.apk"
+      },
+      "icon_sha": "596bcb4572cfacc81631fae2f6ae05be79b2ff43067af6e037f7180bd14156f9"
+    },
+    {
+      "id": "ppsspp",
+      "pkg": "org.ppsspp.ppsspp",
+      "name": "PPSSPP",
+      "cat": "play",
+      "desc": {
+        "vi": "Giả lập máy PSP, chơi bằng tay cầm hoặc remote.",
+        "en": "PSP games on the TV, with a game controller or the remote.",
+        "ru": "Игры PSP на ТВ, с геймпадом или пультом."
+      },
+      "notes": {
+        "vi": "Bạn tự có file game. Link cố định, cập nhật bằng tay.",
+        "en": "You bring your own game files. Fixed link, moved by hand.",
+        "ru": "Файлы игр ваши. Ссылка фиксированная, обновляется вручную."
+      },
+      "icon": "icons/ppsspp.png",
+      "source": "https://github.com/hrydgard/ppsspp",
+      "license": "GPL-2.0-or-later",
+      "min_sdk": 21,
+      "certs": [
+        "c5342629df16762391907b3297aad122b4c1a8a9e608dfb94217a08e3bbf13a2"
+      ],
+      "apk": {
+        "universal": "https://www.ppsspp.org/files/1_20_4/ppsspp.apk"
+      },
+      "icon_sha": "ce06a85dd1df94e0f88a6e7b26248f29fb529c3f32c2db63b03c53c52710ec95"
+    },
+    {
+      "id": "ltvlauncher",
+      "pkg": "com.leanbitlab.ltvL",
+      "name": "LTvLauncher",
+      "cat": "home",
+      "desc": {
+        "vi": "Màn hình chính thay thế: gọn, không quảng cáo, có thời tiết, đồng hồ và màn hình chờ cho OLED.",
+        "en": "A replacement home screen: light, no ads, with weather, a clock and an OLED-safe screensaver.",
+        "ru": "Другой главный экран: лёгкий, без рекламы, с погодой, часами и экранной заставкой для OLED."
+      },
+      "notes": {
+        "vi": "Cần đặt làm màn hình chính; tuỳ TV có thể phải qua TV Remote.",
+        "en": "Must be set as the home screen; on some TVs that needs TV Remote.",
+        "ru": "Нужно назначить главным экраном; на некоторых ТВ — через TV Remote."
+      },
+      "icon": "icons/ltvlauncher.png",
+      "source": "https://github.com/LeanBitLab/LtvLauncher",
+      "license": "GPL-3.0",
+      "min_sdk": 21,
+      "certs": [
+        "df819e5940a514f3d2d5d19d852c18e4cbe2d1d636cb92011b8c101dac72aa9a"
+      ],
+      "apk": {
+        "arm64-v8a": {
+          "repo": "LeanBitLab/LtvLauncher",
+          "match": "LTvLauncher-arm64-v8a-release\\.apk"
+        },
+        "armeabi-v7a": {
+          "repo": "LeanBitLab/LtvLauncher",
+          "match": "LTvLauncher-armeabi-v7a-release\\.apk"
+        },
+        "universal": {
+          "repo": "LeanBitLab/LtvLauncher",
+          "match": "LTvLauncher-universal-release\\.apk"
+        }
+      },
+      "icon_sha": "7436d707e6a0c65850242c7ec6056a9eddfb4d99ec505a935e50fd30d52ba477"
+    },
+    {
+      "id": "flauncher",
+      "pkg": "me.efesser.flauncher",
+      "name": "FLauncher",
+      "cat": "home",
+      "desc": {
+        "vi": "Màn hình chính thay thế: không quảng cáo, xếp app thành nhóm, đổi hình nền.",
+        "en": "A replacement home screen: no ads, apps in your own groups, your own wallpaper.",
+        "ru": "Другой главный экран: без рекламы, свои группы приложений, свои обои."
+      },
+      "notes": {
+        "vi": "Cần đặt làm màn hình chính; tuỳ TV có thể phải qua TV Remote.",
+        "en": "Must be set as the home screen; on some TVs that needs TV Remote.",
+        "ru": "Нужно назначить главным экраном; на некоторых ТВ — через TV Remote."
+      },
+      "icon": "icons/flauncher.png",
+      "source": "https://github.com/osrosal/flauncher",
+      "license": "GPL-3.0",
+      "min_sdk": 21,
+      "certs": [
+        "3ef9f30df1f52f48b4b0c524a6e1861faedd2cccfa96d03e90076a1e30dec101"
+      ],
+      "apk": {
+        "arm64-v8a": {
+          "repo": "osrosal/FLauncher",
+          "match": "flauncher-arm64-v8a-release\\.apk"
+        },
+        "armeabi-v7a": {
+          "repo": "osrosal/FLauncher",
+          "match": "flauncher-armeabi-v7a-release\\.apk"
+        },
+        "x86_64": {
+          "repo": "osrosal/FLauncher",
+          "match": "flauncher-x86_64-release\\.apk"
+        },
+        "universal": {
+          "repo": "osrosal/FLauncher",
+          "match": "flauncher-universal-release\\.apk"
+        }
+      },
+      "icon_sha": "1963a5d01062716d96a5c831d64e479f64dc41815fb695c933a19a2cc91816e9"
+    },
+    {
+      "id": "aerialviews",
+      "pkg": "com.neilturner.aerialviews",
+      "name": "Aerial Views",
+      "cat": "home",
+      "desc": {
+        "vi": "Màn hình chờ là những video quay từ trên cao (Apple, Amazon...), phát từ mạng hoặc USB.",
+        "en": "A screensaver of aerial videos (Apple, Amazon...), played from the web or a USB drive.",
+        "ru": "Заставка из видео с высоты птичьего полёта (Apple, Amazon...) из сети или с USB."
+      },
+      "notes": {
+        "vi": "Bật trong Cài đặt TV > Màn hình chờ.",
+        "en": "Turn it on in the TV's Settings > Screensaver.",
+        "ru": "Включается в настройках ТВ > Заставка."
+      },
+      "icon": "icons/aerialviews.png",
+      "source": "https://github.com/theothernt/AerialViews",
+      "license": "GPL-3.0",
+      "min_sdk": 23,
+      "certs": [
+        "383b3b2df6d2b17cec60542c576408b0deae502f37749eb5ac7fef2f206fa51b"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "theothernt/AerialViews",
+          "match": "aerial-views-.*\\.apk"
+        }
+      },
+      "icon_sha": "cd373008a891dae408e03a509f46918afbacc777038f953313677c7ae9be6736"
+    },
+    {
+      "id": "nebula",
+      "pkg": "com.jordanadema.nebula",
+      "name": "Nebula",
+      "cat": "home",
+      "desc": {
+        "vi": "Màn hình chờ bay xuyên tinh vân vũ trụ, hợp màn HDR.",
+        "en": "A screensaver that flies through a space nebula, made for HDR screens.",
+        "ru": "Заставка: полёт сквозь космическую туманность, для HDR-экранов."
+      },
+      "notes": {
+        "vi": "Không có biểu tượng để mở; chọn trong Cài đặt TV > Màn hình chờ.",
+        "en": "No icon to open; choose it in the TV's Settings > Screensaver.",
+        "ru": "Значка нет; выберите в настройках ТВ > Заставка."
+      },
+      "icon": "icons/nebula.png",
+      "source": "https://github.com/jordanade/Nebula",
+      "license": "GPL-3.0",
+      "min_sdk": 21,
+      "certs": [
+        "878ec6cee21525482bd880c97bde14e1be71a27d581502f7326457daf6693639"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "jordanade/Nebula",
+          "match": "Nebula\\.apk"
+        }
+      },
+      "icon_sha": "7735d58a023212e8b4f952e5291f6e575f396daa92dfb8dcceca524abb728c8d"
+    },
+    {
+      "id": "tvbro",
+      "pkg": "com.phlox.tvwebbrowser",
+      "name": "TV Bro",
+      "cat": "web",
+      "desc": {
+        "vi": "Trình duyệt web dùng bằng remote: con trỏ, nhiều tab, tìm bằng giọng nói.",
+        "en": "A web browser made for the remote: pointer, tabs, voice search.",
+        "ru": "Браузер для пульта: курсор, вкладки, голосовой поиск."
+      },
+      "notes": {
+        "vi": "Dùng bộ duyệt web (WebView) của TV; TV cũ có thể cần cập nhật.",
+        "en": "Uses the TV's own web view; an old TV may need it updated.",
+        "ru": "Использует системный WebView ТВ; на старом ТВ его нужно обновить."
+      },
+      "icon": "icons/tvbro.png",
+      "source": "https://github.com/truefedex/tv-bro",
+      "license": "BSD-style",
+      "min_sdk": 24,
+      "certs": [
+        "1e5124be7e7fcb7a6462b47a42a8567863c6fccc6fe7708cd278be4f43047c75"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "truefedex/tv-bro",
+          "match": "tvbro-.*-generic-geckoExcluded\\.apk"
+        }
+      },
+      "icon_sha": "bef45a7ea4ba2cc13b1d8a6d27ffef28fb35c4e90f238b6b23368ccab5a8a9f8"
+    },
+    {
+      "id": "tailscale",
+      "pkg": "com.tailscale.ipn",
+      "name": "Tailscale",
+      "cat": "web",
+      "desc": {
+        "vi": "Nối TV vào mạng riêng Tailscale để điều khiển từ xa khi không ở nhà.",
+        "en": "Put the TV on your Tailscale network to control it when away from home.",
+        "ru": "Подключает ТВ к вашей сети Tailscale для управления вне дома."
+      },
+      "notes": {
+        "vi": "Cần tài khoản Tailscale (có gói miễn phí). Nặng (~106 MB). Dùng chung một VPN với DNSNet là không được.",
+        "en": "Needs a Tailscale account (free plan exists). Large (~106 MB). Cannot run together with another VPN such as DNSNet.",
+        "ru": "Нужна учётная запись Tailscale (есть бесплатный план). Большой (~106 МБ). Не работает вместе с другим VPN, например DNSNet."
+      },
+      "icon": "icons/tailscale.png",
+      "source": "https://github.com/tailscale/tailscale-android",
+      "license": "BSD-3-Clause",
+      "min_sdk": 26,
+      "certs": [
+        "5cdb295551bfe1a087fed6acda07141c6c929fa7c29bd273a7092813acc434bf",
+        "3257d599a49d2c961a471ca9843f59d341a405884583fc087df4237b733bbd6d"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "tailscale/tailscale-android",
+          "match": "tailscale-android-universal-.*\\.apk"
+        }
+      },
+      "icon_sha": "7c954d842148e26ba41eaf05de4ee668cb4fa376b6bfefb1317167f829578323"
+    },
+    {
+      "id": "dnsnet",
+      "pkg": "dev.clombardo.dnsnet",
+      "name": "DNSNet",
+      "cat": "web",
+      "desc": {
+        "vi": "Chặn quảng cáo và theo dõi bằng DNS ngay trên TV, không cần root.",
+        "en": "Blocks ads and trackers by DNS right on the TV, no root needed.",
+        "ru": "Блокирует рекламу и трекеры через DNS прямо на ТВ, без root."
+      },
+      "notes": {
+        "vi": "Chạy như một VPN trên TV, nên không dùng cùng lúc với VPN khác.",
+        "en": "Runs as a VPN on the TV, so not together with another VPN.",
+        "ru": "Работает как VPN на ТВ, поэтому не вместе с другим VPN."
+      },
+      "icon": "icons/dnsnet.png",
+      "source": "https://github.com/t895/DNSNet",
+      "license": "GPL-3.0",
+      "min_sdk": 24,
+      "certs": [
+        "d76f6207d8182cdc1ee2dcbfe74db2edf37f36b82d084b017f79fe9f067121e4"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "t895/DNSNet",
+          "match": "app-release\\.apk"
+        }
+      },
+      "icon_sha": "13e5ffdfafc5340e396096dcdc87d4be2b2d785c5f4fbbca9e7eccfff868c991"
+    },
+    {
+      "id": "matvt",
+      "pkg": "io.github.virresh.matvt",
+      "name": "MATVT",
+      "cat": "web",
+      "desc": {
+        "vi": "Chuột ảo cho TV: điều khiển con trỏ bằng phím mũi tên của remote.",
+        "en": "A mouse for the TV: move the pointer with the remote's arrow keys.",
+        "ru": "Мышь для ТВ: курсор двигается стрелками пульта."
+      },
+      "notes": {
+        "vi": "Bản 2021 nhưng vẫn là app duy nhất loại này. Cần bật trong Trợ năng.",
+        "en": "From 2021, but still the only one of its kind. Needs turning on in Accessibility.",
+        "ru": "Версия 2021 года, но других таких нет. Включается в «Специальных возможностях»."
+      },
+      "icon": "icons/matvt.png",
+      "source": "https://github.com/virresh/matvt",
+      "license": "GPL-3.0",
+      "min_sdk": 24,
+      "certs": [
+        "3c89a9e9c6b9ae61b16a5710e54ae3521e4df8fc9a0251cb79356ddf52461c6c"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "virresh/matvt",
+          "match": "matvt-app-release-.*\\.apk"
+        }
+      },
+      "icon_sha": "ef83cdb5cc02e87d911e6c2a4a954a6d2abf7ef5990e937234f3bccc43c81dca"
+    },
+    {
+      "id": "leankeyboard",
+      "pkg": "org.liskovsoft.androidtv.rukeyboard",
+      "name": "LeanKey Keyboard",
+      "cat": "web",
+      "desc": {
+        "vi": "Bàn phím cho TV, gõ bằng remote dễ hơn bàn phím mặc định.",
+        "en": "A keyboard for the TV, easier to type on with a remote.",
+        "ru": "Клавиатура для ТВ, печатать пультом удобнее."
+      },
+      "notes": {
+        "vi": "Bật và chọn trong Cài đặt TV > Bàn phím.",
+        "en": "Turn it on and pick it in the TV's Settings > Keyboard.",
+        "ru": "Включается и выбирается в настройках ТВ > Клавиатура."
+      },
+      "icon": "icons/leankeyboard.png",
+      "source": "https://github.com/yuliskov/LeanKeyKeyboard",
+      "license": "MIT",
+      "min_sdk": 14,
+      "certs": [
+        "955ef7b51f8fb9e4036678471a9edea0bbb3bb9b02753f796d9d6bf19dc2002d"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "yuliskov/LeanKeyKeyboard",
+          "match": "LeanKeyboard_.*\\.apk"
+        }
+      },
+      "icon_sha": "68a9bebdcc67c91dcadb84b4f55d0f8ad2e2ca8212bbf9a671b1ea705583a211"
     },
     {
       "id": "localsend",
@@ -426,6 +970,146 @@
         }
       },
       "icon_sha": "5c37c6ea508b29f1f53e89a3363a51304a4752bd55a4f35e5d96c27460cf2aec"
+    },
+    {
+      "id": "keymapper",
+      "pkg": "io.github.sds100.keymapper",
+      "name": "Key Mapper",
+      "cat": "tools",
+      "desc": {
+        "vi": "Đổi chức năng các nút trên remote hoặc tay cầm: nút giữ, bấm đôi, mở app.",
+        "en": "Change what the buttons on a remote or game controller do: hold, double press, open an app.",
+        "ru": "Меняет действия кнопок пульта или геймпада: удержание, двойное нажатие, запуск приложения."
+      },
+      "notes": {
+        "vi": "Cần bật Trợ năng. Remote của TV Remote có phần sửa phím riêng.",
+        "en": "Needs Accessibility turned on. TV Remote has its own key fixes too.",
+        "ru": "Нужны «Специальные возможности». В TV Remote есть и свои настройки кнопок."
+      },
+      "icon": "icons/keymapper.png",
+      "source": "https://github.com/keymapperorg/KeyMapper",
+      "license": "GPL-3.0",
+      "min_sdk": 26,
+      "certs": [
+        "2f41a816b8d60aa1d7cd4976b4452b0335e583d4f4ab14071f303177850ce460"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "keymapperorg/KeyMapper",
+          "match": "keymapper-.*-foss\\.apk"
+        }
+      },
+      "icon_sha": "9f0a093787f19620e2af8f10b0ddd1067e307474159bd1e04c3d75117f0b56cc"
+    },
+    {
+      "id": "flicky",
+      "pkg": "app.flicky",
+      "name": "Flicky",
+      "cat": "tools",
+      "desc": {
+        "vi": "Kho app F-Droid dùng được bằng remote: tìm và cài app mã nguồn mở.",
+        "en": "An F-Droid store you can use with the remote: find and install open-source apps.",
+        "ru": "Магазин F-Droid для пульта: поиск и установка приложений с открытым кодом."
+      },
+      "notes": {
+        "vi": "Không phải app nào trong F-Droid cũng chạy được trên TV.",
+        "en": "Not every app in F-Droid works on a TV.",
+        "ru": "Не каждое приложение F-Droid работает на ТВ."
+      },
+      "icon": "icons/flicky.png",
+      "source": "https://github.com/mlm-games/flicky",
+      "license": "GPL-3.0",
+      "min_sdk": 23,
+      "certs": [
+        "4aed2f691df64a7b0fea25a6b8c80183c6dc520e049dac0178defa1d6472228f"
+      ],
+      "apk": {
+        "arm64-v8a": {
+          "repo": "mlm-games/flicky",
+          "match": "flicky-.*-arm64-v8a\\.apk"
+        },
+        "armeabi-v7a": {
+          "repo": "mlm-games/flicky",
+          "match": "flicky-.*-armeabi-v7a\\.apk"
+        },
+        "x86_64": {
+          "repo": "mlm-games/flicky",
+          "match": "flicky-.*-x86_64\\.apk"
+        },
+        "x86": {
+          "repo": "mlm-games/flicky",
+          "match": "flicky-.*-x86\\.apk"
+        }
+      },
+      "icon_sha": "352766d261ec07ea1a91bda069aa8668460d8fe590fe32735a5b910d0838e219"
+    },
+    {
+      "id": "fluffy",
+      "pkg": "app.fluffy",
+      "name": "Fluffy",
+      "cat": "tools",
+      "desc": {
+        "vi": "Quản lý tệp dùng được bằng remote, mở và giải nén file nén.",
+        "en": "A file manager made for the remote, with archive support.",
+        "ru": "Файловый менеджер для пульта, умеет работать с архивами."
+      },
+      "icon": "icons/fluffy.png",
+      "source": "https://github.com/mlm-games/Fluffy",
+      "license": "GPL-3.0",
+      "min_sdk": 24,
+      "certs": [
+        "4aed2f691df64a7b0fea25a6b8c80183c6dc520e049dac0178defa1d6472228f"
+      ],
+      "apk": {
+        "arm64-v8a": {
+          "repo": "mlm-games/Fluffy",
+          "match": "fluffy-.*-arm64-v8a\\.apk"
+        },
+        "armeabi-v7a": {
+          "repo": "mlm-games/Fluffy",
+          "match": "fluffy-.*-armeabi-v7a\\.apk"
+        },
+        "x86_64": {
+          "repo": "mlm-games/Fluffy",
+          "match": "fluffy-.*-x86_64\\.apk"
+        },
+        "x86": {
+          "repo": "mlm-games/Fluffy",
+          "match": "fluffy-.*-x86\\.apk"
+        }
+      },
+      "icon_sha": "257619d75f35e1605c1acafe106000aa8a32d350698c56ef2ef3e28a574798e9"
+    },
+    {
+      "id": "materialfiles",
+      "pkg": "me.zhanghai.android.files",
+      "name": "Material Files",
+      "cat": "tools",
+      "desc": {
+        "vi": "Quản lý tệp gọn đẹp, mở được cả thư mục FTP, SFTP, SMB và WebDAV.",
+        "en": "A clean file manager that also opens FTP, SFTP, SMB and WebDAV folders.",
+        "ru": "Аккуратный файловый менеджер: открывает и папки FTP, SFTP, SMB, WebDAV."
+      },
+      "notes": {
+        "vi": "Làm cho điện thoại, dùng bằng remote hơi khó; nên có chuột ảo (MATVT).",
+        "en": "Built for phones; awkward with a remote, a mouse app (MATVT) helps.",
+        "ru": "Сделан для телефона, пультом неудобно; поможет мышь (MATVT)."
+      },
+      "icon": "icons/materialfiles.png",
+      "source": "https://github.com/zhanghai/MaterialFiles",
+      "license": "GPL-3.0",
+      "min_sdk": 23,
+      "certs": [
+        "873b9b60c77cf7f3cd5fae66d0fe112c4a86973e118ee8a29c346c4c673c97f0",
+        "3257d599a49d2c961a471ca9843f59d341a405884583fc087df4237b733bbd6d"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "zhanghai/MaterialFiles",
+          "match": "app-release-universal\\.apk"
+        }
+      },
+      "icon_sha": "ccd7ed77c3088ebb51e8f6d19715b5434506d19570e61401da204a8d9ee8f925"
     }
   ]
 }
