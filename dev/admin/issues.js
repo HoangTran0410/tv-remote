@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Which GitHub issues need a word from us, so nobody has to remind the agent:
 //   - open, and the last word is not the owner's (a new issue, or an answer to us);
+//   - closed, and someone wrote after it was closed (a thank-you, or a new question: #15 asked where to find games and sat unseen);
+//     a 👍 or ❤️ on that last comment marks it read, nothing to answer (the person sees it was read)
 //   - labelled next-release ("fixed on main, waiting for a release") and a release came out after our last comment: say it is out,
 //     then take the label off (and close the issue when the fix is all it asked for).
 // Prints nothing when nothing is due. Run by the session hooks (.claude/settings.json; --every N: at most once per N minutes) and at
@@ -18,20 +20,23 @@ const RECENT_DAYS = 3;
 const gh = (...a) => JSON.parse(execFileSync('gh', a, { cwd: path.join(__dirname, '../..'), encoding: 'utf8', timeout: 15000, stdio: ['ignore', 'pipe', 'ignore'] }));
 
 function due(everyComment = false) {
-  const issues = gh('issue', 'list', '--state', 'open', '--limit', '100', '--json', 'number,title,author,createdAt,comments,labels');
+  const issues = gh('issue', 'list', '--state', 'all', '--limit', '100', '--json', 'number,title,author,createdAt,comments,labels,state,closedAt');
   const rel = gh('release', 'list', '--limit', '1', '--json', 'tagName,publishedAt')[0];
   const out = [];
   for (const i of issues) {
     const ours = i.comments.filter((c) => c.author.login === OWNER);
     const last = i.comments[i.comments.length - 1];
-    const waiting = last ? last.author.login !== OWNER : i.author.login !== OWNER;
+    const closed = i.state === 'CLOSED';
+    const liked = last && (last.reactionGroups || []).some((r) => r.content === 'THUMBS_UP' || r.content === 'HEART');
+    const waiting = last ? last.author.login !== OWNER && (!closed || last.createdAt > i.closedAt && !liked) : !closed && i.author.login !== OWNER;
     const at = last ? last.createdAt : i.createdAt;
+    if (closed && !waiting) continue;                                // closed and nothing since, or the last word ours: done
     if (everyComment) {                                              // the same key as the "waits" row of a last comment: told once either way
       const since = new Date(Date.now() - RECENT_DAYS * 86400000).toISOString();
-      for (const c of i.comments) if (c.author.login !== OWNER && c.createdAt > since && c !== last)
+      for (const c of i.comments) if (c.author.login !== OWNER && c.createdAt > since && c !== last && (!closed || c.createdAt > i.closedAt && waiting))
         out.push(`${i.number}@${c.createdAt}|#${i.number} new comment by ${c.author.login} (answered after it? read it): ${i.title}`);
     }
-    if (waiting) out.push(`${i.number}@${at}|#${i.number} waits for a reply (${last ? 'last comment by ' + last.author.login : 'no answer yet'}): ${i.title}`);
+    if (waiting) out.push(`${i.number}@${at}|#${i.number}${closed ? ' (closed)' : ''} waits for a reply (${last ? 'last comment by ' + last.author.login : 'no answer yet'}${closed ? ', after it was closed: a thank-you needs none, a question does' : ''}): ${i.title}`);
     const lastOurs = ours.length ? ours[ours.length - 1].createdAt : i.createdAt;
     if (rel && i.labels.some((l) => l.name === LABEL) && rel.publishedAt > lastOurs)
       out.push(`${i.number}@${rel.tagName}|#${i.number} is ${LABEL} and ${rel.tagName} is out since our last comment: say the fix is out, remove the label: ${i.title}`);
