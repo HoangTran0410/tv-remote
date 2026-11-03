@@ -54,6 +54,7 @@
     <b data-i18n="page.the_tv_is_asking">TV đang hỏi “Cho phép gỡ lỗi USB?” cho một thiết bị</b>
     <p data-i18n="page.the_device_s_code">Mã của thiết bị: <code id="askfp"></code></p>
     <p class="muted" data-i18n="page.allow_it_only_if">Chỉ cho phép nếu đó là máy của bạn.</p>
+    <label class="check" id="askalwayslbl" data-i18n="adbwho.always"><input type="checkbox" id="askalways" checked> Luôn cho phép máy này</label>
     <div class="actions"><button class="small primary" id="askyes" data-i18n="page.allow">✓ Cho phép</button><button class="small" id="askno" data-i18n="page.decline">Từ chối</button></div>
   </div>
 
@@ -95,7 +96,7 @@
         <div class="list" id="fleetlist"></div>
         <h3 data-i18n="fleet.do_title">Làm trên các TV đã chọn</h3>
         <div class="fleetdo">
-          <label class="linkbtn filebtn" id="fleetapk"><input type="file" accept=".apk,application/vnd.android.package-archive"><span data-i18n="fleet.do_install">📦 Cài APK</span></label>
+          <label class="linkbtn filebtn" id="fleetapk"><input type="file" accept=".apk,.apks,.xapk,.apkm,application/vnd.android.package-archive,application/zip,application/octet-stream"><span data-i18n="fleet.do_install">📦 Cài APK</span></label>
           <button type="button" id="fleetremove" data-i18n="fleet.do_remove">🗑 Gỡ app</button>
           <button type="button" id="fleetlaunch" data-i18n="fleet.do_launcher">🖼️ Màn hình chính</button>
           <button type="button" id="fleetwelcome" data-i18n="fleet.do_welcome">🏠 Màn hình chào</button>
@@ -258,8 +259,8 @@
         </section>
         <section class="card">
           <h2 data-i18n="files.install_an_apk">📦 Cài APK</h2>
-          <form class="line" id="instf"><input id="insturl" placeholder="Link tới file .apk" inputmode="url" autocomplete="off" data-i18n-placeholder="files.link_to_an_apk"><button class="primary" data-i18n="files.install">📦 Cài</button></form>
-          <label class="drop" data-i18n="files.or_choose_an_apk"><input type="file" id="apkfile" accept=".apk,application/vnd.android.package-archive">Hoặc chọn file .apk từ máy này</label>
+          <form class="line" id="instf"><input id="insturl" placeholder="Link tới file .apk, .apks, .xapk hoặc .apkm" inputmode="url" autocomplete="off" data-i18n-placeholder="files.link_to_an_apk"><button class="primary" data-i18n="files.install">📦 Cài</button></form>
+          <label class="drop" data-i18n="files.or_choose_an_apk"><input type="file" id="apkfile" accept=".apk,.apks,.xapk,.apkm,application/vnd.android.package-archive,application/zip,application/octet-stream">Hoặc chọn file .apk, .apks, .xapk, .apkm từ máy này</label>
         </section>
         <!-- Terminal: for people who know shell commands, so folded away -->
         <details class="card" id="termcard">
@@ -435,6 +436,7 @@
       <div class="places setfilter" id="setfilter"><button type="button" class="on" data-f="all" data-i18n="tv.all">Tất cả</button><button type="button" data-f="edit" data-i18n="tv.editable">✎ Chỉnh được</button><button type="button" data-f="view" data-i18n="tv.view_only">🔒 Chỉ xem</button></div>
       <div id="setlistbody" class="setlist"></div>
     </details>
+    <div id="adbwho" data-needs="adb"></div>
     <div id="paired" data-for="tv"></div>
   </div>
 
@@ -627,6 +629,7 @@
 <script src="stats.js"></script>
 <script src="js/health.js"></script>
 <script src="js/privacy.js"></script>
+<script src="js/adbwho.js"></script>
 <script src="js/speed.js"></script>
 <script src="js/dim.js"></script>
 <script src="js/terminal.js"></script>

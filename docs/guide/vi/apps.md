@@ -13,6 +13,7 @@ Bấm **⋯** trên một dòng:
 | Mở · Dừng | Chạy hoặc tắt app. |
 | Chi tiết & quyền | Xem quyền app. |
 | Sao chép tên gói | Dùng cho phím tắt hay cảnh. |
+| Đổi tên | Tên app trên TV Home (cùng tên khi giữ OK ở TV Home). Chỉ có khi TV có TV Home. |
 | Sao lưu (tải về) | Lưu app thành file. |
 | Xóa dữ liệu · Tắt app · Gỡ | Dọn, tắt hẳn hoặc gỡ. Tắt thì **Bật lại** được. |
 

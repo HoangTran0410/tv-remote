@@ -245,6 +245,9 @@ const FRIENDLY = [
   [/the update did not start on the TV/i, T('core.fr_update_not_started')],
   [/could not write the update script/i, T('core.fr_update_script_failed')],
   [/INSTALL_FAILED_NO_MATCHING_ABIS/i, T('core.fr_abi_mismatch')],
+  [/bundle:missing/, T('core.fr_bundle_missing')],               // a split bundle (Splits.kt, InstallApi)
+  [/bundle:locked/, T('core.fr_bundle_locked')],
+  [/INSTALL_FAILED_MISSING_SPLIT/, T('core.fr_missing_split')],
   [/INSTALL_FAILED_VERIFICATION_FAILURE/i, T('core.fr_play_protect')],   // PlayProtect.kt
   // the launcher gallery (LauncherInstall.kt): the way it ended, in the order they can match
   [/launcher:rolledback:(\w+)/, (m) => T(LAUNCH_KEPT.includes(m[1]) ? 'core.fr_launcher_kept' : 'core.fr_launcher_back', { why: T(LAUNCH_WENT[m[1]] || 'launcher.why_user') })],
@@ -579,16 +582,18 @@ async function checkAsk() {
   askAt = Date.now();
   const r = await fetch('/api/adb/prompt').then((x) => x.ok ? x.json() : null).catch(() => null);
   const fp = (r && r.fingerprint) || '';
-  put($('#askother'), 'hidden', !fp || picking); if (fp !== askSeen) { askSeen = fp; put('#askfp', 'textContent', fp); }
+  const other = !!fp && !r.ours;                                       // our own key's question is the app's to answer, never the person's
+  put($('#askother'), 'hidden', !other || picking); put($('#askalwayslbl'), 'hidden', !r.always); if (fp !== askSeen) { askSeen = fp; put('#askfp', 'textContent', fp); }
 }
 async function answerAsk(yes) {
   const fp = askSeen; if (!fp) return;
+  const always = $('#askalways').checked;
   if (yes && !await ask(T('core.allow_ask') + '\n\n' + fp, { ok: T('core.allow') })) return;
   put('#askyes', 'disabled', true); put('#askno', 'disabled', true);
-  const r = await api(yes ? '/api/adb/allow' : '/api/adb/deny', { fingerprint: fp });
+  const r = await api(yes ? '/api/adb/allow' : '/api/adb/deny', { fingerprint: fp, always });
   put('#askyes', 'disabled', false); put('#askno', 'disabled', false);
   if (r) toast(yes ? (r.result === 'allowed' ? T('core.device_allowed') : T('core.allow_failed')) : T('core.declined'));
-  askAt = 0; checkAsk();
+  askAt = 0; checkAsk(); if (typeof adbWhoLoad === 'function') adbWhoLoad();
 }
 $('#askyes').addEventListener('click', () => answerAsk(true));
 $('#askno').addEventListener('click', () => answerAsk(false));

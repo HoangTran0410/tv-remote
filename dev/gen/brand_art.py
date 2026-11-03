@@ -19,6 +19,7 @@ APPS = {                                                             # name, the
     "games": ("Games", (124, 58, 237), (219, 39, 119)),
     "tvapps": ("Apps", (245, 158, 11), (234, 88, 12)),
     "voice": ("Voice", (239, 68, 68), (190, 24, 93)),               # TV Setup Voice (app/tvvoice): its tile in TV Setup's More TV apps row
+    "keys": ("Keys", (14, 165, 233), (29, 78, 216)),                # TV Setup Keys (app/tvkeys): TV Setup's blue, lighter at the corner
 }
 BOLT = (255, 200, 61)                                                # TV Setup's bolt keeps the logo's yellow
 
@@ -82,6 +83,14 @@ def glyph(kind, d, cx, cy, s, mid):
         d.arc((cx - r, top + ch * 0.62 - r, cx + r, top + ch * 0.62 + r), 0, 180, fill="white", width=lw)
         line(d, [(cx, top + ch * 0.62 + r), (cx, cy + s * 0.46)], lw)
         line(d, [(cx - s * 0.18, cy + s * 0.46), (cx + s * 0.18, cy + s * 0.46)], lw)
+    elif kind == "keys":                                             # a key: a ring, a shaft and two teeth
+        r = s * 0.20
+        ox, oy = cx - s * 0.26, cy - s * 0.26
+        d.ellipse((ox - r, oy - r, ox + r, oy + r), outline="white", width=lw * 2)
+        a, b = (ox + r * 0.72, oy + r * 0.72), (cx + s * 0.44, cy + s * 0.44)
+        line(d, [a, b], lw * 2)
+        line(d, [(cx + s * 0.16, cy + s * 0.16), (cx + s * 0.34, cy - s * 0.02)], lw * 2)
+        line(d, [(cx + s * 0.30, cy + s * 0.30), (cx + s * 0.44, cy + s * 0.16)], lw * 2)
     else:                                                            # a pad: white body, a cross, two buttons
         w, h = s, s * 0.56
         x0, y0 = cx - w / 2, cy - h / 2
@@ -110,7 +119,7 @@ def font(weight, size):
 
 
 small, big = font("Semibold", 26 * K), font("Bold", 36 * K)
-DIR = {"tv": "tvsetup", "home": "tvhome", "channels": "tvchannels", "games": "tvgames", "voice": "tvvoice"}   # glyph and eco_*.png names -> app folder
+DIR = {"tv": "tvsetup", "home": "tvhome", "channels": "tvchannels", "games": "tvgames", "voice": "tvvoice", "keys": "tvkeys"}   # glyph and eco_*.png names -> app folder
 for app, (name, a, b) in APPS.items():
     mid = tuple((a[i] + b[i]) // 2 for i in range(3))
     out = ROOT / f"app/{DIR.get(app, app)}/src/main/res/drawable"
@@ -124,8 +133,9 @@ for app, (name, a, b) in APPS.items():
     ban.save(out / "banner.png")
     if app == "tv":                                                  # TV Home's suggestion tile for it, while it is not installed
         ban.save(ROOT / "app/tvhome/src/main/res/drawable/suggest_setup.png")
-    if app != "tv":
+    if app not in ("tv", "keys"):                                    # keys: an add-on TV Setup installs by itself, no tile in its row
         ban.save(ROOT / f"app/tvsetup/src/main/res/drawable/eco_{app}.png")
+    if app != "tv":
         icon = tile(192 * K, 192 * K, 44 * K, a, b)
         glyph(app, ImageDraw.Draw(icon), 96 * K, 96 * K, 120 * K, mid)
         icon.resize((192, 192), Image.LANCZOS).save(out / "icon.png")

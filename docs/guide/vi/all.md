@@ -394,6 +394,7 @@ Bấm **⋯** trên một dòng:
 | Mở · Dừng | Chạy hoặc tắt app. |
 | Chi tiết & quyền | Xem quyền app. |
 | Sao chép tên gói | Dùng cho phím tắt hay cảnh. |
+| Đổi tên | Tên app trên TV Home (cùng tên khi giữ OK ở TV Home). Chỉ có khi TV có TV Home. |
 | Sao lưu (tải về) | Lưu app thành file. |
 | Xóa dữ liệu · Tắt app · Gỡ | Dọn, tắt hẳn hoặc gỡ. Tắt thì **Bật lại** được. |
 
@@ -812,7 +813,7 @@ Tab **📁 Tệp** là trình quản lý tệp của TV.
 | Cài APK đã có trên TV | Bấm **Cài APK này lên TV**. |
 | Tải về máy bạn · Đổi tên · Xóa | Trong menu **⋯**. |
 | Tải link về TV | **⬇️ Tải file về TV**, dán link. |
-| Cài APK từ link hoặc tệp | **📦 Cài APK**. |
+| Cài APK từ link hoặc tệp | **📦 Cài APK**. Nhận cả gói chia nhỏ **.apks ·.xapk ·.apkm**: chỉ phần hợp TV được cài; file.obb của.xapk được chép kèm. |
 | Gõ lệnh | **⌨️ Terminal** (cho người rành). Mỗi lệnh và kết quả có nút chép riêng, cộng **Chép tất cả** và **Xóa**. |
 
 > 💡 Việc gửi lâu có thanh tiến độ và nút **Dừng**.
@@ -847,6 +848,8 @@ Mỗi app ghi điều đã THẤY (micro dùng 12 phút trước, có quyền ca
 - **Cần chú ý**: dùng micro / camera trong 24 giờ, nhận diện nội dung (ACR), trợ năng. **Có quyền nhạy cảm**: chỉ giữ quyền hoặc dùng cũ. **Ít đáng ngại**: gập sẵn.
 - **Thu hồi quyền** gỡ quyền micro, camera, vị trí của app (có **Cấp lại**); **Tắt app** dùng chung danh sách hoàn tác với Tối ưu TV. App TV cần giữ thì không có nút.
 - Mỗi app có menu **⋯** như tab Ứng dụng. App TV cần (Trợ lý Google, bàn phím) không bị tắt, nhưng thu được từng quyền (vd micro) trong **Chi tiết & quyền**: có hỏi trước, cho lại được.
+- **Ai được dùng ADB** (tab Thiết lập): máy được phép, ai đang kết nối, và **Thu hồi tất cả**. Thu hồi xóa cả khóa của máy này: lần kết nối tới TV hỏi lại.
+- Khi máy lạ xin “Cho phép gỡ lỗi USB?”, trang hiện mã của nó và bạn tự chọn Cho phép hay Từ chối.
 
 ## Thống kê ẩn danh
 

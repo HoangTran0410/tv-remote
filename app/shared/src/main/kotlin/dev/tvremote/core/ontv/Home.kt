@@ -34,10 +34,24 @@ object Home {
         return r
     }
 
-    /** The names the person gave apps on TV Home (its "names"), by package; empty without TV Home. No GitHub check, unlike [call]. */
-    fun ownNames(sh: (String) -> String): Map<String, String> {
-        val m = Regex("data=\"([A-Za-z0-9+/=]+)\"").find(sh("am broadcast --include-stopped-packages -n ${HomeConfig.RECEIVER} 2>&1")) ?: return emptyMap()
-        return names(JSONObject(String(B64.decode(m.groupValues[1]), Charsets.UTF_8)).optJSONObject("config"))
+    /** TV Home's settings as it reports them; null without TV Home. No GitHub check, unlike [call]. */
+    fun ownConfig(sh: (String) -> String): JSONObject? {
+        val m = Regex("data=\"([A-Za-z0-9+/=]+)\"").find(sh("am broadcast --include-stopped-packages -n ${HomeConfig.RECEIVER} 2>&1")) ?: return null
+        return JSONObject(String(B64.decode(m.groupValues[1]), Charsets.UTF_8)).optJSONObject("config") ?: JSONObject()
+    }
+    /** The names the person gave apps on TV Home (its "names"), by package; empty without TV Home. */
+    fun ownNames(sh: (String) -> String): Map<String, String> = names(ownConfig(sh))
+
+    /** The Apps tab's Rename: [name] becomes the app's name on TV Home (the same "names" its own Rename writes), empty = the app's own.
+     *  Returns the names now, or null when TV Home is not on the TV. */
+    @Throws(IOException::class)
+    fun rename(sh: (String) -> String, pkg: String, name: String): Map<String, String>? {
+        val cfg = ownConfig(sh) ?: return null
+        val g = JSONObject(cfg.optJSONObject("names")?.toString() ?: "{}")
+        val n = name.replace(Regex("\\s+"), " ").trim().take(HomeConfig.NAME_MAX)
+        if (n.isEmpty()) g.remove(pkg) else g.put(pkg, n)
+        call(sh, JSONObject().put("names", g))
+        return names(JSONObject().put("names", g))
     }
 
     /** The tiles pinned on TV Home's grid (its "pinned"), for the voice to open by name; empty without TV Home or a TV Home that does not report them. */

@@ -13,6 +13,7 @@ Tap **⋯** on a row:
 | Open · Stop | Starts or stops the app. |
 | Details & permissions | See the app's permissions. |
 | Copy package name | For shortcuts and scenes. |
+| Rename | The app's name on TV Home (same as holding OK there). Only when the TV has TV Home. |
 | Back up (download) | Saves the app as a file. |
 | Clear data · Turn off · Uninstall | Clean, turn off or remove. A disabled app can be **turned on** again. |
 

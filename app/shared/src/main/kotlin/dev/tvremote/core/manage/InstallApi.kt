@@ -4,6 +4,7 @@ import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.adb.PmInstall
 import dev.tvremote.core.adb.TvShell
 import dev.tvremote.core.manage.TvPaths.TMP_APK
+import dev.tvremote.core.manage.TvPaths.TMP_BASE
 import dev.tvremote.core.manage.TvPaths.safeName
 import dev.tvremote.core.manage.TvPaths.safePath
 import dev.tvremote.core.web.Cancel
@@ -38,20 +39,51 @@ internal class InstallApi(core: ManageCore, private val copy: TvCopy) : ManagePa
         val q = Adb.q(path)
         if (!adb.shell("head -c 2 $q 2>/dev/null").startsWith("PK")) throw IOException("not an APK file")
         val size = adb.shell("stat -c %s $q").trim()
-        val info = try { Apk.info(B64.decode(adb.shell("unzip -p $q AndroidManifest.xml 2>/dev/null | base64"))) }
+        var info = try { Apk.info(B64.decode(adb.shell("unzip -p $q AndroidManifest.xml 2>/dev/null | base64"))) }
                    catch (e: IllegalArgumentException) { emptyMap() }
-        val pkg = info["package"]
         // said before installing, in words a person can act on, rather than pm's INSTALL_FAILED_... after it
-        val tv = adb.shell("getprop ro.build.version.sdk; getprop ro.product.cpu.abilist").split("\n") + listOf("", "")
-        val abis = Apk.abis(adb.shell("unzip -l $q 2>/dev/null | grep -o 'lib/[^ ]*\\.so' || true").split(Regex("\\s+")))
-        Apk.fits(info, abis, tv[0].trim().toIntOrNull() ?: 0, tv[1].trim().split(",").filter { it.isNotEmpty() })?.let { throw IOException(it) }
+        val tv = adb.shell("getprop ro.build.version.sdk; getprop ro.product.cpu.abilist; getprop persist.sys.locale; getprop ro.product.locale; wm density 2>/dev/null").split("\n") + listOf("", "", "", "")
+        val sdk = tv[0].trim().toIntOrNull() ?: 0
+        val tvAbis = tv[1].trim().split(",").filter { it.isNotEmpty() }
+        // no AndroidManifest.xml at the top: maybe a bundle of APKs (.apks / .xapk / .apkm), of which the parts that fit are installed
+        val plan = if (info.isEmpty()) {
+            val all = Splits.list(adb.shell("unzip -l $q 2>/dev/null | grep -E '\\.(apk|obb)$' || true", 60000))
+            if (Splits.hasApks(all)) Splits.pick(all, tvAbis, Splits.density(tv.drop(4).joinToString("\n")), Splits.langs(tv[2], tv[3])) else null
+        } else null
+        if (plan != null) {
+            val base = Splits.pattern(plan.parts[0].name)
+            try {                                                     // only the base, to read its manifest (and to tell a locked bundle)
+                adb.shell("unzip -p $q ${Adb.q(base)} > $TMP_BASE 2>/dev/null", 600000)
+                if (!adb.shell("head -c 2 $TMP_BASE 2>/dev/null").startsWith("PK")) throw IOException(Splits.LOCKED)
+                info = try { Apk.info(B64.decode(adb.shell("unzip -p $TMP_BASE AndroidManifest.xml 2>/dev/null | base64"))) }
+                       catch (e: IllegalArgumentException) { emptyMap() }
+            } finally { adb.shell("rm -f $TMP_BASE") }
+        }
+        val pkg = info["package"]
+        val abis = if (plan != null) emptyList() else Apk.abis(adb.shell("unzip -l $q 2>/dev/null | grep -o 'lib/[^ ]*\\.so' || true").split(Regex("\\s+")))
+        Apk.fits(info, abis, sdk, tvAbis)?.let { throw IOException(it) }
+        // new, an update or the same version: said with "installed" (cheap: one dumpsys line)
+        val how = if (pkg == null) null else Splits.how(adb.shell("dumpsys package $pkg 2>/dev/null | grep -m1 versionCode=; echo ."), info["versionCode"])
         val cancel = current.get()
         cancel?.check()
-        val s = adb.exec("cat $q | pm install -r -S $size 2>&1")
-        cancel?.onStop { s.close() }                                  // closing the stream ends pm, which drops its install session
-        var out = try { s.readAll(600000) } finally { s.close() }
-        cancel?.check()
-        out = PmInstall.fallback(out, { adb.shell(it, 600000) }, q, size.toLongOrNull() ?: 0) { cancel?.check() }   // firmware that refuses pm install: a session instead
+        var out: String
+        if (plan != null) {
+            val parts = plan.parts.mapIndexed { i, e -> PmInstall.Part("unzip -p $q ${Adb.q(Splits.pattern(e.name))}", e.size, if (i == 0) "base.apk" else "split$i.apk") }
+            out = PmInstall.bundle({ adb.shell(it, 600000) }, parts) { cancel?.check() }
+            cancel?.check()
+            if (out.contains("Success")) for (o in plan.obbs) {        // expansion files go beside the app
+                val dir = "/sdcard/Android/obb/" + Splits.obbPackage(o)
+                val dest = dir + "/" + o.name.substringAfterLast('/')
+                adb.shell("mkdir -p ${Adb.q(dir)} && unzip -p $q ${Adb.q(Splits.pattern(o.name))} > ${Adb.q(dest)}", 1800000)
+                if (adb.shell("stat -c %s ${Adb.q(dest)} 2>/dev/null").trim().toLongOrNull() != o.size) throw IOException("copy to the TV incomplete")
+            }
+        } else {
+            val s = adb.exec("cat $q | pm install -r -S $size 2>&1")
+            cancel?.onStop { s.close() }                              // closing the stream ends pm, which drops its install session
+            out = try { s.readAll(600000) } finally { s.close() }
+            cancel?.check()
+            out = PmInstall.fallback(out, { adb.shell(it, 600000) }, q, size.toLongOrNull() ?: 0) { cancel?.check() }   // firmware that refuses pm install: a session instead
+        }
         cancel?.check()
         if (!out.contains("Success") && pkg != null && Regex("INSTALL_FAILED_VERSION_DOWNGRADE|INSTALL_FAILED_UPDATE_INCOMPATIBLE|signatures do not match").containsMatchIn(out)
             && adb.shell("pm list packages -s $pkg 2>/dev/null; echo .").lines().any { it.trim() == "package:$pkg" })
@@ -62,7 +94,7 @@ internal class InstallApi(core: ManageCore, private val copy: TvCopy) : ManagePa
             Thread.sleep(3000)
             if (!adb.shell("pm path $pkg 2>/dev/null; echo .").contains("package:")) throw IOException("removed by the TV right after install: $pkg")
         }
-        return "installed"
+        return if (how == null) "installed" else "installed $how"
     }
 
     /** An APK from this device, checked and installed as an upload is: the phone's "several TVs at once" (pct 0..90 while it copies). */
@@ -83,11 +115,11 @@ internal class InstallApi(core: ManageCore, private val copy: TvCopy) : ManagePa
         }
 
     /** The APK arrives in the request body: it has to be read before we answer, so this one is not a background job. */
-    fun installUpload(r: HttpServer.Request) {
+    fun installUpload(r: HttpServer.Request): String {
         if (r.length <= 0) throw IllegalArgumentException("empty upload")
         copy.push(r.body, r.length, TMP_APK, null, 2)
         try {
-            pmInstall(TMP_APK)
+            return pmInstall(TMP_APK)
         } catch (e: Cancelled) {
             throw e                                                   // a Stop, answered 410 like the copy's
         } catch (e: IOException) {

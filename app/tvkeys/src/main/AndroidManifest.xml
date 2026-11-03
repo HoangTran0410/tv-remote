@@ -4,7 +4,7 @@
     <uses-permission android:name="dev.tvremote.setup.permission.KEYS" />
     <!-- Android 11+: the add-on must see TV Setup to bind its service -->
     <queries><package android:name="dev.tvremote.setup" /></queries>
-    <application android:label="@string/app_name" android:icon="@android:drawable/sym_def_app_icon" android:allowBackup="false">
+    <application android:label="@string/app_name" android:icon="@drawable/icon" android:banner="@drawable/banner" android:allowBackup="false">
         <!-- the first key of the TV's remote after the screen off only turns it on (KeyCatch.kt); on only while it is off, set by the shell -->
         <service android:name=".KeyCatch" android:exported="false" android:label="@string/keys_wake"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">

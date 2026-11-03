@@ -95,7 +95,7 @@ private fun MainActivity.fleetMenu() = menu(T("many_tvs.several_tvs_at_once_2"),
         try {
             @Suppress("DEPRECATION")
             startActivityForResult(Intent(Intent.ACTION_GET_CONTENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE)
-                .putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/vnd.android.package-archive", "application/octet-stream")), PICK_FLEET)
+                .putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/vnd.android.package-archive", "application/octet-stream", "application/zip", "application/x-zip-compressed", "application/vnd.xapk")), PICK_FLEET)
         } catch (e: Exception) { toast(T("media.this_phone_has_no")) }
     },
     Triple("@home|" + T("fleet.menu_welcome"), "") {

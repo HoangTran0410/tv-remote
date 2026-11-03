@@ -10,7 +10,7 @@ function showNowApp(id, label) {
   if (id === 'dev.tvremote.games' && can('adb')) box.append(el('button', { className: 'small', textContent: T('rkey.pad_chip'), onclick: () => gamePad() }));   // the pad page of TV Games (its QR on the TV); looked up on the press: games.js loads later, and the first /api/state can come back first on a slow TV
   if (pkg) onMeta(id, (m) => { if (nowApp.startsWith(id + '|')) { icon.fill(m); put(name, 'textContent', appName(id)); } });
 }
-function seedMeta(apps) { apps.forEach((a) => { if (a.meta && !META.has(a.pkg)) META.set(a.pkg, a.meta); }); }
+function seedMeta(apps) { apps.forEach((a) => { if (!a.meta) return; const m = META.get(a.pkg); if (!m) META.set(a.pkg, a.meta); else m.label = a.meta.label; }); }   // the label is renewed: a rename on TV Home reaches the list
 // The button that stands for a chosen app in a form (its value the package): its icon and name, or "Pick an app…" when none.
 function appChoice(btn, pkg) {
   btn.value = pkg || '';
@@ -55,6 +55,7 @@ async function loadQuick() {
 }
 
 // ---------- apps tab ----------
+let appsHome = false;                                                  // TV Home is on the TV: the ⋯ menu offers Rename (its names, one store)
 let appsLoaded = false, appsAll = [], appsInfo = new Map(), appsOffOpen = false;          // pkg -> { off, keep, version }
 const appsStale = () => { quickLoaded = appsLoaded = false; };      // installed or removed elsewhere (files.js, Optimize TV): read again
 let appsGen = 0;                                                      // bumped when the TV changes: a list still on its way from the old TV is dropped
@@ -91,6 +92,7 @@ async function loadApps(quiet) {                                       // quiet:
   const gen = appsGen, r = await api('/api/apps' + ($('#appssys').checked ? '?system=1' : ''));
   if (gen !== appsGen) return;
   if (!r) { if (!quiet) $('#appslist').replaceChildren(); return; }
+  appsHome = !!r.home;
   appsSys = null; appsLoaded = true; appsAll = r.apps.map((a) => a.pkg); appsInfo = new Map(r.apps.map((a) => [a.pkg, { off: !!a.off, keep: !!a.keep, version: a.version || '' }])); seedMeta(r.apps); renderApps();
   const b = await api('/api/apps/boot', null, true);                 // after the list: a tag is worth no wait
   if (b && gen === appsGen) { appsBoot = bootRead(b.text); renderApps(); }
@@ -119,7 +121,8 @@ function renderApps() {
     const icon = appsIcon(pkg, info.off), title = el('span', { textContent: META.get(pkg)?.label || pkg.split('.').pop() });
     // one button for what is wanted most, everything else behind ⋯
     const more = el('button', { className: 'small iconbtn', title: T('page.more_actions'), ariaLabel: T('page.more_actions'), textContent: '⋯', onclick: (e) => appMenu(e.currentTarget, pkg, info, (name) => {
-      if (name === 'uninstall') { appsAll = appsAll.filter((p) => p !== pkg); appsInfo.delete(pkg); }   // the list as it is, less one row: no reading every app again
+      if (name === 'rename') { /* only the name changed */ }
+      else if (name === 'uninstall') { appsAll = appsAll.filter((p) => p !== pkg); appsInfo.delete(pkg); }   // the list as it is, less one row: no reading every app again
       else appsInfo.set(pkg, { ...info, off: name === 'disable' });
       renderApps(); quickLoaded = false; loadQuick();
     }) });
@@ -172,10 +175,20 @@ function appMenu(btn, pkg, info, done, skip = []) {
     info.keep || info.off ? null : ['⏹', T('apps.stop'), () => run('stop', T('apps.stop'))],   // 🔒 must keep: the TV needs it, so no stop / clear / off / remove
     info.off ? null : ['📜', T('apps.view_log'), () => appLog(pkg)],
     ['💾', T('apps.backup'), () => appBackup(pkg)],
+    appsHome ? ['✏️', T('apps.rename'), () => appRename(pkg, done)] : null,
     info.keep || info.off ? null : ['🧽', T('apps.clear_data'), () => run('clear', T('apps.clear_data'))],
     info.keep || info.off || no('disable') ? null : ['⏸', T('apps.disable_app'), () => run('disable', T('apps.disable_app'))],
     info.keep || no('uninstall') ? null : ['🗑', T('apps.remove'), () => run('uninstall', T('apps.remove')), 'danger'],
   ]);
+}
+
+// ✏️ the app's name on TV Home's grid (TV Home's own Rename writes the same "names"); empty = the app's own name
+async function appRename(pkg, done) {
+  const v = await ask(T('apps.rename_q', { name: appName(pkg) }), { value: appName(pkg), ok: T('apps.rename') });
+  if (v === null) return;
+  const r = await api('/api/app/rename', { pkg, name: v }); if (!r) return;
+  const m = META.get(pkg); if (m) m.label = r.label;
+  done('rename'); toast(T('apps.renamed', { name: r.label }));
 }
 
 // ℹ️ one app in detail: version, dates, memory, start at boot, and the permissions a person can give or take back

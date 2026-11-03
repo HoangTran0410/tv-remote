@@ -17,7 +17,7 @@ app/shared/src/.../core/ Kotlin shared by the apps, one package per kind of work
                          ConscryptBackend, found by mDNS; Phone and Computer apps only, `Manage.canPair`), TvShell, Pkg
   picture/               Tv (scrcpy session, video/audio/control), Feeds, AudioOut (Opus playback), Downmix, SoundQueue
   manage/                Manage (the /api core for the web UI: routes the TV itself, the rest to its parts, each a ManagePart with
-                         its own `route()`: AppsApi, FilesApi, InstallApi, HealthApi, SetupApi, HomeApi, LauncherApi, TvAppsApi,
+                         its own `route()`: AppsApi, FilesApi, InstallApi, HealthApi, SetupApi, HomeApi, AdbApi (Who may use ADB: `ontv/AdbAccess.kt`), LauncherApi, TvAppsApi,
                          TvCopy; Jobs (the jobs the page polls), pure helpers TvPaths / Procs / Apk; a new route goes in the part
                          it belongs to)
   web/                   HttpServer, WebPage, Invite, Qr, Transfer (Stop, no room), Hook, Telegram + TelegramHttp (the Telegram bot: long polling, runs in TV Setup; commands, alerts via `RemoteService.alert(kind)`, history, `/start <code>` pairing; the phone/computer card reaches it through Manage `/api/telegram` -> RulesReceiver `do:"telegram"`; TV Home asks HomeInfo `call("telegram", ""|"code")` -> `{state: token_missing|none|ready, bot, code, code_left, link}`, see dev/decisions/tv-setup.md "Telegram bot")

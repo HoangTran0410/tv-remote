@@ -6,6 +6,7 @@ internal object TvPaths {
     const val CAST_DIR = "/sdcard/Download"
     const val TMP_DIR = "/data/local/tmp"
     const val TMP_APK = "$TMP_DIR/tvremote-install.apk"
+    const val TMP_BASE = "$TMP_DIR/tvremote-base.apk"                  // a bundle's base, taken out to read its manifest
     private const val RESERVE = 16L shl 20                          // never fill the TV to the last byte: it needs room to run
     private val DIGITS = Regex("\\d+")
 

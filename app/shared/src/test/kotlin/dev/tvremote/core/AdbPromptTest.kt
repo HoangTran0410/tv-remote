@@ -115,4 +115,13 @@ class AdbPromptTest {
         run(tv)
         assertFalse(tv.answers.contains(stranger to "allowed"))
     }
+
+    /** The person unticked "Always allow" for another device's question: the tick-box is never touched, Allow is pressed once. */
+    @Test fun aKeyAllowedThisTimeOnlyLeavesTheTickBoxAlone() {
+        var ticks = 0
+        val tv = FakeTv(listOf(stranger)) { part, _ -> if (part == "always") ticks++ }
+        assertEquals("allowed", AdbPrompt.allow(tv, stranger, 0, false, false, { }))
+        assertEquals(0, ticks)
+        assertEquals(listOf(stranger to "allowed"), tv.answers)
+    }
 }

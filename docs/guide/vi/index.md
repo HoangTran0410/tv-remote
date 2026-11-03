@@ -49,7 +49,7 @@
 - [TV Apps, kho app cho TV](tvapps.md): Danh sách app miễn phí, mã nguồn mở cho TV (SmartTube, Kodi, VLC, Jellyfin…). Mỗi app tải thẳng từ bản phát hành của nhà làm app, và chỉ… _(downloader 1082201 kho app store cai app mien phi ma nguon mo open source smarttube kodi vlc jellyfin moonlight localsend tvapps)_
 - [Tệp và cài APK](files.md): Tab 📁 Tệp là trình quản lý tệp của TV. _(tep file apk cai upload tai len keo tha terminal thu muc doi ten xoa)_
 - [Sức khỏe TV](health.md): Tab 🩺 Sức khỏe cho biết TV đang khỏe hay mệt. _(suc khoe ram cpu nhiet do temperature mang bluetooth giai phong bo nho health toc do mang speed test)_
-- [Kiểm tra quyền riêng tư](privacy.md): Mở Sức khỏe → Riêng tư, chọn Kiểm tra. App đọc nền trên TV, nhẹ, không làm chậm app khác; app hiện dần khi tìm thấy. _(quyen rieng tu privacy micro camera vi tri acr theo doi tracking nghe len)_
+- [Kiểm tra quyền riêng tư](privacy.md): Mở Sức khỏe → Riêng tư, chọn Kiểm tra. App đọc nền trên TV, nhẹ, không làm chậm app khác; app hiện dần khi tìm thấy. _(quyen rieng tu privacy adb khoa key micro camera vi tri acr theo doi tracking nghe len)_
 - [Thống kê ẩn danh](census.md): Mỗi ngày một lần, mỗi app gửi một ghi chú nhỏ để biết TV nào chạy tốt. Dùng cho mục "TV đã chạy thử" trên trang chủ. _(thong ke an danh census gui hang model tv chip ay tat telemetry anonymous stats privacy)_
 - [Quản lý ngay trên TV](ontv.md): Không có điện thoại hay máy tính ở gần? Làm ngay trên TV bằng điều khiển của TV. _(quan ly tren tv khong co dien thoai may tinh remote cua tv back tv setup man hinh tv)_
 - [TV Setup tự sửa DNS và ADB](tvguard.md): TV Setup canh hai chuyện hay làm TV mất kết nối, và tự sửa. _(dns loc dns keepadb adb tu bat lai tat loc dns cat mang youtube khong ket noi dns filter)_

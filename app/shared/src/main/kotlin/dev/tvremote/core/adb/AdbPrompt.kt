@@ -67,9 +67,10 @@ object AdbPrompt {
      * other:<fingerprint> (another key's question is on screen and was left alone).
      */
     @Throws(IOException::class)
-    fun allow(adb: Adb, fingerprint: String, waitMs: Long, skipOthers: Boolean): String = allow(Sh(adb::shell), fingerprint, waitMs, skipOthers)
+    fun allow(adb: Adb, fingerprint: String, waitMs: Long, skipOthers: Boolean, always: Boolean = true): String = allow(Sh(adb::shell), fingerprint, waitMs, skipOthers, always)
 
-    internal fun allow(adb: Sh, fingerprint: String, waitMs: Long, skipOthers: Boolean, nap: (Long) -> Unit = Thread::sleep, skippedOne: () -> Unit = {}): String {
+    /** [always]: the tick-box is left as the person chose (ticked: the key is remembered; unticked: this time only). */
+    internal fun allow(adb: Sh, fingerprint: String, waitMs: Long, skipOthers: Boolean, always: Boolean = true, nap: (Long) -> Unit = Thread::sleep, skippedOne: () -> Unit = {}): String {
         val want = fingerprint.uppercase()
         val end = System.currentTimeMillis() + waitMs
         var skipped = 0
@@ -88,12 +89,12 @@ object AdbPrompt {
                 nap(1200)
                 continue
             }
-            if (p.always?.checked == false) press(adb, p, { it.always }, nap)
+            if (p.always?.checked.let { it != null && it != always }) press(adb, p, { it.always }, nap)
             // Allow is pressed only on the question read just now, and only if it is still about this key: when it went away
             // meanwhile and the TV put another key's question up (it queues them), the top of the loop treats that one as such
             val now = read(adb)
             if (now == null || now.fingerprint != want) continue
-            if (now.always?.checked == false) return "failed"         // never answer without "Always"
+            if (now.always?.checked.let { it != null && it != always }) return "failed"   // never answer with the tick-box other than chosen
             press(adb, now, { it.allow }, nap)
             nap(900)
             val after = read(adb)

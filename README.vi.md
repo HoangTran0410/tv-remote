@@ -75,7 +75,7 @@ Chưa có ADB? App điện thoại và app máy tính vẫn bấm phím được
 | 🏠 **Thư viện launcher** | Chọn màn hình chính không quảng cáo (TV Home trước, rồi các cái khác), bấm một lần là cài; cái cũ chỉ tắt khi cái mới đã nhận nút Home | [→](https://tvremote.pages.dev/guide#launchers) |
 | 🛡️ **Lọc DNS** | Chặn quảng cáo và mã độc cho mọi app qua Private DNS; trong 30 giây kiểm tra tên miền vẫn chạy, không thì trả lại như cũ; sau này hỏng thì tự tắt | [→](https://tvremote.pages.dev/guide#tvguard) |
 | 🧹 **Dọn bộ nhớ đệm** | Giải phóng chỗ từ bộ nhớ đệm của mọi app; dữ liệu và đăng nhập giữ nguyên | [→](https://tvremote.pages.dev/guide#apps) |
-| 🔑 **Ai được điều khiển TV** | Mỗi trình duyệt ghép một lần bằng mã 6 số; tab Thiết lập liệt kê các thiết bị đã ghép, quên từng cái hoặc tất cả. "Allow USB debugging?" chỉ được bấm cho khoá của chính mình | [→](https://tvremote.pages.dev/guide#share) |
+| 🔑 **Ai được điều khiển TV** | Mỗi trình duyệt ghép một lần bằng mã 6 số; tab Thiết lập liệt kê các thiết bị đã ghép, quên từng cái hoặc tất cả. **Ai được dùng ADB** (tab Thiết lập) liệt kê khoá TV cho phép và ai đang kết nối, thu hồi tất cả được (hỏi trước). "Allow USB debugging?" tự bấm cho khoá của mình; máy khác chỉ khi bạn bấm Cho phép hoặc Từ chối | [→](https://tvremote.pages.dev/guide#share) |
 | ⌨️ **Thử phím remote** | Mọi phím TV nhận được, trực tiếp: tên, mã, remote nào, nhấn hay giữ, có bị đổi không | [→](https://tvremote.pages.dev/guide#keyfix) |
 | 🎬 **Cảnh và liên kết** | Nhiều bước một chạm, widget, ô Cài đặt nhanh, Home Assistant, Phím tắt Siri, bot Telegram của bạn | [→](https://tvremote.pages.dev/guide#scenes) |
 | 🌍 **Khi khác mạng** | Qua Tailscale, cài bằng một nút, không gõ gì trên TV | [→](https://tvremote.pages.dev/guide#away) |

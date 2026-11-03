@@ -5,7 +5,7 @@ let filesGen = 0;                                                      // the ne
 onTvChange(() => { filesGen++; cwd = '/sdcard/Download'; filesLoaded = false; $('#fileslist').replaceChildren(); });
 const KINDS = [
   ['🎬', 'video', /\.(mp4|mkv|avi|mov|webm|ts|m4v|wmv|flv)$/i], ['🎵', 'audio', /\.(mp3|flac|wav|m4a|ogg|aac|opus)$/i],
-  ['🖼️', 'image', /\.(jpe?g|png|gif|webp)$/i], ['📦', 'apk', /\.apk$/i], ['🗜️', 'zip', /\.(zip|rar|7z|tar|gz|xz)$/i],
+  ['🖼️', 'image', /\.(jpe?g|png|gif|webp)$/i], ['📦', 'apk', /\.(apk|apks|xapk|apkm)$/i], ['🗜️', 'zip', /\.(zip|rar|7z|tar|gz|xz)$/i],
 ];
 const kindOf = (i) => i.dir ? ['📁', 'dir'] : (KINDS.find((k) => k[2].test(i.name)) || ['📄', 'file']);
 const join = (name) => cwd.replace(/\/$/, '') + '/' + name;
@@ -80,7 +80,10 @@ function mark(src, j) {
 // yet, or an older server, keeps the title / msg as sent.
 const JOB_T = { download: 'files.job_download', install: 'files.install_name', upload: 'files.job_upload' };
 function jobTitle(j) { const k = JOB_T[j.kind]; return k && j.name ? T(k, { name: j.name }) : j.title; }
-function jobMsg(j) { const w = j.status === 'done' && j.dest ? T('files.saved_to', { dest: j.dest }) : 'files.saved_to'; return w !== 'files.saved_to' ? w : j.msg; }
+function jobMsg(j) {
+  const how = j.status === 'done' && /^installed (new|update|same|older)$/.exec(j.msg || '');   // Installer.pmInstall: what the install was
+  if (how) return { new: T('files.installed_new'), update: T('files.installed_update'), same: T('files.installed_same'), older: T('files.installed_older') }[how[1]];
+  const w = j.status === 'done' && j.dest ? T('files.saved_to', { dest: j.dest }) : 'files.saved_to'; return w !== 'files.saved_to' ? w : j.msg; }
 function showJob(j, label, stop) {
   let row = jobEls[j.id];
   if (!row) {

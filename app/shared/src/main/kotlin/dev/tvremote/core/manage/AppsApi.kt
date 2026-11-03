@@ -47,6 +47,13 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
             "privacy/a11y-off" -> HttpServer.Response.json(privacyA11yOff(r.json().optString("pkg")))
             "privacy/off", "privacy/on" -> HttpServer.Response.json(privacyOff(r.json().optString("pkg"), what.endsWith("off")))
             "app/launch", "app/stop", "app/uninstall", "app/disable", "app/enable", "app/clear" -> app(r.json().optString("pkg"), what.substring(4))
+            "app/rename" -> {                                         // the name on TV Home's grid: one store ("names"), TV Home reads it at once
+                val d = r.json(); val pkg = d.optString("pkg")
+                if (!PKG.matcher(pkg).matches()) throw IllegalArgumentException("bad package")
+                val m = dev.tvremote.core.ontv.Home.rename({ sh(it) }, pkg, d.optString("name")) ?: throw java.io.IOException("home:missing")
+                labels?.own(m)
+                HttpServer.Response.json(JSONObject().put("ok", true).put("label", labels?.label(pkg) ?: m[pkg] ?: pkg.substringAfterLast('.')))
+            }
             "clean" -> text(TvShell.CLEAN, 90000)
             "rescue" -> {                                         // TV frozen: stop the app on screen, go Home
                 val o = dev.tvremote.core.ontv.Rescue.run({ sh(it) })
@@ -130,12 +137,14 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
         val out = JSONArray()
         val icons = labels != null && labels.icons()
         val home = homeNow()
+        val tvHome = try { dev.tvremote.core.ontv.Home.ownConfig { sh(it) } } catch (e: Exception) { null }   // names given on TV Home (Rename there) win; null = no TV Home
+        if (tvHome != null) labels?.own(dev.tvremote.core.ontv.Home.names(tvHome))
         for (p in pkgs) {
             val label = labels?.label(p)
             out.put(JSONObject().put("pkg", p).put("off", p in off).put("keep", Setup.mustKeep(p) || p == home).put("version", versions[p] ?: "")
                 .put("meta", JSONObject().put("label", label ?: p.substring(p.lastIndexOf('.') + 1)).put("icon", icons).put("banner", icons)))
         }
-        return JSONObject().put("apps", out)
+        return JSONObject().put("apps", out).put("home", tvHome != null)   // home: TV Home is there, so Rename is offered
     }
 
     /** "Open on the TV": the settings, an app by its package name, or a link for whatever app takes it. */

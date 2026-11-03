@@ -410,7 +410,7 @@ function showTab(t) {
   if (t === 'tv' && CORE === 'pc') loadSteps();
   if (t === 'health') loadHealth();
   if (t === 'auto') autoTab();
-  if (t === 'tv') { tsState(); restoreState(); loadTvset(); loadHold(); loadPaired(); homeCard(); chanCard(); gameCard(); }
+  if (t === 'tv') { tsState(); restoreState(); loadTvset(); loadHold(); loadPaired(); adbWhoLoad(); homeCard(); chanCard(); gameCard(); }
 }
 // A jump from somewhere else (a menu of the remote, the phone app, a link): the tab, then the card [id] it is about, brought
 // into view and lit for a moment, so nobody has to look for it. The tab's own loading may move it: placed a little later.

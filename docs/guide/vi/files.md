@@ -10,7 +10,7 @@ Tab **📁 Tệp** là trình quản lý tệp của TV.
 | Cài APK đã có trên TV | Bấm **Cài APK này lên TV**. |
 | Tải về máy bạn · Đổi tên · Xóa | Trong menu **⋯**. |
 | Tải link về TV | **⬇️ Tải file về TV**, dán link. |
-| Cài APK từ link hoặc tệp | **📦 Cài APK**. |
+| Cài APK từ link hoặc tệp | **📦 Cài APK**. Nhận cả gói chia nhỏ **.apks ·.xapk ·.apkm**: chỉ phần hợp TV được cài; file.obb của.xapk được chép kèm. |
 | Gõ lệnh | **⌨️ Terminal** (cho người rành). Mỗi lệnh và kết quả có nút chép riêng, cộng **Chép tất cả** và **Xóa**. |
 
 > 💡 Việc gửi lâu có thanh tiến độ và nút **Dừng**.

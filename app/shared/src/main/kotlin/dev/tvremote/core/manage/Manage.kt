@@ -59,7 +59,7 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
     private val files by lazy { FilesApi(core, copy, installs, setupApi) }
     private val apps by lazy { AppsApi(core) }
     private val healthApi by lazy { HealthApi(core) }
-    private val parts by lazy { listOf(apps, files, installs, healthApi, setupApi, HomeApi(core), copy) }
+    private val parts by lazy { listOf(apps, files, installs, healthApi, setupApi, HomeApi(core), copy, AdbApi(core)) }
 
     private val playing = helper?.let { NowPlaying({ link.get() }, it) }      // the now playing bar: null where tvr-helper.jar is not at hand
     private val kbdReader = dev.tvremote.core.adb.TvKeyboard.Reader()   // /api/tvkbd: the proto, or the text dump on a TV without it
@@ -154,7 +154,9 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
                 "launcher/restore" -> return HttpServer.Response.json(launcherApi.restore())
                 "adb/prompt" -> {                                     // the TV's "Allow USB debugging?" question, if it is up
                     val p = if (link.state() == "ready") AdbPrompt.read(link.get()) else null
-                    return HttpServer.Response.json(JSONObject().put("fingerprint", p?.fingerprint ?: ""))
+                    val ours = p != null && p.fingerprint == link.get().fingerprint()
+                    return HttpServer.Response.json(JSONObject().put("fingerprint", p?.fingerprint ?: "").put("ours", ours)
+                        .put("always", p?.always?.let { if (it.checked) "on" else "off" } ?: ""))   // "": this TV's question has no tick-box
                 }
                 "tvkbd" -> {                                          // is the TV's own keyboard up (the page opens its typing box)
                     val up = if (link.state() != "ready") false else try { kbdReader.ask { link.get().shell(it) } } catch (e: Exception) {
@@ -216,7 +218,7 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
                     val d = r.json()
                     val fp = d.optString("fingerprint").uppercase()
                     if (!fp.matches(Regex("(?:[0-9A-F]{2}:){15}[0-9A-F]{2}"))) throw IllegalArgumentException("bad fingerprint")
-                    val result = synchronized(promptLock) { AdbPrompt.allow(link.get(), fp, d.optLong("wait", 0).coerceIn(0, 40) * 1000, d.optBoolean("others")) }
+                    val result = synchronized(promptLock) { AdbPrompt.allow(link.get(), fp, d.optLong("wait", 0).coerceIn(0, 40) * 1000, d.optBoolean("others"), d.optBoolean("always", true)) }
                     if (result == "allowed") allowed?.invoke(fp)
                     HttpServer.Response.json(JSONObject().put("result", result))
                 }

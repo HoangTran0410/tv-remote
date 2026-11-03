@@ -28,6 +28,29 @@ object PmInstall {
         return if (s.contains("Success")) s else "$BLOCKED: ${s.trim().lines().lastOrNull().orEmpty()}"
     }
 
+    /** One APK of a split bundle: [src] the shell words that print it (`unzip -p bundle entry`), its [size], the [name] pm files it under. */
+    class Part(val src: String, val size: Long, val name: String)
+
+    /** A split bundle in one session: create (-S the sum), write each part from its [Part.src], commit; abandoned when a step fails. */
+    fun bundle(sh: (String) -> String, parts: List<Part>, between: () -> Unit = {}): String {
+        val made = sh("pm install-create -r -S ${parts.sumOf { it.size }} 2>&1")
+        val id = ID.find(made)?.groupValues?.get(1) ?: return made.ifBlank { "install-create gave no session" }
+        var done = false
+        try {
+            for (p in parts) {
+                between()
+                val wrote = sh("${p.src} | pm install-write -S ${p.size} $id ${p.name} - 2>&1")
+                if (!wrote.contains("Success")) return wrote.ifBlank { "install-write gave no answer" }
+            }
+            between()
+            val out = sh("pm install-commit $id 2>&1")
+            done = true
+            return out
+        } finally {
+            if (!done) try { sh("pm install-abandon $id 2>&1") } catch (ignored: Exception) { }
+        }
+    }
+
     /** create, write, commit; the session is abandoned when a step fails, so no half-written one stays on the TV. */
     fun session(sh: (String) -> String, quoted: String, size: Long, between: () -> Unit = {}): String {
         val made = sh("pm install-create -r -S $size 2>&1")

@@ -145,7 +145,7 @@ internal class FilesApi(core: ManageCore, private val copy: TvCopy, private val 
         if (uid.isNotEmpty()) stops[uid] = cancel
         current.set(cancel)
         try {
-            if (r.q("kind") == "install") { installs.installUpload(r); return done("install $name", "installed") }
+            if (r.q("kind") == "install") { return done("install $name", installs.installUpload(r)) }
             if (r.q("kind") == "installcopy") { val pkg = installs.installCopy(r); return done("install $name", "installed $pkg") }
             if (r.q("kind") == "restore") { installs.restore(r); return done("restore $name", "restored") }
             if (r.q("kind") == "welcome") { setupApi.welcomeUpload(r, name); return done("welcome $name", Words.get(r.lang, "welcome.saved")) }
