@@ -864,6 +864,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "4a2daf26dd76371ee97f6c8a|0.3.1": {
+  "at": "2026-11-03T14:42:30+07:00",
+  "n": 1,
+  "note": "fixed: viaSetup's sleep interrupted by shutdownNow on onDestroy"
+ },
  "4ab694b37c47fbba0c8b073a|0.25.0": {
   "at": "2026-10-28T14:05:37+07:00",
   "n": 1,

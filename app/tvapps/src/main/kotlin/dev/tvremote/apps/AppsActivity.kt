@@ -311,7 +311,7 @@ class AppsActivity : Activity() {
                 }
             }
             if (status != "running") return
-            Thread.sleep(1000)
+            try { Thread.sleep(1000) } catch (e: InterruptedException) { return }   // the screen closed (onDestroy: shutdownNow); TV Setup goes on installing
         }
     }
 
