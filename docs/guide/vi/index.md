@@ -58,6 +58,7 @@
 - [Vẽ lên TV](draw.md): Bấm ✏️ cạnh hình TV (hoặc Thêm phím → Vẽ lên TV). _(ve len tv but pen anh chu text hinh draw)_
 - [Đưa ảnh lên TV](photo.md): Có hai cách: đặt một ảnh phủ lên màn hình TV (trên mọi app), hoặc phát ảnh hay video từ máy. _(dua anh len tv hinh anh phu len man hinh pic phat anh video)_
 - [Chụp màn hình TV](screenshot.md): Bấm Thêm phím trên tab Remote. _(chup man hinh screenshot anh png)_
+- [Video trên TV](video.md): Mở Thêm phím → Tiện ích → Video trên TV. _(video tren tv camera webcam khung phu overlay keo doi co video box pip)_
 - [Tắt màn hình, giảm độ sáng](screen-dim.md): Tắt màn hình nằm trong Thêm phím → Hẹn giờ tắt; Giảm độ sáng trong Thêm phím → Tiện ích, và trên TV ở Bảng điều khiển của TV Home (thanh… _(tat man hinh giam do sang loc anh sang xanh toi screen off dim night)_
 
 ## Tự động

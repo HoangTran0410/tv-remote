@@ -941,6 +941,15 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 
 > 💡 Protected apps may come out black.
 
+## Video on the TV
+
+1. Open **More keys → Tools → Video on the TV**.
+2. Tap **🎞️ Pick a video** to play a file, or **📷 Camera** to show your phone's or computer's camera (**🔄 Switch camera** for front / back).
+3. Drag the box to move it, drag its blue corner to resize it, even while it plays. Arrow keys and + / − work too.
+4. Pause, turn the sound on, or **⏹ Remove from TV**.
+
+> 💡 The box sits over every app. Close the window and a video keeps playing; the camera stops. The camera works in the phone and computer apps only. Needs TV Setup 0.41.1.
+
 ## Screen off, dim the screen
 
 **Screen off** is in **More keys → Sleep timer**; **Dim the screen** in **More keys → Tools**, and on the TV in **TV Home's Control Center** (the sun bar, the colour button beside it):

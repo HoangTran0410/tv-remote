@@ -63,6 +63,8 @@
         <provider android:name=".HomeInfo" android:authorities="dev.tvremote.setup.home" android:exported="true" />
         <!-- drawing over the screen for a device that has ADB here (DrawLayer.kt, Draw.kt) -->
         <receiver android:name=".DrawReceiver" android:exported="true" android:permission="android.permission.DUMP" />
+        <!-- a video in a movable box over the screen: a file or a phone's / computer's camera (VideoLayer.kt, Video.kt) -->
+        <receiver android:name=".VideoReceiver" android:exported="true" android:permission="android.permission.DUMP" />
         <!-- the tint over the whole screen, for a device that has ADB here (DimLayer.kt, Dim.kt) -->
         <receiver android:name=".DimReceiver" android:exported="true" android:permission="android.permission.DUMP" />
         <!-- a message in a corner of the screen for a device that has ADB here (NotifyLayer.kt, Notify.kt) -->

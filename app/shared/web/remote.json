@@ -47,6 +47,7 @@
     "tools": [
       { "id": "tools-keys", "icon": "tv", "t": "rkey.tools_keys", "sub": "rkey.tools_keys_sub", "do": "menu", "arg": "tvkeys" },
       { "id": "dim", "icon": "sun", "t": "rkey.dim", "do": "dim", "needs": ["adb"], "sub": "rkey.dim_sub" },
+      { "id": "vbox", "icon": "camera", "t": "rkey.vbox", "do": "vbox", "needs": ["adb"], "sub": "rkey.vbox_sub" },
       { "id": "tools-share", "icon": "share", "t": "rkey.share", "do": "share", "needs": ["adb"] },
       { "id": "tools-notify", "icon": "bell", "t": "rkey.notify", "do": "notify", "needs": ["adb"] },
       { "id": "tools-rescue", "icon": "alert", "t": "rkey.rescue", "sub": "rkey.rescue_sub", "do": "rescue", "needs": ["adb"] },

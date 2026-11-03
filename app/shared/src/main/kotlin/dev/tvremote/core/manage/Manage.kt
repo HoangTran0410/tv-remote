@@ -66,6 +66,7 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
     private val playing = helper?.let { NowPlaying({ link.get() }, it) }      // the now playing bar: null where tvr-helper.jar is not at hand
     private val kbdReader = dev.tvremote.core.adb.TvKeyboard.Reader()   // /api/tvkbd: the proto, or the text dump on a TV without it
     private val draw = Draw { link.get() }                           // strokes for TV Setup to draw over the screen
+    private val video = dev.tvremote.core.ontv.Video { link.get() }  // a video or a camera in a box over the screen (VideoLayer)
     private val launcherApi by lazy { LauncherApi(link, dir, { t, w -> jobs.job(t, null, null, w) }, { jobs.current.get() }) }
     private val tvAppsApi by lazy { TvAppsApi(link, dir, { t, w -> jobs.job(t, null, null, w) }, { jobs.current.get() }, { i, n, c -> install(i, n, null, c) }) }
 
@@ -216,6 +217,18 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
                 }
                 "screen/on" -> { ScreenOff.on(link.get(), (helper ?: throw IllegalStateException("not here"))()); HttpServer.Response.json(JSONObject().put("ok", true)) }
                 "draw" -> { draw.send(r.json(Draw.MAX_BODY).getJSONArray("ops")); HttpServer.Response.json(JSONObject().put("ok", true).put("pic", draw.pics)) }
+                "videobox" -> {                                        // {o: file, path, x, y, s} plays a file already on the TV; move, pause, play, mute, close, q
+                    val d = r.json()
+                    HttpServer.Response.json(if (d.optString("o") == "file") video.file(TvPaths.safePath(d.optString("path")), d) else video.op(d))
+                }
+                "videobox/start" -> { video.start(r.json()); HttpServer.Response.json(JSONObject().put("ok", true)) }   // a camera: {w, h, x, y, s}
+                "videobox/frame" -> {                                    // one H.264 frame (Annex B) as the body; ?k=1 a key frame, ?t= its µs
+                    if (r.length <= 0 || r.length > dev.tvremote.core.ontv.Video.MAX_FRAME) throw IllegalArgumentException("bad frame")
+                    val b = ByteArray(r.length.toInt()); var off = 0
+                    while (off < b.size) { val n = r.body.read(b, off, b.size - off); if (n < 0) break; off += n }
+                    HttpServer.Response.json(JSONObject().put("ok", video.frame(b, off, r.q("k") == "1", r.q("t").toLongOrNull() ?: 0)))
+                }
+                "videobox/stop" -> { video.stop(); HttpServer.Response.json(JSONObject().put("ok", true)) }
                 "adb/allow" -> {                                      // only for the key named: see AdbPrompt
                     val d = r.json()
                     val fp = d.optString("fingerprint").uppercase()

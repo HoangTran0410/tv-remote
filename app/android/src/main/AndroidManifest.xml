@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />   <!-- MIUI cut a copy's network in the background, its notification shown -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />   <!-- Quick talk (Talk.kt): hears you only while the button is held, asked the first time with a reason -->
+    <uses-permission android:name="android.permission.CAMERA" />   <!-- Video on the TV: your camera in a box on the TV, asked the first time it is used -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-permission android:name="android.permission.TRANSMIT_IR" />   <!-- the infrared remote (IrRemote.kt): the phone's own IR LED -->
     <uses-feature android:name="android.hardware.consumerir" android:required="false" />
     <!-- the photo picker sheet: Android's own, or Google Play services' on Android 12 and older -->

@@ -941,6 +941,15 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 
 > 💡 Ứng dụng có bản quyền có thể chụp ra màn hình đen.
 
+## Video trên TV
+
+1. Mở **Thêm phím → Tiện ích → Video trên TV**.
+2. Bấm **🎞️ Chọn video** để phát một file, hoặc **📷 Camera** để chiếu camera của điện thoại / máy tính (**🔄 Đổi camera** để đổi trước / sau).
+3. Kéo khung để di chuyển, kéo góc xanh để đổi cỡ, ngay cả khi đang phát. Phím mũi tên và + / − cũng được.
+4. Tạm dừng, bật tiếng, hoặc **⏹ Gỡ khỏi TV**.
+
+> 💡 Khung nằm trên mọi app. Đóng cửa sổ thì video vẫn phát, camera thì tắt. Camera chỉ có trong app điện thoại và app máy tính. Cần TV Setup 0.41.1.
+
 ## Tắt màn hình, giảm độ sáng
 
 **Tắt màn hình** nằm trong **Thêm phím → Hẹn giờ tắt**; **Giảm độ sáng** trong **Thêm phím → Tiện ích**, và trên TV ở **Bảng điều khiển của TV Home** (thanh mặt trời, nút màu kế bên):

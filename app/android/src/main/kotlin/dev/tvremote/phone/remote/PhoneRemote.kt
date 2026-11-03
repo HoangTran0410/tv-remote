@@ -96,6 +96,7 @@ internal val phoneActions: Map<String, MainActivity.(String?) -> Unit> = mapOf(
     "clip" to act { clipDialog() },
     "screenOff" to act { screenOff() },
     "dim" to act { if (!needsAdb()) managing.open(host, then = "fromRemote(dimOpen)") },
+    "vbox" to act { if (!needsAdb()) managing.open(host, then = "fromRemote(videoOpen)") },
     "share" to act { if (!needsAdb()) managing.open(host, then = "fromRemote(shareDialog)") },
     "inputs" to act { inputsMenu() },
     "air" to act { if (airMode() != "mouse" && !airCan()) say(T("air.needs_adb"), true); airPick("mouse") },

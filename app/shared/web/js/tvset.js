@@ -104,7 +104,7 @@ function drawTvset(t) {
   }
   // the remote's Màn hình TV menu (remote.json "screen") again here, where Manage is used without the remote
   rows.push(el('div', { className: 'setrow' }, el('b', { textContent: T('tvset.screen_title') }),
-    UI.actions(UI.btn(T('rkey.screen_off'), () => screenOff()), UI.btn(T('rkey.dim'), () => dimOpen()))));
+    UI.actions(UI.btn(T('rkey.screen_off'), () => screenOff()), UI.btn(T('rkey.dim'), () => dimOpen()), UI.btn(T('rkey.vbox'), () => videoOpen()))));
   $('#tvset').replaceChildren(...rows);
 }
 

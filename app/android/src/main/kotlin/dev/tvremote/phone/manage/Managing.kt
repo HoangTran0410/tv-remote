@@ -59,6 +59,15 @@ import org.json.JSONObject
  * (it must present a random cookie), talking to the TV over its own ADB connection.
  */
 internal class Managing(private val a: MainActivity, root: FrameLayout) : HttpServer.Handler {
+    companion object { const val CAMERA_ASK = 32 }                   // requestPermissions' code (31 is Quick talk's microphone)
+    private var camAsk: android.webkit.PermissionRequest? = null      // the page's camera, waiting for Android's question
+
+    /** Android's answer to the camera question ([CAMERA_ASK]). */
+    internal fun cameraAnswer(yes: Boolean) {
+        val r = camAsk ?: return
+        camAsk = null
+        if (yes) r.grant(arrayOf(android.webkit.PermissionRequest.RESOURCE_VIDEO_CAPTURE)) else r.deny()
+    }
     private val view: LinearLayout = a.col()
     val shown get() = view.visibility == View.VISIBLE
     private var web: WebView
@@ -110,6 +119,18 @@ internal class Managing(private val a: MainActivity, root: FrameLayout) : HttpSe
                 }
                 return true
             }
+            // Video on the TV (js/video.js): the page asks for the camera; only our own page, only the camera, asked of Android first
+            override fun onPermissionRequest(req: android.webkit.PermissionRequest) {
+                val cam = android.webkit.PermissionRequest.RESOURCE_VIDEO_CAPTURE
+                if (req.origin?.host != "127.0.0.1" || !req.resources.contains(cam)) { req.deny(); return }
+                if (Build.VERSION.SDK_INT < 23 || a.checkSelfPermission(android.Manifest.permission.CAMERA) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    req.grant(arrayOf(cam)); return
+                }
+                camAsk?.deny()
+                camAsk = req
+                a.requestPermissions(arrayOf(android.Manifest.permission.CAMERA), CAMERA_ASK)
+            }
+            override fun onPermissionRequestCanceled(req: android.webkit.PermissionRequest?) { if (camAsk === req) camAsk = null }
         }
         web.setDownloadListener { url, _, disposition, _, _ -> saveToPhone(url, disposition) }
         return web

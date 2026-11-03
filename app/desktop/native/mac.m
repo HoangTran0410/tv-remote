@@ -45,13 +45,13 @@ static void menus(void) {
 static BOOL ours(WKSecurityOrigin *o) { return [o.host isEqualToString:@"127.0.0.1"] || [o.host isEqualToString:@"localhost"]; }
 
 // webview's own WKUIDelegate class answers neither question, and unanswered they are a no: the methods are added to it.
-// Only this app's own page (its server on 127.0.0.1) gets the microphone, never a page it was sent to.
+// Only this app's own page (its server on 127.0.0.1) gets the microphone or the camera, never a page it was sent to.
 static void microphone(void) {
     Class c = objc_getClass("WebviewWKUIDelegate");
     if (!c) return;
     class_addMethod(c, sel_registerName("webView:requestMediaCapturePermissionForOrigin:initiatedByFrame:type:decisionHandler:"),
         imp_implementationWithBlock(^(id self, WKWebView *v, WKSecurityOrigin *o, WKFrameInfo *f, NSInteger type, void (^done)(NSInteger)) {
-            done(ours(o) && type == 1 ? 1 : 2);                       // WKMediaCaptureTypeMicrophone → WKPermissionDecisionGrant, else Deny
+            done(ours(o) && (type == 0 || type == 1) ? 1 : 2);       // Camera (Video on the TV) or Microphone → Grant, else Deny
         }), "v@:@@@q@?");
     class_addMethod(c, sel_registerName("_webView:requestSpeechRecognitionPermissionForOrigin:decisionHandler:"),   // WebKit's own (no public one)
         imp_implementationWithBlock(^(id self, WKWebView *v, WKSecurityOrigin *o, void (^done)(BOOL)) { done(ours(o)); }), "v@:@@@?");

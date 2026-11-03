@@ -68,7 +68,7 @@ Chưa có ADB? App điện thoại và app máy tính vẫn bấm phím được
 |---|---|---|
 | 🎮 **Remote** | Mũi tên, âm lượng, kênh, app, gõ chữ, giọng nói; giữ phím như remote thật | [→](https://tvremote.pages.dev/guide#remote) |
 | 📺 **Hình TV** | Ngay trên máy bạn, có chạm và tiếng; nghe tiếng TV cả khi tắt màn hình điện thoại | [→](https://tvremote.pages.dev/guide#picture) |
-| ✏️ **Lên màn hình TV** | Vẽ, gửi ảnh hoặc lời nhắn; đang phát; clipboard của TV; giảm sáng, lọc ánh sáng xanh | [→](https://tvremote.pages.dev/guide#draw) |
+| ✏️ **Lên màn hình TV** | Vẽ, gửi ảnh, video, camera hoặc lời nhắn; đang phát; clipboard của TV; giảm sáng, lọc ánh sáng xanh | [→](https://tvremote.pages.dev/guide#draw) |
 | 🔒 **Cho trẻ em** | Hẹn giờ tắt, giờ đi ngủ, giới hạn app, giới hạn âm lượng, khóa app bằng PIN: chạy ngay trên TV | [→](https://tvremote.pages.dev/guide#limits) |
 | 📱 **Quản lý TV** | Ứng dụng, tệp, sức khỏe (RAM, tốc độ mạng của chính TV), nhiều TV cùng lúc | [→](https://tvremote.pages.dev/guide#apps) |
 | ⚡ **Tối ưu TV** | Nhanh, nhẹ hơn: tắt hiệu ứng, tạm dừng màn hình chính đầy quảng cáo và app không dùng; **Hoàn tác** trả lại hết | [→](https://tvremote.pages.dev/guide#optimize) |
@@ -89,6 +89,7 @@ Chưa có ADB? App điện thoại và app máy tính vẫn bấm phím được
 | | App điện thoại | Web của TV | App máy tính |
 |---|---|---|---|
 | Remote, xem và chạm hình TV, ✏️ vẽ, 🖼️ đưa ảnh, 💬 lời nhắn lên TV | ✓ | ✓ | ✓ |
+| 📹 Video phủ trên mọi app, khung kéo và đổi cỡ được: file hoặc camera | ✓ | ✓ (chỉ file) | ✓ |
 | ▶️ Đang phát, 📋 clipboard của TV, tắt màn hình vẫn nghe, 🔅 giảm độ sáng | ✓ | ✓ | ✓ |
 | 🔊 Giới hạn âm lượng theo giờ, hẹn giờ tắt, giờ đi ngủ, giới hạn app, 🔒 khóa app bằng PIN | ✓ | ✓ | ✓ |
 | 🎧 Nghe tiếng TV | ✓, cả khi tắt màn hình | ✓, khi trang đang mở | ✓, chất lượng cao |

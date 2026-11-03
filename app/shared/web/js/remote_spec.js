@@ -68,6 +68,7 @@ const REMOTE_DO = {
   clip: () => clipDialog(),
   screenOff: () => screenOff(),
   dim: () => dimOpen(),
+  vbox: () => videoOpen(),
   share: () => shareDialog(),
   inputs: () => inputsMenu(),
   homeCustom: () => homeOpen(),

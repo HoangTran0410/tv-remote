@@ -979,6 +979,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
     override fun onRequestPermissionsResult(request: Int, permissions: Array<out String>, results: IntArray) {
         super.onRequestPermissionsResult(request, permissions, results)
         if (request == 31) talk.permission(results.isNotEmpty() && results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED)
+        if (request == Managing.CAMERA_ASK && ::managing.isInitialized) managing.cameraAnswer(results.isNotEmpty() && results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED)
     }
 
     // ---------------------------------------------------------------- speaking to the TV

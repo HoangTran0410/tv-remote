@@ -84,14 +84,16 @@ val packageApp by tasks.registering(Exec::class) {
         val app = packageOut.resolve("TV Remote.app")
         val plist = app.resolve("Contents/Info.plist").path
         exec { commandLine("plutil", "-replace", "CFBundleLocalizations", "-json", "[\"vi\",\"en\"]", plist) }
-        // the 🎤 key hears in the window (native/mac.m): without these macOS ends the app the moment WebKit asks for the microphone
-        val ask = mapOf("en" to listOf("Speak to the TV: what you say becomes the words sent to it.", "Turns what you say to the TV into words."),
-            "vi" to listOf("Nói với TV: lời bạn nói thành chữ gửi tới TV.", "Đổi lời bạn nói với TV thành chữ."))
+        // the 🎤 key hears in the window, Video on the TV sees (native/mac.m): without these macOS ends the app the moment WebKit asks
+        val ask = mapOf("en" to listOf("Speak to the TV: what you say becomes the words sent to it.", "Turns what you say to the TV into words.",
+                "Video on the TV: your camera shown in a box on the TV."),
+            "vi" to listOf("Nói với TV: lời bạn nói thành chữ gửi tới TV.", "Đổi lời bạn nói với TV thành chữ.", "Video trên TV: hình camera của bạn hiện trong khung trên TV."))
         exec { commandLine("plutil", "-replace", "NSMicrophoneUsageDescription", "-string", ask.getValue("en")[0], plist) }
         exec { commandLine("plutil", "-replace", "NSSpeechRecognitionUsageDescription", "-string", ask.getValue("en")[1], plist) }
+        exec { commandLine("plutil", "-replace", "NSCameraUsageDescription", "-string", ask.getValue("en")[2], plist) }
         for ((l, w) in ask) app.resolve("Contents/Resources/$l.lproj").let { d ->
             d.mkdirs()
-            d.resolve("InfoPlist.strings").writeText("NSMicrophoneUsageDescription = \"${w[0]}\";\nNSSpeechRecognitionUsageDescription = \"${w[1]}\";\n")
+            d.resolve("InfoPlist.strings").writeText("NSMicrophoneUsageDescription = \"${w[0]}\";\nNSSpeechRecognitionUsageDescription = \"${w[1]}\";\nNSCameraUsageDescription = \"${w[2]}\";\n")
         }
         exec { commandLine("codesign", "--force", "--deep", "--sign", "-", app.path) }   // signed again over the changed Info.plist
     }

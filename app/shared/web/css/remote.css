@@ -178,6 +178,13 @@ section.card.old:not(.rc):not(.playing) > * + * { margin-top:var(--gap); }   /* 
 .fchips.dimc { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; overflow:visible; }
 .fchips.dimc button { display:inline-flex; align-items:center; justify-content:center; gap:6px; white-space:nowrap; min-width:0; }
 .dimc i { width:14px; height:14px; border-radius:50%; background:var(--c); border:1px solid var(--line); flex:none; }
+.vstage { position:relative; aspect-ratio:16/9; background:#0b0d10; border:1px solid var(--line); border-radius:12px; overflow:hidden; touch-action:none; }   /* the TV's screen in small (video.js) */
+.vbox { position:absolute; background:#2a3038; border:2px dashed var(--muted); border-radius:6px; cursor:move; touch-action:none; overflow:hidden; }
+.vbox.on { border:2px solid var(--accent); }
+.vbox:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+.vbox video { width:100%; height:100%; object-fit:contain; pointer-events:none; display:block; }
+.vgrip { position:absolute; right:0; bottom:0; width:22px; height:22px; cursor:nwse-resize; background:linear-gradient(135deg, transparent 50%, var(--accent) 50%); }
+p.state.bad { color:var(--bad); }
 .fchips.homewalls { display:grid; grid-template-columns:repeat(auto-fill, minmax(72px, 1fr)); gap:8px; overflow:visible; }   /* a tile per wall: the colour itself, its name under it */
 .fchips.homewalls button { display:flex; flex-direction:column; gap:4px; padding:4px; border-radius:10px; font-size:12px; min-width:0; }
 .fchips.homewalls.themes { grid-template-columns:repeat(auto-fill, minmax(104px, 1fr)); }   /* a theme's name is a word or two: wider than a wall's tile */
