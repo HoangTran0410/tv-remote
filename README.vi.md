@@ -70,6 +70,10 @@ Chưa có ADB? App điện thoại và app máy tính vẫn bấm phím được
 | 🔒 **Cho trẻ em** | Hẹn giờ tắt, giờ đi ngủ, giới hạn app, giới hạn âm lượng, khóa app bằng PIN: chạy ngay trên TV | [→](https://tvremote.pages.dev/guide#limits) |
 | 📱 **Quản lý TV** | Ứng dụng, tệp, sức khỏe (RAM, tốc độ mạng của chính TV), nhiều TV cùng lúc | [→](https://tvremote.pages.dev/guide#apps) |
 | ⚡ **Tối ưu TV** | Nhanh, nhẹ hơn: tắt hiệu ứng, tạm dừng màn hình chính đầy quảng cáo và app không dùng; **Hoàn tác** trả lại hết | [→](https://tvremote.pages.dev/guide#optimize) |
+| 🏠 **Thư viện launcher** | Chọn màn hình chính không quảng cáo (TV Home trước, rồi các cái khác), bấm một lần là cài; cái cũ chỉ tắt khi cái mới đã nhận nút Home | [→](https://tvremote.pages.dev/guide#launchers) |
+| 🛡️ **Lọc DNS** | Chặn quảng cáo và mã độc cho mọi app qua Private DNS; trong 30 giây kiểm tra tên miền vẫn chạy, không thì trả lại như cũ; sau này hỏng thì tự tắt | [→](https://tvremote.pages.dev/guide#tvguard) |
+| 🧹 **Dọn bộ nhớ đệm** | Giải phóng chỗ từ bộ nhớ đệm của mọi app; dữ liệu và đăng nhập giữ nguyên | [→](https://tvremote.pages.dev/guide#apps) |
+| 🔑 **Ai được điều khiển TV** | Mỗi trình duyệt ghép một lần bằng mã 6 số; tab Thiết lập liệt kê các thiết bị đã ghép, quên từng cái hoặc tất cả. "Allow USB debugging?" chỉ được bấm cho khoá của chính mình | [→](https://tvremote.pages.dev/guide#share) |
 | ⌨️ **Thử phím remote** | Mọi phím TV nhận được, trực tiếp: tên, mã, remote nào, nhấn hay giữ, có bị đổi không | [→](https://tvremote.pages.dev/guide#keyfix) |
 | 🎬 **Cảnh và liên kết** | Nhiều bước một chạm, widget, ô Cài đặt nhanh, Home Assistant, Phím tắt Siri, bot Telegram của bạn | [→](https://tvremote.pages.dev/guide#scenes) |
 | 🌍 **Khi khác mạng** | Qua Tailscale, cài bằng một nút, không gõ gì trên TV | [→](https://tvremote.pages.dev/guide#away) |
