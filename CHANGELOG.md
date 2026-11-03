@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.43.0 - 2026-11-03
+
+Web 0.43.0 · Phone app 0.40.0 · TV app 0.41.0 · TV Home 0.26.0 · TV Channels 0.18.2 · TV Games 0.19.0 · TV Apps 0.4.0
 
 - Phone app: back from another app, a connection that died meanwhile (Tailscale, Wi-Fi) is noticed within 2.5 s and made again at once, instead of a black picture until it timed out. Folding cards on the page keep their title on its own row; Add, Refresh and the like sit under it.
 - TV Apps: TV Setup Voice is in the list. Install takes you to TV Setup's voice settings, which install it; on a TV without TV Setup it says to install TV Setup first, with a button for it. A jump to a folded card on the page now opens it.
