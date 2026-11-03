@@ -6,7 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
-- TV apps and the web page on the TV: the D-pad focus scrolls to the middle of a list, so the rows beyond it stay in sight
+- TV apps and the web page on the TV: the D-pad focus scrolls to the middle of a list, so the rows beyond it stay in sight; it glides there instead of jumping
 - TV Home, Prayer times: the Morocco method (Ministry of Habous: Fajr 19°, Isha 17°, Dhuhr and Maghrib +5 min), the default in Morocco (#17).
 - Telegram: a black /shot (YouTube, Netflix and other protected video) comes with a line saying why.
 
