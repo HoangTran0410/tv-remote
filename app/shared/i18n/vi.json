@@ -2367,6 +2367,8 @@
  "setup.tcl_title": "TCL (bản Trung Quốc)",
  "setup.tcl_steps": "1. Cài đặt → Giới thiệu (Thông tin máy).\n2. Bấm Lên, Xuống, Trái, Phải trên điều khiển, lặp nhiều vòng đến khi hiện khung ADB.\n3. Công tắc tự ẩn lại sau đó: lần sau cần thì làm lại.",
  "tv_main.xiaomi_adb": "TV Xiaomi (bản nội địa): Cài đặt → Tài khoản & Bảo mật → Gỡ lỗi ADB (ADB调试) → Bật, rồi quay lại đây chọn Kết nối lại.",
+ "tv_main.fire_adb_blocked": "Fire TV không cho app trên TV dùng ADB của chính nó (Amazon chặn từ 2024).",
+ "tv_main.fire_adb_use_phone": "Các tính năng cần ADB: dùng app điện thoại hoặc máy tính, chúng kết nối qua Wi-Fi.",
  "guard.volume_cap": "🔊 Âm lượng tối đa {max}% ({from}–{to}, giới hạn đặt trong TV Remote)",
  "guard.min_left": "Còn {n} phút dùng {app} hôm nay",
  "guard.time_up": "Hết giờ dùng {name} hôm nay",

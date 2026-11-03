@@ -806,6 +806,13 @@ class MainActivity : Activity() {
                         tiles[1].view.requestFocus()
                         return@ui
                     }
+                    if (LinkFailure.fireBlocked(Build.MANUFACTURER, e.toString() + " " + e.cause)) {   // Amazon's block: no switch on the TV turns it back on
+                        setStatus(BAD, T("tv_main.no_adb_connection"), "")
+                        log("✗ " + T("tv_main.fire_adb_blocked"))
+                        howto(T("tv_main.fire_adb_use_phone"))
+                        tiles[1].enable(true)
+                        return@ui
+                    }
                     setStatus(BAD, T("tv_main.no_adb_connection"), T("tv_main.turn_on_adb_debugging"))
                     val notPaired = (e.message ?: "").contains("not paired")   // no 5555, Wireless debugging on: the code is what is missing
                     val refused = notPaired || (e.message ?: "").contains("refused", ignoreCase = true)   // on this very TV a refused port is ADB off, never a slow network

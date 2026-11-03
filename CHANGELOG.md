@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Setup on a Fire TV: says Amazon blocks apps on the TV from its own ADB (since 2024) and points to the phone or computer app, instead of asking to turn on ADB that is already on.
 - French and Russian: Ask an AI writes its request in the page's language (it was Vietnamese); dates, times and speech follow the page's language too.
 - TV Games: the phone pad and Add games pages speak every language of the apps (they were Vietnamese or English); Add games says arcade .zip files work too, not only .nes.
 - TV Games: on a TV whose graphics refuse what retro games need (NM-TVBOX1), a game says so instead of the app closing; web games still work.

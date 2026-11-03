@@ -389,6 +389,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "1eaf9599017372e7ef226194|0.28.0": {
+  "at": "2026-11-03T10:12:57+07:00",
+  "n": 1,
+  "note": "fixed in 314c0f33 (ArrayList copy); old phone 0.28.0"
+ },
  "1eaf9599017372e7ef226194|0.31.0": {
   "at": "2026-10-29T17:19:57+07:00",
   "n": 1,

@@ -586,7 +586,8 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
             }
             "closed", "error" -> {                                    // ADB off, TV just booted, session dropped: keep trying
                 if (resting) return                                   // we closed it ourselves
-                val o = LinkFailure.of(key, detail, retryMs) { dev.tvremote.core.Errors.say(java.io.IOException(it), dev.tvremote.core.Words.lang) }
+                val o = LinkFailure.of(key, detail, retryMs, { dev.tvremote.core.Errors.say(java.io.IOException(it), dev.tvremote.core.Words.lang) },
+                    android.os.Build.MANUFACTURER) { T("tv_main.fire_adb_blocked") + " " + T("tv_main.fire_adb_use_phone") }
                 adbDetail = o.detail
                 adbState = o.state
                 tv = null

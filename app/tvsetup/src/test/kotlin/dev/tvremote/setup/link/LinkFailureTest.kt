@@ -52,4 +52,13 @@ class LinkFailureTest {
         assertEquals(false, LinkFailure.opensWireless(true, 34))   // already on: the words say pair, nothing to open
         assertEquals(false, LinkFailure.opensWireless(false, 29))
     }
+
+    @Test fun fireTvsOwnAdbBlockedSaysSo() {
+        val o = LinkFailure.of("error", "EOFException", 20_000L, raw, "Amazon") { "blocked" }
+        assertEquals("error", o.state)
+        assertEquals("blocked", o.detail)
+        assertTrue(LinkFailure.fireBlocked("Amazon", "java.io.EOFException: stream closed"))
+        assertTrue(!LinkFailure.fireBlocked("Xiaomi", "EOFException"))                // elsewhere an EOF is not Amazon's block
+        assertEquals("EOFException", LinkFailure.of("error", "EOFException", 20_000L, raw, "Xiaomi") { "blocked" }.detail)
+    }
 }

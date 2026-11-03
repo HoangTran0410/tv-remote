@@ -14,15 +14,25 @@ internal object LinkFailure {
 
     private val REFUSED = Regex("ECONNREFUSED|Connection refused", RegexOption.IGNORE_CASE)
 
-    /** [key] "closed" or "error" from the session, its raw [detail], the [wait] now, and [say] turning raw text into words. */
-    fun of(key: String, detail: String, wait: Long, say: (String) -> String): Outcome {
+    /** [key] "closed" or "error" from the session, its raw [detail], the [wait] now, and [say] turning raw text into words; on a
+     *  [maker]'s TV that blocks its own ADB ([fireBlocked]) the words are [fire]'s. */
+    fun of(key: String, detail: String, wait: Long, say: (String) -> String, maker: String = "", fire: () -> String = { "" }): Outcome {
         if (key == "error" && detail.contains(Adb.UNANSWERED)) return Outcome("allow", "", wait, true)
+        if (key == "error" && fireBlocked(maker, detail)) return Outcome("error", fire(), wait, true)
         val refused = key == "error" && REFUSED.containsMatchIn(detail)
         // refused already has its plain words; the raw socket text only scared. Anything else: words a person can act on
         val words = if (key == "error" && !refused) say(detail.take(200)).take(200) else ""
         val state = if (key == "error" && !refused) "error" else if (refused) "refused" else "connecting"
         return Outcome(state, words, wait, true)
     }
+
+    /**
+     * Fire TV: Amazon blocks an app on the TV from its own ADB since February 2024 (aftvnews.com/?p=7897): adbd takes the connection
+     * from 127.0.0.1 and closes it, an EOF (census AFTR, AFTSSS, 2026-11). Nothing on the TV turns it back on, so "turn on ADB" sent
+     * people in circles; a phone or computer over Wi-Fi still gets in.
+     */
+    fun fireBlocked(maker: String, detail: String): Boolean =
+        maker.equals("Amazon", ignoreCase = true) && (detail.contains("EOFException") || detail.contains("stream closed"))
 
     /**
      * What the TV shows (word ids) when ADB debugging is on yet port 5555 refuses. Android 11+ with Wireless debugging off is the
