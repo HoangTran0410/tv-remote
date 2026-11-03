@@ -66,7 +66,7 @@ Lessons from the FPT Play box (1.8 GB, Mali, Android 14), 2026-10-27:
   `adb install -r` keeps the person's settings. It is `<profileable android:shell="true">`, so simpleperf works on it.
 - `dev/test/tvperf/`: `panels.sh <serial> <label>` walks the panels from Home (the tile menu, Customize and two of its pages,
   the Control Center) and prints frames, jank, worst frame, CPU ms and PSS before / open / after. `keys.sh` measures one key
-  set after an opening set. `idle.sh` measures frames and CPU per thread while Home is left alone. `prof.sh` runs simpleperf
+  set after an opening set. `idle.sh` measures frames and CPU per thread while Home is left alone. `scroll.sh` walks Customize → Widgets (a TvScroll) at a key gap: frames, p90, CPU per frame. `prof.sh` runs simpleperf
   while keys are pressed and then `agg.py` (inclusive ms per method, names from the R8 map). The key paths assume Home's
   default layout (the first tile; the gear at the top right).
 - simpleperf on the box: `-e cpu-clock` (the FPT box has no `cpu-cycles`). The host's `simpleperf report` cannot read an R8

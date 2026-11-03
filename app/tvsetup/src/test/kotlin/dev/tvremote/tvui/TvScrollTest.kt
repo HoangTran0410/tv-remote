@@ -31,7 +31,7 @@ class TvScrollTest {
         val xs = run(40)
         assert(600f - xs[13] < 60f) { "slow: ${xs[13]} at 230 ms" }             // 90 % there
         assert(600f - xs[23] < 6f) { "far: ${xs[23]} at 400 ms" }               // 99 %: what is left the eye does not see
-        assert(600f - xs[35] < 0.5f) { "not settled: ${xs[35]} at 600 ms" }      // Glide stops under half a pixel
+        assert(600f - xs[30] < 1f) { "not settled: ${xs[30]} at 520 ms" }        // Glide stops under a pixel
     }
     @Test fun aSlowBoxFrameDoesNotOvershoot() = assert(run(12, dt = 0.05f).all { it <= 600f })
     @Test fun theNextKeyKeepsTheSpeed() {

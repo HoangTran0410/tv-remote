@@ -278,6 +278,16 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
      * column, two small widgets in a row stack in one, a small widget alone stands in a narrow one; what does not fit waits. The height
      * is fixed so the favourites below stay in view. A column's width is its weight's share of the row.
      */
+    /**
+     * The row's place kept, empty, while its numbers are read (2-3 s on a weak box at start): the grid sits where it will stay from
+     * the first frame instead of under the clock, then pushed down when they came (the user, 2026-11-03).
+     */
+    fun hold() {
+        val lp = layoutParams
+        if (lp != null && lp.height != dp(BIG_H)) { lp.height = dp(BIG_H); layoutParams = lp }
+        if (visibility == View.GONE) visibility = View.INVISIBLE
+    }
+
     fun show(want: List<String>, f: Facts, note: String, label: (String) -> String, sizes: JSONObject = JSONObject(), qrs: JSONObject = JSONObject()) {
         val keep = hot.firstOrNull { it.hasFocus() }?.tag
         removeAllViews(); speed = null; speedUp = null; hot.clear()

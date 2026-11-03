@@ -80,7 +80,7 @@ internal class Glide(private val v: View, private val now: () -> Int, private va
         last = t
         val s = spring(x, speed, to.toFloat(), dt)
         x = s[0]; speed = s[1]
-        if (abs(to - x) < 0.5f && abs(speed) < 30f) { running = false; set(to); return }
+        if (abs(to - x) < 1f && abs(speed) < 60f) { running = false; set(to); return }   // the last pixel snapped: its ~5 frames of 1 px moves cost a weak box CPU for nothing seen
         set(x.roundToInt())
         v.postOnAnimation(this)
     }

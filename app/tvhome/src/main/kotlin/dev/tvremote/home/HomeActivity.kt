@@ -155,6 +155,10 @@ class HomeActivity : Activity() {
     private var lastOpened: String?                                 // kept in prefs: the home may be made again while the app is open
         get() = getSharedPreferences("nav", MODE_PRIVATE).getString("last", null)
         set(v) { getSharedPreferences("nav", MODE_PRIVATE).edit().putString("last", v).apply() }
+    /** The widgets chosen at the last read and whether their row came ("-" before: it did not): the next start keeps its place or not. */
+    private var widgetsLast: String?
+        get() = getSharedPreferences("nav", MODE_PRIVATE).getString("widgets", null)
+        set(v) { getSharedPreferences("nav", MODE_PRIVATE).edit().putString("widgets", v).apply() }
     private var topAt: View? = null; private var topVia: View? = null   // the tile left by Up and the widget it went to: Down from that widget lands back on it
     private var stepping = false
     internal companion object {
@@ -719,6 +723,9 @@ class HomeActivity : Activity() {
         noWidgets = none
         peek()                                                        // the grid's margin is peek()'s alone: set here too, every minute's read made it jump
         if (none) { widgets.visibility = View.GONE; return }
+        val sig = want.joinToString(",") + "|" + note.isNotEmpty()
+        val held = widgets.visibility == View.GONE && widgetsLast != "-$sig"   // the row came last time (or nothing known): keep its place
+        if (held) widgets.hold()
         bg.execute {
             val f = widgets.read(want)
             runOnUiThread {
@@ -728,6 +735,8 @@ class HomeActivity : Activity() {
                 // (FPT, the user 2026-11-03: the timer alone left the grid up under an empty row)
                 val shown = widgets.visibility == View.VISIBLE
                 if (noWidgets == shown) { noWidgets = !shown; peek() }
+                (if (shown) sig else "-$sig").let { if (widgetsLast != it) widgetsLast = it }
+                if (held && shown && Motion.on) { widgets.alpha = 0f; widgets.animate().alpha(1f).setDuration(Motion.ms(240)).withLayer().start() }   // into the place kept
                 focusWidget?.let { k -> ui.post { widgetView(k)?.let { focusWidget = null; go(it) } } }
                 if (widgets.speed != null) { ui.removeCallbacks(netTick); ui.postDelayed(netTick, Widgets.SAMPLE_MS) }   // the graph was just added: its tick starts
                 // TV Setup answers the CPU with its last measure and starts the next: the first time there is none, so ask again soon, once
