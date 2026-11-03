@@ -104,7 +104,9 @@ class RemoteLabels(private val link: AdbLink, helper: () -> ByteArray, private v
         if (!ok || !pkg.matches(Regex("[\\w.]+"))) return null
         val file = cache?.let { File(it, "$pkg.png") }
         val stamp = cache?.let { File(it, "$pkg.stamp") }
-        val st = stamps
+        // Meta has not run this session: run it (or wait for the run under way) rather than show the kept copy of an app updated
+        // since (TV Setup Voice's robot stayed after its mic came in 0.40.0)
+        val st = stamps ?: synchronized(running) { if (stamps == null && System.currentTimeMillis() - failedAt >= RETRY) ask(); stamps }
         try {
             if (file != null && file.length() > 0 && (st == null || st[pkg] != null && stamp!!.readText() == st[pkg])) return file.readBytes()
         } catch (ignored: IOException) {
