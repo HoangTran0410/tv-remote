@@ -420,6 +420,8 @@ TV chậm? Tối ưu giúp mở app nhanh hơn. Không gỡ gì cả, và **Hoà
 
 > 💡 Nút Nguồn vào / YouTube / Netflix trên remote chết sau khi tắt launcher gốc? TV Setup tự bật lại chúng (tắt ở **Tối ưu TV** > **Nút điều khiển**). Xem [phím chết](#keyfix).
 
+> 💡 Danh sách lấy từ [cleanyourtv](https://github.com/Gathin23/cleanyourtv) (400+ TV), UAD-NG, TV Slim và người dùng TV Remote.
+
 > 🛡️ App giữ mạng Wi-Fi đã lưu hoặc cổng HDMI / kênh TV không bao giờ bị tắt, xóa dữ liệu hay gỡ: TV sẽ quên mạng hoặc mất nguồn vào.
 
 > 🔁 Sau khi TV cập nhật firmware, TV Setup tắt lại app đã tắt mà bản cập nhật bật lại, và đặt lại TV Home. Hoàn tác thì dừng.

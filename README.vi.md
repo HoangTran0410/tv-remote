@@ -171,6 +171,28 @@ flowchart LR
 | Máy chiếu | XGIMI, Epson | chủ TV báo |
 | Hãng khác | LG, Samsung, Roku, VIDAA | thử nghiệm, chưa thử trên TV thật |
 
+### Danh sách của Tối ưu TV lấy từ đâu
+
+| Nguồn | Góp gì |
+|---|---|
+| [cleanyourtv](https://github.com/Gathin23/cleanyourtv) (MIT), các bản fork, PR và issue | danh sách theo từng TV của hơn 400 TV, mỗi cái do chính chủ TV làm, và cái gì đã hỏng trên TV nào |
+| [UAD-NG](https://github.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation), [TV Slim](https://github.com/jolabs40/TVSlim) | ghi chú mức rủi ro và danh sách không được đụng |
+| Người dùng TV Remote | issue trên GitHub, log gửi từ app, TV của chính mình (Sony BRAVIA, FPT Play box) |
+
+Đọc lại vài ngày một lần (lần cuối: 2026-11-02). Lấy gì, bỏ gì và vì sao: [dev/sign/bloat-sources.md](dev/sign/bloat-sources.md). Chỉ đề xuất app được tắt trên nhiều TV và không TV nào phải giữ; app nào làm ai đó mất tính năng thì vào danh sách giữ. Danh sách có chữ ký, đọc từ trang web mỗi lần mở Tối ưu TV, nên không cần cập nhật app.
+
+**Quy tắc an toàn** (`core/ontv/Setup.kt`, `LauncherSwap.kt`, `Bloat.kt`):
+
+| Quy tắc | Cách làm |
+|---|---|
+| Chỉ tắt, không gỡ | `pm disable-user`: không xoá gì, app nào cũng bật lại được |
+| Không đụng thứ TV cần | danh sách bảo vệ (lõi của Google, bàn phím, màn hình cài đặt ban đầu, chính TV Setup) cộng danh sách giữ của từng hãng, không gì ghi đè được; và, kiểm tra ngay trên TV trước mỗi lần đổi, app giữ cổng HDMI / đầu thu, mạng Wi-Fi đã lưu, màn hình Cài đặt, hay app Android luôn giữ chạy. Tab Ứng dụng cũng từ chối các app này |
+| Ghi lại trước khi đổi | những gì đã tắt được ghi trên TV, và có file khôi phục chỉ cần `adb` để chạy |
+| Màn hình chính mới trước | launcher mới phải mở được và nhận nút Home rồi mới tắt cái cũ; không được thì trả lại như cũ |
+| Hoàn tác chỉ bật lại cái nó đã tắt | những gì được ghi lại và danh sách đề xuất, không đụng app bạn tự tắt |
+| Sau khi cập nhật firmware | tắt lại những gì bản cập nhật bật lên; Hoàn tác thì thôi |
+| Nút remote | nút Nguồn vào / nút app mà launcher cũ xử lý vẫn chạy: TV Setup nhận thay |
+
 ## Trợ giúp
 
 | Cần | Xem |

@@ -167,6 +167,28 @@ flowchart LR
 | Projectors | XGIMI, Epson | owners |
 | Other brands | LG, Samsung, Roku, VIDAA | beta, not tested on a real TV |
 
+### Where Optimize TV's lists come from
+
+| Source | What it adds |
+|---|---|
+| [cleanyourtv](https://github.com/Gathin23/cleanyourtv) (MIT), its forks, PRs and issues | the per-TV lists of 400+ TVs, each from its owner, and what broke on which TV |
+| [UAD-NG](https://github.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation), [TV Slim](https://github.com/jolabs40/TVSlim) | risk notes and never-touch lists |
+| TV Remote's users | GitHub issues, logs sent from the app, our own TVs (Sony BRAVIA, FPT Play box) |
+
+Read again every few days (last: 2026-11-02). What was taken, what was left out and why: [dev/sign/bloat-sources.md](dev/sign/bloat-sources.md). Only apps that are off on many TVs and kept on none are suggested; anything someone lost a feature to goes on the keep list. The list is signed and read from the site each time Optimize TV opens, so no update is needed.
+
+**Safety rules** (`core/ontv/Setup.kt`, `LauncherSwap.kt`, `Bloat.kt`):
+
+| Rule | How |
+|---|---|
+| Turns off, never uninstalls | `pm disable-user`: nothing is deleted, any app comes back |
+| Never touches what the TV needs | a protected list (Google's core, keyboards, setup, TV Setup itself) plus each brand's keep list, which nothing can override; and, checked on the TV before each change, any app that owns the HDMI / tuner inputs, a saved Wi-Fi network or the Settings screen, or that Android keeps running. The Apps tab refuses them too |
+| Records before it changes | what it turned off is written on the TV, and offered as a restore script that needs only `adb` |
+| New home screen first | the new launcher must open and answer Home before the old one goes off; if not, it rolls back |
+| Undo turns back on only its own | what the record names and its suggested list, nothing you turned off yourself |
+| After a firmware update | turns off again what the update turned back on; Undo stops that |
+| Remote keys | Input / app keys the old launcher handled keep working: TV Setup takes them over |
+
 ## Help
 
 | Need | Go to |
