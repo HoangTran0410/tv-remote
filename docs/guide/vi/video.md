@@ -5,4 +5,4 @@
 3. Kéo khung để di chuyển, kéo góc xanh để đổi cỡ, ngay cả khi đang phát. Phím mũi tên và + / − cũng được.
 4. Tạm dừng, bật tiếng, hoặc **⏹ Gỡ khỏi TV**.
 
-> 💡 Khung nằm trên mọi app. Đóng cửa sổ thì video vẫn phát, camera thì tắt. Camera chỉ có trong app điện thoại và app máy tính. Cần TV Setup 0.41.1.
+> 💡 Khung nằm trên mọi app. Đóng cửa sổ thì video vẫn phát, camera thì tắt. Camera chỉ có trong app điện thoại và app máy tính. Cần TV Setup 0.42.0.

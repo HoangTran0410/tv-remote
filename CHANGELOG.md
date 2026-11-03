@@ -6,7 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
-- Video on the TV (More keys → Tools): a video file or the phone's / computer's camera plays in a box over every app; drag the box to move it and its corner to resize it while it plays. Needs TV Setup 0.41.1.
+- Video on the TV (More keys → Tools): a video file or the phone's / computer's camera plays in a box over every app; drag the box to move it and its corner to resize it while it plays. Needs TV Setup 0.42.0.
 - Fixed: the page stopped with an error when the TV did not answer the check for "Allow USB debugging?" (0.43.0).
 - Computer app: Quit closes the app within 5 s even when its window does not close (seen now and then on Windows).
 

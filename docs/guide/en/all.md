@@ -948,7 +948,7 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 3. Drag the box to move it, drag its blue corner to resize it, even while it plays. Arrow keys and + / − work too.
 4. Pause, turn the sound on, or **⏹ Remove from TV**.
 
-> 💡 The box sits over every app. Close the window and a video keeps playing; the camera stops. The camera works in the phone and computer apps only. Needs TV Setup 0.41.1.
+> 💡 The box sits over every app. Close the window and a video keeps playing; the camera stops. The camera works in the phone and computer apps only. Needs TV Setup 0.42.0.
 
 ## Screen off, dim the screen
 

@@ -43,7 +43,7 @@ object SetupNeed {
         "mic_offline" to "0.38.1",                                     // 🎙️ speech heard on the TV without Google (TV Setup Voice, Rules "mic_offline"; the release after 0.38.0)
         "mic_engine" to "0.39.1",                                      // 🎙️ TV Setup Voice listening first, over Google's (Rules "mic_engine"; the release after 0.39.0)
         "family" to "0.38.5",                                          // 🛡️ Family mode's record kept on the TV (Rules "family"; the release after 0.38.4)
-        "video" to "0.41.1",                                           // 🎬 a video or a camera in a box over the screen (VideoLayer; the release after 0.41.0)
+        "video" to "0.42.0",                                           // 🎬 a video or a camera in a box over the screen (VideoLayer; the release after 0.41.0)
         "home_usage" to "0.14.1",                                      // 📊 TV Home's card of app use and limits (HomeInfo)
     )
 
