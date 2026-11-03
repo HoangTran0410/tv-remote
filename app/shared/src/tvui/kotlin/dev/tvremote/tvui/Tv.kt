@@ -169,7 +169,7 @@ object TvUi {
             orientation = LinearLayout.VERTICAL
             val p = dp(c, 14).toInt(); setPadding(p, p, p, p)
         }
-        val scroll = ScrollView(c).apply {
+        val scroll = TvScroll(c).apply {
             isVerticalScrollBarEnabled = false
             background = round(SHEET_FILL, dp(c, R_SHEET), 1, SHEET_EDGE); clipToOutline = true   // the corners stay put while the rows scroll
             addView(box, ViewGroup.LayoutParams(-1, -2))

@@ -39,6 +39,8 @@ import dev.tvremote.update.Release
 import java.io.File
 import java.util.Locale
 import kotlin.math.roundToInt
+import dev.tvremote.tvui.TvScroll
+import dev.tvremote.tvui.TvHScroll
 
 /**
  * One screen, driven with the TV remote. Left: where things stand (ADB, the TV's addresses) and six actions as tiles.
@@ -316,7 +318,7 @@ class MainActivity : Activity() {
             eco.forEachIndexed { i, e -> row.addView(e, LinearLayout.LayoutParams(-2, -2).apply { if (i > 0) leftMargin = dp(14) }) }
             ecoNote = text("", 12, MUTED, false).also { it.minLines = 2; it.maxLines = 2; it.ellipsize = TextUtils.TruncateAt.END }   // two lines held: no jump on focus
             // a row that scrolls sideways: more apps than the column holds (TV Setup Voice made five, the user 2026-11-03); focus scrolls it
-            val strip = object : android.widget.HorizontalScrollView(this) {
+            val strip = object : TvHScroll(this) {
                 override fun getLeftFadingEdgeStrength() = 0f         // Android's own fade drew a hard dark band: the shades below instead,
                 override fun getRightFadingEdgeStrength() = 0f        // while its length still scrolls the focused banner clear of them
             }.apply {
@@ -357,7 +359,7 @@ class MainActivity : Activity() {
         spinner.visibility = View.INVISIBLE
         logView = text(T("tv_main.activity_empty"), 14, MUTED, false)   // until the first line
         logView.setLineSpacing(dp(3).toFloat(), 1f)
-        scroll = ScrollView(this)
+        scroll = TvScroll(this)
         scroll.background = box(TvUi.CARD, 14, 0)
         scroll.setPadding(dp(16), dp(10), dp(16), dp(10))
         scroll.isFocusable = true                                     // D-pad can scroll back to an error that went by
@@ -383,7 +385,7 @@ class MainActivity : Activity() {
             scroll.isNestedScrollingEnabled = true
             left.addView(logBox, LinearLayout.LayoutParams(-1, dp(240)).apply { topMargin = dp(8) })
             page.addView(left, LinearLayout.LayoutParams(-1, -2))
-            val outer = ScrollView(this)
+            val outer = TvScroll(this)
             outer.setBackgroundColor(TvUi.BG)
             outer.isFillViewport = true
             outer.addView(page)
@@ -1305,7 +1307,7 @@ class MainActivity : Activity() {
         recount()
 
         val most = (resources.displayMetrics.heightPixels * 0.62).toInt()  // the list grows with its rows, then scrolls
-        val scroll = object : ScrollView(this) {
+        val scroll = object : TvScroll(this) {
             override fun onMeasure(w: Int, h: Int) = super.onMeasure(w, View.MeasureSpec.makeMeasureSpec(most, View.MeasureSpec.AT_MOST))
         }
         scroll.addView(list)
@@ -1522,7 +1524,7 @@ class MainActivity : Activity() {
         for (e in g.entries) list.addView(card(e), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
         launcherPics(g, pics)
         val most = (resources.displayMetrics.heightPixels * 0.62).toInt()
-        val scroll = object : ScrollView(this) {
+        val scroll = object : TvScroll(this) {
             override fun onMeasure(w: Int, h: Int) = super.onMeasure(w, View.MeasureSpec.makeMeasureSpec(most, View.MeasureSpec.AT_MOST))
         }
         scroll.addView(list)

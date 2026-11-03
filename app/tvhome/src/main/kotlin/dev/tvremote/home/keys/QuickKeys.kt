@@ -23,6 +23,7 @@ import dev.tvremote.tvui.TvGlass
 import dev.tvremote.tvui.pill
 import dev.tvremote.tvui.pillText
 import org.json.JSONObject
+import dev.tvremote.tvui.TvScroll
 
 /**
  * "Quick keys" (Phím nhanh), webOS's number-key screen for this TV: 1-9 and 0, the four colour keys and the power-on slot, each a tile
@@ -45,7 +46,7 @@ object QuickKeys {
         val area = FrameLayout(a).apply { clipChildren = false; clipToPadding = false }
         val grid = LinearLayout(a).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false; setPadding(dp(34), dp(24), dp(34), dp(70)) }
         area.addView(grid, FrameLayout.LayoutParams(-1, -2))
-        val scroll = ScrollView(a).apply { isVerticalScrollBarEnabled = false; clipChildren = false; clipToPadding = false; addView(area) }
+        val scroll = TvScroll(a).apply { isVerticalScrollBarEnabled = false; clipChildren = false; clipToPadding = false; addView(area) }
 
         fun line(t: String, size: Float, color: Int) = Font.on(TextView(a)).apply { text = t; textSize = size; setTextColor(color) }
         val hint = line("", 13f, PK_DIM).apply { setPadding(dp(34), 0, dp(34), dp(4)) }

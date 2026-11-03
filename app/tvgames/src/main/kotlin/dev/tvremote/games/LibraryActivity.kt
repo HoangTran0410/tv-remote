@@ -40,6 +40,7 @@ import dev.tvremote.tvui.withIcon
 import dev.tvremote.update.Release
 import dev.tvremote.update.SelfUpdate
 import java.io.File
+import dev.tvremote.tvui.TvScroll
 
 /**
  * The launcher screen, Apple TV style: clean pictures in rows (favourites, the person's folders, all games, suggestions), the focused one
@@ -487,7 +488,7 @@ class LibraryActivity : ComponentActivity() {
             list.addView(r, LinearLayout.LayoutParams(-2, dp(46)))
         }
         val maxH = root.height - y - dp(16)
-        val card = ScrollView(this).apply {
+        val card = TvScroll(this).apply {
             addView(list); isVerticalScrollBarEnabled = false
             background = GradientDrawable().apply { setColor(tvColor(R.color.tv_card)); cornerRadius = resources.getDimension(R.dimen.tv_radius_card) }
             clipToOutline = true

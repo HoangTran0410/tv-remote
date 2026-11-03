@@ -18,6 +18,7 @@ import android.widget.TextView
 import dev.tvremote.home.widgets.Widgets
 import dev.tvremote.home.widgets.prayerFacts
 import org.json.JSONObject
+import dev.tvremote.tvui.TvScroll
 
 /**
  * A widget's settings, one dialog for every widget, drawn from [HomeConfig.options] (no widget has a screen of its own): a row per option
@@ -164,7 +165,7 @@ object WidgetSettings {
         // the options scroll when they are taller than the screen leaves them (the prayer widget's methods: its Hijri row and OK were cut off);
         // a ScrollView brings the focused row into view by itself
         val room = a.resources.displayMetrics.heightPixels - dp(16 + 16 + 32 + 26 + 72 + 22 + 16)   // the window's gap, the panel's padding, title, strip
-        val scroll = object : android.widget.ScrollView(a) {
+        val scroll = object : TvScroll(a) {
             override fun onMeasure(w: Int, h: Int) {                 // what the panel leaves it, never more than the screen does
                 val most = if (View.MeasureSpec.getMode(h) == View.MeasureSpec.UNSPECIFIED) room else minOf(room, View.MeasureSpec.getSize(h))
                 super.onMeasure(w, View.MeasureSpec.makeMeasureSpec(most, View.MeasureSpec.AT_MOST))

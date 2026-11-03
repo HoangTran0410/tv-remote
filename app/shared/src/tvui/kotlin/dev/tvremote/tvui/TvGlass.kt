@@ -121,7 +121,7 @@ object TvGlass {
                 val col = LinearLayout(a).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false; setPadding(dp(12), 0, dp(12), 0) }
                 col.addView(body, LinearLayout.LayoutParams(-1, -2))
                 val cap = dm.heightPixels - dp(margin)
-                val scroll = object : ScrollView(a) {
+                val scroll = object : TvScroll(a) {
                     override fun onMeasure(w: Int, h: Int) {
                         top.measure(View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.getSize(w), View.MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
                         super.onMeasure(w, View.MeasureSpec.makeMeasureSpec(maxOf(dp(120), cap - top.measuredHeight), View.MeasureSpec.AT_MOST))
@@ -134,7 +134,7 @@ object TvGlass {
             col.addView(head(title, back), LinearLayout.LayoutParams(-1, -2).apply { setMargins(dp(4), dp(4), dp(4), dp(12)) })
             col.addView(body, LinearLayout.LayoutParams(-1, -2))
             val cap = dm.heightPixels - dp(margin)                                  // the panel + its padding stay on the screen; a longer list scrolls
-            val scroll = object : ScrollView(a) {
+            val scroll = object : TvScroll(a) {
                 override fun onMeasure(w: Int, h: Int) = super.onMeasure(w, View.MeasureSpec.makeMeasureSpec(cap, View.MeasureSpec.AT_MOST))
             }.apply { isVerticalScrollBarEnabled = false; clipChildren = false; addView(col) }
             box.removeAllViews(); box.addView(scroll)

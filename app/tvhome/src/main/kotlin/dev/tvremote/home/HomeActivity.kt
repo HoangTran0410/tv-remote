@@ -96,6 +96,7 @@ import dev.tvremote.home.wall.Slideshow
 import dev.tvremote.home.wall.Sky
 import dev.tvremote.home.widgets.Widgets
 import dev.tvremote.home.ui.Zoom
+import dev.tvremote.tvui.TvScroll
 
 /**
  * The home screen: the clock, two round buttons in one capsule (network, settings = the Control Center: inputs and the power actions are in it), and ONE grid of apps: the favourites
@@ -1381,7 +1382,7 @@ class HomeActivity : Activity() {
         val w = ((resources.displayMetrics.widthPixels * 0.6f).toInt() - (cols - 1) * gap) / cols
         val title = Font.on(TvUi.text(this, "", 22f, bold = true))
         val body = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false; setPadding(dp(16), dp(16), dp(16), dp(16 + GRID_GAP)) }   // room for a focused tile's growth and the name under it
-        val scroll = ScrollView(this).apply { addView(body); clipChildren = false; clipToPadding = false; isVerticalScrollBarEnabled = false }
+        val scroll = TvScroll(this).apply { addView(body); clipChildren = false; clipToPadding = false; isVerticalScrollBarEnabled = false }
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL; setPadding(dp(32), dp(24), dp(32), dp(20)); clipChildren = false
             background = TvUi.round(TvUi.SHEET_FILL, dp(TvUi.R_SHEET.toInt()).toFloat(), 1, TvUi.SHEET_EDGE)

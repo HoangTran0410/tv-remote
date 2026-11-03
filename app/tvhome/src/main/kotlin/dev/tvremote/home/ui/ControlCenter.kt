@@ -52,6 +52,7 @@ import android.net.wifi.WifiManager
 import java.net.Inet4Address
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
+import dev.tvremote.tvui.TvScroll
 
 /**
  * The Control Center (Trung tâm điều khiển): one glass panel under the top bar with the TV's everyday switches, after webOS's, drawn as
@@ -560,7 +561,7 @@ object ControlCenter {
             tiles.last().id = View.generateViewId(); tiles.last().nextFocusDownId = tint.id; tint.nextFocusUpId = tiles.last().id
             val at = IntArray(2).also { if (anchor != null) anchor.getLocationOnScreen(it) else { it[0] = dm.widthPixels - dp(48); it[1] = dp(48) } }   // no anchor (over another app, ControlCenterActivity): where the top bar's would be
             val maxH = dm.heightPixels - at[1] - dp(12) - dp(170)     // the title, the round row and the footer stay on the screen
-            col.addView(object : ScrollView(a) {
+            col.addView(object : TvScroll(a) {
                 override fun onMeasure(w: Int, h: Int) = super.onMeasure(w, MeasureSpec.makeMeasureSpec(maxH.coerceAtLeast(dp(140)), MeasureSpec.AT_MOST))
             }.apply { isVerticalScrollBarEnabled = false; clipChildren = false; clipToPadding = false; addView(grid) }, LinearLayout.LayoutParams(-1, -2))
 

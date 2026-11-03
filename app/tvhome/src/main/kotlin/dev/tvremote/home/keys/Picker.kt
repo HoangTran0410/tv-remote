@@ -38,6 +38,7 @@ import dev.tvremote.tvui.TvTile
 import dev.tvremote.tvui.TvUi
 import org.json.JSONArray
 import org.json.JSONObject
+import dev.tvremote.tvui.TvScroll
 
 internal const val PK_DIM = 0xA6FFFFFF.toInt()                      // a section name, a hint: white at about two thirds
 internal const val PK_SOFT = 0xB3FFFFFF.toInt()
@@ -150,7 +151,7 @@ object Picker {
         val area = FrameLayout(a).apply { clipChildren = false; clipToPadding = false }
         val list = LinearLayout(a).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false; setPadding(dp(34), dp(24), dp(34), dp(70)) }   // room for a focused tile to grow past the first and last row
         area.addView(list, FrameLayout.LayoutParams(-1, -2))
-        val scroll = ScrollView(a).apply { isVerticalScrollBarEnabled = false; clipChildren = false; clipToPadding = false; addView(area) }
+        val scroll = TvScroll(a).apply { isVerticalScrollBarEnabled = false; clipChildren = false; clipToPadding = false; addView(area) }
         val search = TvUi.field(a, a.getString(R.string.pk_search), 16f, EditorInfo.IME_ACTION_SEARCH, TvUi.FIELD_REST, TvUi.R_BUTTON, 18, 10, R.drawable.ic_search)
         val head = LinearLayout(a).apply {
             orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; setPadding(dp(34), dp(58), dp(34), dp(10))   // 32 dp above the panel before, now inside it

@@ -37,6 +37,7 @@ import dev.tvremote.home.keys.Picker
 import dev.tvremote.home.keys.QuickKeys
 import dev.tvremote.home.wall.WallArt
 import dev.tvremote.home.wall.Walls
+import dev.tvremote.tvui.TvScroll
 
 /**
  * TV Home's own settings, on the TV with the D-pad: a glass panel from the right, the home screen still showing beside it so
@@ -67,7 +68,7 @@ object Customize {
 
     private class Group(c: Context, val key: String, val name: Int, val icon: Int) {
         val col = LinearLayout(c).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false }
-        val scroll = ScrollView(c).apply { isVerticalScrollBarEnabled = false; clipChildren = false; addView(col) }
+        val scroll = TvScroll(c).apply { isVerticalScrollBarEnabled = false; clipChildren = false; addView(col) }
         val page = LinearLayout(c).apply { orientation = LinearLayout.VERTICAL; visibility = View.GONE }
         var row: View? = null; var head: View? = null; var sum: TextView? = null; var last: View? = null
         var start: (() -> View?)? = null                                 // where a first visit lands, else the first control (Background: its first control, not the photo in use further down)
@@ -508,7 +509,7 @@ object Customize {
                             addView(label(k, 14f, DIM), LinearLayout.LayoutParams(dp(230), -2))
                             addView(label(v, 14f, Color.WHITE), LinearLayout.LayoutParams(0, -2, 1f))
                         }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
-                        val b = android.app.AlertDialog.Builder(a, R.style.Menu).setTitle(name).setView(android.widget.ScrollView(a).apply { addView(body) })
+                        val b = android.app.AlertDialog.Builder(a, R.style.Menu).setTitle(name).setView(TvScroll(a).apply { addView(body) })
                             .setPositiveButton(android.R.string.ok, null)
                         if (mine) b.setNeutralButton(R.string.photo_del) { _, _ ->
                             android.app.AlertDialog.Builder(a, R.style.Menu).setTitle(R.string.th_del_q).setMessage(R.string.th_del_note)
@@ -964,7 +965,7 @@ object Customize {
             addView(label(a.getString(R.string.customize), 20f, Color.WHITE).apply { typeface = Font.bold })
             addView(label(a.getString(R.string.c_sub), 12f, TvGlass.HINT))
         })
-        val topScroll = ScrollView(a).apply { isVerticalScrollBarEnabled = false; clipChildren = false; addView(top) }
+        val topScroll = TvScroll(a).apply { isVerticalScrollBarEnabled = false; clipChildren = false; addView(top) }
         val stack = FrameLayout(a).apply { clipChildren = false }
         stack.addView(topScroll, FrameLayout.LayoutParams(-1, -1))
         var cur: Group? = null                                         // the page open, null on the first level

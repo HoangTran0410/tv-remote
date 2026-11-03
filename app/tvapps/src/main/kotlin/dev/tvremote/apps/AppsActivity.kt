@@ -40,6 +40,8 @@ import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
+import dev.tvremote.tvui.TvScroll
+import dev.tvremote.tvui.TvHScroll
 
 /** The app, only to start the error guard and the anonymous error reports. */
 class TvAppsApp : Application() {
@@ -79,11 +81,11 @@ class AppsActivity : Activity() {
         val page = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(mx, my, mx, 0) }
         page.addView(header())
         pills = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL; setPadding(dp(4), dp(4), dp(4), dp(4)) }
-        page.addView(HorizontalScrollView(this).apply { isHorizontalScrollBarEnabled = false; clipToPadding = false; addView(pills) },
+        page.addView(TvHScroll(this).apply { isHorizontalScrollBarEnabled = false; clipToPadding = false; addView(pills) },
             LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(8) })
         rows = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(0, dp(4), 0, my) }
         foot = TvUi.text(this, "", TvUi.SP_COUNT, TvUi.DIM).apply { setPadding(dp(12), dp(12), dp(12), 0) }
-        scroll = ScrollView(this).apply {
+        scroll = TvScroll(this).apply {
             isVerticalScrollBarEnabled = false; clipToPadding = false
             addView(LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; addView(rows); addView(foot) })
         }

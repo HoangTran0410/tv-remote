@@ -32,6 +32,7 @@ import java.text.Normalizer
 import java.util.concurrent.Executors
 import dev.tvremote.update.Release
 import dev.tvremote.update.SelfUpdate
+import dev.tvremote.tvui.TvScroll
 
 /**
  * The list: a side column (favourites and the person's own groups, the country, its categories) and a grid of channel cards.
@@ -81,7 +82,7 @@ class BrowseActivity : Activity() {
         val root = LinearLayout(this).apply { @Suppress("DEPRECATION") setBackgroundColor(resources.getColor(R.color.tv_bg)) }
 
         rail = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(mx, my, d(12), my) }
-        root.addView(ScrollView(this).apply { addView(rail); isVerticalScrollBarEnabled = false; clipToPadding = false },
+        root.addView(TvScroll(this).apply { addView(rail); isVerticalScrollBarEnabled = false; clipToPadding = false },
             LinearLayout.LayoutParams(mx + d(234), -1))
 
         val right = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(d(8), my, mx, 0) }

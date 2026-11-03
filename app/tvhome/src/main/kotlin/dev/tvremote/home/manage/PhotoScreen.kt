@@ -21,6 +21,7 @@ import dev.tvremote.home.DIM
 import dev.tvremote.home.Store
 import dev.tvremote.home.HomeConfig
 import dev.tvremote.home.R
+import dev.tvremote.tvui.TvScroll
 
 /**
  * The QR screen of "Manage from phone" (and of the web-page background): the code, the short address for a phone that cannot scan, and what to do. The server
@@ -95,7 +96,7 @@ object PhotoScreen {
         }
         // Close under the scroll, not in it: on a 540 dp tall TV the web page's screen did not fit, the window stopped at the
         // screen's edge and the last row, Close, was squashed until its word vanished
-        val scroll = android.widget.ScrollView(a).apply { isVerticalScrollBarEnabled = false; clipChildren = false; addView(col) }
+        val scroll = TvScroll(a).apply { isVerticalScrollBarEnabled = false; clipChildren = false; addView(col) }
         val panel = LinearLayout(a).apply {
             orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
             background = TvGlass.panelBg(a); setPadding(0, 0, 0, dp(20))

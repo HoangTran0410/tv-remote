@@ -53,7 +53,7 @@ if (window.ONTV) (() => {
   let opener = null;
   document.addEventListener('focusin', (ev) => { if (ev.target !== document.body && !ev.target.closest('dialog, [role=menu]')) opener = ev.target; }, true);
   const home = () => (opener && opener.isConnected && seen(opener) && scope().contains(opener)) ? opener : start();
-  const go = (e) => { if (!e) return false; quiet(e); e.focus({ preventScroll: true }); e.scrollIntoView({ block: 'nearest', inline: 'nearest' }); return true; };
+  const go = (e) => { if (!e) return false; quiet(e); e.focus({ preventScroll: true }); e.scrollIntoView({ block: 'center', inline: 'nearest' }); return true; };   // the middle, as the TV apps (TvScroll): at the edge nobody sees more waits below
 
   // Left / right: the nearest control on the same row, or none (the focus stays). Up / down: the next row that way, and on it
   // the control under the column the focus keeps since the last move sideways (a wide search box does not throw it off).
