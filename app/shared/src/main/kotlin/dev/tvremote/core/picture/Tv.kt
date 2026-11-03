@@ -591,6 +591,15 @@ class Tv(
 
     fun ready(): Boolean = (control != null || resting) && !stopped
 
+    /** Back on screen after a while: asks the TV for an echo, in the background. A link that died quietly while the app was
+     *  frozen (Tailscale, Wi-Fi changed) gets no answer and is cut, so the session ends ("closed") and the app dials again at
+     *  once, instead of waiting a minute or more for TCP to give up (the user, 2026-11-03). */
+    fun check(ms: Long) {
+        val a = adb ?: return
+        if (stopped || a.isDead()) return
+        Thread({ a.alive(ms) }, "tv-check").apply { isDaemon = true }.start()
+    }
+
     /**
      * [by] (the picture's session, once it is live) takes this session's keys, typing and clipboard from now on: one
      * scrcpy-server on the TV instead of two. After [REST_MS] in which nothing needed our own, it rests ([rest]). null: the

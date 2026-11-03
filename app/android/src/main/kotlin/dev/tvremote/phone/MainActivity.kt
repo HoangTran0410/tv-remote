@@ -167,6 +167,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
     // phone's Wi-Fi asleep, the TV's ADB restarted) is opened again on return, and one that worked before is retried a few
     // times before giving up (the network often needs a moment after the screen comes back).
     internal var foreground = false
+    private var awaySince = 0L                                         // when onStop last ran: a short glance away needs no check
     internal var wasLive = false                                       // this TV's session has worked since it was picked
     internal var retries = 0                                           // reconnects tried in a row since it last worked
     internal var keysAway = false                                      // the keys-only connection ended while away: opened again on return
@@ -393,6 +394,8 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
         bgListen = false                                              // back on screen: the picture again (the sound plays on: its own session)
         startSound()                                                  // given up on while away: once more
         managing.resume()
+        val away = awaySince > 0 && android.os.SystemClock.elapsedRealtime() - awaySince >= 5000
+        if (away) tv?.check(2500)                                     // before anything asks the TV: a dead link is cut and dialled again
         if (keysAway) { keysAway = false; host?.let { resumeBasic(it) } } else startSession()
         if (::playing.isInitialized) { playing.wake(); nowApp.wake() }   // asked at once, not at their next tick
     }
@@ -405,6 +408,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
     override fun onStop() {
         super.onStop()
         foreground = false
+        awaySince = android.os.SystemClock.elapsedRealtime()
         if (!isChangingConfigurations) ui.postDelayed(quietUpdate, 3000) // before Android 14 freezes a cached app (~10 s)
         if (wasPip) stopPicture()                                     // the PiP window was dismissed: no one watches, the TV stops encoding
         ui.removeCallbacks(retry)                                     // tried again on return instead
