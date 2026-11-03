@@ -32,10 +32,10 @@ function appIcon(pkg) {
   };
   letter('');
   box.fill = (m) => {
-    const was = box.filled; box.filled = [m.icon, m.label, m.bg, m.adaptive, m.banner].join('|');
+    const was = box.filled; box.filled = [m.icon, m.label, m.bg, m.adaptive, m.banner, m.iv].join('|');
     if (was === box.filled) return;                                   // drawn so already: a new picture would flash its letter first
     if (!m.icon) { letter(m.label); return; }
-    const img = el('img', { src: APP_PATHS.icon + encodeURIComponent(pkg), alt: '' });   // not lazy: hidden until it loads, a lazy image never would (Chrome)
+    const img = el('img', { src: APP_PATHS.icon + encodeURIComponent(pkg) + (m.iv ? '&v=' + encodeURIComponent(m.iv) : ''), alt: '' });   // not lazy: hidden until it loads, a lazy image never would (Chrome)
     img.onerror = () => letter(m.label);
     img.onload = () => {
       box.replaceChildren(img); box.className = 'appicon'; box.style.background = m.bg || '';

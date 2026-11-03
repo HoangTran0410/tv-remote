@@ -270,9 +270,7 @@ class Server(private val repo: File, private val keys: File, private val pass: P
             "/api/app/meta" -> {
                 val pkg = r.q("pkg")
                 if (!Assist.PKG.matches(pkg)) return Response.error(404, "not found")
-                val label = try { s.labels?.label(pkg) } catch (e: Exception) { null }
-                val icons = try { s.labels?.icons() == true } catch (e: Exception) { false }
-                return Response.json(JSONObject().put("label", label ?: pkg.substringAfterLast('.')).put("icon", icons).put("banner", icons))
+                return Response.json(dev.tvremote.core.manage.Manage.meta(s.labels, pkg))
             }
         }
         if (native(s) && post && r.path == "/api/search") {                // LG: YouTube's own search; Samsung cannot

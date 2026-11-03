@@ -7,7 +7,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 ## Unreleased
 
 - Apps tab: Rename in the app's ⋯ menu (only with TV Home on the TV) writes the same name TV Home's own Rename uses, and the list shows names given on TV Home (TizenTube as "YouTube without ads") without waiting for the next read.
-- TV Setup Keys and TV Setup Voice get their own icon and banner (a key, a mic) instead of the green Android robot in the Apps tab.
+- TV Setup Keys gets its own icon and banner (a key) instead of the green Android robot. An updated app's new logo now shows in the Apps tab on the next opening, not after a day (the picture's link changes with the app), and an app installed since the last look shows its name, not the last part of its package ("voice").
 - Who may use ADB (Setup tab): lists the keys the TV allows (fingerprint, name, yours marked) and who is connected, and revokes them all after a warning. When another device asks "Allow USB debugging?", the page shows its fingerprint and you pick Allow (with or without Always) or Decline; nothing is allowed by itself.
 - Install split-APK bundles (.apks, .xapk, .apkm) from the Files tab, a link or the phone: only the parts that fit the TV (chip, screen density, language) are installed in one session, a .xapk's .obb files are copied beside it, and the result says whether the app is new or an update. A locked or incomplete bundle gets a plain error.
 - TV Setup on a Fire TV: says Amazon blocks apps on the TV from its own ADB (since 2024) and points to the phone or computer app, instead of asking to turn on ADB that is already on.

@@ -25,9 +25,7 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
             "app/meta" -> {                                       // a name and whether /api/app/icon has a picture (the computer app answers it first)
                 val pkg = r.q("pkg")
                 if (!PKG.matcher(pkg).matches()) return HttpServer.Response.error(404, "not found")
-                val label = try { labels?.label(pkg) } catch (e: Exception) { null }
-                val icons = try { labels?.icons() == true } catch (e: Exception) { false }
-                return HttpServer.Response.json(JSONObject().put("label", label ?: pkg.substringAfterLast('.')).put("icon", icons).put("banner", icons))
+                return HttpServer.Response.json(Manage.meta(labels, pkg))
             }
             "procs" -> return HttpServer.Response.json(procs())
             "apps/boot" -> return text(TvShell.BOOT, 20000)
@@ -135,14 +133,12 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
             if (line.startsWith("package:") && line.substring(8).trim() !in pkgs) pkgs.add(line.substring(8).trim())
         pkgs.sort()
         val out = JSONArray()
-        val icons = labels != null && labels.icons()
         val home = homeNow()
         val tvHome = try { dev.tvremote.core.ontv.Home.ownConfig { sh(it) } } catch (e: Exception) { null }   // names given on TV Home (Rename there) win; null = no TV Home
         if (tvHome != null) labels?.own(dev.tvremote.core.ontv.Home.names(tvHome))
         for (p in pkgs) {
-            val label = labels?.label(p)
             out.put(JSONObject().put("pkg", p).put("off", p in off).put("keep", Setup.mustKeep(p) || p == home).put("version", versions[p] ?: "")
-                .put("meta", JSONObject().put("label", label ?: p.substring(p.lastIndexOf('.') + 1)).put("icon", icons).put("banner", icons)))
+                .put("meta", Manage.meta(labels, p)))
         }
         return JSONObject().put("apps", out).put("home", tvHome != null)   // home: TV Home is there, so Rename is offered
     }

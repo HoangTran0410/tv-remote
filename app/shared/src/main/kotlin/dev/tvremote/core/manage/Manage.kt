@@ -42,6 +42,8 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
         fun caps(): String? = null
         /** The names given on TV Home (its settings were just read or changed): they win over the apps' own. */
         fun own(m: Map<String, String>) {}
+        /** Changes when the app's picture does (an update): goes in the picture's link, so a new logo is not hidden behind the browser's day-old copy. */
+        fun stamp(pkg: String): String? = null
     }
 
     /** Told when a device was let in through the TV's question (TV Setup shows it on the TV). */
@@ -303,6 +305,14 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
     }
 
     companion object {
+        /** `/api/app/meta` and each app of `/api/apps`: its name (the package's last part without one), whether it has a picture, and [Labels.stamp] as "iv". */
+        fun meta(labels: Labels?, pkg: String): JSONObject {
+            val label = try { labels?.label(pkg) } catch (e: Exception) { null }
+            val icons = try { labels?.icons() == true } catch (e: Exception) { false }
+            val iv = try { labels?.stamp(pkg) } catch (e: Exception) { null }
+            return JSONObject().put("label", label ?: pkg.substringAfterLast('.')).put("icon", icons).put("banner", icons).also { if (!iv.isNullOrEmpty()) it.put("iv", iv) }
+        }
+
         /**
          * `/api/crash`: the page's error box reports an error ({kind, msg, stack}) through its own core, which scrubs it again, adds the
          * device's facts and sends it with the stats switch (Census.crashNow): the answer says whether the server has it.

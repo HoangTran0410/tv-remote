@@ -33,7 +33,7 @@ class RemoteLabels(private val link: AdbLink, helper: () -> ByteArray, private v
         if (saved != null) {
             names = saved
             ok = true
-            Thread({ ask() }, "meta-refresh").apply { isDaemon = true }.start()
+            Thread({ synchronized(running) { if (stamps == null) ask() } }, "meta-refresh")   // fresh() may have run it first.apply { isDaemon = true }.start()
             return saved
         }
         return ask()
@@ -84,7 +84,18 @@ class RemoteLabels(private val link: AdbLink, helper: () -> ByteArray, private v
         a.shell("CLASSPATH=$remote app_process / dev.tvremote.core.Caps 2>/dev/null", 20000).takeIf { it.isNotBlank() }?.also { caps = it }
     } catch (e: IOException) { null }
 
-    override fun label(pkg: String): String? = own[pkg] ?: system()[pkg]
+    override fun label(pkg: String): String? = own[pkg] ?: system()[pkg] ?: fresh()[pkg]
+
+    /** An app the saved names lack (installed since): waits once for the run of Meta under way, not to show "voice" for TV Setup Voice. */
+    @Volatile private var waited = false
+    private fun fresh(): Map<String, String> {
+        if (waited || !ok) return emptyMap()
+        waited = true
+        return synchronized(running) { if (stamps == null) ask(); names ?: emptyMap() }
+    }
+
+    /** The PNG's "time size" on the TV once Meta has run, else the one kept with the remote's copy: the picture's link changes with it. */
+    override fun stamp(pkg: String): String? = stamps?.get(pkg) ?: try { cache?.let { File(it, "$pkg.stamp").takeIf { f -> f.exists() }?.readText() } } catch (e: IOException) { null }
 
     override fun icons(): Boolean { names(); return ok }
 

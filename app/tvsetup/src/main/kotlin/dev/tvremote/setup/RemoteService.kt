@@ -408,6 +408,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
             override fun label(pkg: String): String? = (own ?: try { dev.tvremote.core.ontv.Home.ownNames { l.getQuiet().shell(it) }.also { own = it } } catch (e: Exception) { emptyMap() })[pkg] ?:   // no ADB yet: asked again
                 try { packageManager.getApplicationLabel(packageManager.getApplicationInfo(pkg, 0)).toString() } catch (e: Exception) { null }
             override fun icons(): Boolean = true
+            override fun stamp(pkg: String): String? = try { java.io.File(packageManager.getApplicationInfo(pkg, 0).sourceDir).lastModified().toString() } catch (e: Exception) { null }   // as apps() below
             private val caps by lazy { Caps.report(this@RemoteService) }   // the hardware does not change while TV Setup runs
             override fun caps(): String = caps
         }, getExternalFilesDir(null)) { assets.open("tvr-helper.jar").use { it.readBytes() } }
@@ -901,7 +902,8 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
             for (ri in pm.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(category), 0)) {
                 val pkg = ri.activityInfo.packageName
                 if (!seen.add(pkg)) continue                          // TV Setup itself too: it has a screen of its own now
-                out.put(JSONObject().put("pkg", pkg).put("keep", Setup.PROTECTED.matches(pkg)).put("meta", JSONObject().put("label", ri.loadLabel(pm).toString()).put("icon", true).put("banner", true)))
+                out.put(JSONObject().put("pkg", pkg).put("keep", Setup.PROTECTED.matches(pkg)).put("meta", JSONObject().put("label", ri.loadLabel(pm).toString()).put("icon", true).put("banner", true)
+                    .put("iv", ri.activityInfo.applicationInfo.sourceDir?.let { java.io.File(it).lastModified().toString() } ?: "")))   // the picture's link changes on an update
             }
         }
         // the apps turned off (they have no launcher entry then), so "Turn on" is always at hand
