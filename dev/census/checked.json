@@ -210,14 +210,19 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "11f863dfd6e576b428b0c908|0.34.0": {
-  "at": "2026-10-30T09:08:05+07:00",
+  "at": "2026-11-04T03:07:24+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "11f863dfd6e576b428b0c908|0.38.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-04T03:07:24+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "11f863dfd6e576b428b0c908|0.42.0": {
+  "at": "2026-11-04T03:07:24+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "13b5562e22b1aff18d3e7207|0.15.0": {
   "at": "2026-10-30T09:07:55+07:00",
@@ -395,14 +400,19 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "1d6f4d6ca98627c06c8cca53|0.30.0": {
-  "at": "2026-10-29T17:19:57+07:00",
+  "at": "2026-11-04T03:07:23+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "1d6f4d6ca98627c06c8cca53|0.32.1": {
-  "at": "2026-10-29T17:19:57+07:00",
+  "at": "2026-11-04T03:07:23+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "1d6f4d6ca98627c06c8cca53|0.42.0": {
+  "at": "2026-11-04T03:07:23+07:00",
+  "n": 2,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "1eaf9599017372e7ef226194|0.28.0": {
   "at": "2026-11-03T10:12:57+07:00",
@@ -429,10 +439,15 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
- "26d2655349a426cd1a66e207|0.34.2": {
-  "at": "2026-11-02T22:17:48+07:00",
+ "26d2655349a426cd1a66e207|0.34.1": {
+  "at": "2026-11-04T03:07:24+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "26d2655349a426cd1a66e207|0.34.2": {
+  "at": "2026-11-04T03:07:24+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "2762d2d3012a1454188ebd57|0.11.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -520,44 +535,49 @@
   "note": "Safari with stale HTML + new JS (auto.js stopped at #supgo); 1 install, left"
  },
  "312bbcd02ded9c242b05435d|0.32.1": {
-  "at": "2026-11-03T23:36:43+07:00",
+  "at": "2026-11-04T03:07:25+07:00",
   "n": 3,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "312bbcd02ded9c242b05435d|0.34.1": {
-  "at": "2026-11-03T23:36:43+07:00",
+  "at": "2026-11-04T03:07:25+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "312bbcd02ded9c242b05435d|0.34.2": {
-  "at": "2026-11-03T23:36:43+07:00",
+  "at": "2026-11-04T03:07:25+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "312bbcd02ded9c242b05435d|0.35.0": {
-  "at": "2026-11-03T23:36:43+07:00",
+  "at": "2026-11-04T03:07:25+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "312bbcd02ded9c242b05435d|0.38.2": {
-  "at": "2026-11-03T23:36:43+07:00",
+  "at": "2026-11-04T03:07:25+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "312bbcd02ded9c242b05435d|0.38.3": {
-  "at": "2026-11-03T23:36:43+07:00",
+  "at": "2026-11-04T03:07:25+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "312bbcd02ded9c242b05435d|0.38.4": {
-  "at": "2026-11-03T23:36:43+07:00",
+  "at": "2026-11-04T03:07:25+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "312bbcd02ded9c242b05435d|0.41.0": {
-  "at": "2026-11-03T23:36:43+07:00",
+  "at": "2026-11-04T03:07:25+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "312bbcd02ded9c242b05435d|0.42.0": {
+  "at": "2026-11-04T03:07:25+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "3165ca140d8765602735689f|0.23.0": {
   "at": "2026-10-26T21:47:37+07:00",
@@ -669,6 +689,11 @@
   "n": 1,
   "note": "fixed in 314c0f33 (IR import capped 1 MB)"
  },
+ "3d3fb10724ef308cde567ed9|0.42.0": {
+  "at": "2026-11-04T03:07:26+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
  "3d5dffd0b165e9e474f753dd|0.38.3": {
   "at": "2026-11-03T03:42:51+07:00",
   "n": 1,
@@ -680,49 +705,54 @@
   "note": "fixed in 314c0f33 (PadService plain start)"
  },
  "3de729f6815ae508958555a8|0.28.0": {
-  "at": "2026-11-03T23:36:44+07:00",
+  "at": "2026-11-04T03:07:26+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "3de729f6815ae508958555a8|0.30.0": {
-  "at": "2026-11-03T23:36:44+07:00",
+  "at": "2026-11-04T03:07:26+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "3de729f6815ae508958555a8|0.33.1": {
-  "at": "2026-11-03T23:36:44+07:00",
+  "at": "2026-11-04T03:07:26+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "3de729f6815ae508958555a8|0.34.1": {
-  "at": "2026-11-03T23:36:44+07:00",
+  "at": "2026-11-04T03:07:26+07:00",
   "n": 2,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "3de729f6815ae508958555a8|0.37.0": {
-  "at": "2026-11-03T23:36:44+07:00",
+  "at": "2026-11-04T03:07:26+07:00",
   "n": 3,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "3de729f6815ae508958555a8|0.38.0": {
-  "at": "2026-11-03T23:36:44+07:00",
+  "at": "2026-11-04T03:07:26+07:00",
   "n": 2,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "3de729f6815ae508958555a8|0.38.4": {
-  "at": "2026-11-03T23:36:44+07:00",
+  "at": "2026-11-04T03:07:26+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "3de729f6815ae508958555a8|0.40.0": {
-  "at": "2026-11-03T23:36:44+07:00",
+  "at": "2026-11-04T03:07:26+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "3de729f6815ae508958555a8|0.41.0": {
-  "at": "2026-11-03T23:36:44+07:00",
+  "at": "2026-11-04T03:07:26+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "3de729f6815ae508958555a8|0.42.0": {
+  "at": "2026-11-04T03:07:26+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "3df75f21109cfe64c6abe060|0.30.0": {
   "at": "2026-10-30T09:08:09+07:00",
@@ -835,19 +865,24 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "4664ee61b8bdc5497e1638b0|0.32.1": {
-  "at": "2026-11-03T10:07:26+07:00",
+  "at": "2026-11-04T03:07:27+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "4664ee61b8bdc5497e1638b0|0.35.0": {
-  "at": "2026-11-03T10:07:26+07:00",
+  "at": "2026-11-04T03:07:27+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "4664ee61b8bdc5497e1638b0|0.37.0": {
-  "at": "2026-11-03T10:07:26+07:00",
+  "at": "2026-11-04T03:07:27+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "4664ee61b8bdc5497e1638b0|0.42.0": {
+  "at": "2026-11-04T03:07:27+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "46a201947cd09f30b640db42|0.32.7": {
   "at": "2026-10-30T09:08:10+07:00",
@@ -918,6 +953,11 @@
   "at": "2026-10-30T09:08:11+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+ },
+ "4ca1101fe622edb5f8a932fa|0.42.0": {
+  "at": "2026-11-04T03:07:27+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "4cacc103078f5e6b7266801e|0.29.0": {
   "at": "2026-10-30T09:08:12+07:00",
@@ -1000,34 +1040,39 @@
   "note": "not our code: minified script the browser injected into the TV web page; errbox now drops stacks whose every frame is the page itself"
  },
  "535993e358ec33bffb4a2ab7|0.27.0": {
-  "at": "2026-10-30T09:08:14+07:00",
+  "at": "2026-11-04T03:07:28+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "535993e358ec33bffb4a2ab7|0.30.0": {
-  "at": "2026-10-30T09:08:14+07:00",
+  "at": "2026-11-04T03:07:28+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "535993e358ec33bffb4a2ab7|0.33.1": {
-  "at": "2026-10-30T09:08:14+07:00",
+  "at": "2026-11-04T03:07:28+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "535993e358ec33bffb4a2ab7|0.34.1": {
-  "at": "2026-10-30T09:08:14+07:00",
+  "at": "2026-11-04T03:07:28+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "535993e358ec33bffb4a2ab7|0.37.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-04T03:07:28+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "535993e358ec33bffb4a2ab7|0.38.2": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-04T03:07:28+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "535993e358ec33bffb4a2ab7|0.42.0": {
+  "at": "2026-11-04T03:07:28+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "53c851be292645defe2ebe29|0.25.0": {
   "at": "2026-10-27T09:37:10+07:00",
@@ -1343,6 +1388,16 @@
   "at": "2026-10-27T09:37:15+07:00",
   "n": 1,
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
+ },
+ "6b3d724484c5bbbb774fe449|0.32.1": {
+  "at": "2026-11-04T03:07:28+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "6b3d724484c5bbbb774fe449|0.42.0": {
+  "at": "2026-11-04T03:07:28+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "6ca924d6b3c5ee9382ca8aee|0.23.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -1990,24 +2045,29 @@
   "note": "Strong 4K box (Skyworth, A14), TV Setup 0.34.1: Allow not pressed / timeout, a user step, not a code fault"
  },
  "a54cc4711ab55a41b38bd0ab|0.29.0": {
-  "at": "2026-11-03T23:36:49+07:00",
+  "at": "2026-11-04T03:07:29+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "a54cc4711ab55a41b38bd0ab|0.38.4": {
-  "at": "2026-11-03T23:36:49+07:00",
+  "at": "2026-11-04T03:07:29+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "a54cc4711ab55a41b38bd0ab|0.40.0": {
-  "at": "2026-11-03T23:36:49+07:00",
+  "at": "2026-11-04T03:07:29+07:00",
   "n": 2,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "a54cc4711ab55a41b38bd0ab|0.41.0": {
-  "at": "2026-11-03T23:36:49+07:00",
+  "at": "2026-11-04T03:07:29+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "a54cc4711ab55a41b38bd0ab|0.42.0": {
+  "at": "2026-11-04T03:07:29+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "a61105e296172cd1c6bf213f|0.30.0": {
   "at": "2026-11-03T03:42:55+07:00",
@@ -2098,6 +2158,11 @@
   "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "ae16036c3fb4c0f133138391|0.42.0": {
+  "at": "2026-11-04T03:07:30+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "af07b280da306e71dfc625f7|0.34.1": {
   "at": "2026-10-30T09:08:24+07:00",
@@ -2230,24 +2295,39 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "bb235b5156d5dfe6f4b07f66|0.31.0": {
-  "at": "2026-10-30T09:07:59+07:00",
+  "at": "2026-11-04T03:07:30+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "bb235b5156d5dfe6f4b07f66|0.32.1": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-04T03:07:30+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "bb235b5156d5dfe6f4b07f66|0.34.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-04T03:07:30+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "bb235b5156d5dfe6f4b07f66|0.34.2": {
+  "at": "2026-11-04T03:07:30+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "bb235b5156d5dfe6f4b07f66|0.35.0": {
+  "at": "2026-11-04T03:07:30+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "bb235b5156d5dfe6f4b07f66|0.38.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-04T03:07:30+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "bb235b5156d5dfe6f4b07f66|0.42.0": {
+  "at": "2026-11-04T03:07:30+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "bb6aa51a71dd220857d39503|0.24.1": {
   "at": "2026-10-27T09:37:20+07:00",
@@ -2394,6 +2474,11 @@
   "n": 1,
   "note": "fixed: Guard ignores a dialog shown/dismissed after its screen is gone (GuardLogic.goneWindow)"
  },
+ "cb5b967edf8d24798bc4d683|0.42.0": {
+  "at": "2026-11-04T03:07:31+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
  "cb86f676dfffbcf108630018|0.28.0": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 3,
@@ -2525,24 +2610,29 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "d498a8ad39a52e3263df243d|0.37.0": {
-  "at": "2026-11-03T03:42:55+07:00",
+  "at": "2026-11-04T03:07:31+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "d498a8ad39a52e3263df243d|0.38.2": {
-  "at": "2026-11-03T03:42:55+07:00",
+  "at": "2026-11-04T03:07:31+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "d498a8ad39a52e3263df243d|0.38.3": {
-  "at": "2026-11-03T03:42:55+07:00",
+  "at": "2026-11-04T03:07:31+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "d498a8ad39a52e3263df243d|0.38.4": {
-  "at": "2026-11-03T03:42:55+07:00",
+  "at": "2026-11-04T03:07:31+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "d498a8ad39a52e3263df243d|0.42.0": {
+  "at": "2026-11-04T03:07:31+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "d6434b998952d4ab9cc3cb26|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -2754,15 +2844,25 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
- "e854671036bc5c993fe48c57|0.37.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+ "e854671036bc5c993fe48c57|0.35.0": {
+  "at": "2026-11-04T03:07:32+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "e854671036bc5c993fe48c57|0.37.0": {
+  "at": "2026-11-04T03:07:32+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "e854671036bc5c993fe48c57|0.38.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-04T03:07:32+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+ },
+ "e854671036bc5c993fe48c57|0.42.0": {
+  "at": "2026-11-04T03:07:32+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "e94dd9684f447e3743727f48|0.33.1": {
   "at": "2026-10-29T18:31:22+07:00",
@@ -2788,6 +2888,11 @@
   "at": "2026-11-03T06:59:49+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "ee16781ca31682bbe27f8af8|0.42.0": {
+  "at": "2026-11-04T03:07:32+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "ee57e878f33619a603accc6d|0.25.0": {
   "at": "2026-10-30T09:08:29+07:00",

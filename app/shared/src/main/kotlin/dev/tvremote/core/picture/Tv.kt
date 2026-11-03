@@ -94,6 +94,16 @@ class Tv(
 
     companion object {
         /**
+         * What scrcpy-server printed, cut to the line that says why it stopped (an ERROR, an Exception, else its last line), for the
+         * error a person sees and the census: "did not start" alone left two boxes' reports unexplained (2026-11-04).
+         */
+        fun serverSaid(out: String): String {
+            val lines = out.lines().map { it.trim() }.filter { it.isNotEmpty() }
+            val why = lines.lastOrNull { it.contains("ERROR") || it.contains("Exception") || it.contains("Error:") } ?: lines.lastOrNull()
+            return why?.let { ": " + it.take(200) } ?: ""
+        }
+
+        /**
          * The software H.264 encoder in scrcpy's list_encoders. scrcpy marks "(sw)" only from Android 10 (MediaCodecInfo.isSoftwareOnly
          * is API 29); before, Google's own encoders are the software ones by name (OMX.google.*, c2.android.*): issue #10, Android 9,
          * "Use Software" found none and the hardware encoder ran again.
@@ -324,7 +334,17 @@ class Tv(
                 Thread({
                     try { while (!stopped) { log.write("\n".toByteArray()); Thread.sleep(8000) } } catch (gone: Exception) { }
                 }, "scrcpy-heartbeat").apply { isDaemon = true }.start()
-                Thread({ try { log.readAll() } catch (ignored: IOException) { } }, "scrcpy-log").apply { isDaemon = true }.start()
+                val said = StringBuilder()                                // the server's last words: why it did not start, for the report
+                Thread({
+                    try {
+                        val b = ByteArray(1024)
+                        while (true) {
+                            val n = log.read(b, 0, b.size, 0)
+                            if (n < 0) break
+                            synchronized(said) { said.append(String(b, 0, n, Charsets.UTF_8)); if (said.length > 800) said.delete(0, said.length - 800) }
+                        }
+                    } catch (ignored: IOException) { }
+                }, "scrcpy-log").apply { isDaemon = true }.start()
                 var first: Adb.Stream? = null                             // the first of the sockets: video, then sound, then control, whichever are asked for
                 val one = ByteArray(1)
                 var i = 0
@@ -339,7 +359,7 @@ class Tv(
                     if (first == null) Thread.sleep(if (i < 60) POLL_MS else 100)   // a refused socket costs the TV nothing: tight for ~2 s, then easier
                     i++
                 }
-                if (first == null) throw IOException("scrcpy-server did not start on the TV")
+                if (first == null) throw IOException("scrcpy-server did not start on the TV" + serverSaid(synchronized(said) { said.toString() }))
                 if (Trace.on) Trace.log("s.listening", "tries=$i")
                 got.add(first)                                            // the server takes the connections in this order
                 val count = (if (wantVideo) 1 else 0) + (if (hearing != null) 1 else 0) + (if (wantControl) 1 else 0)

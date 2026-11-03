@@ -5,6 +5,7 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
 ## Unreleased
+- When the TV's picture service cannot start, the error now says the TV's own reason, so the log and crash report show why.
 
 - TV Home: the app row opens where it stays; the widgets fade in above it instead of pushing it down when their numbers come
 - TV apps and the web page on the TV: the D-pad focus scrolls to the middle of a list, so the rows beyond it stay in sight; it glides there instead of jumping
