@@ -47,6 +47,8 @@ What it takes care of, for doing it by hand:
   own port redirect (adb forward hid a reply lost to a reset); `TVR_PASS=… dev/test/smoke.py URL` does the same for the computer app.
   `TVR_PASS=… node dev/test/layout.js` checks the layout in Chrome and WebKit (the Mac app's window and iPhones are WebKit). Run both
   after a change to HttpServer / the routes, or to the page's CSS.
+- `node dev/test/apifail.js` runs every core and tab while /api fails (all down, all 500, half the paths failing): a field read of a
+  failed answer (`r.always` on null) throws only there; exit 1 on any script error. release.sh runs it (~2 min).
 - `node dev/test/slowload.js` loads the page as a slow TV sends it (each script late, /api at once) in every core and start tab;
   exit 1 on any script error ("X is not defined": an answer handled before a later file was read). release.sh runs it.
 - Before a release with UI changes: `node dev/test/audit.js` presses every button of the page (no TV, the demo's made-up one) and checks each

@@ -30,6 +30,7 @@ grep -q "$(java dev/release/Sign.java pub "$KEY")" app/shared/src/sign/kotlin/de
 # the user guide: a topic whose app files changed since the release it was checked against may now be wrong
 node --test app/shared/tests/ app/tvgames/tests/ >/dev/null 2>&1 || { echo "node tests fail: node --test app/shared/tests/ app/tvgames/tests/"; exit 1; }  # what ships must parse and pass
 node dev/test/slowload.js >/dev/null 2>&1 || { echo "the page throws while a slow TV loads it: node dev/test/slowload.js"; exit 1; }   # census 91edf904 and kin
+node dev/test/apifail.js --wait=3 >/dev/null 2>&1 || { echo "the page throws when an /api request fails: node dev/test/apifail.js"; exit 1; }   # census e4ac11c3 and kin
 (cd app/gradle && ./gradlew -q :shared:testDebugUnitTest >/dev/null 2>&1) || { echo "Kotlin tests fail (speed budgets included): cd app/gradle && ./gradlew :shared:testDebugUnitTest"; exit 1; }   # not in pre-push: Gradle is ~1 min; a release is where a slowdown must not ship
 LINTS=":shared:lintDebug :android:lintDebug :tvsetup:lintDebug :tvkeys:lintDebug :tvhome:lintDebug :tvchannels:lintDebug :tvgames:lintDebug :tvapps:lintDebug :tvvoice:lintDebug"
 (cd app/gradle && ./gradlew -q $LINTS >/dev/null 2>&1) || { echo "a call newer than Android 5 unguarded (lint NewApi): cd app/gradle && ./gradlew $LINTS"; exit 1; }   # Android 5-6 boxes crash on it (census 8f22ae15)

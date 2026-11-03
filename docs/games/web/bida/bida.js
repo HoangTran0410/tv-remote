@@ -8,14 +8,14 @@ const W = Object.assign({}, Table.W, Table.VI ? {
   badSpot: 'Chỗ này chưa đặt được bi', power: 'Lực', breakT: (n) => `${n} khai cuộc`, turnOf: (n) => `Lượt của ${n}`, rolling: 'Bi đang lăn…', goOn: (n) => `${n} đánh tiếp`,
   hand: (n) => `${n} được đặt bi cái`, takes: (n, g) => `${n} đánh ${g}`, watch: 'Bạn đang xem trận này',
   f: { scratch: 'Lỗi: bi cái xuống lỗ', nohit: 'Lỗi: không chạm bi nào', wrong: 'Lỗi: chạm sai bi đầu tiên', rail: 'Lỗi: không bi nào chạm băng' },
-  why: { clear: (n) => `${n} đưa bi 8 xuống lỗ`, early: (n) => `${n} làm bi 8 xuống lỗ quá sớm`, foul: (n) => `${n} làm bi 8 xuống lỗ cùng lỗi` },
+  why: { clear: (n) => `${n} đưa bi 8 xuống lỗ`, early: (n) => `${n} làm bi 8 xuống lỗ quá sớm`, foul: (n, f) => f === 'scratch' ? `${n} làm bi 8 xuống lỗ nhưng bi cái cũng rơi` : `${n} làm bi 8 xuống lỗ nhưng chạm bi khác trước` },
 } : {
   solids: 'Solids', stripes: 'Stripes', openT: 'Open table', hintAim: 'Drag to turn the cue · hold A to charge · release to shoot', hintPlace: 'Drag to place the cue ball · tap A to set it · hold A to shoot',
   tvAim: '◀ ▶ turn the cue · hold OK to charge · release OK to shoot', tvPlace: '◀ ▶ ▲ ▼ move the cue ball · tap OK to set it · hold OK to shoot',
   badSpot: 'The ball cannot go there', power: 'Power', breakT: (n) => `${n} breaks`, turnOf: (n) => `${n} to play`, rolling: 'Balls rolling…', goOn: (n) => `${n} shoots again`,
   hand: (n) => `${n} has the cue ball in hand`, takes: (n, g) => `${n} plays ${g}`, watch: 'You are watching this game',
   f: { scratch: 'Foul: cue ball in the pocket', nohit: 'Foul: no ball was hit', wrong: 'Foul: wrong ball hit first', rail: 'Foul: no ball reached a rail' },
-  why: { clear: (n) => `${n} potted the 8-ball`, early: (n) => `${n} potted the 8-ball too early`, foul: (n) => `${n} potted the 8-ball with a foul` },
+  why: { clear: (n) => `${n} potted the 8-ball`, early: (n) => `${n} potted the 8-ball too early`, foul: (n, f) => f === 'scratch' ? `${n} potted the 8-ball but the cue ball fell too` : `${n} potted the 8-ball but hit another ball first` },
 });
 const TURN = 45;
 const SC = 1.3, OX = 120, OY = 124, FONT = 'system-ui, Roboto, "Helvetica Neue", Arial, sans-serif';
@@ -91,7 +91,7 @@ function finish(res) {
   const nm = () => t.name(me), who = () => t.name(turn);
   S.chg = 0; S.shotId++;
   if (res.over) {
-    S.phase = 'idle'; S.banner = ''; S.msg = () => W.why[res.why](nm());
+    S.phase = 'idle'; S.banner = ''; S.msg = () => W.why[res.why](nm(), res.foul);   // which foul: the banner that named it is gone with the shot (the user lost on a kiss they never saw, 2026-11-03)
     t.over(res.winner === 0 ? [0, 1] : [1, 0]); return;
   }
   S.phase = g.hand ? 'place' : 'aim';
