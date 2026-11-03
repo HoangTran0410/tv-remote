@@ -30,7 +30,9 @@ object AppList {
     class Source(val url: String, val repo: String, val match: String)
     class App(val id: String, val pkg: String, val name: String, val cat: String, val desc: Map<String, String>, val notes: Map<String, String>,
               val icon: String, val iconSha: String, val source: String, val license: String, val certs: List<String>, val minSdk: Int,
-              val apk: Map<String, Source>) {
+              val apk: Map<String, Source>, val setup: String = "", val also: List<String> = emptyList()) {
+        /** On the TV under any of these (TV Setup Voice: one package per language). */
+        val pkgs get() = listOf(pkg) + also
         fun desc(lang: String) = desc[lang] ?: desc["en"] ?: ""
         fun notes(lang: String) = notes[lang] ?: notes["en"] ?: ""
     }
@@ -54,7 +56,7 @@ object AppList {
         val certs = a.getJSONArray("certs").let { c -> (0 until c.length()).map { c.getString(it).lowercase().replace(":", "") } }
         if (certs.isEmpty() || certs.any { !it.matches(Regex("[0-9a-f]{64}")) }) return null
         val apk = LinkedHashMap<String, Source>()
-        val ao = a.getJSONObject("apk")
+        val ao = a.optJSONObject("apk") ?: JSONObject()                // none: only an app TV Setup installs ("setup" below)
         for (abi in ao.keys()) {
             val v = ao.get(abi)
             val s = if (v is String) Source(v, "", "") else (v as JSONObject).let { Source("", it.getString("repo"), it.getString("match")) }
@@ -62,9 +64,13 @@ object AppList {
             if (s.repo.isNotEmpty() && !s.repo.matches(Regex("[\\w.-]+/[\\w.-]+"))) return null
             apk[abi] = s
         }
-        if (apk.isEmpty()) return null
+        // "setup": TV Setup installs it on that screen of its own ("voice": by its rule, which also removes it), so no "apk":
+        // a client from before "setup" drops the entry instead of installing it beside the rule (TV Setup would take it off again)
+        val setup = a.optString("setup")
+        if (apk.isEmpty() && setup.isEmpty()) return null
+        val also = a.optJSONArray("also")?.let { x -> (0 until x.length()).map { x.getString(it) } } ?: emptyList()
         return App(a.getString("id"), a.getString("pkg"), a.getString("name"), a.optString("cat"), words(a.optJSONObject("desc")),
-            words(a.optJSONObject("notes")), a.optString("icon"), a.optString("icon_sha"), a.optString("source"), a.optString("license"), certs, a.optInt("min_sdk", 21), apk)
+            words(a.optJSONObject("notes")), a.optString("icon"), a.optString("icon_sha"), a.optString("source"), a.optString("license"), certs, a.optInt("min_sdk", 21), apk, setup, also)
     }
 
     /** The APK for a TV: the first of its ABIs (best first, as getprop ro.product.cpu.abilist lists them) the app has, else "universal". */
@@ -72,7 +78,10 @@ object AppList {
         abis.firstNotNullOfOrNull { abi -> a.apk[abi]?.let { abi to it } } ?: a.apk["universal"]?.let { "universal" to it }
 
     /** "" when the app fits this TV, else sdk / abi (each screen puts it in its own words). */
-    fun why(a: App, sdk: Int, abis: List<String>) = when { sdk in 1 until a.minSdk -> "sdk"; pick(a, abis) == null -> "abi"; else -> "" }
+    fun why(a: App, sdk: Int, abis: List<String>) = when { sdk in 1 until a.minSdk -> "sdk"; a.setup.isEmpty() && pick(a, abis) == null -> "abi"; else -> "" }
+
+    /** The package of TV Setup, which installs the apps with a "setup" screen. */
+    const val SETUP_PKG = "dev.tvremote.setup"
 
     @Volatile private var mem: Pair<Long, List_>? = null
     private val asking = java.util.concurrent.atomic.AtomicBoolean()

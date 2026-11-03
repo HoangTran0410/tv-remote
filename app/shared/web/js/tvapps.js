@@ -12,11 +12,11 @@ function tvappsRow(a) {
   const icon = el('img', { className: 'tvappsicon', src: a.icon, alt: '', loading: 'lazy' });
   icon.onerror = () => icon.classList.add('none');
   const act = a.installed
-    ? el('button', { className: 'small', textContent: T('tvapps.open'), onclick: () => tvappsOpen(a) })
-    : el('button', { className: 'small primary', disabled: !!a.why || tvappsRunning, textContent: T('tvapps.install'), onclick: () => tvappsInstall(a) });
+    ? el('button', { className: 'small', textContent: T('tvapps.open'), onclick: () => a.setup ? tvappsSetup(a) : tvappsOpen(a) })
+    : el('button', { className: 'small primary', disabled: !!a.why || tvappsRunning, textContent: T('tvapps.install'), onclick: () => a.setup ? tvappsSetup(a) : tvappsInstall(a) });
   const more = el('button', { type: 'button', className: 'small iconbtn', textContent: '⋯', title: T('page.more_actions'), 'aria-label': T('page.more_actions'), onclick: (e) => popover(e.currentTarget, [
     ['ℹ️', T('launcher.details'), () => tvappsDetails(a)],
-    a.installed && !a.why ? ['↻', T('tvapps.reinstall'), () => tvappsInstall(a)] : null,
+    a.installed && !a.why && !a.setup ? ['↻', T('tvapps.reinstall'), () => tvappsInstall(a)] : null,
     ['🔗', T('launcher.source'), () => open(a.source, '_blank', 'noopener')],
   ].filter(Boolean)) });
   return UI.item({ icon, name: a.name, sub: tvappsWords(a.desc),
@@ -58,6 +58,19 @@ async function tvappsLoad(fresh) {
 
 $('#tvappsopen').addEventListener('click', async () => { $('#tvappsdlg').showModal(); await tvappsLoad(false); });
 $('#tvappsclose').addEventListener('click', () => $('#tvappsdlg').close());
+
+// An app TV Setup installs on a screen of its own ("setup": TV Setup Voice, by its rule, which also removes it): that card of the
+// Setup tab, where it is switched on and its language picked. Without TV Setup it cannot run: said, with TV Setup to install first.
+const TVAPPS_SETUP = { voice: 'keyscard' };
+async function tvappsSetup(a) {
+  if (!tvappsList?.has_setup) {
+    const setup = tvappsList?.apps.find((x) => x.pkg === 'dev.tvremote.setup');
+    if (await ask(T('tvapps.needs_setup', { name: a.name }), { ok: T('tvapps.install_setup') }) && setup) tvappsInstall(setup);
+    return;
+  }
+  $('#tvappsdlg').close();
+  goTo('tv', TVAPPS_SETUP[a.setup]);
+}
 
 async function tvappsOpen(a) {
   if (await api('/api/app/launch', { pkg: a.pkg })) toast(T('apps.what_name', { what: T('apps.open'), name: a.name }));

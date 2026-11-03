@@ -33,10 +33,10 @@ internal class TvAppsApi(private val link: AdbLink, private val dir: File?, priv
         val apps = JSONArray()
         for (a in l.apps) apps.put(JSONObject().put("id", a.id).put("pkg", a.pkg).put("name", a.name).put("cat", a.cat)
             .put("desc", JSONObject(a.desc)).put("notes", JSONObject(a.notes)).put("source", a.source).put("license", a.license)
-            .put("icon", if (a.icon.isNotEmpty()) "/api/tvapps/icon?id=" + a.id else "").put("min_sdk", a.minSdk).put("why", AppList.why(a, t.sdk, t.abis)).put("installed", a.pkg in t.have))
+            .put("icon", if (a.icon.isNotEmpty()) "/api/tvapps/icon?id=" + a.id else "").put("min_sdk", a.minSdk).put("why", AppList.why(a, t.sdk, t.abis)).put("installed", a.pkgs.any { it in t.have }).put("setup", a.setup))
         val cats = JSONArray()
         for (c in l.cats) cats.put(JSONObject().put("id", c.id).put("name", JSONObject(c.name)))
-        return JSONObject().put("updated", l.updated).put("cats", cats).put("apps", apps)
+        return JSONObject().put("updated", l.updated).put("cats", cats).put("apps", apps).put("has_setup", AppList.SETUP_PKG in t.have)
     }
 
     fun icon(id: String): HttpServer.Response {
@@ -48,6 +48,7 @@ internal class TvAppsApi(private val link: AdbLink, private val dir: File?, priv
     /** Download (step "download", pct), check, install (step "install"): a job the page polls, Stop ends either part. */
     fun install(id: String): JSONObject {
         val a = AppList.fetch(dir)[id] ?: throw IllegalArgumentException("no such app")
+        if (a.setup.isNotEmpty()) throw IllegalArgumentException("installed by TV Setup")   // the page sends it to TV Setup's own card
         return job("app " + a.name) { j ->
             val d = dir ?: throw IOException("no folder for the download")
             val c = cancel()

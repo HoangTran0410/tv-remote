@@ -15,6 +15,8 @@
   "failed": "Không cài được (%1$s)",
   "cert_bad": "File không do chính tác giả app ký, nên không cài.",
   "no_apk": "App này chưa có bản cho chip của TV này.",
+  "needs_setup": "%1$s chạy cùng TV Setup. Cài TV Setup trước, rồi bật %1$s trong đó.",
+  "install_setup": "Cài TV Setup",
   "details": "Chi tiết",
   "reinstall": "Cài lại",
   "source": "Mã nguồn: %1$s",

@@ -15,6 +15,8 @@
   "failed": "Could not install (%1$s)",
   "cert_bad": "The file is not signed by the app's maker, so it was not installed.",
   "no_apk": "There is no version of this app for this TV's processor.",
+  "needs_setup": "%1$s works with TV Setup. Install TV Setup first, then turn %1$s on there.",
+  "install_setup": "Install TV Setup",
   "details": "Details",
   "reinstall": "Install again",
   "source": "Source code: %1$s",

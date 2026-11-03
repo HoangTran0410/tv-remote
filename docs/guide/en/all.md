@@ -800,6 +800,7 @@ TV remote only: Downloader, code **1082201**. Direct link: [tv-apps.apk](https:/
 
 - With TV Setup: installs at once, the TV asks nothing. Without it: Android asks first, and the first time TV Apps must be allowed to install apps (it shows how).
 - Add-ons (for Stremio, Kodi) are never installed for you; the details page only names them.
+- **TV Setup Voice** works with TV Setup: Install takes you to where TV Setup turns it on. Without TV Setup, the app asks you to install TV Setup first.
 
 ## Files and installing APKs
 

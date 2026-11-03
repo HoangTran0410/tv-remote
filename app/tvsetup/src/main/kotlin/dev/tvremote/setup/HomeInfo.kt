@@ -44,7 +44,8 @@ import org.json.JSONObject
  * and "control" (HomeControl: the Control Center's sleep timer and kids mode on; `arg` "" | "sleep:<min>" | "kids:on"; {sleep_at, kids, pin, error?}).
  * and "webview" (to TV Home, Channels and Games by their key: no WebView on the TV, switch it back on; "result" fine / fixed / none / noadb / failed),
  * and "updates" (to TV Home, Channels and Games by their key, like "census": {silent} = auto-update is on and ADB is ready, so TV Setup installs their updates itself),
- * and "tvapps" (to TV Apps by its key: `arg` {op: install | job | cancel, id}; one app of the signed list installed over our ADB link, RemoteService.tvApps; no answer = no ADB here),
+ * and "tvapps" (to TV Apps by its key: `arg` {op: install | job | cancel, id}; one app of the signed list installed over our ADB link, RemoteService.tvApps; no answer = no ADB here;
+ *   {op: open, screen: voice}: "go", the PendingIntent of our screen that installs a list app with "setup", for TV Apps to start in front),
  * Which apps a family watches is nobody else's business: only TV Home, signed by this project's key (or by this app's own,
  * a build signed with one key for both), gets an answer.
  */
@@ -59,6 +60,8 @@ class HomeInfo : ContentProvider() {
         if (method == "tvapps") {                                      // TV Apps: install one app of the signed list over our ADB link; `arg` {op, id}
             if (!censusCaller(c, Binder.getCallingUid())) return null
             val a = try { JSONObject(arg.orEmpty()) } catch (e: Exception) { return null }
+            if (a.optString("op") == "open") return Bundle().apply {   // only the screens of list apps TV Setup installs itself
+                if (a.optString("screen") == "voice") putParcelable("go", dev.tvremote.setup.home.HomeControl.handBack(c, "voice")) }
             val token = Binder.clearCallingIdentity()
             try {
                 val out = try { RemoteService.tvApps(a.optString("op"), a.optString("id")) } catch (e: Exception) { JSONObject().put("status", "error").put("msg", e.message ?: "") }

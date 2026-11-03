@@ -9,3 +9,4 @@ Chỉ có remote của TV: cài bằng Downloader, mã **1082201**. Link trực 
 
 - Có TV Setup: cài luôn, TV không hỏi. Không có: Android hỏi trước, và lần đầu cần cho phép TV Apps cài app (app chỉ cách).
 - Tiện ích thêm (add-on của Stremio, Kodi) không bao giờ được cài thay bạn; trang chi tiết chỉ ghi tên.
+- **TV Setup Voice** chạy cùng TV Setup: bấm Cài là tới chỗ bật nó trong TV Setup. Chưa có TV Setup thì app nhắc cài TV Setup trước.

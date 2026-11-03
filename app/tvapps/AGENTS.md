@@ -28,4 +28,7 @@ app/tvapps/              TV Apps: AppsActivity (the list, a pill per category, d
 - The row's state follows the TV: re-drawn on resume and on PACKAGE_ADDED / REMOVED (registered only while the screen is open:
   Android's installer closes before the app lands).
 - Plugins (Stremio add-ons, Kodi add-ons) are never installed for the person; the list names them in "notes".
+- An entry with `"setup"` (TV Setup Voice: `"voice"`) is installed by TV Setup on that screen of its own, never by the list: it has
+  no `"apk"` (older clients drop it). Install / Open go there (TV Apps: HomeInfo `tvapps` `{op: open, screen}` hands back the
+  screen's PendingIntent; the page: `goTo` that card); no TV Setup on the TV = says so, with Install TV Setup.
 - AndroidX none; `:shared` none (only its `tvui`, `sign`, `selfupdate`, `tvapps`, `guard`, `report` sources).

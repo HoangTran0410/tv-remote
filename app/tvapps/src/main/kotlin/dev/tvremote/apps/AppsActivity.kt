@@ -156,6 +156,7 @@ class AppsActivity : Activity() {
     }
 
     private fun installed(pkg: String) = try { packageManager.getPackageInfo(pkg, 0); true } catch (e: Exception) { false }
+    private fun installed(a: AppList.App) = a.pkgs.any { installed(it) }
 
     /** One row per app of the chosen category, in the list's order; the focus stays on the same app when the rows are drawn again. */
     private fun render() {
@@ -182,7 +183,7 @@ class AppsActivity : Activity() {
         setPadding(dp(12), dp(10), dp(16), dp(10))
         background = TvUi.states(context, Color.TRANSPARENT, TvUi.dp(context, TvUi.R_ROW), edge = false)
         isFocusable = true; isClickable = true; isLongClickable = true
-        val on = installed(a.pkg); val why = why(a)
+        val on = installed(a); val why = why(a)
         val icon = ImageView(context).apply { scaleType = ImageView.ScaleType.FIT_CENTER; rounded(this, TvUi.dp(context, TvUi.R_TILE)) }
         addView(icon, LinearLayout.LayoutParams(dp(56), dp(56)).apply { marginEnd = dp(16) })
         addView(LinearLayout(context).apply {
@@ -192,7 +193,7 @@ class AppsActivity : Activity() {
         }, LinearLayout.LayoutParams(0, -2, 1f))
         addView(TvUi.text(context, when { on -> "✓ " + getString(R.string.on_tv); why.isNotEmpty() -> why; else -> getString(R.string.install) },
             TvUi.SP_COUNT + 1, if (on) TvUi.ACCENT else TvUi.DIM).apply { setPadding(dp(16), 0, 0, 0) })
-        setOnClickListener { if (installed(a.pkg)) open(a) else if (why.isEmpty()) install(a) else details(l, a) }
+        setOnClickListener { if (installed(a)) open(a) else if (why.isEmpty()) install(a) else details(l, a) }
         setOnLongClickListener { menu(l, a); true }
         icons[a.id]?.let { icon.setImageBitmap(it) } ?: work.execute {
             val bmp = try { AppList.icon(l, a, filesDir).let { BitmapFactory.decodeByteArray(it, 0, it.size) } } catch (e: Exception) { null }
@@ -210,16 +211,17 @@ class AppsActivity : Activity() {
     }
 
     private fun open(a: AppList.App) {
+        if (a.setup.isNotEmpty()) return toSetup(a)
         val i = packageManager.getLeanbackLaunchIntentForPackage(a.pkg) ?: packageManager.getLaunchIntentForPackage(a.pkg) ?: return
         try { startActivity(i) } catch (e: Exception) { }
     }
 
     /** Hold OK / Menu: Open, Install again, Details. */
     private fun menu(l: AppList.List_, a: AppList.App) {
-        val on = installed(a.pkg)
+        val on = installed(a)
         val items = ArrayList<TvUi.Item>()
         if (on) items += TvUi.Item(R.drawable.ic_play, getString(R.string.open)) { open(a) }
-        if (why(a).isEmpty()) items += TvUi.Item(R.drawable.ic_download, getString(if (on) R.string.reinstall else R.string.install)) { install(a) }
+        if (why(a).isEmpty() && !(on && a.setup.isNotEmpty())) items += TvUi.Item(R.drawable.ic_download, getString(if (on) R.string.reinstall else R.string.install)) { install(a) }
         items += TvUi.Item(R.drawable.ic_info, getString(R.string.details)) { details(l, a) }
         TvUi.menu(this, R.style.Dialog, a.name, items, R.drawable.ic_check)
     }
@@ -232,7 +234,7 @@ class AppsActivity : Activity() {
         a.notes(lang).takeIf { it.isNotEmpty() }?.let { TvUi.sheetNote(box, it) }
         why(a).takeIf { it.isNotEmpty() }?.let { TvUi.sheetNote(box, it).setTextColor(TvUi.BAD) }
         TvUi.sheetNote(box, getString(R.string.source, a.source.removePrefix("https://")) + "\n" + getString(R.string.license, a.license)).textSize = TvUi.SP_COUNT
-        val on = installed(a.pkg)
+        val on = installed(a)
         val first = box.childCount
         if (on) box.addView(TvUi.row(this, R.drawable.ic_play, getString(R.string.open)) { dlg.dismiss(); open(a) })
         else if (why(a).isEmpty()) box.addView(TvUi.row(this, R.drawable.ic_download, getString(R.string.install)) { dlg.dismiss(); install(a) })
@@ -281,7 +283,40 @@ class AppsActivity : Activity() {
             ?.getString("json")?.let { JSONObject(it) }
     } catch (e: Exception) { null }                                    // missing, older than TV Apps, another key: Android's installer
 
+    /**
+     * An app TV Setup installs on a screen of its own ("setup": TV Setup Voice, by its rule, which also takes it off again): that
+     * screen, handed back by TV Setup and started from here (we are in front; Android 14 drops TV Setup's own start from behind).
+     * Without TV Setup it cannot work: said, with TV Setup to install first. A TV Setup too old to answer: its own first screen.
+     */
+    private fun toSetup(a: AppList.App) {
+        if (!installed(SETUP_PKG)) {
+            val (dlg, box) = TvUi.sheet(this, R.style.Dialog, 520)
+            TvUi.sheetTitle(box, a.name); TvUi.sheetNote(box, getString(R.string.needs_setup, a.name))
+            val first = box.childCount
+            list?.apps?.firstOrNull { it.pkg == SETUP_PKG }?.let { s ->
+                box.addView(TvUi.row(this, R.drawable.ic_download, getString(R.string.install_setup)) { dlg.dismiss(); install(s) }) }
+            box.addView(TvUi.row(this, R.drawable.ic_close, getString(R.string.cancel)) { dlg.dismiss() })
+            return show(dlg, box, first)
+        }
+        work.execute {
+            @Suppress("DEPRECATION") val go = try {
+                if (packageManager.resolveContentProvider(SETUP_AUTH, 0)?.packageName != SETUP_PKG) null
+                else contentResolver.call(Uri.parse("content://$SETUP_AUTH"), "tvapps", JSONObject().put("op", "open").put("screen", a.setup).toString(), null)
+                    ?.getParcelable<android.app.PendingIntent>("go")
+            } catch (e: Exception) { null }
+            ui.post {
+                try {
+                    if (go == null) startActivity(packageManager.getLeanbackLaunchIntentForPackage(SETUP_PKG) ?: packageManager.getLaunchIntentForPackage(SETUP_PKG) ?: return@post)
+                    else if (Build.VERSION.SDK_INT < 23) go.send()
+                    else go.send(this, 0, null, null, null, null, android.app.ActivityOptions.makeBasic().apply {
+                        if (Build.VERSION.SDK_INT >= 34) setPendingIntentBackgroundActivityStartMode(android.app.ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED) }.toBundle())
+                } catch (e: Exception) { }
+            }
+        }
+    }
+
     private fun install(a: AppList.App) {
+        if (a.setup.isNotEmpty()) return toSetup(a)
         val stop = AtomicBoolean(false)
         val job = AtomicReference<String?>(null)
         val p = progress(a) { stop.set(true); job.get()?.let { j -> work.execute { setup("cancel", j) } } }

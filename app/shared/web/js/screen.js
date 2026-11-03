@@ -420,6 +420,7 @@ function goTo(t, id) {
   if (!c) return;
   setTimeout(() => {
     if (c.offsetParent === null) return;                             // not on this core / for this TV
+    if (c.classList.contains('folded')) foldToggle(c);                // a folded card (fold.js) opens: the jump is to what is inside
     c.scrollIntoView({ block: 'center', behavior: 'smooth' });
     c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash');   // again from the start when asked twice
     c.addEventListener('animationend', () => c.classList.remove('flash'), { once: true });

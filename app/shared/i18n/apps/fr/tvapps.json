@@ -15,6 +15,8 @@
   "failed": "Installation impossible (%1$s)",
   "cert_bad": "Le fichier n'est pas signé par le créateur de l'application, il n'a donc pas été installé.",
   "no_apk": "Il n'existe pas de version de cette application pour le processeur de cette TV.",
+  "needs_setup": "%1$s fonctionne avec TV Setup. Installez d'abord TV Setup, puis activez %1$s dans TV Setup.",
+  "install_setup": "Installer TV Setup",
   "details": "Détails",
   "reinstall": "Réinstaller",
   "source": "Code source : %1$s",

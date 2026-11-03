@@ -3362,6 +3362,8 @@
  "tvapps.retry": "↻ Thử lại",
  "tvapps.install": "Cài",
  "tvapps.open": "Mở",
+ "tvapps.needs_setup": "{name} chạy cùng TV Setup. Cài TV Setup trước, rồi bật {name} trong đó.",
+ "tvapps.install_setup": "Cài TV Setup",
  "tvapps.reinstall": "Cài lại bản mới nhất",
  "tvapps.on_tv": "✓ Đã có trên TV",
  "tvapps.job": "📦 Cài {name}",

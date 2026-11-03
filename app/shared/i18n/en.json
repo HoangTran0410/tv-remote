@@ -3470,6 +3470,8 @@
  "tvapps.retry": "↻ Try again",
  "tvapps.install": "Install",
  "tvapps.open": "Open",
+ "tvapps.needs_setup": "{name} works with TV Setup. Install TV Setup first, then turn {name} on there.",
+ "tvapps.install_setup": "Install TV Setup",
  "tvapps.reinstall": "Reinstall the latest version",
  "tvapps.on_tv": "✓ On the TV",
  "tvapps.job": "📦 Install {name}",

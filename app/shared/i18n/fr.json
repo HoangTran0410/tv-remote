@@ -3479,6 +3479,8 @@
   "tvapps.retry": "↻ Réessayer",
   "tvapps.install": "Installer",
   "tvapps.open": "Ouvrir",
+  "tvapps.needs_setup": "{name} fonctionne avec TV Setup. Installez d'abord TV Setup, puis activez {name} dans TV Setup.",
+  "tvapps.install_setup": "Installer TV Setup",
   "tvapps.reinstall": "Réinstaller la dernière version",
   "tvapps.on_tv": "✓ Sur la TV",
   "tvapps.job": "📦 Installer {name}",

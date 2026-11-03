@@ -3452,6 +3452,8 @@
  "tvapps.retry": "↻ Повторить",
  "tvapps.install": "Установить",
  "tvapps.open": "Открыть",
+ "tvapps.needs_setup": "{name} работает вместе с TV Setup. Сначала установите TV Setup, затем включите {name} в нём.",
+ "tvapps.install_setup": "Установить TV Setup",
  "tvapps.reinstall": "Переустановить последнюю версию",
  "tvapps.on_tv": "✓ Уже на ТВ",
  "tvapps.job": "📦 Установка {name}",
