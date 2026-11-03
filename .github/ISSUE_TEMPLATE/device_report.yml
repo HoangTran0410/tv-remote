@@ -1,0 +1,50 @@
+name: Device report
+description: How TV Remote works on your TV or box, good or bad. Every report helps the next owner of the same model.
+title: "[Device] <brand> <model>"
+labels: ["device-report"]
+body:
+  - type: input
+    id: model
+    attributes:
+      label: TV or box
+      description: Brand and model, as in the TV's Settings → About (e.g. TCL 55C645, Xiaomi Mi Box S, FPT Play Box S550).
+    validations:
+      required: true
+  - type: input
+    id: android
+    attributes:
+      label: Android version
+      description: Settings → About → Android version (or Fire OS / webOS / Tizen version).
+  - type: dropdown
+    id: client
+    attributes:
+      label: What you used
+      multiple: true
+      options:
+        - Phone app (Android)
+        - Computer app (Mac / Windows / Linux)
+        - TV web page (TV Setup, any browser)
+        - TV Home
+        - TV Channels / TV Games / TV Apps
+  - type: checkboxes
+    id: worked
+    attributes:
+      label: What worked
+      options:
+        - label: Connect (ADB allowed)
+        - label: Remote keys
+        - label: The TV's picture and touch
+        - label: Optimize TV
+        - label: TV Home as the home screen
+        - label: Voice
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What went wrong
+      description: What you pressed, what you expected, what happened. A screenshot helps.
+  - type: textarea
+    id: log
+    attributes:
+      label: Log (optional)
+      description: Settings (🛠️) → About → 📋 Send the log copies it; paste it here. No pairing keys, MAC addresses or typed text are in it.
+      render: text
