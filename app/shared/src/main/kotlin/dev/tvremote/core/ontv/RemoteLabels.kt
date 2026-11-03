@@ -95,7 +95,10 @@ class RemoteLabels(private val link: AdbLink, helper: () -> ByteArray, private v
     }
 
     /** The PNG's "time size" on the TV once Meta has run, else the one kept with the remote's copy: the picture's link changes with it. */
-    override fun stamp(pkg: String): String? = stamps?.get(pkg) ?: try { cache?.let { File(it, "$pkg.stamp").takeIf { f -> f.exists() }?.readText() } } catch (e: IOException) { null }
+    // Meta has not run this session: run it (or wait for it) first, as icon() does. The kept stamp gave the link the old ?v=, the very
+    // link the page's browser kept the old picture under for a day (TV Setup Keys / Voice stayed robots on the user's phone)
+    override fun stamp(pkg: String): String? = (stamps ?: synchronized(running) { if (stamps == null && System.currentTimeMillis() - failedAt >= RETRY) ask(); stamps })?.get(pkg)
+        ?: try { cache?.let { File(it, "$pkg.stamp").takeIf { f -> f.exists() }?.readText() } } catch (e: IOException) { null }
 
     override fun icons(): Boolean { names(); return ok }
 
