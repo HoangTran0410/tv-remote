@@ -287,7 +287,7 @@ object HomeConfig {
         }
     }
     /** The prayer widget's calculation methods ("auto": by the TV's time zone), the same ids as `Prayer.METHODS` in app/tvhome (a test holds them equal). */
-    val PRAYER_METHODS = listOf("mwl", "isna", "egypt", "ummalqura", "karachi", "jakim", "kemenag", "singapore", "turkey", "tehran")
+    val PRAYER_METHODS = listOf("mwl", "isna", "egypt", "ummalqura", "karachi", "jakim", "kemenag", "singapore", "turkey", "tehran", "morocco")
     private fun optValues(o: Opt) = if (o.type == "toggle") listOf("off", "on") else o.values
     /** The schema as the clients get it ("wschema" in what TV Home reports): {widget: [{id, type, store, default, label, values: [{id, w}]}]}. */
     fun schema(sdk: Int = ADBLOCK_MIN_SDK): JSONObject = JSONObject().also { out ->

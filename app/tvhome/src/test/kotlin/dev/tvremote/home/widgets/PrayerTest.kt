@@ -38,6 +38,8 @@ class PrayerTest {
         Case("tehran", 35.6892, 51.389, 3.5, "tehran", 2026, 6, 21, "03:02 04:49 12:06 15:55 19:45 20:44"),
         Case("tehran", 35.6892, 51.389, 3.5, "tehran", 2026, 12, 21, "05:40 07:10 12:02 14:37 17:15 18:06"),
         Case("tehran", 35.6892, 51.389, 3.5, "tehran", 2026, 3, 20, "04:45 06:08 12:12 15:38 18:34 19:21"),
+        Case("casablanca", 33.5731, -7.5898, 1.0, "morocco", 2026, 6, 21, "04:30 06:21 13:37 17:16 20:49 22:21"),   // AlAdhan method 21, on the clock its zone data gives (+1, +0 in December)
+        Case("casablanca", 33.5731, -7.5898, 0.0, "morocco", 2026, 12, 21, "05:57 07:31 12:33 15:08 17:31 18:50"),
         Case("singapore", 1.3521, 103.8198, 8.0, "singapore", 2026, 6, 21, "05:36 07:00 13:06 16:33 19:13 20:28"),
         Case("singapore", 1.3521, 103.8198, 8.0, "singapore", 2026, 12, 21, "05:37 07:01 13:03 16:28 19:04 20:19"),
         Case("singapore", 1.3521, 103.8198, 8.0, "singapore", 2026, 3, 20, "05:52 07:09 13:12 16:14 19:16 20:24"),
@@ -105,6 +107,7 @@ class PrayerTest {
 
     @Test fun defaultMethodFromZone() {
         assertEquals("kemenag", Prayer.defaultMethod("Asia/Jakarta", "ID"))
+        assertEquals("morocco", Prayer.defaultMethod("Africa/Casablanca", "US"))
         assertEquals("jakim", Prayer.defaultMethod("Asia/Kuala_Lumpur", ""))
         assertEquals("ummalqura", Prayer.defaultMethod("Asia/Riyadh", "SA"))
         assertEquals("isna", Prayer.defaultMethod("America/Chicago", ""))

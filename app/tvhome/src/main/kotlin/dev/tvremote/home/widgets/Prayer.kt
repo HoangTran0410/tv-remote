@@ -34,6 +34,7 @@ object Prayer {
         "singapore" to Method(20.0, 18.0),                              // MUIS
         "turkey" to Method(18.0, 17.0, tune = intArrayOf(0, -7, 5, 4, 7, 0)),   // Diyanet: its published times carry these minutes
         "tehran" to Method(17.7, 14.0, maghribAngle = 4.5),             // Institute of Geophysics, University of Tehran
+        "morocco" to Method(19.0, 17.0, tune = intArrayOf(0, 0, 5, 0, 5, 0)),   // Ministry of Habous: +5 min Dhuhr and Maghrib (AlAdhan method 21)
     )
     val IDS = METHODS.keys.toList()
 
@@ -52,6 +53,7 @@ object Prayer {
         tz == "Asia/Singapore" -> "singapore"
         tz == "Europe/Istanbul" || tz == "Asia/Istanbul" -> "turkey"
         tz == "Asia/Tehran" -> "tehran"
+        tz == "Africa/Casablanca" || tz == "Africa/El_Aaiun" -> "morocco"
         tz in setOf("Asia/Karachi", "Asia/Dhaka", "Asia/Kabul", "Asia/Kolkata", "Asia/Calcutta", "Asia/Colombo") -> "karachi"
         tz.startsWith("America/") -> "isna"
         tz.contains('/') && !tz.startsWith("Etc/") -> "mwl"                // a real place we have no rule for: not the country's guess
@@ -66,6 +68,7 @@ object Prayer {
         "SG" -> "singapore"
         "TR" -> "turkey"
         "IR" -> "tehran"
+        "MA" -> "morocco"
         "PK", "BD", "AF", "IN", "LK" -> "karachi"
         "US", "CA" -> "isna"
         else -> null
