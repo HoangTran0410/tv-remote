@@ -1,7 +1,15 @@
 {
   "v": 1,
-  "updated": "2026-10-30",
+  "updated": "2026-11-03",
   "cats": [
+    {
+      "id": "tvremote",
+      "name": {
+        "vi": "TV Remote",
+        "en": "TV Remote",
+        "ru": "TV Remote"
+      }
+    },
     {
       "id": "watch",
       "name": {
@@ -28,6 +36,106 @@
     }
   ],
   "apps": [
+    {
+      "id": "tv-setup",
+      "pkg": "dev.tvremote.setup",
+      "name": "TV Setup",
+      "cat": "tvremote",
+      "desc": {
+        "vi": "Điều khiển TV từ trình duyệt bất kỳ (cả iPhone), hẹn giờ tắt, khoá app, tự sửa ADB.",
+        "en": "Control the TV from any browser (iPhone too); sleep timer, app lock, keeps ADB working.",
+        "ru": "Управление телевизором из любого браузера (и с iPhone), таймер сна, блокировка приложений."
+      },
+      "source": "https://github.com/HoangTran0410/tv-remote",
+      "license": "MIT",
+      "min_sdk": 21,
+      "certs": [
+        "6dbf49b2d455de428edaca6674266f7e3d1222483d59c26f7345f8cc129bd966"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "HoangTran0410/tv-remote",
+          "match": "tv-setup\\.apk"
+        }
+      },
+      "icon": "icons/tv-setup.png",
+      "icon_sha": "d94852360e23ef235260033c9207ebfa2f5f5fb83b47963e41a3adb5591b21bd"
+    },
+    {
+      "id": "tv-home",
+      "pkg": "dev.tvremote.home",
+      "name": "TV Home",
+      "cat": "tvremote",
+      "desc": {
+        "vi": "Màn hình chính không quảng cáo: app của bạn, thời tiết, tin tức, chủ đề.",
+        "en": "A home screen without ads: your apps, weather, news and themes.",
+        "ru": "Главный экран без рекламы: ваши приложения, погода, новости, темы."
+      },
+      "source": "https://github.com/HoangTran0410/tv-remote",
+      "license": "MIT",
+      "min_sdk": 21,
+      "certs": [
+        "657aabacfdccbc22ff1f61138df7efd79fae765df742f7d15d80dac84c7d81b3"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "HoangTran0410/tv-remote",
+          "match": "tv-home\\.apk"
+        }
+      },
+      "icon": "icons/tv-home.png",
+      "icon_sha": "7332d74f0dd6d0c33298e8e0c134cb7bbc2cb4045588fe90729287ea5723bbb6"
+    },
+    {
+      "id": "tv-channels",
+      "pkg": "dev.tvremote.channels",
+      "name": "TV Channels",
+      "cat": "tvremote",
+      "desc": {
+        "vi": "Kênh TV miễn phí khắp thế giới, theo nước và thể loại.",
+        "en": "Free TV channels from around the world, by country and genre.",
+        "ru": "Бесплатные телеканалы со всего мира, по странам и жанрам."
+      },
+      "source": "https://github.com/HoangTran0410/tv-remote",
+      "license": "MIT",
+      "min_sdk": 21,
+      "certs": [
+        "a3e09c97fb750bf09285d6fa7c065d4c63ee6d8247b1caaa555dd279e2534b6a"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "HoangTran0410/tv-remote",
+          "match": "tv-channels\\.apk"
+        }
+      },
+      "icon": "icons/tv-channels.png",
+      "icon_sha": "a73ed2e16f156d13bd8f0ebc74b08caf3113c19ec1742ceb2f1fc465e03747ba"
+    },
+    {
+      "id": "tv-games",
+      "pkg": "dev.tvremote.games",
+      "name": "TV Games",
+      "cat": "tvremote",
+      "desc": {
+        "vi": "Game retro và game web trên TV, điện thoại làm tay cầm.",
+        "en": "Retro and web games on the TV, with phones as gamepads.",
+        "ru": "Ретро- и веб-игры на телевизоре, телефоны вместо геймпадов."
+      },
+      "source": "https://github.com/HoangTran0410/tv-remote",
+      "license": "GPL-3.0-only",
+      "min_sdk": 21,
+      "certs": [
+        "b7b61e8be4809effc2b4c16ab75a320b9b655d45a0ef5f0f706feb483bbff567"
+      ],
+      "apk": {
+        "universal": {
+          "repo": "HoangTran0410/tv-remote",
+          "match": "tv-games\\.apk"
+        }
+      },
+      "icon": "icons/tv-games.png",
+      "icon_sha": "1fc8e645b286336b3bcc82179fb3a6702dc1b9350ade60861af7c3753075a540"
+    },
     {
       "id": "smarttube",
       "pkg": "org.smarttube.stable",
