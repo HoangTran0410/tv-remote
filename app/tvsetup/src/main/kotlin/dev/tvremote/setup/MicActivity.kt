@@ -151,7 +151,9 @@ class MicActivity : Activity(), RecognitionListener {
     }
 
     private fun start(r: SpeechRecognizer, words: ArrayList<String>?) {
-        val lang = if (Words.lang == "vi") "vi-VN" else "en-US"
+        val lang = if (android.os.Build.VERSION.SDK_INT >= 24)            // the app's language with its region (vi-VN, fr-FR): recognizers want one
+            android.icu.util.ULocale.addLikelySubtags(android.icu.util.ULocale(Words.lang)).let { it.language + "-" + it.country }
+            else if (Words.lang == "en") "en-US" else Words.lang
         r.startListening(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply { if (words != null) putStringArrayListExtra(VoiceProtocol.WORDS, words) }
             .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             .putExtra(RecognizerIntent.EXTRA_LANGUAGE, lang).putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)

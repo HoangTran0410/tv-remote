@@ -284,39 +284,19 @@ $('#quickq').addEventListener('input', filterQuick);
 // 🤖 "which apps can go?": the TV's app lists and memory as a ready question for an AI (or a knowledgeable friend). Nobody can
 // tell a Sony service from bloatware by its package name; an AI that knows Android TV mostly can. The text stays editable.
 function aiPrompt(r) {
-  const vi = window.LANG !== 'en';
   const named = (p) => r.labels && r.labels[p] ? `${p} (${r.labels[p]})` : p;
   const ours = ['dev.tvremote.setup', 'com.tailscale.ipn'].filter((p) => r.user.includes(p));
   const mem = r.memory.map((m) => `${m.pkg}: ${m.mb} MB`).join('\n');
-  return (vi ? [
-    `Mình có TV ${r.device}, Android ${r.android}, RAM ${r.ram_mb} MB. Mình muốn TV chạy mượt hơn bằng cách tắt (disable) hoặc gỡ những app không cần.`,
-    'Xem danh sách bên dưới và chia thành 3 nhóm, mỗi app kèm một lý do ngắn:',
-    '1. An toàn để tắt/gỡ (bloatware, demo, quảng cáo, app trùng chức năng)',
-    '2. Tắt được nếu không dùng tính năng đó (nói rõ sẽ mất tính năng gì)',
-    '3. Không được đụng (hệ thống, Google Play Services, bàn phím, launcher đang dùng, Chromecast, cài đặt, nguồn phát TV...)',
-    'Ưu tiên "tắt" (pm disable-user --user 0) vì bật lại được; chỉ đề nghị gỡ với app tự cài. Cuối cùng xếp các app nên tắt theo mức RAM lấy lại được.',
-    'Người nhà vẫn dùng: (điền vào, vd YouTube, Netflix, tìm kiếm bằng giọng nói, xem truyền hình bằng ăng-ten)',
-    'Cuối câu trả lời, ghi riêng danh sách app id nên tắt (mỗi dòng một id) trong một khối code, để mình dán vào ô "Bật / tắt / gỡ hàng loạt".',
-    ours.length ? `Đừng đề xuất tắt ${ours.join(', ')}: mình dùng để điều khiển TV.` : '',
-    '', '== App đang tốn RAM nhất lúc này ==', mem,
-    '', `== App tự cài (${r.user.length}) ==`, r.user.map(named).join('\n'),
-    '', `== App hệ thống đang bật (${r.system.length}) ==`, r.system.join('\n'),
-    '', `== App đã tắt sẵn (${r.disabled.length}) ==`, r.disabled.join('\n') || '(không có)',
-  ] : [
-    `I have a ${r.device} TV, Android ${r.android}, ${r.ram_mb} MB of RAM. I want it to run smoother by disabling or uninstalling apps it does not need.`,
-    'Look at the lists below and sort the apps into 3 groups, each with a short reason:',
-    '1. Safe to disable/uninstall (bloatware, demos, ads, duplicates)',
-    '2. Can be disabled if that feature is not used (say which feature is lost)',
-    '3. Do not touch (system, Google Play Services, keyboard, the launcher in use, Chromecast, settings, TV inputs...)',
-    'Prefer "disable" (pm disable-user --user 0), which can be undone; suggest uninstalling only for user-installed apps. Finally, rank the apps to disable by the memory they would give back.',
-    'My family still uses: (fill in, e.g. YouTube, Netflix, voice search, antenna TV)',
-    'At the end, list the app ids to disable on their own (one per line) in a code block, so I can paste them into "Turn on / off / remove in bulk".',
-    ours.length ? `Do not suggest disabling ${ours.join(', ')}: I use them to control the TV.` : '',
-    '', '== Apps using the most memory right now ==', mem,
-    '', `== User-installed apps (${r.user.length}) ==`, r.user.map(named).join('\n'),
-    '', `== System apps that are on (${r.system.length}) ==`, r.system.join('\n'),
-    '', `== Apps already disabled (${r.disabled.length}) ==`, r.disabled.join('\n') || '(none)',
-  ]).filter((l, i, a) => l !== '' || a[i - 1] !== '').join('\n');
+  const head = (id, n) => '== ' + T(id, { n }) + ' ==';
+  return [
+    T('apps.ai_intro', { device: r.device, android: r.android, ram: r.ram_mb }), T('apps.ai_sort'), T('apps.ai_safe'), T('apps.ai_maybe'), T('apps.ai_keep'),
+    T('apps.ai_prefer'), T('apps.ai_rank'), T('apps.ai_family'), T('apps.ai_ids', { tool: T('apps.turn_on_off_remove') }),
+    ours.length ? T('apps.ai_ours', { apps: ours.join(', ') }) : '',
+    '', head('apps.ai_h_memory'), mem,
+    '', head('apps.ai_h_user', r.user.length), r.user.map(named).join('\n'),
+    '', head('apps.ai_h_system', r.system.length), r.system.join('\n'),
+    '', head('apps.ai_h_disabled', r.disabled.length), r.disabled.join('\n') || T('apps.ai_none'),
+  ].filter((l, i, a) => l !== '' || a[i - 1] !== '').join('\n');
 }
 $('#aiapps').addEventListener('click', async (e) => {                // the TV's memory survey takes a few seconds: the button says so until the text is ready
   const done = UI.busy(e.currentTarget, T('apps.getting_list'));

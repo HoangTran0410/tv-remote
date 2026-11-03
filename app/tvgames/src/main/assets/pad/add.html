@@ -28,21 +28,18 @@ a{color:#7aa7ff;display:inline-block;margin-top:20px}
 <form id="wf"><input id="wn" maxlength="40" autocomplete="off"><input id="wu" type="url" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="https://"><button class="pick" id="wb" type="submit" style="border:0;width:100%"></button></form>
 <div id="wmsg"></div>
 <a id="back"></a>
+<script src="words.js?k=__K__"></script>
 <script>
 const K = new URLSearchParams(location.search).get('k') || '';
-const VI = (navigator.language || '').toLowerCase().startsWith('vi');
-const W = VI ? { h: 'Thêm game', p: 'Chọn file game (.nes, tối đa 64 MB mỗi file). Game hiện trên TV ngay sau khi tải xong.', b: 'Chọn file…', ok: 'Xong', bad: 'Lỗi', big: 'Quá 64 MB', typ: 'Loại file không hỗ trợ', back: '← Về tay cầm', h2: 'Thêm link game web', p2: 'Dán địa chỉ một game chạy trên trình duyệt (https, hoặc http trong mạng nhà). Chơi bằng tay cầm này.', wn: 'Tên game', wb: 'Thêm link', wok: 'Đã thêm. Xem trên TV.', wbad: 'Link không hợp lệ (cần http:// hoặc https://)' }
-  : { h: 'Add games', p: 'Pick game files (.nes, up to 64 MB each). They show up on the TV as soon as they are uploaded.', b: 'Choose files…', ok: 'Done', bad: 'Failed', big: 'Over 64 MB', typ: 'Unsupported file type', back: '← Back to the controller', h2: 'Add a web game link', p2: 'Paste the address of a game that runs in a browser (https, or http on your home network). You play it with this controller.', wn: 'Game name', wb: 'Add link', wok: 'Added. Look at the TV.', wbad: 'Not a valid link (needs http:// or https://)' };
-document.documentElement.lang = VI ? 'vi' : 'en';
-h.textContent = W.h; p.textContent = W.p; pick.textContent = W.b; pick.htmlFor = 'file';
-back.textContent = W.back; back.href = '/?k=' + encodeURIComponent(K);
-h2.textContent = W.h2; p2.textContent = W.p2; wn.placeholder = W.wn; wb.textContent = W.wb; wn.type = 'text';
+h.textContent = W.aH; p.textContent = W.aP; pick.textContent = W.aB; pick.htmlFor = 'file';
+back.textContent = W.aBack; back.href = '/?k=' + encodeURIComponent(K);
+h2.textContent = W.aH2; p2.textContent = W.aP2; wn.placeholder = W.aWn; wb.textContent = W.aWb; wn.type = 'text';
 wf.onsubmit = (e) => {
   e.preventDefault();
   const x = new XMLHttpRequest();
   x.open('POST', '/weblink?k=' + encodeURIComponent(K) + '&name=' + encodeURIComponent(wn.value.trim()) + '&url=' + encodeURIComponent(wu.value.trim()));
-  x.onload = () => { wmsg.textContent = x.status === 200 ? W.wok : W.wbad; wmsg.style.color = x.status === 200 ? '#22c55e' : '#ef4444'; if (x.status === 200) { wn.value = ''; wu.value = ''; } };
-  x.onerror = () => { wmsg.textContent = W.bad; wmsg.style.color = '#ef4444'; };
+  x.onload = () => { wmsg.textContent = x.status === 200 ? W.aWok : W.aWbad; wmsg.style.color = x.status === 200 ? '#22c55e' : '#ef4444'; if (x.status === 200) { wn.value = ''; wu.value = ''; } };
+  x.onerror = () => { wmsg.textContent = W.aBad; wmsg.style.color = '#ef4444'; };
   x.send();
 };
 const OK = /\.(nes|sfc|smc|gba|cue|chd|pbp)$/i;
@@ -53,13 +50,13 @@ function up(f) {
   row.querySelector('span').textContent = f.name; list.prepend(row);
   const pct = row.querySelectorAll('span')[1], bar = row.querySelector('i');
   const fail = (m) => { row.classList.add('bad'); pct.textContent = m; bar.style.width = '100%'; };
-  if (f.size > 64 * 1024 * 1024) return fail(W.big);
-  if (!OK.test(f.name)) return fail(W.typ);
+  if (f.size > 64 * 1024 * 1024) return fail(W.aBig);
+  if (!OK.test(f.name)) return fail(W.aTyp);
   const x = new XMLHttpRequest();
   x.open('POST', '/upload?k=' + encodeURIComponent(K) + '&name=' + encodeURIComponent(f.name));
   x.upload.onprogress = (e) => { if (e.lengthComputable) { const v = Math.round(e.loaded / e.total * 100); pct.textContent = v + '%'; bar.style.width = v + '%'; } };
-  x.onload = () => { if (x.status === 200) { row.classList.add('ok'); pct.textContent = W.ok; bar.style.width = '100%'; } else fail(W.bad + ' ' + x.status); };
-  x.onerror = () => fail(W.bad);
+  x.onload = () => { if (x.status === 200) { row.classList.add('ok'); pct.textContent = W.aOk; bar.style.width = '100%'; } else fail(x.status === 415 ? W.aTyp : x.status === 413 ? W.aBig : W.aBad + ' ' + x.status); };
+  x.onerror = () => fail(W.aBad);
   x.send(f);
 }
 </script>

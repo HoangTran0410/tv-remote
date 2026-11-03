@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- French and Russian: Ask an AI writes its request in the page's language (it was Vietnamese); dates, times and speech follow the page's language too.
+- TV Games: the phone pad and Add games pages speak every language of the apps (they were Vietnamese or English); Add games says arcade .zip files work too, not only .nes.
 - TV Games: on a TV whose graphics refuse what retro games need (NM-TVBOX1), a game says so instead of the app closing; web games still work.
 
 ## 0.42.0 - 2026-11-03

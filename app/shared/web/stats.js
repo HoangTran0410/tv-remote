@@ -1,7 +1,7 @@
 // History for the Health tab, shared by the three remotes: how long the TV was used and by which apps, day by day, and how
 // memory, CPU and storage moved over time. The TV Setup app on the TV records it (see Stats.kt); this only draws it.
 //
-//   renderStats(root, data, vi, reload)
+//   renderStats(root, data, reload)
 //     data    { usage: { "2026-10-13": { "pkg": seconds } }, samples: [[t, on, cpu, memUsed, memTotal, diskUsed, diskTotal, pkg,
 //               wifiDbm, "wifi"|"eth"|"", wifiMbps], ...], net: [[t, 0 lost|1 back, kind, screen on], ...], labels: { pkg: name }, collector: bool, days }
 //     reload  (days) => void, called when the range buttons are used
@@ -47,7 +47,7 @@
     return cuts;
   };
   window.statsCuts = statsCuts;
-  window.renderStats = (root, data, vi, reload) => {
+  window.renderStats = (root, data, reload) => {
     if (!document.getElementById('st-css')) document.head.append(el('style', { id: 'st-css', textContent: css }));
     const dur = (s) => { const m = Math.round(s / 60); return m < 60 ? T('health.minutes_n', { n: m }) : T('stats.dur_hm', { h: Math.floor(m / 60), m: pad(m % 60) }); };
     const name = (p) => (data.labels && data.labels[p]) || p.split('.').pop();

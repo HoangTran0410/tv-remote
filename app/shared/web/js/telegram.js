@@ -4,7 +4,7 @@
 let tgNow = null, tgAt = 0, tgWant = false, tgPoll = 0, tgChat = null, tgItems = [], tgTotal = 0;
 const tgMin = (s) => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 const TG_KINDS = { on: 'telegram_ui.k_on', off: 'telegram_ui.k_off', limit: 'telegram_ui.k_limit', bed: 'telegram_ui.k_bed', sleep: 'telegram_ui.k_sleep', pair: 'telegram_ui.k_pair' };   // Telegram.ALERTS, in the order /alerts lists them
-const tgWhen = (t) => new Date(t).toLocaleString(LANG === 'vi' ? 'vi-VN' : 'en-GB', { dateStyle: 'short', timeStyle: 'short' });
+const tgWhen = (t) => new Date(t).toLocaleString(LOCALE, { dateStyle: 'short', timeStyle: 'short' });
 const tgAgo = (ms) => { const s = Math.max(0, Math.round(ms / 1000)); return s < 90 ? T('telegram_ui.ago_s', { n: s }) : s < 5400 ? T('telegram_ui.ago_m', { n: Math.round(s / 60) }) : T('telegram_ui.ago_h', { n: Math.round(s / 3600) }); };
 
 function tgCodeLine() {

@@ -1,23 +1,6 @@
 'use strict';
 const K = new URLSearchParams(location.search).get('k') || '';
-const VI = (navigator.language || '').toLowerCase().startsWith('vi');
-const W = VI
-  ? { tlT: 'Bật nghiêng', tlP: 'Điện thoại chỉ cho dùng cảm biến nghiêng qua kết nối bảo mật, nên tay cầm sẽ mở lại bằng https.',
-    tl1: 'Trình duyệt sẽ báo “Kết nối không riêng tư”: đó là TV nhà bạn, không sao, chỉ lần đầu.',
-    tl2a: 'Bấm “Nâng cao”, rồi “Tiếp tục truy cập…”.', tl2i: 'Bấm “Hiện chi tiết”, rồi “truy cập trang web này”, rồi “Truy cập trang web”.',
-    tl3a: 'Tay cầm mở lại, vẫn đúng chỗ của bạn: nghiêng máy để ngắm.', tl3i: 'Tay cầm mở lại, vẫn đúng chỗ của bạn: bấm “Bật nghiêng” lần nữa và chọn Cho phép.',
-    tlGo: 'Tiếp tục', tlNo: 'Thôi, chơi bằng cảm ứng', rl: 'Tải lại game', p: 'Người chơi', c: 'Đang kết nối…', rc: 'Đang kết nối lại…', rch: 'Không thấy TV? Nếu TV đổi mạng hoặc địa chỉ, quét lại mã QR trên TV.', rs: 'Quét lại mã QR trên TV', rsh: 'Mã kết nối đã đổi. Quét mã mới để vào lại.', nm: 'Tên của bạn', pf: 'Bắn', ps: 'Phụ', pr: 'Căn giữa', ph: 'Rê ngón tay để ngắm', phg: 'Nghiêng máy hoặc rê ngón tay để ngắm', gy: 'Bật nghiêng', gyOn: 'Nghiêng: bật', gyOff: 'Nghiêng: tắt', rp: 'Tay cầm đang mở ở trình duyệt hoặc tab khác', rph: 'Chạm để dùng ở đây.', kk: 'TV đã mời bạn ra khỏi phòng', kkh: 'Chạm để vào lại.', sv: 'Lưu', cx: 'Huỷ', f: 'Hết chỗ chơi', h: 'Rung', a: 'Thêm game', s: 'Gửi', k: 'Cần xoay thay D-pad', b: 'Quay lại', g: 'TV Games', t: 'Thêm vào Màn hình chính để chơi toàn màn hình',
-    s1: 'Bấm nút Chia sẻ của Safari (ô vuông có mũi tên lên)', s2: 'Chọn “Thêm vào Màn hình chính”', s3: 'Mở tay cầm từ biểu tượng mới: toàn màn hình', fs: 'Toàn màn hình', sp: 'Game này tối đa {n} người: bạn đang xem', rd: 'Sẵn sàng', rdOn: 'Đã sẵn sàng ✓', lb: 'Phòng chờ: thử các nút, rồi bấm Sẵn sàng', cl: 'Bắt đầu sau' }
-  : { tlT: 'Turn on tilt', tlP: 'Phones give the tilt sensor only over a secure connection, so the pad opens again over https.',
-    tl1: 'The browser will say “Your connection is not private”: it is your own TV, that is fine, and only the first time.',
-    tl2a: 'Tap “Advanced”, then “Proceed to…”.', tl2i: 'Tap “Show Details”, then “visit this website”, then “Visit Website”.',
-    tl3a: 'The pad opens again in your same seat: tilt the phone to aim.', tl3i: 'The pad opens again in your same seat: tap “Turn on tilt” again and choose Allow.',
-    tlGo: 'Continue', tlNo: 'No, play by touch', rl: 'Reload the game', p: 'Player', c: 'Connecting…', rc: 'Reconnecting…', rch: 'No TV in sight? If the TV changed network or address, scan its QR code again.', rs: 'Scan the QR code on the TV again', rsh: 'The connection code was changed. Scan the new one to join again.', nm: 'Your name', pf: 'Fire', ps: 'Alt', pr: 'Recenter', ph: 'Drag a finger to aim', phg: 'Tilt the phone or drag a finger to aim', gy: 'Turn on tilt', gyOn: 'Tilt: on', gyOff: 'Tilt: off', rp: 'The pad is open in another browser or tab', rph: 'Tap to use it here.', kk: 'The TV sent you out of the room', kkh: 'Tap to join again.', sv: 'Save', cx: 'Cancel', f: 'Room is full', h: 'Haptics', a: 'Add game', s: 'Send', k: 'Stick instead of D-pad', b: 'Back', g: 'TV Games', t: 'Add to Home Screen to play fullscreen',
-    s1: 'Tap Safari’s Share button (the square with an up arrow)', s2: 'Choose “Add to Home Screen”', s3: 'Open the pad from the new icon: fullscreen', fs: 'Fullscreen', sp: 'This game takes {n} players at most: you are watching', rd: 'Ready', rdOn: 'Ready ✓', lb: 'Lobby: try the buttons, then tap Ready', cl: 'Starting in' };
-// the TV left TV Games (Home) or closed it: the pad says so instead of looking healthy
-Object.assign(W, VI
-  ? { aw: 'TV Games đang không mở trên TV', awh: 'Các nút chưa điều khiển được gì lúc này.', awo: 'Mở lại TV Games', awr: 'Mở TV Games bằng remote của TV', cs: 'TV Games đã đóng trên TV', csh: 'Mở lại TV Games trên TV, điện thoại sẽ tự vào lại.' }
-  : { aw: 'TV Games is not open on the TV', awh: 'The buttons do nothing right now.', awo: 'Open TV Games again', awr: 'Open TV Games with the TV remote', cs: 'TV Games was closed on the TV', csh: 'Open TV Games on the TV again; this phone joins back by itself.' });
+// W (the words) comes from words.js: app/shared/i18n/apps/<lang>/pad.json, picked by the phone's language
 const COLORS = ['#3b82f6', '#ef4444', '#22c55e', '#eab308'];
 const $ = (s) => document.querySelector(s);
 const store = {

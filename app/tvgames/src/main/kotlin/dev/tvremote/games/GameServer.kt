@@ -430,6 +430,7 @@ class GameServer private constructor(private val ctx: Context) {
             if (parts[0] == "POST") return when (path) { "/upload" -> upload(conn, inp, h, q); "/weblink" -> weblink(conn, q); else -> reply(conn, 404, "text/plain", "no".toByteArray()) }
             if (path.startsWith("/webgames/")) return webfile(conn, path.removePrefix("/webgames/"), q["k"] == token)
             if (path == "/ws" && h["upgrade"]?.lowercase() == "websocket") { conn.kind = kindOf(h["user-agent"]); return socket(conn, inp, h["sec-websocket-key"] ?: return) }
+            if (path == "/words.js") return words(conn, h["accept-language"])
             val name = when (path) { "/", "/index.html" -> "index.html"; "/pad.css" -> "pad.css"; "/pad.js" -> "pad.js"; "/add" -> "add.html"; "/layouts.json" -> "layouts.json"; "/manifest.webmanifest" -> "manifest.webmanifest"; "/icon.png" -> "icon.png"; else -> null }
                 ?: return reply(conn, 404, "text/plain", "not found".toByteArray())
             var body = if (name == "layouts.json") Catalog.layouts(ctx).toByteArray() else ctx.assets.open("pad/$name").use { it.readBytes() }   // the catalog's pad overrides
@@ -437,6 +438,16 @@ class GameServer private constructor(private val ctx: Context) {
             reply(conn, 200, when { name.endsWith(".css") -> "text/css"; name.endsWith(".js") -> "text/javascript"; name.endsWith(".json") -> "application/json"; name.endsWith(".webmanifest") -> "application/manifest+json"; name.endsWith(".png") -> "image/png"; else -> "text/html" } + "; charset=utf-8", body)
         } catch (e: Exception) {
         } finally { conn.close() }                                    // the early returns too (no websocket key, a header cut off)
+    }
+
+    /** The pad pages' words as `window.W`: English, overlaid by the first Accept-Language tag that is a language of langs.json. */
+    private fun words(c: Conn, accept: String?) {
+        fun load(l: String) = try { org.json.JSONObject(String(ctx.assets.open("pad/words/$l.json").use { it.readBytes() }, Charsets.UTF_8)) } catch (e: Exception) { org.json.JSONObject() }
+        val lang = (accept ?: "").split(',').firstNotNullOfOrNull { dev.tvremote.i18n.Langs.of(it.substringBefore(';').trim()) } ?: "en"
+        val w = load("en")
+        if (lang != "en") load(lang).let { o -> o.keys().forEach { w.put(it, o.get(it)) } }
+        val js = "window.W = $w; document.documentElement.lang = ${org.json.JSONObject.quote(lang)};"
+        reply(c, 200, "application/javascript; charset=utf-8", js.toByteArray(Charsets.UTF_8), "Vary: Accept-Language\r\n")
     }
 
     private fun webfile(c: Conn, rel0: String, setCookie: Boolean) {

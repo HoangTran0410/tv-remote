@@ -723,7 +723,7 @@ async function loadPaired() {
   const setScope = async (d, k) => { if (k !== d.scope && await api('/api/paired/scope', { id: d.id, scope: k })) loadPaired(); };
   const rows = r.devices.map((d) => UI.item({
     name: d.name || T('setup.old_device'),
-    sub: [d.created ? T('setup.paired_at', { when: new Date(d.created).toLocaleString(LANG === 'vi' ? 'vi-VN' : 'en-GB', { dateStyle: 'short', timeStyle: 'short' }) }) : '',
+    sub: [d.created ? T('setup.paired_at', { when: new Date(d.created).toLocaleString(LOCALE, { dateStyle: 'short', timeStyle: 'short' }) }) : '',
       d.me ? T('setup.this_device') : T('setup.used_ago', { ago: agoText(d.seen) }), d.ip].filter(Boolean).join(' · '),
     extra: owner && d.kind === 'web' && !d.me ? [scopeChips(d.scope || 'full', (k) => setScope(d, k))] : [],   // what it may do: Scope.kt
     acts: [el('button', { className: 'small danger', textContent: T('setup.unpair'), title: T('setup.forget_title'),

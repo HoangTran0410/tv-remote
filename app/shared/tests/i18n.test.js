@@ -109,13 +109,10 @@ test('every id is used', () => {
 test('scripts write no words of their own: every word is an id', () => {
   // the old way (a table turning Vietnamese sentences into English on the rendered page) is gone: a sentence in a script would
   // show in Vietnamese to every other language. Left alone: old.js (runs on browsers too old for the rest, carries both
-  // languages), voice.js (what people say, matched, not shown), the request apps.js writes for an AI (both languages, editable).
+  // languages), voice.js (what people say, matched, not shown).
   const SKIP = new Set(['i18n.js', 'old.js', 'voice.js']), bad = [];
   for (const f of fs.readdirSync(path.join(web, 'js')).filter((x) => x.endsWith('.js') && !SKIP.has(x))) {
-    let inAi = false;
     read('js/' + f).split('\n').forEach((line, i) => {
-      if (/^function aiPrompt\b/.test(line)) inAi = true; else if (inAi && /^}/.test(line)) inAi = false;
-      if (inAi) return;
       const code = line.replace(/\/\/.*$/, '');
       for (const m of code.matchAll(/'((?:[^'\\]|\\.)*)'|`((?:[^`\\]|\\.)*)`|"((?:[^"\\]|\\.)*)"/g))
         if (VI.test(m[1] ?? m[2] ?? m[3])) bad.push(`js/${f}:${i + 1}: ${(m[1] ?? m[2] ?? m[3]).slice(0, 60)}`);
@@ -126,7 +123,7 @@ test('scripts write no words of their own: every word is an id', () => {
 });
 
 // The native apps' words: i18n/apps/<lang>/<module>.json, built into res/values-<lang> by app/gradle/i18n.gradle
-const MODULES = ['android', 'channels', 'games', 'home', 'tvapps', 'tvkeys', 'tvui'];
+const MODULES = ['android', 'channels', 'games', 'home', 'tvapps', 'tvkeys', 'tvui', 'pad'];   // pad: the TV Games phone pad (web, not Android strings)
 const fmt = (s) => [...new Set([...(typeof s === 'object' ? Object.values(s).join(' ') : Array.isArray(s) ? s.join(' ') : s).matchAll(/%(?:\d+\$)?[sdf%]/g)].map((m) => m[0]))].sort().join(',');
 const FREE = new Set(['lunar_year']);                                  // numbered args: a language may use more of them (en leaves the zodiac out)
 const shape = (v) => (Array.isArray(v) ? 'array' : v && typeof v === 'object' ? 'plurals' : typeof v);

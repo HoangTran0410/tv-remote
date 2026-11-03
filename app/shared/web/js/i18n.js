@@ -22,6 +22,10 @@ const LANGS = (() => {
   const own = ((navigator.language || 'vi').toLowerCase().split('-')[0]);
   const LANG = LANGS[asked] ? asked : LANGS[stored] ? stored : LANGS[own] ? own : 'en';
   window.LANG = LANG;
+  // dates and times as that language writes them (English day first, as before); speech with its region (vi-VN, fr-FR: a recognizer
+  // wants one), from Intl, so a new language needs no line here
+  window.LOCALE = LANG === 'en' ? 'en-GB' : LANG;
+  window.SPEECH_LANG = (() => { try { const l = new Intl.Locale(LANG).maximize(); return l.language + '-' + l.region; } catch { return LANG; } })();
   // The page reloads to switch language, so where the viewer is (tab, whether the TV list was open, scroll) is handed over once
   // through sessionStorage: without it the computer app opened on the TV list again, kicking the viewer off the TV.
   window.LANG_KEEP = null;

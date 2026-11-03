@@ -39,7 +39,7 @@ android {
     lint { checkReleaseBuilds = false; checkOnly += "NewApi" }        // lintDebug: a call newer than minSdk 21 (Android 5-6 boxes crashed); release.sh runs it
     sourceSets["main"].java.srcDirs(layout.buildDirectory.dir("generated/qr"), "../shared/src/guard/kotlin", "../shared/src/guard/android", "../shared/src/report/kotlin", "../shared/src/report/android", "../shared/src/tvui/kotlin", "../shared/src/marks/kotlin", "../shared/src/sign/kotlin", "../shared/src/selfupdate/kotlin")   // Ed25519: games.json is signed; Release + SelfUpdate: its own updates
     sourceSets["main"].res.srcDirs("../shared/src/tvui/res")                 // tv_style.xml: ONE copy for the TV apps (app/DESIGN-TV.md)
-    sourceSets["main"].assets.srcDirs("../../docs/games")             // games.json + .sig: the copy used until the site's is read
+    sourceSets["main"].assets.srcDirs("../../docs/games", layout.buildDirectory.dir("generated/padwords"))   // games.json + .sig: the copy used until the site's is read; the pad's words
     androidResources { ignoreAssetsPattern = "!roms" }                // the site's docs/games/roms are not packed
     compileOptions { sourceCompatibility = JavaVersion.VERSION_11; targetCompatibility = JavaVersion.VERSION_11 }
     kotlinOptions { jvmTarget = "11" }
@@ -64,3 +64,10 @@ val copyQr = tasks.register<Copy>("copyQr") {
     into(layout.buildDirectory.dir("generated/qr/dev/tvremote/core"))
 }
 tasks.matching { it.name == "preBuild" }.configureEach { dependsOn(copyQr) }
+
+// The phone pad's words (web only, not Android strings): apps/<lang>/pad.json -> assets/pad/words/<lang>.json, served as /words.js by GameServer
+val copyPadWords = tasks.register<Copy>("copyPadWords") {
+    from("../shared/i18n/apps") { include("*/pad.json"); eachFile { path = path.substringBefore('/') + ".json" }; includeEmptyDirs = false }
+    into(layout.buildDirectory.dir("generated/padwords/pad/words"))
+}
+tasks.matching { it.name == "preBuild" }.configureEach { dependsOn(copyPadWords) }

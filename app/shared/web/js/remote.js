@@ -274,7 +274,7 @@ let rec = null;
 function hear() {                                                     // this device's speech as words, then to the TV
   if (rec) { rec.stop(); return; }
   const r0 = rec = new Speech(); let dropped = false, handOver = false, mic = null;
-  rec.lang = LANG === 'vi' ? 'vi-VN' : 'en-US'; rec.interimResults = true;
+  rec.lang = window.SPEECH_LANG || LANG; rec.interimResults = true;
   rec.onresult = (e) => { const r = e.results[e.results.length - 1]; hearWords(r[0].transcript); if (r.isFinal && !dropped) askTv(r[0].transcript); };
   rec.onerror = (e) => {
     if (e.error === 'aborted' || e.error === 'no-speech') return;

@@ -38,7 +38,7 @@ $('#freeram').addEventListener('click', async () => {
 let hmode = 'now';
 async function loadHist(days) {
   $('#hhist').replaceChildren(el('div', { className: 'muted waiting', textContent: T('health.reading_from_the_tv') }));
-  const d = await api('/api/stats?days=' + (days || 7)); if (d && hmode === 'hist') renderStats($('#hhist'), d, window.LANG === 'vi', loadHist);
+  const d = await api('/api/stats?days=' + (days || 7)); if (d && hmode === 'hist') renderStats($('#hhist'), d, loadHist);
 }
 document.querySelectorAll('#hmode button').forEach((b) => b.addEventListener('click', () => {
   hmode = b.dataset.m; document.querySelectorAll('#hmode button').forEach((x) => x.classList.toggle('on', x === b));
@@ -63,7 +63,7 @@ function deathWhy(w) {
   return w;
 }
 const ms2say = (ms) => ms == null ? '' : ms <= 0 || ms >= 2147483647 ? T('health.never') : fmtUptime(ms / 1000);
-const slClock = (t) => new Date(t * 1000).toLocaleTimeString(window.LANG === 'vi' ? 'vi-VN' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
+const slClock = (t) => new Date(t * 1000).toLocaleTimeString(window.LOCALE, { hour: '2-digit', minute: '2-digit' });
 const slWhen = (t) => { const d = new Date(t * 1000), today = new Date().toDateString() === d.toDateString();
   return slClock(t) + (today ? '' : ' ' + d.getDate() + '/' + (d.getMonth() + 1)); };
 let sleepAt = 0, sleepBusy = false, sleepGen = 0, sleepSeen = '', sleepShown = 7;
@@ -153,7 +153,7 @@ function sleepDays(p) {
     for (const [a, z] of bars) rect((a - from) / 60, (z - a) / 60, 'sl-on');
     for (const t of ticks) rect((t - from) / 60, 6, 'sl-ts');
     const d = new Date(from * 1000);
-    const name = i === 0 ? T('health.today') : i === 1 ? T('health.yesterday') : d.toLocaleDateString(window.LANG === 'vi' ? 'vi-VN' : 'en-GB', { weekday: 'short', day: 'numeric', month: 'numeric' });
+    const name = i === 0 ? T('health.today') : i === 1 ? T('health.yesterday') : d.toLocaleDateString(window.LOCALE, { weekday: 'short', day: 'numeric', month: 'numeric' });
     rows.push(el('div', { className: 'sl-day' }, el('div', { className: 'sl-top' }, el('b', { textContent: name }),
       el('small', { textContent: [T('health.day_on', { n: wakes, t: fmtUptime(secs) }), ticks.length ? T('health.day_ts_lost', { n: ticks.length }) : ''].filter(Boolean).join(' · ') })), svg));
   }
