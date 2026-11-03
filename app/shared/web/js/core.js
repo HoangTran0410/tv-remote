@@ -587,7 +587,7 @@ async function checkAsk() {
   const r = await fetch('/api/adb/prompt').then((x) => x.ok ? x.json() : null).catch(() => null);
   const fp = (r && r.fingerprint) || '';
   const other = !!fp && !r.ours;                                       // our own key's question is the app's to answer, never the person's
-  put($('#askother'), 'hidden', !other || picking); put($('#askalwayslbl'), 'hidden', !r.always); if (fp !== askSeen) { askSeen = fp; $('#askfp').replaceChildren(...fp.split(':').flatMap((x, i, a) => [x + (i < a.length - 1 ? ':' : ''), document.createElement('wbr')])); }   // wraps between bytes, never inside one
+  put($('#askother'), 'hidden', !other || picking); put($('#askalwayslbl'), 'hidden', !(r && r.always)); if (fp !== askSeen) { askSeen = fp; $('#askfp').replaceChildren(...fp.split(':').flatMap((x, i, a) => [x + (i < a.length - 1 ? ':' : ''), document.createElement('wbr')])); }   // wraps between bytes, never inside one
 }
 async function answerAsk(yes) {
   const fp = askSeen; if (!fp) return;

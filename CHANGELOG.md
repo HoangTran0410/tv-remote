@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Fixed: the page stopped with an error when the TV did not answer the check for "Allow USB debugging?" (0.43.0).
 - Computer app: Quit closes the app within 5 s even when its window does not close (seen now and then on Windows).
 
 ## 0.43.0 - 2026-11-03
