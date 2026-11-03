@@ -166,6 +166,8 @@ Optional, and usually not needed: TV Setup opens the switch itself. Without ADB 
 
 > 📡 A TV with **Wireless debugging** only (Android 11+)? No ADB debugging switch needed: open the TV's web page, press **📡 Pair with Wireless debugging**, follow [the steps](#wireless).
 
+> 🔥 **Fire TV:** ADB is on but TV Setup still cannot connect? Amazon blocks an app on the TV from using its own ADB; use the phone or computer app.
+
 > 🔐 TV Setup says “The TV is asking Allow USB debugging?”: ADB is already on, just tick **Always allow** on the TV, then choose OK.
 
 > 📡 Also worth turning on: **Network & Internet → Remote start**, so the TV can be woken from afar.
@@ -197,6 +199,8 @@ The first time a device connects, the TV asks whether to trust it. This is Andro
 4. The app goes to the remote on its own.
 
 > ⚠️ Only allow when you just tapped Connect yourself. This box gives that device deep control of the TV.
+
+> 🔑 Another device asking “Allow USB debugging?”: the page shows its code; allow it only if it is yours. The **Who may use ADB** card (Setup tab) lists and revokes them.
 
 > 💡 No box? See [The self-check when it will not connect](#selfcheck).
 
@@ -1320,6 +1324,8 @@ The phone app's Manage screen uses Android's own browser (WebView). If it is too
 | Choppy picture | Lower size and bitrate ([Picture quality](#quality)). |
 | Tailscale shows no link | Wait a bit, then tap **🔑** again ([Tailscale](#away)). |
 | Play Protect warns | Choose “Install anyway”. The source is public. |
+| An.apks /.xapk /.apkm says a part is missing or locked | Use the complete file, without a password; the app sends only the parts that fit the TV. |
+| Fire TV: TV Setup cannot reach ADB though it is on | Amazon blocks an app on the TV from using its own ADB; use the phone or computer app. |
 | Fire TV: Home / Alexa buttons dead, other keys work | First setup never finished: the app says so at the top, press **Fix** (sets `user_setup_complete` to 1). |
 | TV Settings freezes on the text-to-speech page | Run `pm clear com.google.android.tts` (the Terminal, or `adb shell`); the voice downloads again on first use. |
 | The TV's page shows no pairing code | A TV with no ADB cannot show it by itself: open TV Setup on the TV, the code is on its main screen (2 minutes). See [Open the TV's web page](#web-iphone). |

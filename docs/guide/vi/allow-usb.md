@@ -9,4 +9,6 @@ Lần đầu một máy nối vào TV, TV hỏi xem có tin máy đó không. Đ
 
 > ⚠️ Chỉ bấm Cho phép khi chính bạn vừa bấm Kết nối. Hộp này cho phép máy kia điều khiển sâu TV.
 
+> 🔑 Máy khác hỏi “Cho phép gỡ lỗi USB?”: trang hiện mã của máy đó, chỉ cho phép nếu là máy của bạn. Thẻ **Ai được dùng ADB** (tab Thiết lập) liệt kê và thu hồi.
+
 > 💡 Không thấy hộp? Xem [Tự kiểm tra khi không kết nối được](selfcheck.md).

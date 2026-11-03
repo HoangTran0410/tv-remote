@@ -166,6 +166,8 @@ Không bắt buộc, và thường không cần làm: TV Setup tự mở chỗ b
 
 > 📡 TV chỉ có **Gỡ lỗi không dây** (Android 11 trở lên)? Không cần Gỡ lỗi ADB: mở trang web của TV, bấm **📡 Ghép bằng Gỡ lỗi không dây**, làm theo [hướng dẫn](#wireless).
 
+> 🔥 **Fire TV:** ADB đã bật mà TV Setup vẫn báo không nối được? Amazon chặn app trên TV dùng ADB của chính nó; dùng app điện thoại hoặc máy tính.
+
 > 🔐 TV Setup báo “TV đang hỏi Cho phép gỡ lỗi USB?”: ADB đã bật, chỉ cần tích **Luôn cho phép** trên TV rồi chọn OK.
 
 > 📡 Nên bật thêm: **Mạng & Internet → Khởi động từ xa** (Remote start), để bật TV từ xa.
@@ -197,6 +199,8 @@ Lần đầu một máy nối vào TV, TV hỏi xem có tin máy đó không. Đ
 4. App tự vào màn hình điều khiển.
 
 > ⚠️ Chỉ bấm Cho phép khi chính bạn vừa bấm Kết nối. Hộp này cho phép máy kia điều khiển sâu TV.
+
+> 🔑 Máy khác hỏi “Cho phép gỡ lỗi USB?”: trang hiện mã của máy đó, chỉ cho phép nếu là máy của bạn. Thẻ **Ai được dùng ADB** (tab Thiết lập) liệt kê và thu hồi.
 
 > 💡 Không thấy hộp? Xem [Tự kiểm tra khi không kết nối được](#selfcheck).
 
@@ -1320,6 +1324,8 @@ Màn hình Quản lý trong app điện thoại dùng trình duyệt của Andro
 | Hình giật | Giảm cỡ hình và bitrate ([Chất lượng hình](#quality)). |
 | Tailscale không ra link | Chờ thêm rồi bấm lại **🔑** ([Tailscale](#away)). |
 | Play Protect cảnh báo | Chọn “Vẫn cài”. Mã nguồn công khai. |
+| Cài.apks /.xapk /.apkm báo thiếu phần hoặc bị khóa | Dùng đúng file đủ bộ, chưa đặt mật khẩu; app chỉ gửi các phần hợp với TV. |
+| Fire TV: TV Setup báo không nối được ADB dù đã bật | Amazon chặn app trên TV dùng ADB của chính TV; dùng app điện thoại hoặc máy tính. |
 | Fire TV: nút Home / Alexa chết, các phím khác vẫn chạy | Cài đặt ban đầu chưa xong: app tự báo ở đầu trang, bấm **Sửa** (đặt `user_setup_complete` = 1). |
 | Cài đặt của TV đứng ở trang Chuyển văn bản thành giọng nói | Chạy lệnh `pm clear com.google.android.tts` (mục Terminal, hoặc `adb shell`); giọng đọc tải lại ở lần dùng đầu. |
 | Trang web của TV không hiện mã ghép | TV không có ADB nên chưa tự hiện được: mở app TV Setup trên TV, mã ở màn hình chính (2 phút). Xem [Mở trang web của TV](#web-iphone). |

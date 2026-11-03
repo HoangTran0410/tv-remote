@@ -9,4 +9,6 @@ The first time a device connects, the TV asks whether to trust it. This is Andro
 
 > ⚠️ Only allow when you just tapped Connect yourself. This box gives that device deep control of the TV.
 
+> 🔑 Another device asking “Allow USB debugging?”: the page shows its code; allow it only if it is yours. The **Who may use ADB** card (Setup tab) lists and revokes them.
+
 > 💡 No box? See [The self-check when it will not connect](selfcheck.md).
