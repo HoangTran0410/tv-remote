@@ -413,7 +413,8 @@ async function refreshRead() {
   if (s.host !== curHost) { const first = curHost === null; curHost = s.host; if (!first) tvChanged(); }
   if (s.volume && Date.now() > volHold) {
     put('#volv', 'textContent', s.volume.level);
-    $('#r-mute').classList.toggle('on', !!s.volume.muted); put('#r-mute', 'title', s.volume.muted ? T('core.muted_tip') : T('core.mute'));
+    const mute = $('#r-mute');                                        // none when remote.json could not be read
+    if (mute) { mute.classList.toggle('on', !!s.volume.muted); put(mute, 'title', s.volume.muted ? T('core.muted_tip') : T('core.mute')); }
   }
   applyAdb(); allowAlert(); checkAsk(); diagWatch(s);
   if ($('#assist').open && (ADB.state === 'ready' || ADB.state === 'unauthorized')) {   // the TV has opened its ADB port: nothing left to help with

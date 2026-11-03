@@ -354,6 +354,11 @@
   "n": 8,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "1bb957ff3a488ee2d9b284a4|0.42.0": {
+  "at": "2026-11-04T06:24:38+07:00",
+  "n": 1,
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
+ },
  "1bfd183ebabe1f558e4b349e|0.33.1": {
   "at": "2026-10-30T09:07:56+07:00",
   "n": 1,
@@ -1124,6 +1129,11 @@
   "n": 4,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "5b75f99db4e89f1bf05e9ba7|0.42.0": {
+  "at": "2026-11-04T06:24:39+07:00",
+  "n": 1,
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
+ },
  "5bff425f65d93c72f20a0551|0.31.0": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
@@ -1644,6 +1654,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "83256fe098aa582ccd4f668e|0.42.0": {
+  "at": "2026-11-04T06:24:40+07:00",
+  "n": 1,
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
+ },
  "851970ad88ae206fa9b4fc6c|0.32.1": {
   "at": "2026-10-29T17:19:47+07:00",
   "n": 1,
@@ -1680,64 +1695,69 @@
   "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
  },
  "86e0f0317c01d63472f141c3|0.30.0": {
-  "at": "2026-11-03T15:54:20+07:00",
+  "at": "2026-11-04T06:24:40+07:00",
   "n": 1,
-  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "86e0f0317c01d63472f141c3|0.31.0": {
-  "at": "2026-11-03T15:54:20+07:00",
+  "at": "2026-11-04T06:24:40+07:00",
   "n": 1,
-  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "86e0f0317c01d63472f141c3|0.32.1": {
-  "at": "2026-11-03T15:54:20+07:00",
+  "at": "2026-11-04T06:24:40+07:00",
   "n": 2,
-  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "86e0f0317c01d63472f141c3|0.34.0": {
-  "at": "2026-11-03T15:54:20+07:00",
+  "at": "2026-11-04T06:24:40+07:00",
   "n": 1,
-  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "86e0f0317c01d63472f141c3|0.34.1": {
-  "at": "2026-11-03T15:54:20+07:00",
+  "at": "2026-11-04T06:24:40+07:00",
   "n": 1,
-  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "86e0f0317c01d63472f141c3|0.34.2": {
-  "at": "2026-11-03T15:54:20+07:00",
+  "at": "2026-11-04T06:24:40+07:00",
   "n": 1,
-  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "86e0f0317c01d63472f141c3|0.35.0": {
-  "at": "2026-11-03T15:54:20+07:00",
+  "at": "2026-11-04T06:24:40+07:00",
   "n": 1,
-  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "86e0f0317c01d63472f141c3|0.37.0": {
-  "at": "2026-11-03T15:54:20+07:00",
+  "at": "2026-11-04T06:24:40+07:00",
   "n": 1,
-  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "86e0f0317c01d63472f141c3|0.38.0": {
-  "at": "2026-11-03T15:54:20+07:00",
+  "at": "2026-11-04T06:24:40+07:00",
   "n": 1,
-  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "86e0f0317c01d63472f141c3|0.38.2": {
-  "at": "2026-11-03T15:54:20+07:00",
+  "at": "2026-11-04T06:24:40+07:00",
   "n": 1,
-  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "86e0f0317c01d63472f141c3|0.38.4": {
-  "at": "2026-11-03T15:54:20+07:00",
+  "at": "2026-11-04T06:24:40+07:00",
   "n": 1,
-  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "86e0f0317c01d63472f141c3|0.40.0": {
-  "at": "2026-11-03T15:54:20+07:00",
+  "at": "2026-11-04T06:24:40+07:00",
   "n": 1,
-  "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
+ },
+ "86e0f0317c01d63472f141c3|0.42.0": {
+  "at": "2026-11-04T06:24:40+07:00",
+  "n": 1,
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "897eccbc3b0589286bfafdf9|0.34.1": {
   "at": "2026-10-30T09:08:18+07:00",
@@ -2464,6 +2484,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "c9948b1689f4fb7f58ce1925|0.42.0": {
+  "at": "2026-11-04T06:24:41+07:00",
+  "n": 1,
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
+ },
  "c9ed129e030fd9374b14cfd4|0.26.3": {
   "at": "2026-10-26T21:47:46+07:00",
   "n": 1,
@@ -2785,14 +2810,19 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "e22d1d1548eb881e2fbb8bc3|0.30.0": {
-  "at": "2026-10-30T09:08:27+07:00",
+  "at": "2026-11-04T06:24:41+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "e22d1d1548eb881e2fbb8bc3|0.34.1": {
-  "at": "2026-10-30T09:08:27+07:00",
+  "at": "2026-11-04T06:24:41+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
+ },
+ "e22d1d1548eb881e2fbb8bc3|0.42.0": {
+  "at": "2026-11-04T06:24:41+07:00",
+  "n": 1,
+  "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "e2ac20416e441327a8535260|0.30.0": {
   "at": "2026-10-29T17:20:21+07:00",

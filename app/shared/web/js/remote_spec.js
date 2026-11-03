@@ -2,11 +2,13 @@
 // This file reads it and holds REMOTE_DO: what each "do" name in the file does here. Kept free of the page's other scripts at
 // load time (the arrows reach them only when run), so tests/remote.test.js can load it alone and check every name has a handler.
 const REMOTE = (() => {
-  try {                                                               // synchronous: the keys are drawn before remote.js binds them
-    const x = new XMLHttpRequest(), v = new URL(document.currentScript.src).search;   // ?v=stamp of this script, so an update brings the new file too
+  const v = (() => { try { return new URL(document.currentScript.src).search; } catch { return ''; } })();   // ?v=stamp of this script, so an update brings the new file too
+  for (let i = 0; i < 2; i++) try {                                   // synchronous: the keys are drawn before remote.js binds them
+    const x = new XMLHttpRequest();                                   // twice: one dropped answer from a busy TV left a page with no keys (census 83256fe0)
     x.open('GET', 'remote.json' + v, false); x.send();
-    return JSON.parse(x.responseText);
-  } catch { return { rows: {}, menus: {} }; }
+    if (x.status === 200) return JSON.parse(x.responseText);
+  } catch { /* the next try, then none */ }
+  return { rows: {}, menus: {} };
 })();
 // An entry as this page shows it: the "web" fields lay over the common ones, then the "kinds" override of the connected TV
 // (t / icon only: VIDAA's settings key is named Menu); the kind is core.js's TV_KIND, the same one the phone reads (PhoneRemote.kt).
