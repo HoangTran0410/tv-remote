@@ -78,6 +78,29 @@
       "icon_sha": "d94852360e23ef235260033c9207ebfa2f5f5fb83b47963e41a3adb5591b21bd"
     },
     {
+      "id": "tv-voice",
+      "pkg": "dev.tvremote.setup.voice",
+      "also": [
+        "dev.tvremote.setup.voice.en"
+      ],
+      "name": "TV Setup Voice",
+      "cat": "tvremote",
+      "setup": "voice",
+      "desc": {
+        "vi": "Nghe giọng nói ngay trên TV, không cần Internet hay giọng nói của Google. Chạy cùng TV Setup.",
+        "en": "Hears your voice on the TV itself, no Internet and no Google voice needed. Works with TV Setup.",
+        "ru": "Распознаёт голос прямо на телевизоре, без интернета и без голоса Google. Работает вместе с TV Setup."
+      },
+      "source": "https://github.com/HoangTran0410/tv-remote",
+      "license": "MIT",
+      "min_sdk": 21,
+      "certs": [
+        "6dbf49b2d455de428edaca6674266f7e3d1222483d59c26f7345f8cc129bd966"
+      ],
+      "icon": "icons/tv-voice.png",
+      "icon_sha": "c8c362601827414937ffd789a5f5e252bc80def9fdae0efb755816daf89937b7"
+    },
+    {
       "id": "tv-home",
       "pkg": "dev.tvremote.home",
       "name": "TV Home",

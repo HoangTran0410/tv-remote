@@ -122,7 +122,14 @@ for a in d["apps"]:
     if not re.fullmatch(r"[a-z0-9-]+", i) or i in ids:
         fail("id %r: lowercase, unique" % i)
     ids.add(i)
-    for k in ("pkg", "name", "cat", "desc", "icon", "source", "license", "certs", "apk"):
+    # "setup": installed by TV Setup on that screen of its own, never by the list, so no "apk" (AppList.kt; clients before it drop the entry)
+    if a.get("setup") not in (None, "voice"):
+        fail("%s: setup %r (only \"voice\")" % (i, a.get("setup")))
+    if a.get("setup") and "apk" in a:
+        fail("%s: an app TV Setup installs has no apk (an old client would install it beside TV Setup's rule)" % i)
+    if not all(isinstance(p, str) and re.fullmatch(r"[\w.]+", p) for p in a.get("also", [])):
+        fail("%s: also is a list of package names" % i)
+    for k in ("pkg", "name", "cat", "desc", "icon", "source", "license", "certs") + (() if a.get("setup") else ("apk",)):
         if not a.get(k):
             fail("%s: no %s" % (i, k))
     if a["cat"] not in cats:
@@ -134,7 +141,7 @@ for a in d["apps"]:
         fail("%s: icon is icons/%s.png" % (i, i))
     if not all(re.fullmatch(r"[0-9a-f]{64}", c) for c in a["certs"]):
         fail("%s: certs are SHA-256 hex, lowercase" % i)
-    for abi, s in a["apk"].items():
+    for abi, s in a.get("apk", {}).items():
         if abi not in ABIS:
             fail("%s: ABI %r (one of %s)" % (i, abi, sorted(ABIS)))
         ok = s.startswith("https://") if isinstance(s, str) else (re.fullmatch(r"[\w.-]+/[\w.-]+", s.get("repo", "")) and s.get("match"))
@@ -143,7 +150,7 @@ for a in d["apps"]:
 
 for a in d["apps"]:
     path = os.path.join(DIR, a["icon"])
-    if os.environ.get("SKIP_DOWNLOAD") != "1":
+    if os.environ.get("SKIP_DOWNLOAD") != "1" and "apk" in a:
         try:
             urls = {abi: resolve(s) for abi, s in a["apk"].items()}
         except Exception as e:
