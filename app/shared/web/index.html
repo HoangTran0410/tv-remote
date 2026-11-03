@@ -429,6 +429,7 @@
         <div class="actions"><button id="gameopen" hidden data-i18n="games.open">▶ Mở TV Games</button><button class="primary" id="gameinst" hidden></button></div>
       </section>
     </div>
+    <div id="adbwho" data-needs="adb"></div>
     <!-- every setting the TV keeps: the simple ones can be changed, the risky ones are shown locked (health.js) -->
     <details class="card" id="setlist" data-adb-gated>
       <summary data-i18n="tv.all_settings">🗂️ Tất cả cài đặt</summary>
@@ -436,7 +437,6 @@
       <div class="places setfilter" id="setfilter"><button type="button" class="on" data-f="all" data-i18n="tv.all">Tất cả</button><button type="button" data-f="edit" data-i18n="tv.editable">✎ Chỉnh được</button><button type="button" data-f="view" data-i18n="tv.view_only">🔒 Chỉ xem</button></div>
       <div id="setlistbody" class="setlist"></div>
     </details>
-    <div id="adbwho" data-needs="adb"></div>
     <div id="paired" data-for="tv"></div>
   </div>
 

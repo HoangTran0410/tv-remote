@@ -138,5 +138,23 @@ object AdbAccess {
         return if ("Error" in o) "failed" else "settings"
     }
 
+    private val FP = Regex("(?:[0-9A-F]{2}:){15}[0-9A-F]{2}")
+
+    /**
+     * Takes one allowed key away (IAdbManager.unpairDevice, the same call as Wireless debugging's "Forget"): it finds the key by this MD5
+     * in the key store, cuts that device's link and drops the key, so its next connection asks "Allow USB debugging?" again. Checked by
+     * reading the list back: "revoked" when the key is gone, "failed" when it stays (a TV that numbers the call differently does nothing).
+     * Our own key cuts our link mid-call: that is success too.
+     */
+    @Throws(IOException::class)
+    fun revokeOne(adb: Adb, fp: String): String {
+        if (!FP.matches(fp)) return "failed"
+        val sdk = adb.shell("getprop ro.build.version.sdk", 15000).trim().toIntOrNull()
+        if (sdk == null || sdk !in CLEAR_KEYS) return "failed"
+        try { adb.shell("service call adb 7 s16 '$fp' 2>&1", 15000) } catch (e: IOException) { return "revoked" }
+        val left = try { keys(adb.shell("dumpsys adb 2>&1", 15000)) } catch (e: IOException) { return "revoked" }
+        return if (left != null && left.none { it.fingerprint == fp }) "revoked" else "failed"
+    }
+
     private fun xml(s: String) = s.replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&apos;", "'").replace("&amp;", "&")
 }

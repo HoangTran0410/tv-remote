@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Who may use ADB: revoke one device at a time (Android 11+); the card folds like the Setup tab's others, sits above All settings, and shows its two lists in two boxes.
 - TV Apps: leaving the screen while TV Setup installs an app no longer reports a crash (the install goes on).
 - A ⋯ menu no longer opens under the phone app's small TV player (Rename was hidden and a tap closed Manage): it opens above when below is covered, and scrolls when neither side fits.
 - Apps tab: Rename in the app's ⋯ menu (only with TV Home on the TV) writes the same name TV Home's own Rename uses, and the list shows names given on TV Home (TizenTube as "YouTube without ads") without waiting for the next read.
