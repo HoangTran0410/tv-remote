@@ -40,20 +40,26 @@ jobs:
       - name: open, check, quit
         run: |
           set -x
+          shot() { [ "$RUNNER_OS" = Windows ] && powershell -NoProfile -Command "Add-Type -A System.Windows.Forms,System.Drawing; \$b=[Windows.Forms.Screen]::PrimaryScreen.Bounds; \$i=New-Object Drawing.Bitmap \$b.Width,\$b.Height; [Drawing.Graphics]::FromImage(\$i).CopyFromScreen(0,0,0,0,\$i.Size); \$i.Save('shots/$1.png')" || true; }   # what the window shows when it will not close (v0.43.0, a new WebView2)
+          mkdir -p shots; [ "$RUNNER_OS" = Windows ] && reg query 'HKLM\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}' //v pv || true   # the WebView2 version
           app="app/desktop/build/package/${{ matrix.app }}"
           log="$HOME/${{ matrix.log }}/server.log"
           ${{ matrix.run }} "$app" &
           for i in $(seq 60); do curl -H "x-tvr-pass: $TVR_PASS" -sf http://127.0.0.1:8765/api/about && break; sleep 1; done
-          echo; sleep 5
+          echo; sleep 5; shot open
           cat "$log"
           curl -H "x-tvr-pass: $TVR_PASS" -sf -o page.html http://127.0.0.1:8765/                 # not piped: grep -q stops early, curl -H "x-tvr-pass: $TVR_PASS" then fails (23)
           grep -q 'data-core="pc"' page.html
           ! grep -q "no window" "$log"
           curl -H "x-tvr-pass: $TVR_PASS" -sf -X POST -H 'Content-Type: application/json' -d '{}' http://127.0.0.1:8765/api/shutdown
+          sleep 2; shot quit                                           # the quit thread ends the app after 5 s
           for i in $(seq 60); do curl -H "x-tvr-pass: $TVR_PASS" -s http://127.0.0.1:8765/api/about >/dev/null || break; sleep 1; done   # the Intel Mac runner took >20 s once (v0.36.1)
           ! curl -H "x-tvr-pass: $TVR_PASS" -s http://127.0.0.1:8765/api/about
           for i in $(seq 20); do grep -q "Window closed" "$log" && break; sleep 1; done   # written after the port closes: Windows took >0 s (v0.39.0)
           grep -q "Window closed" "$log" || { cat "$log"; false; }   # else the log says where it was stuck (Main.kt's quit thread)
+      - uses: actions/upload-artifact@v4
+        if: always() && runner.os == 'Windows'
+        with: { name: windows-shots, path: shots, if-no-files-found: ignore }
       - name: update itself                                            # Updater.kt: a copy that says 0.0.1, a fake GitHub serving this build
         run: |
           set -x
