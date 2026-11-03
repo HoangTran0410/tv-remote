@@ -720,7 +720,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
                 val v = feeds.viewer?.takeIf { it.ready() } ?: return ok()   // no picture session: nothing to touch
                 return TvControl.touch(v, r.json())                          // the wheel (scroll) too, as on the computer
             }
-            "/api/apps" -> if (r.q("system") != "1") return HttpServer.Response.json(JSONObject().put("apps", apps()))   // every package: Manage
+            "/api/apps" -> if (r.q("system") != "1") return HttpServer.Response.json(JSONObject().put("apps", apps(if (owner) homeNames() else null)).put("home", owner && homeNames() != null))   // every package: Manage; home = Rename is offered
             "/api/app/icon" -> {
                 val png = icon(r.query["pkg"].toString()) ?: return HttpServer.Response.error(404, "no icon")
                 val icon = HttpServer.Response.of("image/png", png)
@@ -737,6 +737,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
             "/api/warm" -> return ok()                                // inUse() has done it: the page's hand is on the remote
             "/api/adb/connect" -> { if (tv == null) connect(); inUse(); return HttpServer.Response.json(JSONObject().put("state", adbWord())) }
         }
+        if (r.path == "/api/app/rename") homeNamesAt = 0L            // the next list reads TV Home's names again
         val managed = manage?.handle(r)
         if (managed != null) return managed
         if (!post) return HttpServer.Response.error(404, "not found")
@@ -893,8 +894,19 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
     }
 
     // ---------------------------------------------------------------- apps on the TV's home screen
+    /** The names given on TV Home (its "names"), for the Apps tab's list and its Rename; null without TV Home or ADB. Held 10 s (a broadcast to TV Home); a rename drops it. */
+    @Volatile private var homeNamesAt = 0L
+    @Volatile private var homeNamesHeld: Map<String, String>? = null
+    private fun homeNames(): Map<String, String>? {
+        if (System.currentTimeMillis() - homeNamesAt < 10_000L) return homeNamesHeld
+        val a = link?.getQuiet() ?: return null
+        homeNamesHeld = try { dev.tvremote.core.ontv.Home.ownConfig { a.shell(it, 15000) }?.let { dev.tvremote.core.ontv.Home.names(it) } } catch (e: Exception) { null }
+        homeNamesAt = System.currentTimeMillis()
+        return homeNamesHeld
+    }
+
     @Throws(Exception::class)
-    private fun apps(): JSONArray {
+    private fun apps(names: Map<String, String>? = null): JSONArray {
         val pm = packageManager
         val out = JSONArray()
         val seen = HashSet<String>()
@@ -902,7 +914,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
             for (ri in pm.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(category), 0)) {
                 val pkg = ri.activityInfo.packageName
                 if (!seen.add(pkg)) continue                          // TV Setup itself too: it has a screen of its own now
-                out.put(JSONObject().put("pkg", pkg).put("keep", Setup.PROTECTED.matches(pkg)).put("meta", JSONObject().put("label", ri.loadLabel(pm).toString()).put("icon", true).put("banner", true)
+                out.put(JSONObject().put("pkg", pkg).put("keep", Setup.PROTECTED.matches(pkg)).put("meta", JSONObject().put("label", names?.get(pkg) ?: ri.loadLabel(pm).toString()).put("icon", true).put("banner", true)
                     .put("iv", ri.activityInfo.applicationInfo.sourceDir?.let { java.io.File(it).lastModified().toString() } ?: "")))   // the picture's link changes on an update
             }
         }
