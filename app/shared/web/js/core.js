@@ -158,7 +158,11 @@ function popover(anchor, items) {
   m.anchor = anchor; (layer && anchor.closest('dialog') || document.body).append(m); popEl = m; if (layer) m.showPopover();   // in the dialog: outside a modal one it would be inert
   const r = anchor.getBoundingClientRect(), w = m.offsetWidth, h = m.offsetHeight, sx = layer ? 0 : scrollX, sy = layer ? 0 : scrollY;
   m.style.left = sx + Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px';
-  m.style.top = sy + (r.bottom + h + 8 > innerHeight && r.top > h + 8 ? r.top - h - 4 : r.bottom + 4) + 'px';
+  const cover = Math.max(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cover-b')) || 0,   // the phone app's small TV player
+    document.body.classList.contains('pip') ? ($('#pipslot') || {}).offsetHeight + 16 || 0 : 0);   // or the page's own: never under it
+  const below = innerHeight - cover - r.bottom - 8, above = r.top - 8, down = h <= below || (h > above && below >= above);
+  if (h > (down ? below : above)) { m.style.maxHeight = (down ? below : above) - 4 + 'px'; m.style.overflowY = 'auto'; }   // too tall either way: it scrolls
+  m.style.top = sy + (down ? r.bottom + 4 : r.top - Math.min(h, above) - 4) + 'px';
   m.querySelector('button').focus({ preventScroll: true });
 }
 document.addEventListener('click', (e) => { if (popEl && !within(popEl, e.target) && !within(popEl.anchor, e.target)) closePop(); }, true);
