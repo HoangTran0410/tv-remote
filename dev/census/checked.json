@@ -64,6 +64,11 @@
   "n": 1,
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
+ "06d05c395271bb834616cb7e|0.18.0": {
+  "at": "2026-11-03T07:09:49+07:00",
+  "n": 1,
+  "note": "TV Games 0.18.0 NM-TVBOX1: says ES3, EGL refuses the ES3 config; GlCheck asks first + GLThread guard, the game says so (fixed, next release)"
+ },
  "079fd99f0b7cd0f6ad9bfa5b|0.34.0": {
   "at": "2026-10-30T09:08:04+07:00",
   "n": 1,

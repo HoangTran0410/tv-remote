@@ -19,6 +19,7 @@
   "scan_add": "Scannez pour ajouter des jeux",
   "empty_hint": "Ou copiez-les avec l'onglet Fichiers de TV Remote, dans Android/data/dev.tvremote.games/files/roms",
   "cant_open": "Impossible d'ouvrir ce jeu",
+  "no_gl": "Les graphismes de ce téléviseur ne font pas tourner les jeux rétro. Les jeux web marchent toujours.",
   "padtest_name": "Test de manette",
   "in_library": "Vous êtes dans la liste des jeux",
   "runs": "Page du jeu : %1$s",

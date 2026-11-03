@@ -19,6 +19,7 @@
   "scan_add": "Scan to add games",
   "empty_hint": "Or copy them with the Files tab of TV Remote, into Android/data/dev.tvremote.games/files/roms",
   "cant_open": "Could not open this game",
+  "no_gl": "This TV's graphics can't run retro games. Web games still work.",
   "padtest_name": "Pad test",
   "in_library": "You are in the game list",
   "runs": "Game page: %1$s",

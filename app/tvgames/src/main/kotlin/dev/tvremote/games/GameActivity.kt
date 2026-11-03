@@ -98,6 +98,8 @@ class GameActivity : ComponentActivity() {
         startedAt = Long.MAX_VALUE                                    // set when the lobby hands over to the game (no picture of the lobby's frozen frame)
         if (::retro.isInitialized) lifecycle.removeObserver(retro)    // Retry after a broken start: the first view goes
         broken = false
+        if (!GlCheck.ok(this)) { failed(getString(R.string.no_gl), gameName); return }   // its EGL refuses what GLRetroView would ask: no crash (GlCheck)
+        GlCheck.guard { runOnUiThread { if (!isDestroyed) failed(getString(R.string.no_gl), gameName) } }
         retro = GLRetroView(this, data)
         lifecycle.addObserver(retro)                                  // GLRetroView is a LifecycleObserver; it also needs onCreate
         retro.onCreate(this)

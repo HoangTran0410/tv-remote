@@ -19,6 +19,7 @@
   "scan_add": "Quét để thêm game",
   "empty_hint": "Hoặc chép bằng tab Tệp của TV Remote vào Android/data/dev.tvremote.games/files/roms",
   "cant_open": "Không mở được game này",
+  "no_gl": "Đồ họa của TV này không chạy được game cổ điển. Game trên web vẫn chơi được.",
   "padtest_name": "Kiểm tra tay cầm",
   "in_library": "Đang ở danh sách game",
   "runs": "Trang game: %1$s",
