@@ -650,39 +650,44 @@
   "note": "fixed in 314c0f33 (PadService plain start)"
  },
  "3de729f6815ae508958555a8|0.28.0": {
-  "at": "2026-10-30T09:07:57+07:00",
+  "at": "2026-11-03T10:16:42+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "Fire TV: Amazon blocks local ADB since 2024; message in 14404eea"
  },
  "3de729f6815ae508958555a8|0.30.0": {
-  "at": "2026-10-30T09:07:57+07:00",
+  "at": "2026-11-03T10:16:42+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "Fire TV: Amazon blocks local ADB since 2024; message in 14404eea"
  },
  "3de729f6815ae508958555a8|0.33.1": {
-  "at": "2026-10-30T09:07:57+07:00",
+  "at": "2026-11-03T10:16:42+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "Fire TV: Amazon blocks local ADB since 2024; message in 14404eea"
  },
  "3de729f6815ae508958555a8|0.34.1": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T10:16:42+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Fire TV: Amazon blocks local ADB since 2024; message in 14404eea"
  },
  "3de729f6815ae508958555a8|0.37.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T10:16:42+07:00",
   "n": 3,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Fire TV: Amazon blocks local ADB since 2024; message in 14404eea"
  },
  "3de729f6815ae508958555a8|0.38.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T10:16:42+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Fire TV: Amazon blocks local ADB since 2024; message in 14404eea"
  },
  "3de729f6815ae508958555a8|0.38.4": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-03T10:16:42+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Fire TV: Amazon blocks local ADB since 2024; message in 14404eea"
+ },
+ "3de729f6815ae508958555a8|0.40.0": {
+  "at": "2026-11-03T10:16:42+07:00",
+  "n": 1,
+  "note": "Fire TV: Amazon blocks local ADB since 2024; message in 14404eea"
  },
  "3df75f21109cfe64c6abe060|0.30.0": {
   "at": "2026-10-30T09:08:09+07:00",
@@ -1875,14 +1880,19 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "a54cc4711ab55a41b38bd0ab|0.29.0": {
-  "at": "2026-11-03T03:42:54+07:00",
+  "at": "2026-11-03T10:16:41+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Fire TV: Amazon blocks local ADB since 2024; message in 14404eea"
  },
  "a54cc4711ab55a41b38bd0ab|0.38.4": {
-  "at": "2026-11-03T03:42:54+07:00",
+  "at": "2026-11-03T10:16:41+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Fire TV: Amazon blocks local ADB since 2024; message in 14404eea"
+ },
+ "a54cc4711ab55a41b38bd0ab|0.40.0": {
+  "at": "2026-11-03T10:16:41+07:00",
+  "n": 2,
+  "note": "Fire TV: Amazon blocks local ADB since 2024; message in 14404eea"
  },
  "a61105e296172cd1c6bf213f|0.30.0": {
   "at": "2026-11-03T03:42:55+07:00",
