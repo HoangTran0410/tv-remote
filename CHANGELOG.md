@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Phone app: no longer warms the phone left open on the remote or Manage. Long names and package names slide three times and rest (they slid forever, keeping the phone drawing ~50 frames a second); in a list only the lines on screen slide.
 - Who may use ADB: revoke one device at a time (Android 11+); the card folds like the Setup tab's others, sits above All settings, and shows its two lists in two boxes.
 - TV Apps: leaving the screen while TV Setup installs an app no longer reports a crash (the install goes on).
 - A ⋯ menu no longer opens under the phone app's small TV player (Rename was hidden and a tap closed Manage): it opens above when below is covered, and scrolls when neither side fits.

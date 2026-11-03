@@ -294,7 +294,9 @@ internal fun TextView.runs() {
     isSingleLine = true
     val still = android.provider.Settings.Global.getFloat(context.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
     if (still) { ellipsize = android.text.TextUtils.TruncateAt.END; return }
-    ellipsize = android.text.TextUtils.TruncateAt.MARQUEE; marqueeRepeatLimit = -1; isSelected = true
+    // three rounds, then it rests (Android's default, the page's RUN_ROUNDS): forever, the TV's long name in the top bar kept
+    // the RenderThread drawing ~51 frames a second, Manage open over it or not (the user's phone grew hot left on Manage)
+    ellipsize = android.text.TextUtils.TruncateAt.MARQUEE; marqueeRepeatLimit = 3; isSelected = true
 }
 
 /** Sets the words only when they change: setText, even to the same words, starts a running line over from its start. */
@@ -307,6 +309,7 @@ internal class StatusText(c: Context) : TextView(c) {
         setTextColor(TEXT); textSize = 15f; typeface = Typeface.DEFAULT_BOLD; runs(); visibility = GONE
     }
     private var inner = false
+    private var one = false
     init { setTextColor(MUTED); textSize = 12f; ellipsize = android.text.TextUtils.TruncateAt.END; maxLines = 2 }
     override fun setText(text: CharSequence?, type: BufferType?) {
         val s = text?.toString() ?: ""
@@ -320,7 +323,10 @@ internal class StatusText(c: Context) : TextView(c) {
     private fun split(n: TextView, s: String, i: Int, type: BufferType?) {
         n.say(if (i < 0) "" else s.substring(0, i))
         n.visibility = if (i < 0) GONE else VISIBLE
-        if (i < 0) { isSingleLine = false; maxLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END } else runs()   // two lines of words, or one that runs
+        if ((i >= 0) != one) {                                         // two lines of words, or one that runs; set again on each
+            one = i >= 0                                               // second's words it laid the bar out again and the name's
+            if (one) runs() else { isSingleLine = false; maxLines = 2; ellipsize = android.text.TextUtils.TruncateAt.END }   // marquee began anew
+        }
         val rest = if (i < 0) s else s.substring(i + 3)
         if (rest != this.text?.toString()) super.setText(rest, type)        // the same words again would restart the marquee
     }

@@ -186,27 +186,40 @@ function runFit(t) {
   }
   // its own width, not the box's scrollWidth: that counts the copy that follows it round (::after). Less than a pixel over is
   // the rounding of clientWidth (80.08 px of words in an 80.08 px box read as 81 > 80): "Google TV" slid with room to spare
-  const over = Math.max(0, Math.ceil(s.getBoundingClientRect().width - 1) - t.clientWidth), same = t.dataset.at === s.textContent, w = s.textContent;
-  if (!runT0.has(w)) { if (runT0.size > 300) runT0.clear(); runT0.set(w, performance.now()); }
+  const over = Math.max(0, Math.ceil(s.getBoundingClientRect().width - 1) - t.clientWidth), same = t.dataset.at === s.textContent;
   if (String(over) === t.dataset.over && same && !fresh) return;     // started again on every call (each second's change on the page) it hitched in WebKit
   t.dataset.over = over; t.dataset.at = s.textContent;
   t.classList.toggle('run', over > 0);
-  runSlide(t, s, over > 0, runT0.get(w));
+  runSlide(t, s, over > 0);
 }
 // As the phone app's marquee: one way round, a copy of the words following a gap behind (::after, from data-t), a pause at the
 // start of each round. A transform with its distance in px, run by the compositor: a margin was drawn on the page's own
 // thread and jerked in the Mac app; the box's contain:paint keeps WebKit drawing the whole moving line (without it the words
 // went blank as they slid). Drawn again (a list redrawn, the same title) it carries on where it was ([t0]).
-const RUN_PX_S = 30, RUN_REST = 1500;
-function runSlide(t, s, on, t0) {
+// Three rounds, then it rests at the start (Android's marqueeRepeatLimit), and only while on screen: forever and everywhere, the
+// Apps tab's long package names kept the phone's RenderThread at ~31% of a core with nothing changing (the user's phone grew hot
+// left on Manage; a CSS animation costs the same, every frame is drawn again either way). A line's rounds start the first time it
+// is seen; a touch or the mouse on it runs it again.
+const RUN_PX_S = 30, RUN_REST = 1500, RUN_ROUNDS = 3;
+const runVis = new IntersectionObserver((list) => list.forEach((e) => { const s = e.target.firstChild; if (s?.nodeType === 1) runPlay(e.target, s, e.isIntersecting); }));
+function runSlide(t, s, on) {
   if (s.run) { s.run.cancel(); s.run = null; }
-  if (!on || matchMedia('(prefers-reduced-motion: reduce)').matches || s.closest('.setrow.full')) { delete s.dataset.t; return; }
-  const gap = Math.max(40, Math.round(t.clientWidth / 3)), dist = Math.ceil(s.getBoundingClientRect().width) + gap;
+  if (!on || matchMedia('(prefers-reduced-motion: reduce)').matches || s.closest('.setrow.full')) { delete s.dataset.t; s.ms = 0; runVis.unobserve(t); return; }
+  const gap = Math.max(40, Math.round(t.clientWidth / 3)); s.dist = Math.ceil(s.getBoundingClientRect().width) + gap;
   s.dataset.t = s.textContent; s.style.setProperty('--gap', gap + 'px');
-  const ms = RUN_REST + dist / RUN_PX_S * 1000;
-  s.run = s.animate([{ transform: 'none', offset: 0 }, { transform: 'none', offset: RUN_REST / ms }, { transform: 'translateX(' + -dist + 'px)', offset: 1 }],
-    { duration: ms, iterations: Infinity });
-  s.run.currentTime = (performance.now() - t0) % ms;
+  s.ms = RUN_REST + s.dist / RUN_PX_S * 1000;
+  runVis.unobserve(t); runVis.observe(t);                              // says at once whether it is on screen: runPlay
+  t.onpointerenter = () => { if (!s.run || s.run.playState !== 'finished') return; runT0.set(s.textContent, performance.now()); s.run.currentTime = 0; s.run.play(); };
+}
+/** On screen: its rounds, carried on from where they were when drawn again ([runT0]); off screen: nothing runs. */
+function runPlay(t, s, seen) {
+  if (s.run) { s.run.cancel(); s.run = null; }
+  if (!seen || !s.ms) return;
+  const w = s.textContent, ms = s.ms;
+  if (!runT0.has(w)) { if (runT0.size > 300) runT0.clear(); runT0.set(w, performance.now()); }
+  s.run = s.animate([{ transform: 'none', offset: 0 }, { transform: 'none', offset: RUN_REST / ms }, { transform: 'translateX(' + -s.dist + 'px)', offset: 1 }],
+    { duration: ms, iterations: RUN_ROUNDS });
+  s.run.currentTime = Math.min(performance.now() - runT0.get(w), ms * RUN_ROUNDS);   // after its rounds it stays at rest
 }
 let runQ = new Set(), runT = 0;
 function runLater(n) {
