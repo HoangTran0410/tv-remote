@@ -27,7 +27,10 @@ object Keys {
 
     /** The power-on app, "" for none. Read and written only here: a tile's menu turned it off by "autoon" alone while Quick keys read "autoapp" alone, and showed an app that no longer opened. */
     fun powerApp(conf: JSONObject): String = if (conf.optBoolean("autoon")) conf.optString("autoapp") else ""
-    fun setPowerApp(c: Context, target: String) { Store.change(c, JSONObject().put("autoapp", target).put("autoon", target.isNotEmpty())) }
+    fun setPowerApp(c: Context, target: String) { Store.change(c, JSONObject().put("autoapp", target).put("autoon", target.isNotEmpty()).put("autolast", false)) }
+    /** Power-on opens the app that was open when the TV turned off (HomeConfig autolast); a fixed app and this are one choice. */
+    fun powerLast(conf: JSONObject): Boolean = conf.optBoolean("autoon") && conf.optBoolean("autolast")
+    fun setPowerLast(c: Context) { Store.change(c, JSONObject().put("autoapp", "").put("autoon", true).put("autolast", true)) }
 
     /** Tells TV Setup the setting as it is now and keeps its answer; on a thread of its own (a binder call to another app). */
     /** TV Setup lets the remote's mapped keys through to the screen while a page that assigns them is open (an older one: they open their apps as ever). */
@@ -38,12 +41,12 @@ object Keys {
     fun push(c: Context) {
         val app = c.applicationContext
         val conf = Store.get(app)
-        val arg = JSONObject().also { o -> for (k in listOf("keyon", "keyapps", "autoon", "autoapp", "autoall")) o.put(k, conf.get(k)) }.toString()
+        val arg = JSONObject().also { o -> for (k in listOf("keyon", "keyapps", "autoon", "autoapp", "autoall", "autolast")) o.put(k, conf.get(k)) }.toString()
         Thread({
             val said = try { app.contentResolver.call(Uri.parse(HomeConfig.USAGE), "keys", arg, null)?.getString("json")?.let { JSONObject(it) } } catch (e: Exception) { null }
             // null: no TV Setup, or one from before this (it answers nothing to a word it does not know)
             prefs(app).edit().putBoolean("setup", said != null).putString("free", (said?.optJSONArray("free") ?: JSONArray()).toString())
-                .putBoolean("can", said?.optBoolean("can") ?: false).putBoolean("all", said?.optBoolean("all") ?: false).apply()
+                .putBoolean("can", said?.optBoolean("can") ?: false).putBoolean("all", said?.optBoolean("all") ?: false).putBoolean("last", said?.optBoolean("last") ?: false).apply()
             ui.post { onState?.invoke() }
         }, "home-keys").apply { isDaemon = true }.start()
     }
@@ -51,7 +54,7 @@ object Keys {
     /** What the last answer said, for the config the clients read: {keysOk, keysSetup, keysDead [codes]}. */
     fun report(c: Context, conf: JSONObject): JSONObject {
         val p = prefs(c)
-        return conf.put("keysOk", true).put("keysSetup", p.getBoolean("setup", false)).put("keysAll", p.getBoolean("all", false))
+        return conf.put("keysOk", true).put("keysSetup", p.getBoolean("setup", false)).put("keysAll", p.getBoolean("all", false)).put("keysLast", p.getBoolean("last", false))
             .put("keysDead", try { JSONArray(p.getString("free", "[]")) } catch (e: Exception) { JSONArray() })
     }
 
@@ -60,6 +63,8 @@ object Keys {
     fun can(c: Context) = prefs(c).getBoolean("can", false)
     /** TV Setup takes "autoall" (power-on opens its app even over the one the TV woke into): an older one ignores it. */
     fun all(c: Context) = prefs(c).getBoolean("all", false)
+    /** TV Setup takes "autolast" (the power-on app is the last one used): an older one ignores it, so the choice is not offered. */
+    fun last(c: Context) = prefs(c).getBoolean("last", false)
 
     /** The dead keys TV Setup found on this TV, which a person may give an app. */
     fun dead(c: Context): List<Int> = try { JSONArray(prefs(c).getString("free", "[]")).let { a -> List(a.length()) { a.getInt(it) } } } catch (e: Exception) { emptyList() }

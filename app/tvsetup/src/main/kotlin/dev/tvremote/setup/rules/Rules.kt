@@ -34,7 +34,7 @@ import org.json.JSONObject
  *
  * Stored as one JSON object: { sleep_at, bedtime: {on, ranges: [{from, to}], from, to (the first range, for
  * remotes older than ranges)}, snooze_until, limits: {pkg: minutes}, extra: {day: {pkg: minutes}},
- * volume: [{from, to, max (percent)}], ram: {on, pct (used, percent)}, lock: {apps: [pkg], salt, hash (of the PIN), len (its digits)},
+ * volume: [{from, to, max (percent)}], ram: {on, pct (used, percent), auto (close background apps itself, at most once per 10 min)}, lock: {apps: [pkg], salt, hash (of the PIN), len (its digits)},
  * sched: {pkg: {days: [1..7, Monday = 1], from, to, max (minutes inside the window, 0 = no cap), block (never: days and window ignored)}},
  * lock also: mode ("list" | "kids"), allow: [pkg], methods: {pin, ask}, totp (the Authenticator secret, base32: never in the state), and
  * unlock_until (ms: everything open until then), unlock_apps: {pkg: ms}, total: {min, days, warn}, total_extra: {day: minutes} }.
@@ -57,7 +57,7 @@ internal object Rules {
     fun active(c: Context): Boolean {
         val o = load(c)
         return o.optLong("sleep_at") > System.currentTimeMillis() || o.optJSONObject("bedtime")?.optBoolean("on") == true || (o.optJSONObject("limits")?.length() ?: 0) > 0
-            || (o.optJSONArray("volume")?.length() ?: 0) > 0 || ram(o).optBoolean("on")
+            || (o.optJSONArray("volume")?.length() ?: 0) > 0 || ram(o).let { it.optBoolean("on") || it.optBoolean("auto") }
             || locked(o).isNotEmpty() || kidsMode(o) || totalMin(o, System.currentTimeMillis()) != null
             || o.optBoolean("awake")                                   // KeepAwake lives in the service
             || o.optBoolean("mic")                                     // MicVoice: the key filter stays on for the remote's mic button
@@ -74,7 +74,7 @@ internal object Rules {
      * bedtime {on, ranges: [{from, to}] ("22:00"), or from, to for one}, snooze {minutes} (bedtime paused, 0 resumes), limit {pkg, minutes} (0 removes),
      * extra {pkg, minutes} (more for today only), volume {ranges: [{from, to, max}]} (the whole list),
      * sched {pkg, windows: [{days: [1..7], from, to}] (or the older days, from, to for one), max, or block: true; on: false removes} (an app opened only on those days inside the window, at most max minutes in it),
-     * ram {on, pct} (the memory notice, at pct% used), pin {pin} (4 to 8 digits), lock {pkg, on} (a PIN must be set first).
+     * ram {on, pct, auto} (the memory notice, and closing background apps by itself, at pct% used), pin {pin} (4 to 8 digits), lock {pkg, on} (a PIN must be set first).
      * Kids mode: kids {mode: "list"|"kids", allow: [pkg], methods: {pin, totp (false only: it is turned on by totp), ask}} (each part optional; kids needs a PIN or a code set),
      * unlock {minutes, pkg?, today?} (everything, or one app, open for that long; today: until midnight; minutes 0 locks again, every app's unlock too),
      * total {min, days: [1..7], warn} (minutes a day on the TV; min 0 removes), total_extra {minutes, set?} (more for today only),
@@ -122,7 +122,8 @@ internal object Rules {
                 o.put("bedtime", bedtime(d.optBoolean("on") && list.length() > 0, list))
             }
             "volume" -> o.put("volume", ranges(d.optJSONArray("ranges") ?: JSONArray(), true))
-            "ram" -> o.put("ram", JSONObject().put("on", d.optBoolean("on")).put("pct", d.optInt("pct", ram(o).optInt("pct")).coerceIn(RAM_MIN, RAM_MAX)))
+            "ram" -> o.put("ram", JSONObject().put("on", d.optBoolean("on")).put("pct", d.optInt("pct", ram(o).optInt("pct")).coerceIn(RAM_MIN, RAM_MAX))
+                .put("auto", if (d.has("auto")) d.optBoolean("auto") else ram(o).optBoolean("auto")))   // "auto" absent (an older client): kept as it is
             "holdkeys" -> o.put("holdkeys", d.optBoolean("on"))             // HoldKeys: a short press of Input / Settings does nothing, 2 s does
             "homekey" -> o.put("homekey", d.optString("pkg").takeIf { HomeKey.PKG.matches(it) } ?: "")   // HomeKey: Home opens this launcher ("" stops)
             "mic" -> o.put("mic", d.optBoolean("on"))                       // MicVoice: the remote's mic button opens TV Remote's voice, not the Assistant
@@ -417,8 +418,8 @@ internal object Rules {
     const val RAM_MIN = 75
     const val RAM_MAX = 97
 
-    /** The memory notice: {on, pct}, off at 90% until a remote turns it on. */
-    fun ram(o: JSONObject): JSONObject = o.optJSONObject("ram") ?: JSONObject().put("on", false).put("pct", 90)
+    /** The memory notice {on, pct} and the automatic free {auto}: both off, at 90%, until a remote turns them on. */
+    fun ram(o: JSONObject): JSONObject = (o.optJSONObject("ram") ?: JSONObject().put("on", false).put("pct", 90)).let { if (it.has("auto")) it else JSONObject(it.toString()).put("auto", false) }
 
     private fun pad(hhmm: String): String = hhmm.split(":").let { it[0].padStart(2, '0') + ":" + it[1] }
 

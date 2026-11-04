@@ -394,6 +394,8 @@
   "qk_yes": "On",
   "qk_no": "Off",
   "qk_power": "At power-on",
+  "qk_last": "Last app used",
+  "qk_last_tag": "The app open when the TV turned off",
   "qk_no_key": "not on this remote",
   "c_quickkeys": "Quick keys",
   "pk_loading": "Loading apps…",

@@ -7,4 +7,5 @@ Phím nhanh mở app ngay từ màn hình chính bằng một phím số hoặc 
 3. Ô đã gán hiện banner hoặc icon app to. Bấm đúng phím số hoặc màu trên remote thật thì ô tương ứng được chọn.
 
 - Ô **Khi bật TV**: chọn app = tự mở, xóa = tắt. Nút **Tự mở … khi bật TV**: mở app đó (trống: TV Home) dù TV tự vào HDMI hay app khác, trừ lúc cast.
+- Cùng ô đó có **Ứng dụng vừa dùng**: mở app đang chạy lúc tắt TV (mặc định tắt).
 - Live widget cũng gán được và hiện icon riêng.

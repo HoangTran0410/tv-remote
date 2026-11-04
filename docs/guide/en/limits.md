@@ -8,6 +8,6 @@
 | Card | What it does |
 | --- | --- |
 | 🔊 Volume limits | By time, max 10 to 90%, for the TV's speakers. Does not work with an external HDMI speaker, nor while 🎧 plays the TV's sound elsewhere (its speakers are silent then). |
-| 🧹 Full memory notice | Warns at 80 to 95% memory. Off by default. |
+| 🧹 Full memory notice | Warns at 80 to 95% memory. **Free memory by itself** closes background apps over that level, like the Free RAM button (never the app on screen, TV Home or "Must keep" apps), once per 10 min. Off by default. |
 
 > 💡 All of it lives on the TV and needs TV Setup. It holds even with your device off.

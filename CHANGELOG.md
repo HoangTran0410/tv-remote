@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- At power-on: a new choice "Last app used" opens the app that was open when the TV turned off (TV Home and system screens do not count). Its own setting, off by default; picking it or a fixed app turns the other off. Needs the new TV Setup (offered only when TV Setup reports it).
+- Memory limits: "Free memory by itself" closes background apps (the Free RAM button's action; never the app on screen, TV Home, TV Setup, the keyboard or Must keep apps) when memory stays over the chosen level, at most once per 10 minutes. Off by default; uses the check the full memory notice already runs.
 - TV Games: web games played only with phones no longer let the TV sleep or start its screensaver mid-game; retro games no longer keep the screen on forever when nobody plays. Both stay on until 10 minutes after the last press.
 - TV Games: Suggestions come in rows: the web games made for TV Games first, then one row per retro genre.
 

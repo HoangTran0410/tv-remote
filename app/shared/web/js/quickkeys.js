@@ -4,10 +4,12 @@
 // (config.keysHave) is shown dead; one that already has something stays editable, so it can be cleared.
 const QK_NUMBERS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 7];          // KEYCODE_1 .. 9, then 0 (HomeConfig.KEY_NUMBERS)
 const QK_COLOURS = { 183: 'red', 184: 'green', 185: 'yellow', 186: 'blue' };
+const QK_LAST = 'last:app';                                        // what the power-on slot holds for "the app open when the TV turned off" (HomeConfig autolast): not a Target
 const QK_POWER = 0;                                                // the power-on slot's code: no key has it
 
 // What a target is called: the app's name, the shortcut's or the live widget's title (from what TV Home lists), else its id
 function qkLabel(c, apps, t) {
+  if (t === QK_LAST) return T('home.qk_last');
   const k = Target.kind(t);
   if (k === 'action') return T('home.qk_cc');
   if (k === 'tile') { const x = (c.tilesAvail || []).find((y) => y.key === t); return (x && x.title) || Target.id(t); }
@@ -18,6 +20,7 @@ function qkLabel(c, apps, t) {
 
 // The logo of a target: the app's own picture (a shortcut wears its app's), a live widget a letter on a colour of its own
 function qkLogo(c, t) {
+  if (t === QK_LAST) return el('div', { className: 'appicon placeholder qklive', textContent: '⏻' });
   const k = Target.kind(t);
   if (k === 'tile' || k === 'action') {
     const x = (c.tilesAvail || []).find((y) => y.key === t), word = k === 'action' ? T('home.qk_cc') : (x && x.title) || Target.id(t);
@@ -70,7 +73,8 @@ function pickTarget(title, now, c, apps, opts = {}) {
     };
     q.addEventListener('input', filter);
     q.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); const b = tiles.find((x) => !x.hidden); if (b) b.click(); } });   // the first one left
-    const clear = opts.none ? [el('button', { type: 'button', className: 'small' + (!now ? ' on' : ''), textContent: T('home.qk_none'), onclick: () => { picked = ''; d.close(); } })] : [];
+    const lastBtn = opts.last ? [el('button', { type: 'button', className: 'small' + (now === QK_LAST ? ' on' : ''), title: T('home.qk_last_tag'), textContent: T('home.qk_last'), onclick: () => { picked = QK_LAST; d.close(); } })] : [];
+    const clear = [...lastBtn, ...(opts.none ? [el('button', { type: 'button', className: 'small' + (!now ? ' on' : ''), textContent: T('home.qk_none'), onclick: () => { picked = ''; d.close(); } })] : [])];
     const d = el('dialog', { className: 'ask appchoose qkpick' }, el('div', { className: 'card' },
       el('div', { className: 'card-head' }, el('h2', { textContent: title }), el('button', { type: 'button', className: 'small iconbtn', textContent: '✕', title: T('common.close'), 'aria-label': T('common.close'), onclick: () => d.close() })),
       q, ...clear, el('p', { className: 'note', textContent: T(opts.toggle ? 'home.qk_grid_hint' : 'home.qk_target_hint') }),
@@ -87,12 +91,12 @@ function pickTarget(title, now, c, apps, opts = {}) {
 function quickKeysDraw(host, c, apps, send) {
   const have = Array.isArray(c.keysHave) ? c.keysHave : null;      // null: not known, every key counts
   const ka = c.keyapps || {};
-  const target = (code) => code === QK_POWER ? (c.autoapp || '') : (ka[code] || '');
+  const target = (code) => code === QK_POWER ? (c.autolast ? QK_LAST : c.autoapp || '') : (ka[code] || '');
   const dead = (code) => !!have && code !== QK_POWER && !have.includes(code) && !target(code);
   const choose = async (code, words) => {
-    const p = await pickTarget(words, target(code), c, apps, { none: true, actions: code !== QK_POWER });
+    const p = await pickTarget(words, target(code), c, apps, { none: true, actions: code !== QK_POWER, last: code === QK_POWER && !!c.keysLast && c.autolast !== undefined });
     if (p === null) return;
-    if (code === QK_POWER) { send({ autoapp: p, autoon: !!p }); return; }   // the slot alone decides: a target switches it on, none switches it off
+    if (code === QK_POWER) { send(p === QK_LAST ? { autolast: true, autoapp: '', autoon: true } : { autoapp: p, autoon: !!p, autolast: false }); return; }   // the slot alone decides: a target switches it on, none switches it off
     const n = { ...ka }; if (p) n[code] = p; else delete n[code];
     send({ keyapps: n, ...(p ? { keyon: true } : {}) });            // the first one chosen switches the keys on: nobody asks twice
   };

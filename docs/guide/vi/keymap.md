@@ -4,7 +4,7 @@ Phím màu, phím số và nút đã hết tác dụng có thể mở app bạn 
 
 1. Trên TV: biểu tượng **⚙** góc trên → **Cài đặt nhanh** → **Tùy chỉnh** → **Phím & khởi động** → **Phím nhanh**. Điện thoại, máy tính: cùng tên, trong thẻ **Phím & khởi động**.
 2. Chọn ô của một phím, rồi chọn app, lối tắt hoặc live widget. Lần đầu chọn, phím tự bật. Ngoài TV Home, TV hiện "TV Setup đã mở…" để biết không phải TV lỗi.
-3. Muốn một app tự mở khi bật TV: chọn nó ở ô **Khi bật TV**. Chỉ mở một lần mỗi lần bật, và không mở nếu TV đã vào app khác.
+3. Ô **Khi bật TV**: chọn một app, hoặc **Ứng dụng vừa dùng** (app đang chạy lúc tắt TV). Mở một lần mỗi lần bật, không mở nếu TV đã vào app khác. Chọn cái này thì cái kia tắt.
 
 | Phím | Gán được khi nào |
 | --- | --- |

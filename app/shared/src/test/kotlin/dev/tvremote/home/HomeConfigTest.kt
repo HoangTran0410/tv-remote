@@ -439,6 +439,15 @@ class HomeConfigTest {
         assertEquals("", HomeConfig.clean(JSONObject().put("autoon", false).put("autoall", true).put("autoapp", "a.b")).getString("autoapp"))   // switched off: no app left behind that "always" would still open
     }
 
+    @Test fun lastAppIsItsOwnSettingOffByDefaultAndAFixedAppWins() {
+        assertFalse(HomeConfig.clean(JSONObject()).getBoolean("autolast"))
+        assertFalse(HomeConfig.clean(JSONObject().put("autolast", true)).getBoolean("autolast"))              // needs autoon
+        assertTrue(HomeConfig.clean(JSONObject().put("autoon", true).put("autolast", true)).getBoolean("autolast"))
+        val both = HomeConfig.clean(JSONObject().put("autoon", true).put("autolast", true).put("autoapp", "a.b"))
+        assertEquals("a.b", both.getString("autoapp")); assertFalse(both.getBoolean("autolast"))              // a fixed app wins
+        assertFalse(HomeConfig.clean(JSONObject().put("autoon", false).put("autolast", true)).getBoolean("autolast"))
+    }
+
     @Test fun keysSurviveTheForwardAndTheMerge() {
         val f = HomeConfig.forward(JSONObject().put("keyon", true).put("keyapps", JSONObject().put("185", "a.b")))
         assertEquals("a.b", f.getJSONObject("keyapps").getString("185"))

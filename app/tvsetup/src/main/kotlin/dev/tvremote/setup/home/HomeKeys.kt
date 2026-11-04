@@ -13,6 +13,7 @@ import android.provider.Settings
 import android.util.Log
 import dev.tvremote.home.HomeConfig
 import dev.tvremote.home.Target
+import dev.tvremote.setup.HomeInfo
 import dev.tvremote.setup.WelcomeState
 import dev.tvremote.setup.rules.Usage
 import org.json.JSONObject
@@ -71,8 +72,11 @@ internal object HomeKeys {
     /** The "always" switch: open even when the TV woke into another app or input ([AutoOpen.decide]). Off by default. */
     fun always(c: Context): Boolean = load(c).optBoolean("autoall")
 
+    /** The power-on app is whichever was open when the TV turned off ([AutoOpen.lastApp]), not a fixed one. */
+    fun last(c: Context): Boolean = load(c).let { it.optBoolean("autoon") && it.optBoolean("autolast") }
+
     /** The service has to run for these: the key filter's list is kept by [KeyFixWatch], waking is heard by [AutoOpenWatch]. */
-    fun active(c: Context): Boolean = all(c).isNotEmpty() || auto(c).let { it.first && (it.second.isNotEmpty() || always(c)) }
+    fun active(c: Context): Boolean = all(c).isNotEmpty() || auto(c).let { it.first && (it.second.isNotEmpty() || always(c) || last(c)) }
 }
 
 /**
@@ -104,6 +108,12 @@ internal object AutoOpen {
         else -> Why.OPEN
     }
 
+    /**
+     * The app the TV was left in: the newest of [opened] (foreground events, oldest first) that is not in [skip] (TV Home, TV Setup, a
+     * launcher, a system screen: nothing a person chose), "" when none. Event order, never times: a box boots with a wrong year.
+     */
+    fun lastOf(opened: List<String>, skip: Set<String>): String = opened.lastOrNull { it.isNotEmpty() && it !in skip } ?: ""
+
     /** Chromecast built-in's receiver: a cast that woke the TV is on screen at the first look. Cheap to see, so kept; an HDMI input has no package to see. */
     val CAST = setOf("com.google.android.apps.mediashell")
 
@@ -122,7 +132,8 @@ internal object AutoOpen {
 
     @Synchronized
     private fun run(c: Context, event: String) {
-        val (on, pkg) = HomeKeys.auto(c)
+        val (on, fixed) = HomeKeys.auto(c)
+        val pkg = if (HomeKeys.last(c)) lastApp(c) else fixed
         val always = HomeKeys.always(c)
         val now = SystemClock.elapsedRealtime()
         val p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -137,6 +148,14 @@ internal object AutoOpen {
         lastBoot = boot; lastAt = now
         p.edit().putInt("last_boot", boot).putLong("last_at", now).apply()
     }
+
+    /** Whichever app was in front when the TV turned off, from the usage events (still there after a boot); read on a power-on only. */
+    private fun lastApp(c: Context): String = try {
+        val opened = ArrayList<String>()
+        val far = Long.MAX_VALUE / 4                                  // no clock: a boot with a wrong year would hide a window
+        Usage.events(c, 0L, far) { e -> if (e.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND) e.packageName?.let { opened.add(it) } }
+        lastOf(opened, homes(c) + HomeInfo.SYSTEM_SCREENS + setOf(HomeInfo.HOME, c.packageName))
+    } catch (e: Exception) { "" }
 
     private fun defaultHome(c: Context): String = try {
         c.packageManager.resolveActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0)?.activityInfo?.packageName ?: ""
