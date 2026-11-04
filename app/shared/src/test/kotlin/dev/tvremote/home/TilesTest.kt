@@ -91,10 +91,10 @@ class TilesTest {
 
     @Test fun menuPerKind() {
         val c = HomeConfig.clean(JSONObject())
-        assertEquals(setOf(Tiles.Act.MOVE, Tiles.Act.FOLDER_PUT, Tiles.Act.RENAME, Tiles.Act.HIDE, Tiles.Act.START, Tiles.Act.LOCK, Tiles.Act.MAINT, Tiles.Act.WATCH),
+        assertEquals(setOf(Tiles.Act.MOVE, Tiles.Act.FOLDER_PUT, Tiles.Act.RENAME, Tiles.Act.PICTURE, Tiles.Act.HIDE, Tiles.Act.START, Tiles.Act.LOCK, Tiles.Act.MAINT, Tiles.Act.WATCH),
             Tiles.acts(c, "com.a.one", own))
         assertEquals(setOf(Tiles.Act.MOVE, Tiles.Act.FOLDER_PUT, Tiles.Act.REMOVE, Tiles.Act.START), Tiles.acts(c, allLive[0], own))
-        assertEquals(setOf(Tiles.Act.MOVE, Tiles.Act.FOLDER_PUT, Tiles.Act.RENAME, Tiles.Act.REMOVE, Tiles.Act.START, Tiles.Act.LINK), Tiles.acts(c, allPins[0], own))
+        assertEquals(setOf(Tiles.Act.MOVE, Tiles.Act.FOLDER_PUT, Tiles.Act.RENAME, Tiles.Act.PICTURE, Tiles.Act.REMOVE, Tiles.Act.START, Tiles.Act.LINK), Tiles.acts(c, allPins[0], own))
         assertTrue(Tiles.acts(c, "folder:ab12", own).isEmpty())
         assertTrue(Tiles.Act.LOCK !in Tiles.acts(c, own, own) && Tiles.Act.FOLDER_PUT !in Tiles.acts(c, own, own))
     }

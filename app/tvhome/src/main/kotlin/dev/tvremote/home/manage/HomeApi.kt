@@ -134,6 +134,19 @@ object HomeApi {
      * "photo" is wall.jpg, then photo2 ...), written beside it and renamed so the launcher never reads half a file, then chosen (and added
      * to the rotation's set when that is on). "ok", or "full" (all slots used), or "image" (not a picture TV Home can read).
      */
+    /**
+     * The person's own picture for the tile [target] ("pics"): [jpeg] is shrunk and kept by [Pics.save], the setting names it.
+     * "ok", "target" (not an app or shortcut), "full" (PICS_MAX others already) or "image" (not a picture). Main thread, like the rest.
+     */
+    fun saveAppPic(c: Context, target: String, jpeg: ByteArray): String {
+        if (!dev.tvremote.home.Target.valid(target) || HomeConfig.isLive(target) || HomeConfig.isFolder(target)) return "target"
+        val have = Store.get(c).optJSONObject("pics") ?: JSONObject()
+        if (!have.has(target) && have.length() >= HomeConfig.PICS_MAX) return "full"
+        val id = dev.tvremote.home.apps.Pics.save(c, jpeg) ?: return "image"
+        Store.change(c, JSONObject().put("pics", JSONObject(have.toString()).put(target, id)))
+        return "ok"
+    }
+
     fun savePhoto(c: Context, jpeg: ByteArray): String {
         if (jpeg.size < 4 || jpeg[0] != 0xFF.toByte() || jpeg[1] != 0xD8.toByte()) return "image"
         val o = BitmapFactory.Options().apply { inJustDecodeBounds = true }

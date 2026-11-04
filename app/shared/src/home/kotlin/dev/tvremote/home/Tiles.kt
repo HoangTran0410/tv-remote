@@ -18,7 +18,7 @@ object Tiles {
     /** A row of the tile menu. MOVE / FOLDER_OUT: where it sits; HIDE: off the grid into Choose apps (apps only, that list has no
      *  other kind); REMOVE: out of "tiles" (a shortcut also unpinned); START: power-on app and remote keys (any [Target]);
      *  LOCK / MAINT: TV Setup's rules and the app's own pages (apps); WATCH: its Play Next items; LINK: a pinned link's address. */
-    enum class Act { MOVE, FOLDER_OUT, FOLDER_PUT, RENAME, HIDE, REMOVE, START, LOCK, MAINT, WATCH, LINK }
+    enum class Act { MOVE, FOLDER_OUT, FOLDER_PUT, RENAME, PICTURE, HIDE, REMOVE, START, LOCK, MAINT, WATCH, LINK }
 
     fun kind(key: String): Kind? = if (HomeConfig.isFolder(key)) Kind.FOLDER else when (Target.kind(key)) {
         Target.Kind.APP -> Kind.APP
@@ -36,6 +36,7 @@ object Tiles {
         val inFolder = Folders.folderOf(conf, key) != null
         out.add(if (inFolder) Act.FOLDER_OUT else Act.MOVE)
         if (key != own && HomeConfig.folderMember(key)) out.add(Act.FOLDER_PUT)
+        if (k == Kind.APP || k == Kind.PIN) out.add(Act.PICTURE)     // the person's own picture for the tile ("pics")
         if (k != Kind.LIVE) out.add(Act.RENAME)                       // a live widget's name is its numbers' title
         if (!inFolder) out.add(if (k == Kind.APP) Act.HIDE else Act.REMOVE)
         out.add(Act.START)

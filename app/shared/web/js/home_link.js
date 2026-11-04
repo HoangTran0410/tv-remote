@@ -5,9 +5,9 @@
 // have is null here and the page hides what needs it (an update through ADB; the wallpaper gallery, which the hosts download).
 const HOME_PATHS = {
   host: { read: '/api/home', drop: '/api/home/photo/drop', pin: '/api/home/pin', open: '/api/youtube/open', link: '/api/home/link', linkOpen: '/api/home/link/open', qr: '/api/home/photo/qr', update: '/api/home/update', walls: '/api/home/walls', wall: '/api/home/wall',
-    photo: '/api/home/photo', video: '/api/home/video?name=', check: '/api/home/web/check?u=', share: '/api/home/theme/share', media: '/api/home/media?id=', themeFile: 'api/home/theme?download=1', app: { meta: '/api/app/meta?pkg=', icon: '/api/app/icon?pkg=' }, need: '/api/setup/need?f=' },
+    photo: '/api/home/photo', apppic: '/api/home/apppic?pkg=', video: '/api/home/video?name=', check: '/api/home/web/check?u=', share: '/api/home/theme/share', media: '/api/home/media?id=', themeFile: 'api/home/theme?download=1', app: { meta: '/api/app/meta?pkg=', icon: '/api/app/icon?pkg=' }, need: '/api/setup/need?f=' },
   direct: { read: '/h/config', drop: '/h/photo/drop', pin: '/h/pin', open: null, link: '/h/link', linkOpen: null, qr: null, update: null, walls: null, wall: null,
-    photo: '/h/photo', video: '/h/video?name=', check: '/h/web/check?u=', share: null, media: '/h/media?id=', themeFile: null, app: { meta: '/h/app/meta?pkg=', icon: '/h/app/icon?pkg=' }, need: null },
+    photo: '/h/photo', apppic: '/h/apppic?pkg=', video: '/h/video?name=', check: '/h/web/check?u=', share: null, media: '/h/media?id=', themeFile: null, app: { meta: '/h/app/meta?pkg=', icon: '/h/app/icon?pkg=' }, need: null },
 };
 
 /**
@@ -32,6 +32,7 @@ function homeLinkFor(direct, call, send) {
     walls: (quiet) => via(p.walls, null, quiet),
     wall: (id) => via(p.wall, { id }),
     photo: (blob) => send(p.photo, blob),
+    appPic: (pkg, blob) => send(p.apppic + encodeURIComponent(pkg), blob),   // the person's own picture for one app's tile (HomeConfig "pics"): a 480 x 270 JPEG
     video: (file, onPct) => send(p.video + encodeURIComponent(file.name), file, onPct),   // a video or GIF to the media library (the TV turns a heavy one light; the answer's video.job tells how far)
     mediaUrl: (id) => p.media + encodeURIComponent(id),              // one of the person's own photos / videos as it is on the TV (a theme file carries them)
     themeFileUrl: (id, name, media) => p.themeFile && p.themeFile + '&id=' + encodeURIComponent(id) + '&name=' + encodeURIComponent(name) + (media ? '&media=1' : ''),   // the host makes the file itself (null on TV Home's own page, which makes it in the page)

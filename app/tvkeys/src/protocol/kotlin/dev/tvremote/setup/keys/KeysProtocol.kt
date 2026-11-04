@@ -18,6 +18,9 @@ object KeysProtocol {
     /** Out: a rev (0: none), a count, the codes: the keys beyond [INTEREST] the site's list gives THIS TV (KeyList), asked again when TX_KEY's rev differs. */
     const val TX_CODES = 2
 
+    /** TV Setup -> the add-on (an explicit broadcast guarded by [PERMISSION]): open the system's own power menu. Only while the service is on; never turns anything off by itself. */
+    const val ACTION_POWER_MENU = "dev.tvremote.setup.keys.POWER_MENU"
+
     /**
      * The only keys the add-on asks about; any other passes with no call at all (every key of a filtering service waits for its
      * answer). A superset of what TV Setup may ever take: the stock launcher's keys (KeyFix.RULES), the colour keys the person may

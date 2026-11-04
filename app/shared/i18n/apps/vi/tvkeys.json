@@ -2,5 +2,5 @@
   "app_name": "TV Setup Keys",
   "keys_fix": "TV Setup Keys: nút remote",
   "keys_wake": "TV Setup Keys: bật TV (tự bật màn hình khi đang tắt)",
-  "keys_about": "Một phần của TV Setup: trả lại các nút remote không app nào nhận, và giữ cho remote chỉ bật màn hình khi bật TV, không mở thêm app. Không đọc nội dung màn hình."
+  "keys_about": "Một phần của TV Setup: trả lại các nút remote không app nào nhận, và giữ cho remote chỉ bật màn hình khi bật TV, không mở thêm app. Trên TV không có ADB, nó mở menu nguồn của hệ thống khi bạn chọn Tắt hẳn. Không đọc nội dung màn hình."
 }

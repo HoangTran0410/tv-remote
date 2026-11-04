@@ -642,4 +642,17 @@ class HomeConfigTest {
         val bad = HomeConfig.clean(JSONObject().put("wopt", JSONObject().put("prayer", JSONObject().put("method", "nope"))))
         assertEquals("auto", HomeConfig.optValue(bad, "prayer", "method"))
     }
+
+    @Test fun ownPicturesKeepOnlyRealTargetsAndIds() {
+        val g = JSONObject().put("com.a.one", "0a1b2c3d").put("pin:com.a/x1", "ffffffff").put("tile:dev.tvremote.setup/ram", "0a1b2c3d")
+            .put("folder:ab12", "0a1b2c3d").put("com.b.two", "NOTHEX!!").put("com.c.three", "0a1b2c3").put("", "0a1b2c3d")
+        val c = HomeConfig.clean(JSONObject().put("pics", g)).getJSONObject("pics")
+        assertEquals(setOf("com.a.one", "pin:com.a/x1"), c.keys().asSequence().toSet())     // no live widget, folder, bad id (short, not hex) or empty key
+        assertEquals("0a1b2c3d", c.getString("com.a.one"))
+        assertEquals(0, HomeConfig.clean(JSONObject()).getJSONObject("pics").length())     // off by default
+        val many = JSONObject().also { o -> (1..HomeConfig.PICS_MAX + 5).forEach { o.put("com.app.n%03d".format(it), "0000%04x".format(it)) } }
+        assertEquals(HomeConfig.PICS_MAX, HomeConfig.clean(JSONObject().put("pics", many)).getJSONObject("pics").length())
+        assertEquals("pics put back to nothing is a change the page can send", 0, HomeConfig.merge(HomeConfig.clean(JSONObject().put("pics", g)), JSONObject().put("pics", JSONObject())).getJSONObject("pics").length())
+        assertTrue(HomeConfig.picPath("0a1b2c3d").endsWith("/files/pics/0a1b2c3d.jpg"))
+    }
 }

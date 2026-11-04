@@ -12,6 +12,7 @@ Giữ OK trên một app mở menu của riêng app đó, chia nhóm. Back trên
 ### Mẹo
 
 - Gán phím: trang vẽ như remote, mỗi phím hiện app đang giữ nó. Bấm thẳng phím số hoặc phím màu trên remote là gán ngay.
+- Ảnh riêng: app trông giống nhau (SmartTube, TizenTube) thì cho mỗi app một ảnh dễ nhận ra. Chọn ảnh trên điện thoại hoặc máy tính (Quản lý từ điện thoại → Ảnh riêng cho app); trên TV, mục Ảnh riêng chỉ chỉ cách làm và có nút Dùng ảnh gốc của app để quay lại.
 - Đổi tên: phân biệt hai app trùng tên (như hai YouTube). Tên hiện khi chọn ô.
 - Chỉ cài TV Home (chưa có TV Setup): khóa vẫn dùng được, TV Home tự giữ mã PIN và danh sách app khóa. Giới hạn mỗi ngày cần TV Setup để đếm giờ.
 - Khóa của TV Home chặn mở app từ TV Home (lưới, dock, phím gán). Nút app trên remote, Trợ lý hay màn hình gần đây thì KHÔNG bị chặn: cần TV Setup.
