@@ -111,6 +111,49 @@ object Customize {
     private fun rowsWord(a: Context, v: Double) = if (v < 1) a.getString(R.string.c_rows_auto) else String.format(java.util.Locale.ROOT, "%.1f", v)
 
     /**
+     * A time of day ("HH:MM", half hours) with the remote, in the stepper's look: Up / Down / Left / Right 30 minutes (a held key
+     * repeats), OK saves through [save], Back cancels. The panel steps aside while it is open.
+     */
+    private fun timeStepper(a: Activity, panel: Dialog, title: String, start: String, save: (String) -> Unit) {
+        val d = a.resources.displayMetrics.density
+        fun dp(v: Number) = (v.toFloat() * d).toInt()
+        var m = (start.substring(0, 2).toInt() * 60 + start.substring(3, 5).toInt()) / 30 * 30
+        var saved = false
+        val dialog = Dialog(a, R.style.Menu)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        val num = Font.on(TextView(a)).apply { textSize = 44f; setTextColor(Color.WHITE); gravity = Gravity.CENTER; typeface = Font.light }
+        fun say() { num.text = "%02d:%02d".format(m / 60, m % 60) }
+        val box = LinearLayout(a).apply {
+            orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL; isFocusable = true; isFocusableInTouchMode = true
+            setPadding(dp(28), dp(18), dp(28), dp(18))
+            background = GradientDrawable().apply { cornerRadius = dp(22).toFloat(); setColor(STEP_FILL); setStroke(dp(1), ACCENT) }
+            addView(Font.on(TextView(a)).apply { text = title; textSize = 15f; setTextColor(DIM); gravity = Gravity.CENTER })
+            addView(num, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(4) })
+            addView(Font.on(TextView(a)).apply { text = a.getString(R.string.c_time_keys); textSize = 13f; setTextColor(DIM); gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(4) })
+        }
+        box.setOnKeyListener { _, code, e ->
+            if (e.action != android.view.KeyEvent.ACTION_DOWN) return@setOnKeyListener false
+            when (code) {
+                android.view.KeyEvent.KEYCODE_DPAD_UP, android.view.KeyEvent.KEYCODE_DPAD_RIGHT -> m = (m + 30) % 1440
+                android.view.KeyEvent.KEYCODE_DPAD_DOWN, android.view.KeyEvent.KEYCODE_DPAD_LEFT -> m = (m + 1440 - 30) % 1440
+                android.view.KeyEvent.KEYCODE_DPAD_CENTER, android.view.KeyEvent.KEYCODE_ENTER -> { saved = true; dialog.dismiss(); return@setOnKeyListener true }
+                else -> return@setOnKeyListener false
+            }
+            say(); true
+        }
+        say()
+        dialog.setContentView(box)
+        dialog.window?.apply {
+            setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.TRANSPARENT)); setDimAmount(0f)
+            setLayout(dp(300), ViewGroup.LayoutParams.WRAP_CONTENT)
+            attributes = attributes.apply { gravity = Gravity.TOP or Gravity.START; x = dp(48); y = dp(40) }
+        }
+        dialog.setOnDismissListener { if (saved) save("%02d:%02d".format(m / 60, m % 60)); panel.show() }
+        dialog.setOnShowListener { box.requestFocus(); panel.hide(); box.post { box.requestFocus() } }
+        dialog.show()
+    }
+
+    /**
      * "rows" or "cols" with the remote: rows ◀ ▶ a tenth, ▲ ▼ a whole row; columns ◀ ▶ ▲ ▼ one. OK or Back done. The panel steps
      * aside ([panel] hidden) and the number sits in the clock's corner with no dim, so each step shows on the home screen at once
      * (saved a moment after the last press: holding a key does not rebuild it every repeat). Then the panel is back as it was.
@@ -421,6 +464,10 @@ object Customize {
             t.setOnClickListener {
                 if (key == "stats") { if (!viaSetup) { on = !on; dev.tvremote.report.OwnReport.setOwn(a, on); paint() }; return@setOnClickListener }
                 if (key == "wcol") { ownColours(a, dialog) { ownFace(); markAll() }; return@setOnClickListener }
+                if (key == "ddark_from" || key == "ddark_to") {         // a time of day: its own small stepper, 30 minutes a press
+                    timeStepper(a, dialog, text, read()) { v -> write?.invoke(v); pick = choices?.indexOfFirst { it.first == v }?.coerceAtLeast(0) ?: 0; paint() }
+                    return@setOnClickListener
+                }
                 if (key == "rows" || key == "cols" || key == "shade") {
                     stepper(a, dialog, key) { pick = choices?.indexOfFirst { it.first == Store.get(a).optString(key) }?.coerceAtLeast(0) ?: 0; paint() }
                     return@setOnClickListener
@@ -888,7 +935,7 @@ object Customize {
         groups[4].fill = {
             tile(R.drawable.ic_moon, a.getString(R.string.dream), a.getString(R.string.dream_sub), "dream")
             tile(R.drawable.ic_clock, a.getString(R.string.dface), null, "dface", HomeConfig.DFACES.map { it to a.getString(when (it) { "modern" -> R.string.home_ov_modern; "digital" -> R.string.home_ov_digital; else -> R.string.dface_big }) })
-            // dark hours (OLED care, default off): a switch, and when on the From and To tiles, Right or OK = 30 minutes later (Left leaves the page, as on every page)
+            // dark hours (OLED care, default off): a switch, and when on the From and To tiles, OK opens a stepper (timeStepper)
             fun span() = HomeConfig.dark(Store.get(a).optString("ddark")).ifEmpty { null }?.split("-")
             fun setSpan(from: String, to: String) { Store.change(a, JSONObject().put("ddark", if (from == to) "" else "$from-$to")) }
             val halves = List(48) { "%02d:%02d".format(it / 2, it % 2 * 30).let { t -> t to t } }
@@ -902,15 +949,6 @@ object Customize {
                 val label = a.getString(if (end) R.string.ddark_to else R.string.ddark_from)
                 tile(R.drawable.ic_clock, label, null, if (end) "ddark_to" else "ddark_from", halves, read = { (span() ?: HomeConfig.DARK_ON.split("-"))[if (end) 1 else 0] },
                     write = { v -> val s = span() ?: HomeConfig.DARK_ON.split("-"); if (end) setSpan(s[0], v) else setSpan(v, s[1]) })
-                darkBox.getChildAt(darkBox.childCount - 1).apply {
-                    val step = { d: Int -> val i = (halves.indexOfFirst { it.first == (span() ?: HomeConfig.DARK_ON.split("-"))[if (end) 1 else 0] } + d + 48) % 48; val s = span() ?: HomeConfig.DARK_ON.split("-")
-                        if (end) setSpan(s[0], halves[i].first) else setSpan(halves[i].first, s[1]); (this as LinearLayout).let { t -> ((t.getChildAt(1) as LinearLayout).getChildAt(1) as TextView).text = halves[i].first } }
-                    setOnKeyListener { _, code, e ->
-                        if (e.action != android.view.KeyEvent.ACTION_DOWN) return@setOnKeyListener false
-                        when (code) { android.view.KeyEvent.KEYCODE_DPAD_LEFT -> step(-1); android.view.KeyEvent.KEYCODE_DPAD_RIGHT -> step(1); else -> return@setOnKeyListener false }
-                        true
-                    }
-                }
             }
             col = outer
             darkBox.visibility = if (span() != null) View.VISIBLE else View.GONE
