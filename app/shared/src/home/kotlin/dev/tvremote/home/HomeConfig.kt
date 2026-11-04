@@ -111,8 +111,9 @@ import org.json.JSONObject
  *           ADB) and puts the previous screensaver back when this is switched off
  *   dface   the screensaver's look ([DFACES]): "big" (the big clock and the day, as before), "modern" (StandBy: the Modern clock
  *           face beside the day, the clock widget's own drawing), "digital" (the Digital face, filling the screen)
- *   ddark   dark hours of the screensaver ([DDARKS]): "" = off (default), else "22-6" (from hour to hour, wraps midnight): the screen
- *           is fully black then (OLED care, a TV left on at night). Checked by the screensaver's once-a-minute tick; not a theme key
+ *   ddark   dark hours of the screensaver: "" = off (default), else "HH:MM-HH:MM" (start-end, minutes 00 or 30, wraps midnight; start == end = off,
+ *           [dark] cleans it; the older "22-6" is read as "22:00-06:00"): the screen is fully black then (OLED care, a TV left on at night).
+ *           Checked by the screensaver's once-a-minute tick; not a theme key
  *   center  the app grid's tiles sit in the middle of their row (a row with fewer tiles than [cols] too), default false = left-aligned.
  *           A look, so a theme key
  *   note    a line from the family, pinned on the home screen until it is emptied ([NOTE_MAX] characters, one line)
@@ -430,12 +431,23 @@ object HomeConfig {
     const val GNAME_MAX = 24
     const val GTEXT_MAX = 60
     val DFACES = listOf("big", "modern", "digital")
-    val DDARKS = listOf("", "22-6", "23-6", "0-6", "1-6")
-    /** True when [hour] (0..23) is inside the dark hours [v] ("22-6": from 22:00 to 6:00, wraps midnight); "" or a bad value = never. */
-    fun darkAt(v: String, hour: Int): Boolean {
-        if (v !in DDARKS || v.isEmpty()) return false
-        val (a, b) = v.split("-").map { it.toInt() }
-        return if (a <= b) hour in a until b else hour >= a || hour < b
+    const val DARK_ON = "22:00-06:00"                                // what switching the dark hours on starts with
+    /** [v] as "HH:MM-HH:MM" in half hours, or "" when it is off, bad or start == end. Reads the older "22-6" (hours) too. */
+    fun dark(v: String): String {
+        val m = Regex("""(\d{1,2})(?::(\d{2}))?-(\d{1,2})(?::(\d{2}))?""").matchEntire(v.trim()) ?: return ""
+        val (h1, m1, h2, m2) = m.destructured
+        val a = h1.toInt(); val b = h2.toInt(); val x = m1.ifEmpty { "0" }.toInt(); val y = m2.ifEmpty { "0" }.toInt()
+        if (a > 23 || b > 23 || (x != 0 && x != 30) || (y != 0 && y != 30)) return ""
+        if (a * 60 + x == b * 60 + y) return ""
+        return "%02d:%02d-%02d:%02d".format(a, x, b, y)
+    }
+    /** True when [minute] (minute of the day, 0..1439) is inside the dark hours [v]; "" or a bad value = never. */
+    fun darkAt(v: String, minute: Int): Boolean {
+        val d = dark(v)
+        if (d.isEmpty()) return false
+        val a = d.substring(0, 2).toInt() * 60 + d.substring(3, 5).toInt()
+        val b = d.substring(6, 8).toInt() * 60 + d.substring(9, 11).toInt()
+        return if (a < b) minute in a until b else minute >= a || minute < b
     }
     val GSTYLES = listOf("time", "name", "date", "lunar", "own")
     /** What "own" text may ask for, written {date}: the clients offer them as chips; an unknown {word} stays as typed. */
@@ -724,7 +736,7 @@ object HomeConfig {
             .put("rows", rows(o.optDouble("rows", 0.0)))
             .put("dream", o.optBoolean("dream", false))
             .put("dface", o.optString("dface").takeIf { it in DFACES } ?: "big")
-            .put("ddark", o.optString("ddark").takeIf { it in DDARKS } ?: "")
+            .put("ddark", dark(o.optString("ddark")))
             .put("center", o.optBoolean("center", false))
             .put("note", o.optString("note").replace(Regex("\\s+"), " ").trim().take(NOTE_MAX))
             .put("place", o.optString("place").replace(Regex("\\s+"), " ").trim().take(PLACE_MAX))

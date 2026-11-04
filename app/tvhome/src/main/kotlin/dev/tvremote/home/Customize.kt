@@ -389,10 +389,10 @@ object Customize {
         fun markEvery() { val e = Store.get(a).optString("wevery"); for ((k, v) in chips) v.isSelected = k == e }
         // switches as tiles, one to a row (two side by side were ~200 dp each: a name on two lines left its neighbour short): an icon, a name, a line under it; on = a blue tint with a blue edge, as everywhere in the app
         // with [choices] (value to its words) the tile steps through them on each press instead of switching on / off; on = not the first
-        fun tile(res: Int, text: String, sub: String?, key: String, choices: List<Pair<String, String>>? = null, then: () -> Unit = {}) {
-            var pick = choices?.indexOfFirst { it.first == conf.optString(key) }?.coerceAtLeast(0) ?: 0
+        fun tile(res: Int, text: String, sub: String?, key: String, choices: List<Pair<String, String>>? = null, then: () -> Unit = {}, read: () -> String = { conf.optString(key) }, write: ((String) -> Unit)? = null) {
+            var pick = choices?.indexOfFirst { it.first == read() }?.coerceAtLeast(0) ?: 0
             var viaSetup = false                                       // "stats": TV Setup is on the TV and holds the switch (OwnReport)
-            var on = if (key == "stats") dev.tvremote.report.OwnReport.own(a) else if (choices != null || key == "rows" || key == "shade") pick > 0 || key == "cols" || key == "watchAt" || key == "rows" || key == "shade" else conf.optBoolean(key, true)
+            var on = if (key == "stats") dev.tvremote.report.OwnReport.own(a) else if (choices != null || key == "rows" || key == "shade") pick > 0 || key == "cols" || key == "ddark_from" || key == "ddark_to" || key == "watchAt" || key == "rows" || key == "shade" else conf.optBoolean(key, true)
             val ic = ImageView(a).apply { setImageResource(res) }
             val state = label("", 12f, DIM)
             val t = LinearLayout(a).apply {
@@ -426,8 +426,10 @@ object Customize {
                     return@setOnClickListener
                 }
                 if (choices != null) {                                 // the next one in turn (motion, focus)
-                    pick = (pick + 1) % choices.size; on = pick > 0 || key == "cols"; paint()
-                    Store.change(a, JSONObject().put(key, choices[pick].first)); then(); return@setOnClickListener
+                    if (write != null) pick = choices.indexOfFirst { it.first == read() }.coerceAtLeast(0)   // Left / Right may have moved it
+                    pick = (pick + 1) % choices.size; on = pick > 0 || key == "cols" || key == "ddark_from" || key == "ddark_to"; paint()
+                    if (write != null) write(choices[pick].first) else Store.change(a, JSONObject().put(key, choices[pick].first))
+                    then(); return@setOnClickListener
                 }
                 on = !on
                 try { Store.change(a, JSONObject().put(key, on)) } catch (e: SecurityException) { on = !on; systemDream(a) }
@@ -886,7 +888,33 @@ object Customize {
         groups[4].fill = {
             tile(R.drawable.ic_moon, a.getString(R.string.dream), a.getString(R.string.dream_sub), "dream")
             tile(R.drawable.ic_clock, a.getString(R.string.dface), null, "dface", HomeConfig.DFACES.map { it to a.getString(when (it) { "modern" -> R.string.home_ov_modern; "digital" -> R.string.home_ov_digital; else -> R.string.dface_big }) })
-            tile(R.drawable.ic_moon, a.getString(R.string.ddark), null, "ddark", HomeConfig.DDARKS.map { it to if (it.isEmpty()) a.getString(R.string.ddark_off) else it.split("-").let { (x, y) -> "$x:00–$y:00" } })   // black screen in the night hours (OLED care), default off
+            // dark hours (OLED care, default off): a switch, and when on the From and To tiles, Right or OK = 30 minutes later (Left leaves the page, as on every page)
+            fun span() = HomeConfig.dark(Store.get(a).optString("ddark")).ifEmpty { null }?.split("-")
+            fun setSpan(from: String, to: String) { Store.change(a, JSONObject().put("ddark", if (from == to) "" else "$from-$to")) }
+            val halves = List(48) { "%02d:%02d".format(it / 2, it % 2 * 30).let { t -> t to t } }
+            val darkBox = LinearLayout(a).apply { orientation = LinearLayout.VERTICAL }
+            tile(R.drawable.ic_moon, a.getString(R.string.ddark), null, "ddark_on", listOf("" to a.getString(R.string.w_off).replaceFirstChar { it.uppercase() }, "1" to a.getString(R.string.w_on).replaceFirstChar { it.uppercase() }),
+                then = { darkBox.visibility = if (span() != null) View.VISIBLE else View.GONE },
+                read = { if (span() != null) "1" else "" },
+                write = { Store.change(a, JSONObject().put("ddark", if (it.isEmpty()) "" else HomeConfig.DARK_ON)) })
+            val outer = col; col = darkBox
+            for (end in listOf(false, true)) {
+                val label = a.getString(if (end) R.string.ddark_to else R.string.ddark_from)
+                tile(R.drawable.ic_clock, label, null, if (end) "ddark_to" else "ddark_from", halves, read = { (span() ?: HomeConfig.DARK_ON.split("-"))[if (end) 1 else 0] },
+                    write = { v -> val s = span() ?: HomeConfig.DARK_ON.split("-"); if (end) setSpan(s[0], v) else setSpan(v, s[1]) })
+                darkBox.getChildAt(darkBox.childCount - 1).apply {
+                    val step = { d: Int -> val i = (halves.indexOfFirst { it.first == (span() ?: HomeConfig.DARK_ON.split("-"))[if (end) 1 else 0] } + d + 48) % 48; val s = span() ?: HomeConfig.DARK_ON.split("-")
+                        if (end) setSpan(s[0], halves[i].first) else setSpan(halves[i].first, s[1]); (this as LinearLayout).let { t -> ((t.getChildAt(1) as LinearLayout).getChildAt(1) as TextView).text = halves[i].first } }
+                    setOnKeyListener { _, code, e ->
+                        if (e.action != android.view.KeyEvent.ACTION_DOWN) return@setOnKeyListener false
+                        when (code) { android.view.KeyEvent.KEYCODE_DPAD_LEFT -> step(-1); android.view.KeyEvent.KEYCODE_DPAD_RIGHT -> step(1); else -> return@setOnKeyListener false }
+                        true
+                    }
+                }
+            }
+            col = outer
+            darkBox.visibility = if (span() != null) View.VISIBLE else View.GONE
+            col.addView(darkBox, LinearLayout.LayoutParams(-1, -2).apply { if (col.childCount > 0) topMargin = gap })
             tile(R.drawable.ic_gauge, a.getString(R.string.stats), null, "stats")   // anonymous stats (OwnReport): TV Setup's switch when it is installed, else this one
             // another launcher as the home screen: TV Home has no ADB to turn the TV's own one off (without that Home goes on landing on it,
             // a BRAVIA on Android 9), so TV Setup's picker does it, opened on that screen; without TV Setup the row says how to get it

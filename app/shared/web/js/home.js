@@ -446,7 +446,12 @@ async function homeOpen() {
   const shift = el('input', { type: 'checkbox', onchange: () => send({ shift: shift.checked }) });   // HomeConfig "shift", default off
   const dream = el('input', { type: 'checkbox', onchange: () => send({ dream: dream.checked }) });
   const dfaceHead = el('h3', { textContent: T('home.dface') }), dface = el('div', { className: 'fchips' });   // the screensaver's look (HomeConfig "dface"); only a TV Home that reports it
-  const ddarkHead = el('h3', { textContent: T('home.ddark') }), ddark = el('div', { className: 'fchips wrapc' });   // black screen in the night hours (HomeConfig "ddark", "" = off); only a TV Home that reports it
+  // black screen in the night hours (HomeConfig "ddark": "" = off, else "HH:MM-HH:MM", 30-minute steps); only a TV Home that reports it
+  const DARK_ON = '22:00-06:00';
+  const ddarkOn = el('input', { type: 'checkbox', onchange: () => send({ ddark: ddarkOn.checked ? DARK_ON : '' }) });
+  const ddarkSend = () => { if (ddarkFrom.value && ddarkTo.value) send({ ddark: ddarkFrom.value + '-' + ddarkTo.value }); };   // from == to: the TV reads it as off
+  const ddarkFrom = el('input', { type: 'time', step: 1800, onchange: ddarkSend }), ddarkTo = el('input', { type: 'time', step: 1800, onchange: ddarkSend });
+  const ddarkTimes = el('div', { className: 'ddark' }, el('label', {}, el('span', { textContent: T('home.ddark_from') }), ddarkFrom), el('label', {}, el('span', { textContent: T('home.ddark_to') }), ddarkTo));
   const center = el('input', { type: 'checkbox', onchange: () => send({ center: center.checked }) });   // the app grid's tiles in the middle of their row (HomeConfig "center", default off)
   // remote keys that open an app, and the app that opens each time the TV turns on (HomeConfig keyon / keyapps / autoon / autoapp).
   // Both default off. TV Home answers a key on its own screen; TV Setup does it everywhere and the power-on app: said under each
@@ -682,9 +687,10 @@ async function homeOpen() {
     dfaceHead.hidden = dface.hidden = c.dface === undefined;
     dface.replaceChildren(...[['big', 'home.dface_big'], ['modern', 'home.ov_modern'], ['digital', 'home.ov_digital']].map(([k, id]) =>
       el('button', { type: 'button', className: c.dface === k ? 'on' : '', 'aria-pressed': String(c.dface === k), onclick: () => send({ dface: k }) }, T(id))));
-    ddarkHead.hidden = ddark.hidden = c.ddark === undefined;
-    ddark.replaceChildren(...['', '22-6', '23-6', '0-6', '1-6'].map((k) =>
-      el('button', { type: 'button', className: (c.ddark || '') === k ? 'on' : '', 'aria-pressed': String((c.ddark || '') === k), onclick: () => send({ ddark: k }) }, k ? k.split('-').map((h, i) => h + ':00').join('–') : T('home.ddark_off'))));
+    ddarkOn.closest('label').hidden = c.ddark === undefined;
+    const dk = /^(\d\d:\d\d)-(\d\d:\d\d)$/.exec(c.ddark || '');
+    ddarkOn.checked = !!dk; ddarkTimes.hidden = c.ddark === undefined || !dk;
+    if (dk) { ddarkFrom.value = dk[1]; ddarkTo.value = dk[2]; }
     center.checked = !!c.center;
     center.closest('label').hidden = c.center === undefined;          // a TV Home older than it
     const ka = c.keyapps || {}, kOk = !!c.keysOk;                     // an older TV Home has neither: shown, with its update
@@ -1056,7 +1062,7 @@ async function homeOpen() {
       sect(null, picsHead, pics)]],
     ['widgets', 'chart', 210, 'home.g_widgets', [sect(null, wHead, wList, ...wLines), sect(null, packHead, packBox, packNote), sect(null, layHead, lay, layNote, placeHead, placeLine),
       sect(null, feedHead, feedLine, feedList, feedNote), sect(null, noteHead, noteLine), sect(null, qrHead, qrList, qrNote)]],
-    ['system', 'power', 260, 'home.g_system', [sect(null, check(dream, 'home.dream'), dfaceHead, dface, ddarkHead, ddark)]],
+    ['system', 'power', 260, 'home.g_system', [sect(null, check(dream, 'home.dream'), dfaceHead, dface, check(ddarkOn, 'home.ddark'), ddarkTimes)]],
     ['keys', 'keyboard', 230, 'home.keys', [keysOld, check(keyOn, 'home.keys_on'), keysNote, keysList, autoNote, autoAllBox, autoAllNote]],
     ['lang', 'globe', 200, 'home.lang', [langs]],
   ];

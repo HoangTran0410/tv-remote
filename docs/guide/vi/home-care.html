@@ -6,7 +6,7 @@ Hai tùy chọn cho nền của TV Home, tính trên TV, không cần mạng.
 2. Nơi tính lấy từ widget Thời tiết, không có thì theo múi giờ. Tính ngay trên TV, không cần mạng, vài phút vẽ lại một lần.
 3. Màn OLED: chọn nền **Đen**, rồi bật **Nhích nhẹ màn hình mỗi phút** (Tùy chỉnh → Giao diện). Mặc định tắt.
 4. Cả màn hình chính dịch 1 dp mỗi phút trong ô vuông 6 dp, không thấy giật; hình nền đứng yên.
-5. Màn chờ tối đen ban đêm: **Màn chờ: tối đen** (Tùy chỉnh → Hệ thống), chọn khung giờ như 22:00–6:00. Trong giờ đó màn chờ chỉ còn màn đen, không đồng hồ. Mặc định tắt.
+5. Màn chờ tối đen ban đêm (Tùy chỉnh → Hệ thống): bật, rồi chọn **Từ** và **Đến**, mỗi bước 30 phút (trên TV: OK hoặc Phải). Trong giờ đó chỉ còn màn đen. Mặc định tắt.
 
 Tùy chỉnh → Giao diện → **Bấm Home trong app: hiện thanh app** (mặc định tắt).
 
