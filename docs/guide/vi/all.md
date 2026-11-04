@@ -658,6 +658,10 @@ Hai tùy chọn cho nền của TV Home, tính trên TV, không cần mạng.
 4. Cả màn hình chính dịch 1 dp mỗi phút trong ô vuông 6 dp, không thấy giật; hình nền đứng yên.
 5. Màn chờ tối đen ban đêm: **Màn chờ: tối đen** (Tùy chỉnh → Hệ thống), chọn khung giờ như 22:00–6:00. Trong giờ đó màn chờ chỉ còn màn đen, không đồng hồ. Mặc định tắt.
 
+Tùy chỉnh → Giao diện → **Bấm Home trong app: hiện thanh app** (mặc định tắt).
+
+Home trong app mở thanh: Trang chủ, Dock, app gần đây. OK mở, Back đóng, Home lần nữa về TV Home. Cần TV Setup Keys.
+
 ## Cài đặt nhanh (TV Home)
 
 Nút Cài đặt (bánh răng) trên thanh trên mở bảng theo kiểu Android. Ô lớn: Tùy chỉnh, Hẹn giờ tắt.
@@ -702,6 +706,18 @@ Giữ OK trên một app mở menu của riêng app đó, chia nhóm. Back trên
 - Sai 5 lần liên tiếp thì chờ 1, 5, 15, rồi 60 phút.
 - Khóa thật cho trẻ: khóa luôn app Cài đặt (chế độ trẻ em), không thì trẻ gỡ được TV Setup từ Cài đặt. TV Setup tự hỏi mã PIN khi mở nó hoặc màn Quản lý của nó.
 
+## Phím nhanh của TV Home
+
+Phím nhanh mở app ngay từ màn hình chính bằng một phím số hoặc phím màu trên remote.
+
+1. Tab **TV** → **Tùy chỉnh TV Home** → **Phím nhanh**.
+2. Bàn phím giống "Gán phím điều khiển": 1-9, 0, 4 phím màu, rồi ô **Khi bật TV** và các phím remote không có. Bấm một ô để chọn app.
+3. Ô đã gán hiện banner hoặc icon app to. Bấm đúng phím số hoặc màu trên remote thật thì ô tương ứng được chọn.
+
+- Ô **Khi bật TV**: chọn app = tự mở, xóa = tắt. Nút **Tự mở … khi bật TV**: mở app đó (trống: TV Home) dù TV tự vào HDMI hay app khác, trừ lúc cast.
+- Cùng ô đó có **Ứng dụng vừa dùng**: mở app đang chạy lúc tắt TV (mặc định tắt).
+- Live widget cũng gán được và hiện icon riêng.
+
 ## Phím trên remote: gán app, sửa phím chết, giữ để đổi
 
 Phím màu, phím số và nút đã hết tác dụng có thể mở app bạn chọn. Cần [TV Home](#home); muốn chạy ở mọi app thì cần thêm TV Setup.
@@ -725,18 +741,6 @@ Phím màu, phím số và nút đã hết tác dụng có thể mở app bạn 
 
 - Ô của app đã gán hiện phím ở góc trên (chấm màu, số hoặc biểu tượng), tắt phím nhanh thì ẩn.
 - Phím nhanh dùng chung bàn phím này: xem [Phím nhanh](#home-quickkeys).
-
-## Phím nhanh của TV Home
-
-Phím nhanh mở app ngay từ màn hình chính bằng một phím số hoặc phím màu trên remote.
-
-1. Tab **TV** → **Tùy chỉnh TV Home** → **Phím nhanh**.
-2. Bàn phím giống "Gán phím điều khiển": 1-9, 0, 4 phím màu, rồi ô **Khi bật TV** và các phím remote không có. Bấm một ô để chọn app.
-3. Ô đã gán hiện banner hoặc icon app to. Bấm đúng phím số hoặc màu trên remote thật thì ô tương ứng được chọn.
-
-- Ô **Khi bật TV**: chọn app = tự mở, xóa = tắt. Nút **Tự mở … khi bật TV**: mở app đó (trống: TV Home) dù TV tự vào HDMI hay app khác, trừ lúc cast.
-- Cùng ô đó có **Ứng dụng vừa dùng**: mở app đang chạy lúc tắt TV (mặc định tắt).
-- Live widget cũng gán được và hiện icon riêng.
 
 ## Sửa phím chết, giữ để đổi
 

@@ -16,7 +16,9 @@ import android.view.KeyEvent
 import android.widget.Toast
 import dev.tvremote.core.T
 import dev.tvremote.setup.health.Support
+import dev.tvremote.setup.home.HomeBar
 import dev.tvremote.setup.home.HomeKey
+import dev.tvremote.setup.home.HomeKeys
 import dev.tvremote.setup.keys.HoldKeys
 import dev.tvremote.setup.keys.KeyFix
 import dev.tvremote.setup.keys.KeyList
@@ -65,6 +67,7 @@ class KeysBridge : Service() {
     private val fire = Runnable { if (synchronized(gate) { gate.timer(armed) }) held(armed) }
     @Volatile private var homeDown = 0L                               // the Home press under way (its down time), 0: none
     @Volatile private var homeLong = false
+    @Volatile private var bar = false                                 // the option "homebar", read in refresh(): no disk in the key path
     private val homeHeld = Runnable { if (homeDown != 0L) { homeLong = true; HomeKey.longPress() } }
     @Volatile private var digit = -1                                  // the number held now, and the app on screen when it went down
     @Volatile private var digitFront = ""
@@ -137,6 +140,8 @@ class KeysBridge : Service() {
             val p = SparseArray<KeyFix.Rule>()
             try { if (KeyFix.wanted(this)) for ((k, v) in KeyFix.current(this)) p.put(k, v) } catch (e: Exception) { }   // switched off: the service only holds
             try { HomeKey.pkg(this)?.let { p.put(HomeKey.CODE, KeyFix.Rule(KeyFix.LAUNCHER, listOf(it))) } } catch (e: Exception) { }   // asked for on the page: not under the dead-key switch
+            bar = HomeKeys.bar(this)
+            if (bar && p.get(HomeKey.CODE) == null) p.put(HomeKey.CODE, KeyFix.Rule(KeyFix.HOME, emptyList()))   // the bar needs the key; [homeBar] gives Home back where there is no app
             val d = SparseArray<String>()
             try { for ((k, v) in KeyFix.digits(this)) d.put(k, v) } catch (e: Exception) { }
             plan = p
@@ -192,10 +197,20 @@ class KeysBridge : Service() {
             ui.removeCallbacks(homeHeld); ui.postDelayed(homeHeld, HomeKey.LONG_MS)
         } else if (action == KeyEvent.ACTION_UP) {
             ui.removeCallbacks(homeHeld)
-            if (homeDown != 0L && !homeLong) ui.post { act(rule, HomeKey.CODE) }
+            if (homeDown != 0L && !homeLong) ui.post { if (bar) homeBar(rule) else act(rule, HomeKey.CODE) }
             homeDown = 0L
         }
         return true
+    }
+
+    /** Home with the bar on: over an app the bar opens, anywhere else Home is what it was ([rule]: the launcher picked, else the home screen). */
+    private fun homeBar(rule: KeyFix.Rule) {
+        Thread({
+            val front = Usage.front(this)
+            val over = HomeBar.opens(front, HomeBar.homes(this))
+            android.util.Log.i("HomeBar", "front '$front': ${if (over) "bar" else "home"}")      // adb logcat -s HomeBar
+            ui.post { KeyFix.run(this, if (over) KeyFix.Rule(KeyFix.BAR, emptyList()) else rule) }
+        }, "home-bar").apply { isDaemon = true }.start()
     }
 
     /**
@@ -238,6 +253,7 @@ class KeysBridge : Service() {
         plan = SparseArray()
         digits = SparseArray()
         hold = false
+        bar = false
         mic = false
         ui.removeCallbacks(fire); ui.removeCallbacks(homeHeld); ui.removeCallbacks(digitHeld)
         if (running === this) running = null

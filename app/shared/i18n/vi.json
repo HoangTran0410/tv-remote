@@ -3117,6 +3117,7 @@
  "home.show_watch": "Hàng Xem tiếp",
  "home.show_infold": "Chỉ hiện cổng HDMI/AV đang cắm",
  "home.show_shift": "Nhích nhẹ màn hình mỗi phút (chống burn-in OLED)",
+ "home.show_homebar": "Bấm Home trong app: hiện thanh app gần đây và Dock (cần TV Setup)",
  "home.watch_at": "Vị trí hàng Xem tiếp",
  "home.watch_at_top": "Trên các app",
  "home.watch_at_under1": "Dưới hàng đầu",

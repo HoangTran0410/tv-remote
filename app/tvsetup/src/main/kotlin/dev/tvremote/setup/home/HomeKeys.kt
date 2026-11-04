@@ -75,8 +75,11 @@ internal object HomeKeys {
     /** The power-on app is whichever was open when the TV turned off ([AutoOpen.lastApp]), not a fixed one. */
     fun last(c: Context): Boolean = load(c).let { it.optBoolean("autoon") && it.optBoolean("autolast") }
 
+    /** "Home over an app shows TV Home's bar" ([HomeBar]): off by default, then nothing here runs for it. */
+    fun bar(c: Context): Boolean = load(c).optBoolean("homebar")
+
     /** The service has to run for these: the key filter's list is kept by [KeyFixWatch], waking is heard by [AutoOpenWatch]. */
-    fun active(c: Context): Boolean = all(c).isNotEmpty() || auto(c).let { it.first && (it.second.isNotEmpty() || always(c) || last(c)) }
+    fun active(c: Context): Boolean = all(c).isNotEmpty() || bar(c) || auto(c).let { it.first && (it.second.isNotEmpty() || always(c) || last(c)) }
 }
 
 /**
