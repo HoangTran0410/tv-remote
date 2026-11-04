@@ -607,6 +607,7 @@ class Adb(private val dir: File) : Closeable {
         val sum = data.sumOf { it.toInt() and 0xff }
         val b = ByteBuffer.allocate(24 + data.size).order(ByteOrder.LITTLE_ENDIAN)
         b.putInt(cmd).putInt(arg0).putInt(arg1).putInt(data.size).putInt(sum).putInt(cmd.inv()).put(data)
+        if (!::output.isInitialized) throw IOException("not connected")   // alive() on one whose connect never got through: callers catch IOException, not this (crash b4de9bca)
         output.write(b.array())
         output.flush()
     }
