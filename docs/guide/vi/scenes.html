@@ -14,7 +14,7 @@ Một cảnh là chuỗi việc chạy một lần bấm. Ví dụ “Xem phim�
 | Đặt âm lượng · Bấm phím | Đặt mức hay bấm phím. |
 | Chuyển ngõ vào | HDMI hay nguồn khác. |
 | Chờ | Đợi vài giây giữa hai bước. |
-| Hẹn giờ tắt · Gửi thông báo | Như các tính năng riêng. |
+| Hẹn giờ tắt · Gửi thông báo | Như các tính năng riêng. Thông báo đọc to được. |
 
 Chạy cảnh từ **Thêm phím → Cảnh**, bằng giọng nói (nói tên cảnh), hoặc widget, ô Cài đặt nhanh, phím tắt trên điện thoại.
 

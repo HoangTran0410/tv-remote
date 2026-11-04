@@ -13,3 +13,5 @@ Cần TV Setup trên TV và ADB đang bật. Các việc dưới đây tự ch�
 | Vì sao tách riêng | Để Google Play Protect không chặn TV Setup khi bạn cài bằng Downloader. |
 
 > 💡 Nút lạ của vài đời TV (vd. Xiaomi MiTV-MOOQ0: nút Nguồn vào) được sửa theo danh sách trên site, không cần cập nhật app. Remote của bạn có nút lạ: gửi mã hỗ trợ.
+
+> 💡 TV không có ADB: add-on này cũng mở menu nguồn của hệ thống cho nút Tắt TV trên TV Home ([Cài đặt nhanh](home-control.md)).

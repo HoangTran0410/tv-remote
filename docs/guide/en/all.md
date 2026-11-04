@@ -559,7 +559,7 @@ Big QR codes on the home screen, readable from the sofa: guest Wi-Fi, a menu lin
 
 A live widget is a tile in the app grid with live numbers; press it and it does the job. Provided by TV Setup and TV Channels.
 
-1. **TV** tab → **Customize TV Home** → **Add to home screen**.
+1. **TV** tab → **Customize TV Home** → **Look** → **Add to home screen**.
 2. Under **Live widgets**: press a live widget to put it on the grid; one already there says **Added** and a press goes to it.
 
 | Live widget | Pressing it |
@@ -759,6 +759,8 @@ These need TV Setup on the TV and ADB switched on. They run by themselves once o
 | Why it is separate | So Google Play Protect does not block TV Setup when you install it with Downloader. |
 
 > 💡 Odd buttons on some TV models (e.g. the Xiaomi MiTV-MOOQ0's Input button) are fixed from a list on the site, with no app update. An odd button on your remote: send a support code.
+
+> 💡 A TV with no ADB: this add-on also opens the system power menu for TV Home's Power off ([Quick settings](#home-control)).
 
 ## TV Channels, free TV channels
 
@@ -1068,7 +1070,7 @@ A scene is a chain of steps run with one tap. For example “Movie”: turn on t
 | Set the volume · Press a key | Sets a level or presses a key. |
 | Switch input | HDMI or another source. |
 | Wait | Waits a few seconds between steps. |
-| Sleep timer · Send a notification | Like the separate features. |
+| Sleep timer · Send a notification | Like the separate features. A notification can be read aloud. |
 
 Run a scene from **More keys → Scenes**, by voice (say its name), or from the phone's widget, Quick Settings tile or shortcut.
 
@@ -1158,7 +1160,7 @@ Change the end of the link to do something else (a space is `%20`):
 | `app=com.netflix.ninja` | Opens an app by package name. |
 | `scene=Movie` | Runs a scene. |
 | `text=hello` | Types text. |
-| `notify=Someone%20at%20the%20door&title=Doorbell` | Shows a message card on the TV screen (title= and seconds= 1 to 60 are optional). Needs TV Setup. |
+| `notify=Someone%20at%20the%20door&title=Doorbell` | Shows a message card on the TV screen (title= and seconds= 1 to 60 are optional; add `speak=1` to have the TV read it aloud, `lang=` is its language). Needs TV Setup. |
 | `volume=20` / `up` / `down` / `mute` | Sets volume (0 to 100), or up, down, mute. |
 | `power=on` / `off` / `toggle` | On, off or toggle. |
 | `minutes=15&for=com.google.android.youtube.tv` | More minutes today (1 to 240) for an app with a limit; without `for=` they add to the daily TV time. For a learning site: call the link when the quiz is passed. Needs TV Setup. |

@@ -2,7 +2,7 @@
 
 Live widget là một ô trong lưới app có số liệu thật, bấm là làm việc luôn. Do TV Setup và TV Channels cung cấp.
 
-1. Tab **TV** → **Tùy chỉnh TV Home** → **Thêm vào màn hình chính**.
+1. Tab **TV** → **Tùy chỉnh TV Home** → **Giao diện** → **Thêm vào màn hình chính**.
 2. Mục **Live widget**: bấm live widget chưa thêm để đưa lên lưới app; cái đã có ghi **Đã thêm**, bấm là tới nó.
 
 | Live widget | Bấm thì |

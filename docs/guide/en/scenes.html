@@ -14,7 +14,7 @@ A scene is a chain of steps run with one tap. For example “Movie”: turn on t
 | Set the volume · Press a key | Sets a level or presses a key. |
 | Switch input | HDMI or another source. |
 | Wait | Waits a few seconds between steps. |
-| Sleep timer · Send a notification | Like the separate features. |
+| Sleep timer · Send a notification | Like the separate features. A notification can be read aloud. |
 
 Run a scene from **More keys → Scenes**, by voice (say its name), or from the phone's widget, Quick Settings tile or shortcut.
 

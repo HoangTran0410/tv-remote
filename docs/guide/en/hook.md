@@ -38,7 +38,7 @@ Change the end of the link to do something else (a space is `%20`):
 | `app=com.netflix.ninja` | Opens an app by package name. |
 | `scene=Movie` | Runs a scene. |
 | `text=hello` | Types text. |
-| `notify=Someone%20at%20the%20door&title=Doorbell` | Shows a message card on the TV screen (title= and seconds= 1 to 60 are optional). Needs TV Setup. |
+| `notify=Someone%20at%20the%20door&title=Doorbell` | Shows a message card on the TV screen (title= and seconds= 1 to 60 are optional; add `speak=1` to have the TV read it aloud, `lang=` is its language). Needs TV Setup. |
 | `volume=20` / `up` / `down` / `mute` | Sets volume (0 to 100), or up, down, mute. |
 | `power=on` / `off` / `toggle` | On, off or toggle. |
 | `minutes=15&for=com.google.android.youtube.tv` | More minutes today (1 to 240) for an app with a limit; without `for=` they add to the daily TV time. For a learning site: call the link when the quiz is passed. Needs TV Setup. |

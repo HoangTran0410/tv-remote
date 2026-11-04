@@ -13,3 +13,5 @@ These need TV Setup on the TV and ADB switched on. They run by themselves once o
 | Why it is separate | So Google Play Protect does not block TV Setup when you install it with Downloader. |
 
 > 💡 Odd buttons on some TV models (e.g. the Xiaomi MiTV-MOOQ0's Input button) are fixed from a list on the site, with no app update. An odd button on your remote: send a support code.
+
+> 💡 A TV with no ADB: this add-on also opens the system power menu for TV Home's Power off ([Quick settings](home-control.md)).

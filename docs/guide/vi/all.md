@@ -559,7 +559,7 @@ Mã QR to ngay màn hình chính, quét từ ghế sofa: Wi-Fi cho khách, link 
 
 Live widget là một ô trong lưới app có số liệu thật, bấm là làm việc luôn. Do TV Setup và TV Channels cung cấp.
 
-1. Tab **TV** → **Tùy chỉnh TV Home** → **Thêm vào màn hình chính**.
+1. Tab **TV** → **Tùy chỉnh TV Home** → **Giao diện** → **Thêm vào màn hình chính**.
 2. Mục **Live widget**: bấm live widget chưa thêm để đưa lên lưới app; cái đã có ghi **Đã thêm**, bấm là tới nó.
 
 | Live widget | Bấm thì |
@@ -759,6 +759,8 @@ Cần TV Setup trên TV và ADB đang bật. Các việc dưới đây tự ch�
 | Vì sao tách riêng | Để Google Play Protect không chặn TV Setup khi bạn cài bằng Downloader. |
 
 > 💡 Nút lạ của vài đời TV (vd. Xiaomi MiTV-MOOQ0: nút Nguồn vào) được sửa theo danh sách trên site, không cần cập nhật app. Remote của bạn có nút lạ: gửi mã hỗ trợ.
+
+> 💡 TV không có ADB: add-on này cũng mở menu nguồn của hệ thống cho nút Tắt TV trên TV Home ([Cài đặt nhanh](#home-control)).
 
 ## TV Channels, kênh truyền hình miễn phí
 
@@ -1068,7 +1070,7 @@ Một cảnh là chuỗi việc chạy một lần bấm. Ví dụ “Xem phim�
 | Đặt âm lượng · Bấm phím | Đặt mức hay bấm phím. |
 | Chuyển ngõ vào | HDMI hay nguồn khác. |
 | Chờ | Đợi vài giây giữa hai bước. |
-| Hẹn giờ tắt · Gửi thông báo | Như các tính năng riêng. |
+| Hẹn giờ tắt · Gửi thông báo | Như các tính năng riêng. Thông báo đọc to được. |
 
 Chạy cảnh từ **Thêm phím → Cảnh**, bằng giọng nói (nói tên cảnh), hoặc widget, ô Cài đặt nhanh, phím tắt trên điện thoại.
 
@@ -1158,7 +1160,7 @@ Máy phải cùng Wi-Fi với TV.
 | `app=com.netflix.ninja` | Mở app theo tên gói. |
 | `scene=Xem phim` | Chạy một cảnh. |
 | `text=xin chào` | Gõ chữ. |
-| `notify=Có khách&title=Chuông cửa` | Hiện thẻ tin nhắn trên màn hình TV (title= và seconds= 1 đến 60 là tuỳ chọn). Cần TV Setup. |
+| `notify=Có khách&title=Chuông cửa` | Hiện thẻ tin nhắn trên màn hình TV (title= và seconds= 1 đến 60 là tuỳ chọn; thêm `speak=1` để TV đọc to, `lang=` là ngôn ngữ). Cần TV Setup. |
 | `volume=20` / `up` / `down` / `mute` | Đặt âm lượng (0 đến 100) hoặc tăng, giảm, tắt tiếng. |
 | `power=on` / `off` / `toggle` | Bật, tắt hay đổi trạng thái. |
 | `minutes=15&for=com.google.android.youtube.tv` | Cho thêm phút xem hôm nay (1 đến 240) cho app đã đặt giới hạn; bỏ `for=` là cộng vào tổng giờ TV mỗi ngày. Hợp với web học bài: làm đạt thì gọi link. Cần TV Setup. |
