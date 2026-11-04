@@ -3,6 +3,7 @@ import dev.tvremote.core.B64
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.home.HomeConfig
 import dev.tvremote.home.LinkUrl
+import dev.tvremote.home.Target
 import dev.tvremote.update.Release
 import org.json.JSONObject
 import java.io.File
@@ -134,6 +135,28 @@ object Home {
         val set = conf.optJSONArray("walls")?.let { a -> List(a.length()) { a.getString(it) } } ?: emptyList()
         val walls = if (conf.optString("wevery", "off") == "off") listOf(id) else set + id
         return call(sh, JSONObject().put("walls", org.json.JSONArray(walls)).put("wall", id).put("photo", System.currentTimeMillis()))
+    }
+
+    /**
+     * The person's own picture for the tile [target] ("pics"): [jpeg] (the page's 480 x 270 one, at most [HomeConfig.PIC_BYTES]) goes to TV Home's
+     * pics folder under a new id, then the setting names it; TV Home drops the files no setting names. A TV Home from before "pics" answers `home:pic_old`.
+     */
+    @Throws(IOException::class)
+    fun appPic(adb: Adb, target: String, jpeg: ByteArray): JSONObject {
+        if (!Target.valid(target) || HomeConfig.isLive(target) || HomeConfig.isFolder(target)) throw IllegalArgumentException("pic target")
+        if (jpeg.size < 4 || jpeg.size > HomeConfig.PIC_BYTES || jpeg[0] != 0xFF.toByte() || jpeg[1] != 0xD8.toByte()) throw IllegalArgumentException("pic image")
+        val sh: (String) -> String = { adb.shell(it) }
+        val now = call(sh, null)
+        if (!now.optBoolean("installed")) throw IOException("home:missing")
+        val conf = now.optJSONObject("config") ?: JSONObject()
+        if (!conf.has("pics")) throw IOException("home:pic_old")        // a TV Home from before own pictures
+        val have = conf.optJSONObject("pics") ?: JSONObject()
+        if (!have.has(target) && have.length() >= HomeConfig.PICS_MAX) throw IOException("home:pic_full")
+        val id = String.format("%08x", java.security.SecureRandom().nextInt())
+        val path = HomeConfig.picPath(id)
+        sh("mkdir -p " + path.substringBeforeLast('/'))
+        if (!adb.put(path, jpeg, true)) throw IOException("home:photo")
+        return call(sh, JSONObject().put("pics", JSONObject(have.toString()).put(target, id)))
     }
 
     /**

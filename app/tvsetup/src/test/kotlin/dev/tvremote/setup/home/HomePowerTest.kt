@@ -14,4 +14,12 @@ class HomePowerTest {
         assertNull(HomePower.command("standby; rm -rf /sdcard"))     // a caller's own words never reach the shell
         assertNull(HomePower.command(""))
     }
+
+    @Test fun noAdbPowerOffOpensTheSystemMenuOnlyWhenKeysIsOn() {
+        assertEquals("menu", HomePower.withoutAdb("power_off", "noadb", true))
+        assertEquals("keys_off", HomePower.withoutAdb("power_off", "noadb", false))
+        assertEquals("ok", HomePower.withoutAdb("power_off", "ok", false))
+        assertEquals("noadb", HomePower.withoutAdb("reboot", "noadb", true))     // only Power off has the menu
+        assertEquals("failed", HomePower.withoutAdb("power_off", "failed", true))
+    }
 }

@@ -1,9 +1,11 @@
 package dev.tvremote.setup.keys
 
 import android.accessibilityservice.AccessibilityService
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.os.Handler
 import android.os.IBinder
@@ -36,10 +38,19 @@ class KeyFixService : AccessibilityService() {
         override fun onNullBinding(n: ComponentName) { bridge = null }
     }
 
+    /** TV Setup's "Power off" on a box with no ADB: the system's own power menu (the person still picks in it). Only TV Setup's key may send it. */
+    private val menu = object : BroadcastReceiver() {
+        override fun onReceive(c: Context, i: Intent) { performGlobalAction(GLOBAL_ACTION_POWER_DIALOG) }
+    }
+    private var menuOn = false
+
     override fun onServiceConnected() {
         power = getSystemService(Context.POWER_SERVICE) as? PowerManager
+        if (!menuOn) menuOn = try { registerReceiver(menu, IntentFilter(KeysProtocol.ACTION_POWER_MENU), KeysProtocol.PERMISSION, null); true } catch (e: Exception) { false }
         bind()
     }
+
+    private fun unmenu() { if (menuOn) try { unregisterReceiver(menu) } catch (e: Exception) { }; menuOn = false }
 
     private fun bind() {
         if (bound) return
@@ -95,8 +106,8 @@ class KeyFixService : AccessibilityService() {
         }, "codes").apply { isDaemon = true }.start()
     }
 
-    override fun onUnbind(i: Intent?): Boolean { ui.removeCallbacksAndMessages(null); unbind(); return super.onUnbind(i) }
-    override fun onDestroy() { ui.removeCallbacksAndMessages(null); unbind(); super.onDestroy() }
+    override fun onUnbind(i: Intent?): Boolean { ui.removeCallbacksAndMessages(null); unbind(); unmenu(); return super.onUnbind(i) }
+    override fun onDestroy() { ui.removeCallbacksAndMessages(null); unbind(); unmenu(); super.onDestroy() }
     override fun onAccessibilityEvent(e: AccessibilityEvent?) { }
     override fun onInterrupt() { }
 }

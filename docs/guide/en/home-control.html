@@ -8,6 +8,8 @@ Kids mode: tap to turn on; when on, a tap (asks the PIN) picks the apps or turns
 
 Round buttons: Clear RAM, TV settings, Turn off the TV (Screensaver, Screen off, Restart, Power off).
 
+Power off on a TV with no ADB: when TV Setup Keys is on (Settings → Accessibility), the TV opens the system's own power menu for you to pick from; it never powers off by itself. When it is off, the TV says how to turn it on.
+
 **Brightness** (sun icon): OK to change it, Left / Right in steps of 10 %, Back when done; 100 % = no tint.
 
 The **Tint color** button beside it: Dark, Blue light filter, Yellow, Sepia, Night red, Blue. Needs a newer TV Setup.

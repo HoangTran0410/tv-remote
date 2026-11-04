@@ -56,6 +56,7 @@ import dev.tvremote.home.apps.AppPages
 import dev.tvremote.home.apps.HomeLock
 import dev.tvremote.home.apps.AppRules
 import dev.tvremote.home.apps.Apps
+import dev.tvremote.home.apps.Pics
 import dev.tvremote.home.wall.Backdrop
 import dev.tvremote.home.apps.Badges
 import dev.tvremote.home.ui.Drop
@@ -216,7 +217,7 @@ class HomeActivity : Activity() {
         shortcutWatch = Pins.watch(this) { r -> bg.execute(r) }
         if (!Pins.listed(this)) bg.execute { Pins.refresh(this) }       // the first Home: + Add has the apps' shortcuts to list
         Store.advance(this, true)                                     // a rotation on "each time Home is shown" (or one that fell due while away): before the first paint, so nothing is drawn twice
-        conf = Store.get(this); readNames(); Pins.resize(pinW())
+        conf = Store.get(this); readNames(); Pics.ids = picIds(); if (Pics.dir(this).isDirectory) bg.execute { Pics.sweep(this, Pics.ids.values) }; Pins.resize(pinW())
         val root = FrameLayout(this)
         backdrop = Backdrop(window.decorView)
 
@@ -1016,7 +1017,7 @@ class HomeActivity : Activity() {
 
     /** A change of the settings ([Store.onChange]): everything that reads them, drawn again. */
     private fun onConf() {
-        readNames(); if (Pins.resize(pinW())) pinsRedraw()
+        readNames(); readPics(); if (Pins.resize(pinW())) pinsRedraw()
         if (conf.optString("lang") != Lang.shown) relang() else { show(); watchRead(); wallTimer(); bingCheck(); peek(); folderFill?.invoke() }
     }
 
@@ -1045,7 +1046,7 @@ class HomeActivity : Activity() {
         val hidden = conf.optJSONArray("hidden").let { a -> if (a == null) emptySet() else List(a.length()) { a.optString(it) }.toSet() }
         val shownPins = pins.filter { it.pkg !in byPkg && it.pkg !in dockPkgs }   // a shortcut put on the grid by the picker shows as that tile, not twice
         val inFolder = if (conf.optJSONObject("folders")?.length() ?: 0 == 0) emptySet() else Folders.members(conf)   // none: no work at all
-        val key = (dockPkgs + shownPins.map { it.pkg }).joinToString(",") + "|" + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden && it.pkg !in inFolder }.joinToString(",") { it.pkg } + "|" + apps.filter { it.folder }.joinToString(",") { it.pkg + it.members } + "|" + apps.count { it.pkg in hidden } + "|" + conf.optInt("cols") + "|" + conf.optJSONArray("order") + "|" + conf.optJSONObject("names") + "|" + suggestSetup() + "|" + conf.optBoolean("showAdd", true)
+        val key = (dockPkgs + shownPins.map { it.pkg }).joinToString(",") + "|" + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden && it.pkg !in inFolder }.joinToString(",") { it.pkg } + "|" + apps.filter { it.folder }.joinToString(",") { it.pkg + it.members } + "|" + apps.count { it.pkg in hidden } + "|" + conf.optInt("cols") + "|" + conf.optJSONArray("order") + "|" + conf.optJSONObject("names") + "|" + conf.optJSONObject("pics") + "|" + suggestSetup() + "|" + conf.optBoolean("showAdd", true)
         val all = key + "|" + watchAt() + "|" + watch.joinToString(",") { it.first.key + it.first.title + (it.second != null) }
         if (all == shownKey) { badgeTiles(); return }                 // nothing that decides the tiles changed: not one view is rebuilt (the power mark may have)
         shownKey = all
@@ -1525,7 +1526,7 @@ class HomeActivity : Activity() {
     }
 
     private fun tile(a: App, w: Int, made: HashMap<String, Tile>): Tile {
-        val k = "${a.pkg}|$w|${a.label}"
+        val k = "${a.pkg}|$w|${a.label}|${Pics.ids[a.pkg]}"
         val t = tileCache[k]?.takeIf { it.app === a } ?: makeTile(a, w)
         made[k] = t
         return t
@@ -1536,6 +1537,25 @@ class HomeActivity : Activity() {
         val g = conf.optJSONObject("names")
         Apps.names = if (g == null) emptyMap() else g.keys().asSequence().associateWith { g.optString(it) }
         apps = apps.sortedBy { it.label.lowercase() }
+    }
+
+    private fun picIds(): Map<String, String> {
+        val g = conf.optJSONObject("pics") ?: return emptyMap()
+        return g.keys().asSequence().associateWith { g.optString(it) }
+    }
+
+    /** The own pictures ("pics") changed: the tiles they touch read again off the main thread, the files nobody names go. Nothing when there are none and were none. */
+    private fun readPics() {
+        val now = picIds(); val was = Pics.ids
+        if (now == was) return
+        Pics.ids = now
+        val changed = (now.keys + was.keys).filter { now[it] != was[it] }.toSet()
+        val mine = (apps + pins).filter { it.pkg in changed }
+        bg.execute {
+            mine.forEach { it.load(this) }
+            Pics.sweep(this, now.values)
+            runOnUiThread { if (!isDestroyed) { shownKey = ""; show() } }
+        }
     }
 
     private fun makeTile(a: App, w: Int) = Tile(this, a, w, a.label, ::dp, ::liveSays, art = if (a.folder) FolderArt.of(this, a.members) else null).apply {
@@ -2110,6 +2130,7 @@ class HomeActivity : Activity() {
         if (Tiles.Act.FOLDER_PUT in acts && !dockedPin) home.add(item(R.drawable.ic_apps, if (inFolder == null) R.string.folder_put else R.string.folder_other) { ui.post { folderPicker(a.pkg, inFolder) } })
         if (dockedPin) home.add(item(R.drawable.ic_close, R.string.unpin) { Pins.remove(this, a); pins = pins.filter { it !== a }; shownKey = ""; show() })
         if (Tiles.Act.RENAME in acts) home.add(item(R.drawable.ic_pen, R.string.rename) { ui.post { rename(a) } })
+        if (Tiles.Act.PICTURE in acts) home.add(item(R.drawable.ic_image, R.string.pic_own, if (Pics.ids.containsKey(a.pkg)) getString(R.string.pic_on) else "") { ui.post { picture(a) } })
         val link = if (Tiles.Act.LINK !in acts) null else Pins.ownIdOf(this, a)?.let { Pins.linkOf(this, it) }
         if (link != null) home.add(TvGlass.Item(R.drawable.ic_link, link.removePrefix("https://").removePrefix("http://").removeSuffix("/"), "", false, false) { ui.post { linkEdit(a, link) } }.also { r ->
             // where it goes, and a press changes it; next to Rename, where people look for both (the user, 2026-11-01)
@@ -2502,6 +2523,21 @@ class HomeActivity : Activity() {
         }
         capture(true)
         p.view("${a.label} · ${getString(R.string.am_key)}", pad, 600, focusCode?.let { tiles[it] } ?: tiles[digits[0]], fixed = head, back = { sub(a, st, 1, 1) })
+    }
+
+    /**
+     * The own picture of [a]: picking a file on a TV is not practical, so the phone does it (the Manage from phone page, "Pictures of apps");
+     * here the person only sees how, and takes the picture away to get the app's own back.
+     */
+    private fun picture(a: App) {
+        val b = android.app.AlertDialog.Builder(this, R.style.Menu).setTitle(R.string.pic_q).setMessage(R.string.pic_hint)
+            .setPositiveButton(R.string.pic_phone) { _, _ -> PhotoScreen.show(this) {} }.setNegativeButton(android.R.string.cancel, null)
+        if (Pics.ids.containsKey(a.pkg)) b.setNeutralButton(R.string.pic_orig) { _, _ ->
+            Store.change(this, JSONObject().put("pics", JSONObject(conf.optJSONObject("pics")?.toString() ?: "{}").also { it.remove(a.pkg) }))
+        }
+        val dlg = b.create()
+        open = dlg
+        dlg.show()
     }
 
     /** Rename [a]: a field with the TV's keyboard, prefilled with the name shown; "Original name" takes the person's name away. */

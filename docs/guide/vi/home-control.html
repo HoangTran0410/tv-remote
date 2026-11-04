@@ -8,6 +8,8 @@ Khoá trẻ em: chạm để bật; bật rồi thì chạm (hỏi mã PIN) đ�
 
 Nút tròn: Dọn RAM, Cài đặt TV, Tắt TV (Màn chờ, Tắt màn hình, Khởi động lại, Tắt hẳn).
 
+Tắt hẳn khi TV không có ADB: nếu TV Setup Keys đang bật (Cài đặt → Hỗ trợ tiếp cận), TV mở menu nguồn của chính hệ thống để bạn tự chọn; nó không tự tắt. Chưa bật thì TV nói cách bật.
+
 **Độ sáng** (biểu tượng mặt trời): OK để chỉnh, Trái / Phải mỗi lần 10 %, Back là xong; 100 % = không phủ.
 
 Nút **Màu lớp phủ** cạnh đó: Tối, Lọc ánh sáng xanh, Vàng, Nâu cổ, Đỏ đêm, Xanh. Cần TV Setup mới.

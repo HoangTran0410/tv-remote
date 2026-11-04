@@ -667,6 +667,8 @@ Kids mode: tap to turn on; when on, a tap (asks the PIN) picks the apps or turns
 
 Round buttons: Clear RAM, TV settings, Turn off the TV (Screensaver, Screen off, Restart, Power off).
 
+Power off on a TV with no ADB: when TV Setup Keys is on (Settings → Accessibility), the TV opens the system's own power menu for you to pick from; it never powers off by itself. When it is off, the TV says how to turn it on.
+
 **Brightness** (sun icon): OK to change it, Left / Right in steps of 10 %, Back when done; 100 % = no tint.
 
 The **Tint color** button beside it: Dark, Blue light filter, Yellow, Sepia, Night red, Blue. Needs a newer TV Setup.
@@ -689,6 +691,7 @@ Holding OK on an app opens its own menu, in groups. Back on the remote returns t
 ### Tips
 
 - Assigning a key: the page is drawn like the remote, each key showing the app on it. Press a number or color key on the remote to assign it at once.
+- Own picture: give look-alike apps (SmartTube, TizenTube) a picture you know at a glance. Pick it on the phone or computer (Manage from phone → Pictures of apps); on the TV, the Own picture row shows how and has Use the app's own picture to go back.
 - Rename: tell two apps with the same name apart (like two YouTubes). The name shows when the tile is focused.
 - Only TV Home installed (no TV Setup): the lock still works, TV Home keeps the PIN and the locked apps itself. Daily limits need TV Setup to count time.
 - TV Home's lock blocks opening an app from TV Home (grid, dock, assigned keys). The remote's own app button, the Assistant or Recents are NOT blocked: that needs TV Setup.

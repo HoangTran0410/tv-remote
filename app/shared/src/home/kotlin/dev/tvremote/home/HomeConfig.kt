@@ -111,6 +111,10 @@ import org.json.JSONObject
  *   note    a line from the family, pinned on the home screen until it is emptied ([NOTE_MAX] characters, one line)
  *   names   the person's own names for apps and shortcuts: {"<package or pin:...>": "name"}, at most [NAMES_MAX], each [NAME_MAX] characters;
  *           shown wherever TV Home shows the app's name, and always on a banner tile (two YouTubes look the same). Not a theme key
+ *   pics    the person's own picture for an app's tile: {"<package or pin:...>": "<8 hex id>"}, at most [PICS_MAX]; the id names a JPEG of
+ *           at most [PIC_W] x [PIC_H] in TV Home's external files folder (pics/<id>.jpg, [picPath]) that a client put there or sent to
+ *           the page's server. It replaces the tile's banner or icon wherever TV Home draws it; removing the key brings the app's own back.
+ *           Not a theme key
  *   tiles   live widgets ("tile:<provider package>/<id>", [isLive]) and launcher shortcuts ("pin:<package>/<id>", [Target.isPin]) on the app grid, at most [TILES_MAX]. A provider (TV Setup's RAM
  *           live widget: tile:dev.tvremote.setup/ram, and its sleep timer; TV Channels' tile:dev.tvremote.channels/next) draws its value
  *           itself, in its layout (gauge / next / toggle); the key then sits in dock / hidden / order like an app's package name.
@@ -222,6 +226,8 @@ object HomeConfig {
     fun photoName(id: String) = "wall" + id.removePrefix("photo") + ".jpg"
     fun photoPath(id: String) = PHOTO.substringBeforeLast('/') + "/" + photoName(id)
     fun isPhoto(id: String) = id in PHOTOS
+    /** The file of the own picture [id] (see "pics"), in the same folder as the photos so that the shell may write it. */
+    fun picPath(id: String) = PHOTO.substringBeforeLast('/') + "/pics/" + id + ".jpg"
     /** The length of an interval in ms ("day" and "show" are not lengths: 0). */
     fun everyMs(e: String) = when (e) { "30m" -> 30 * 60_000L; "1h" -> 3_600_000L; "6h" -> 6 * 3_600_000L; else -> 0L }
     private const val DAY = 86_400_000L
@@ -405,6 +411,11 @@ object HomeConfig {
     const val NOTE_MAX = 140
     const val NAME_MAX = 30
     const val NAMES_MAX = 100
+    const val PICS_MAX = 40
+    const val PIC_W = 480                                             // a tile's picture is 16:9 and no bigger: 480 x 270 in RGB_565 is 253 KB in memory on a weak box
+    const val PIC_H = 270
+    const val PIC_BYTES = 300_000                                     // the file; one that is bigger is not used
+    val PIC_ID = Regex("[0-9a-f]{8}")
     const val PLACE_MAX = 60
     const val GNAME_MAX = 24
     const val GTEXT_MAX = 60
@@ -707,6 +718,7 @@ object HomeConfig {
             .put("folders", folders)
             .put("qrs", qrs)
             .put("names", names(o.optJSONObject("names")))
+            .put("pics", pics(o.optJSONObject("pics")))
             .put("themes", JSONArray(customThemes(o)))
             .also { out -> before(o)?.let { out.put(BEFORE, it) } }
             .put("widgets", JSONArray(widgets))
@@ -787,6 +799,19 @@ object HomeConfig {
             if (!Target.valid(k) || isLive(k)) continue
             val v = g.optString(k).replace(Regex("\\s+"), " ").trim().take(NAME_MAX).trim()
             if (v.isNotEmpty()) out.put(k, v)
+        }
+        return out
+    }
+
+    /** {target: id}: apps and shortcuts only (a live widget draws its own numbers, a folder its apps), an id of 8 hex digits, at most [PICS_MAX]. */
+    fun pics(g: JSONObject?): JSONObject {
+        val out = JSONObject()
+        if (g == null) return out
+        for (k in g.keys().asSequence().sorted()) {
+            if (out.length() >= PICS_MAX) break
+            if (!Target.valid(k) || isLive(k) || isFolder(k)) continue
+            val v = g.optString(k)
+            if (PIC_ID.matches(v)) out.put(k, v)
         }
         return out
     }

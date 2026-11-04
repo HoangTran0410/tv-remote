@@ -18,7 +18,7 @@ object Power {
     fun run(a: Activity, action: String) {
         Thread({
             val said = try { a.contentResolver.call(Uri.parse(HomeConfig.USAGE), "power", action, null)?.getString("result") } catch (e: Exception) { null }
-            val words = when (said) { "ok" -> 0; "noadb" -> R.string.power_noadb; "failed" -> R.string.power_failed; "untrusted" -> R.string.power_untrusted; else -> R.string.power_missing }   // null: no TV Setup, or one without the button
+            val words = when (said) { "ok", "menu" -> 0; "keys_off" -> R.string.power_keys_off; "noadb" -> R.string.power_noadb; "failed" -> R.string.power_failed; "untrusted" -> R.string.power_untrusted; else -> R.string.power_missing }   // null: no TV Setup, or one without the button
             if (words != 0) a.runOnUiThread { if (!a.isDestroyed) Toast.makeText(a, words, Toast.LENGTH_LONG).show() }
         }, "home-power").apply { isDaemon = true }.start()
     }

@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: Quick settings > Turn off the TV > Power off works on boxes with no ADB (Android 14 without port 5555, not paired): when TV Setup Keys is on it opens the system's own power menu to pick from (never powers off by itself); when it is off, the TV says to turn it on in Settings > Accessibility. Needs TV Setup and TV Setup Keys updated together.
+- TV Home: give an app tile its own picture (hold OK > Own picture; set from the phone or computer page under Pictures of apps, shrunk to 480x270 and kept under 300 KB on the TV); "Use the app's own picture" puts the original back. Off until you set one.
 - TV Games: web games played only with phones no longer let the TV sleep or start its screensaver mid-game; retro games no longer keep the screen on forever when nobody plays. Both stay on until 10 minutes after the last press.
 - TV Games: Suggestions come in rows: the web games made for TV Games first, then one row per retro genre.
 

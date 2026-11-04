@@ -193,6 +193,13 @@ object ManageServer {
                     if (code != "ok") reply(out, if (code == "full") 409 else 415, "application/json", err(code))
                     else json(out, onMain { HomeApi.snapshot(c, null, null, false) }, true)
                 }
+                post && req.path == "/h/apppic" -> {                      // the person's own picture for an app's tile (HomeConfig "pics"): a JPEG the page made 16:9
+                    val target = req.query["pkg"] ?: ""
+                    val jpeg = read(req, dev.tvremote.home.HomeConfig.PIC_BYTES * 6)
+                    val code = onMain { HomeApi.saveAppPic(c, target, jpeg) }
+                    if (code != "ok") reply(out, if (code == "full") 409 else if (code == "target") 400 else 415, "application/json", err(code))
+                    else json(out, onMain { HomeApi.snapshot(c, null, null, false) }, true)
+                }
                 !post && req.path == "/h/app/meta" -> {
                     val app = req.query["pkg"]?.takeIf { it.length <= 200 && PKG.matches(it) }?.let { Apps.one(c, it) }
                     if (app == null) reply(out, 404, "application/json", err("not found"))

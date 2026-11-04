@@ -257,6 +257,20 @@ async function homeOpen() {
     const p = await chooseApp(T('home.pick_rename'), [...apps(), ...pins], null, { label: appLabel, icon: (k) => Target.kind(k) === 'pin' ? qkLogo(r.config, k) : appIcon(k) }); if (p) setName(p);
   } });
   const namesHead = el('div', { className: 'card-head' }, el('h3', { textContent: T('home.names') }), addName);
+  // the person's own picture for an app's tile (HomeConfig "pics"): the TV keeps a 480 x 270 JPEG per app; a TV Home older than them reports none, and the part stays hidden
+  const pics = el('div', { className: 'list' }), picsNote = el('p', { className: 'empty', textContent: T('home.pic_none') });
+  let picFor = null;
+  const picFile = el('input', { type: 'file', accept: 'image/*', hidden: true, onchange: async () => {
+    const f = picFile.files[0], p = picFor; picFile.value = ''; picFor = null;
+    if (f && p && await homeAppPic(f, p, (n) => { r = n; homeNow = n; })) after(r);
+  } });
+  const pickPic = (p) => { picFor = p; picFile.click(); };
+  const addPic = el('button', { type: 'button', className: 'small', textContent: T('home.pic_add'), onclick: async () => {
+    if (window.ONTV && homeLink.canQr) return homeLink.qr();          // no file picker on the TV itself: the phone does it, as for photos
+    const pins = (r.config.pinned || []).map((x) => x.key);
+    const p = await chooseApp(T('home.pic_pick'), [...apps(), ...pins], null, { label: appLabel, icon: (k) => Target.kind(k) === 'pin' ? qkLogo(r.config, k) : appIcon(k) }); if (p) pickPic(p);
+  } });
+  const picsHead = el('div', { className: 'card-head' }, el('h3', { textContent: T('home.pics') }), addPic, picFile);
   const orderHead = el('h3', { textContent: T('home.order') }), orderBox = el('div', { className: 'group' });
   // folders on the grid (HomeConfig "folders"): every edit is one change made by HomeFolders (the TV's Folders.kt does the same) and sent whole
   const foldHead = el('div', { className: 'card-head' }, el('h3', { textContent: T('home.folders_head') })), foldNote = el('p', { className: 'note', textContent: T('home.folders_note') }), foldBox = el('div', { className: 'list' });
@@ -585,6 +599,11 @@ async function homeOpen() {
       el('button', { type: 'button', className: 'small', textContent: T('home.rename_edit'), onclick: () => setName(p) }),
       el('button', { type: 'button', className: 'small', textContent: T('home.rename_orig'), onclick: () => { const n = { ...c.names }; delete n[p]; send({ names: n }); } })])));
     if (c.names && !Object.keys(c.names).length) names.append(namesNote);
+    picsHead.hidden = pics.hidden = c.pics === undefined;
+    pics.replaceChildren(...Object.keys(c.pics || {}).map((p) => row(p, [
+      ...(window.ONTV ? [] : [el('button', { type: 'button', className: 'small', textContent: T('home.pic_edit'), onclick: () => pickPic(p) })]),
+      el('button', { type: 'button', className: 'small', textContent: T('home.pic_orig'), onclick: () => { const n = { ...c.pics }; delete n[p]; send({ pics: n }); } })])));
+    if (c.pics && !Object.keys(c.pics).length) pics.append(picsNote);
     if (!c.hidden.length) hidden.append(el('p', { className: 'empty', textContent: T('home.none_hidden') }));
     upload.disabled = !!c.wrotate && (r.photos || []).length >= HOME_PHOTO_MAX;
     for (const x of [hOnline, wOnline, hScenes, wScenes, hColours]) x.hidden = !c.wrotate;      // a TV Home without rotation has the one box
@@ -1024,7 +1043,8 @@ async function homeOpen() {
       sect('home.sec_grid', colsHead, cols, rowsHead, rowsLine, rowsNote, orderHead, orderBox, foldHead, foldNote, foldBox),
       sect(null, tilesHead, tilesNote, addHome, tilesList),
       sect(null, el('div', { className: 'card-head' }, el('h3', { textContent: T('home.hidden') }), addHidden), hidden),
-      sect(null, namesHead, names)]],
+      sect(null, namesHead, names),
+      sect(null, picsHead, pics)]],
     ['widgets', 'chart', 210, 'home.g_widgets', [sect(null, wHead, wList, ...wLines), sect(null, packHead, packBox, packNote), sect(null, layHead, lay, layNote, placeHead, placeLine),
       sect(null, feedHead, feedLine, feedList, feedNote), sect(null, noteHead, noteLine), sect(null, qrHead, qrList, qrNote)]],
     ['system', 'power', 260, 'home.g_system', [sect(null, check(dream, 'home.dream'), dfaceHead, dface)]],
@@ -1247,6 +1267,19 @@ async function homePhoto(f, done) {
     let n = await homeLink.photo(blob);
     if (view.whole && c.wfit !== 'contain') n = (await homeLink.write({ wfit: 'contain' })) || n;   // whole: shown whole (all photos: wfit is one setting)
     done(n); toast(T('home.photo_done'));
+    return true;
+  } catch (e) { toast(T('common.error_msg', { msg: friendly(e.message) })); return false; }
+}
+
+// An app's own picture for its tile: cropped 16:9 here (the crop dialog is the photo's), sent small (a 480 x 270 JPEG is ~40 KB; the TV shrinks and limits it again)
+async function homeAppPic(f, pkg, done) {
+  try {
+    const img = await photoOpen(f);
+    const view = await homeCropAsk(img, 480, 270, null);
+    if (!view) return false;                                          // cancelled: nothing sent, nothing said
+    toast(T('home.pic_sending'));
+    done(await homeLink.appPic(pkg, await photoBlob(img, 480, 270, view, 0.8)));
+    toast(T('home.pic_done'));
     return true;
   } catch (e) { toast(T('common.error_msg', { msg: friendly(e.message) })); return false; }
 }

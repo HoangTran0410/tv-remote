@@ -28,6 +28,7 @@ class App(val pkg: String, val orig: String, val info: ActivityInfo?, val pin: A
     fun release() { banner = null; icon = null }
 
     fun load(c: Context) {
+        Pics.of(c, pkg)?.let { banner = it; icon = null; return }     // the person's own picture ("pics") wins over the app's and a shortcut's
         if (pin != null) { Pins.picture(c, this); return }
         val info = info ?: return
         val pm = c.packageManager

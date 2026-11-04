@@ -111,6 +111,13 @@ internal class HomeApi(core: ManageCore) : ManagePart(core) {
                 if (off < b.size) throw IOException("cut")            // as home/video: half a JPEG must not become the background
                 return HttpServer.Response.json(dev.tvremote.core.ontv.Home.photo(link.get(), b))
             }
+            "home/apppic" -> if (post) {                          // its own picture for one app's tile: the JPEG the page made 480 x 270
+                if (r.length !in 1..dev.tvremote.home.HomeConfig.PIC_BYTES.toLong()) throw IllegalArgumentException("photo too large")
+                val b = ByteArray(r.length.toInt()); var off = 0
+                while (off < b.size) { val n = r.body.read(b, off, b.size - off); if (n < 0) break; off += n }
+                if (off < b.size) throw IOException("cut")
+                return HttpServer.Response.json(dev.tvremote.core.ontv.Home.appPic(link.get(), r.q("pkg"), b))
+            }
             "home/video" -> if (post) {                           // a video or GIF, streamed to the TV (200 MB never sits in memory here)
                 val len = r.length
                 if (len !in 1..dev.tvremote.home.HomeConfig.VIDEO_MAX_BYTES) throw IllegalArgumentException("video size")
