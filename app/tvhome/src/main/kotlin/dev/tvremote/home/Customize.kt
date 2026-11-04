@@ -112,9 +112,9 @@ object Customize {
 
     /**
      * A time of day ("HH:MM", half hours) with the remote, in the stepper's look: Up / Down / Left / Right 30 minutes (a held key
-     * repeats), OK saves through [save], Back cancels. The panel steps aside while it is open.
+     * repeats), OK saves through [save], Back cancels. Centered over the panel (dimmed), which stays.
      */
-    private fun timeStepper(a: Activity, panel: Dialog, title: String, start: String, save: (String) -> Unit) {
+    private fun timeStepper(a: Activity, title: String, start: String, save: (String) -> Unit) {
         val d = a.resources.displayMetrics.density
         fun dp(v: Number) = (v.toFloat() * d).toInt()
         var m = (start.substring(0, 2).toInt() * 60 + start.substring(3, 5).toInt()) / 30 * 30
@@ -144,12 +144,12 @@ object Customize {
         say()
         dialog.setContentView(box)
         dialog.window?.apply {
-            setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.TRANSPARENT)); setDimAmount(0f)
+            setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.TRANSPARENT)); setDimAmount(0.5f)
             setLayout(dp(300), ViewGroup.LayoutParams.WRAP_CONTENT)
-            attributes = attributes.apply { gravity = Gravity.TOP or Gravity.START; x = dp(48); y = dp(40) }
+            attributes = attributes.apply { gravity = Gravity.CENTER }   // over the panel, which stays: a time changes nothing on the home screen to watch (unlike [stepper])
         }
-        dialog.setOnDismissListener { if (saved) save("%02d:%02d".format(m / 60, m % 60)); panel.show() }
-        dialog.setOnShowListener { box.requestFocus(); panel.hide(); box.post { box.requestFocus() } }
+        dialog.setOnDismissListener { if (saved) save("%02d:%02d".format(m / 60, m % 60)) }   // the panel never hid: focus goes back to the From / To tile
+        dialog.setOnShowListener { box.requestFocus(); box.post { box.requestFocus() } }
         dialog.show()
     }
 
@@ -465,7 +465,7 @@ object Customize {
                 if (key == "stats") { if (!viaSetup) { on = !on; dev.tvremote.report.OwnReport.setOwn(a, on); paint() }; return@setOnClickListener }
                 if (key == "wcol") { ownColours(a, dialog) { ownFace(); markAll() }; return@setOnClickListener }
                 if (key == "ddark_from" || key == "ddark_to") {         // a time of day: its own small stepper, 30 minutes a press
-                    timeStepper(a, dialog, text, read()) { v -> write?.invoke(v); pick = choices?.indexOfFirst { it.first == v }?.coerceAtLeast(0) ?: 0; paint() }
+                    timeStepper(a, text, read()) { v -> write?.invoke(v); pick = choices?.indexOfFirst { it.first == v }?.coerceAtLeast(0) ?: 0; paint() }
                     return@setOnClickListener
                 }
                 if (key == "rows" || key == "cols" || key == "shade") {
