@@ -40,7 +40,7 @@ class VoicePhrasesTest {
     }
 
     @Test fun fetchedThenKeptThenPacked() {
-        val newer = withRev(50); val keptOld = withRev(7)
+        val newer = withRev(50); val keptOld = withRev(40)    // above the packed rev, whatever it is now
         assertArrayEquals(newer, VoicePhrases.choose(newer, keptOld, packed)!!.first)
         assertArrayEquals(keptOld, VoicePhrases.choose(null, keptOld, packed)!!.first)
         assertArrayEquals(packed, VoicePhrases.choose(null, null, packed)!!.first)

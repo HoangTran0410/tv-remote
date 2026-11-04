@@ -119,6 +119,7 @@ class VoiceTest {
 
     @Test fun timer() {
         assertEquals(Command.Timer(30), p("hẹn giờ tắt 30 phút"))
+        assertEquals(Command.Timer(30), p("hẹn giờ tắt 30 phu"))        // TV Setup Voice hears the last sound of "phút" as "phu"
         assertEquals(Command.Timer(120), p("tắt TV sau 2 tiếng"))
         assertEquals(Command.Timer(45), p("sleep in 45 minutes"))
         assertEquals(Command.Timer(0), p("hủy hẹn giờ"))

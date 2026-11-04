@@ -110,10 +110,14 @@ object VoiceProtocol {
     fun sure(confs: List<Double>): Boolean = confs.isNotEmpty() && confs.min() >= 0.9 && confs.average() >= 0.95
 
     /**
-     * Which of [heard] (grammar text, then free text) TV Setup acts on: the first that is a command ([isCommand]: Voice.parse names it),
-     * else the last non-empty one, free speech, which goes on as a search. A list with the commands' words forced onto a song's name
-     * ("Ngày xưa anh nói" -> "tiếng ngay xuống thanh đổi") is never a command, so the free text wins there.
+     * Which of [heard] (grammar text, then free text) TV Setup acts on: the first that is a command ([isCommand]: Voice.parse names it);
+     * else the free text when it is a search ([isSearch]: a search word or connector), which goes on as one ("Ngày xưa anh nói" forced into
+     * "tiếng ngay xuống thanh đổi" is never a command, so the free text wins there); else the grammar text, as before free speech existed
+     * ("hẹn giờ tắt 30 phu" is closer to what was said than a free "phố" and goes to the TV's own search fallback).
      */
-    fun pick(heard: List<String>, isCommand: (String) -> Boolean): String =
-        heard.firstOrNull { it.isNotEmpty() && isCommand(it) } ?: heard.lastOrNull { it.isNotEmpty() }.orEmpty()
+    fun pick(heard: List<String>, isSearch: (String) -> Boolean, isCommand: (String) -> Boolean): String {
+        heard.firstOrNull { it.isNotEmpty() && isCommand(it) }?.let { return it }
+        val free = heard.lastOrNull { it.isNotEmpty() }.orEmpty()
+        return if (heard.size > 1 && isSearch(free)) free else heard.firstOrNull { it.isNotEmpty() } ?: free
+    }
 }

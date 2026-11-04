@@ -229,7 +229,7 @@ class MicActivity : Activity(), RecognitionListener {
     override fun onResults(r: Bundle?) {
         val all = r?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).orEmpty()
         // TV Setup Voice sends [commands' text, free text] when the commands were not heard clearly: a command is kept, else free speech (a search)
-        val t = (if (r?.getBoolean(VoiceProtocol.FREE) == true) VoiceProtocol.pick(all.map { it.trim() }) { parse(it, last = true) != null } else all.firstOrNull()?.trim()).orEmpty()
+        val t = (if (r?.getBoolean(VoiceProtocol.FREE) == true) VoiceProtocol.pick(all.map { it.trim() }, { Voice.looksLikeSearch(it) }) { parse(it, last = true) != null } else all.firstOrNull()?.trim()).orEmpty()
         log("results \"$t\"" + if (all.size > 1) " of $all" else "")
         finish(t.ifEmpty { partial }, cut = false)
     }

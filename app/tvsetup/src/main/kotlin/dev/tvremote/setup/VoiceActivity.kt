@@ -107,9 +107,9 @@ class VoiceActivity : Activity() {
         buttons.removeAllViews()
         when {
             voice == "busy" -> add(T("common.close")) { finish() }  // the install goes on: its own thread
-            used -> { addFreeSpeech(r); add(T("tvvoice.use_google")) { work { Rules.change(this, JSONObject().put("do", "mic_engine").put("engine", "auto")) } }
+            used -> { add(T("tvvoice.use_google")) { work { Rules.change(this, JSONObject().put("do", "mic_engine").put("engine", "auto")) } }; addFreeSpeech(r)
                 add(T("tvvoice.remove_lang", "lang" to NAMES.getValue(MicVoice.active(this) ?: MicVoice.lang(this))), danger = true) { remove() }; add(T("common.close")) { finish() } }
-            voice == "ready" -> { addFreeSpeech(r); add(T("tvvoice.use")) { work { MicVoice.useTv(this) } }
+            voice == "ready" -> { add(T("tvvoice.use")) { work { MicVoice.useTv(this) } }; addFreeSpeech(r)
                 add(T("tvvoice.remove_lang", "lang" to NAMES.getValue(MicVoice.active(this) ?: MicVoice.lang(this))), danger = true) { remove() }; add(T("common.close")) { finish() } }
             else -> { add(T("tvvoice.install")) { waiting = true; work { MicVoice.useTv(this) } }; add(T("common.later")) { finish() } }
         }

@@ -33,9 +33,11 @@ class VoiceProtocolTest {
 
     @Test fun aCommandWinsElseFreeSpeech() {
         val cmds = setOf("tắt tiếng", "mở youtube")
-        fun pick(vararg h: String) = VoiceProtocol.pick(h.toList()) { it in cmds }
+        fun pick(vararg h: String) = VoiceProtocol.pick(h.toList(), { it.startsWith("tìm ") || " trên " in it }) { it in cmds }
         assertEquals("tắt tiếng", pick("tắt tiếng", "tắc kiểu"))      // the commands' list is exact: kept
         assertEquals("tìm ngày xưa anh nổi", pick("tiếng ngay xuống thanh đổi", "tìm ngày xưa anh nổi"))
+        assertEquals("sơn tùng trên youtube", pick("sau home dụng chơi menu", "sơn tùng trên youtube"))   // a connector: a search
+        assertEquals("hẹn giờ tắt 30 phu", pick("hẹn giờ tắt 30 phu", "hẹn giờ tắt 30 phố"))      // no search word: the commands' text stays
         assertEquals("mở youtube", pick("tiếng ngay", "mở youtube"))  // free speech heard a command the list missed
         assertEquals("tiếng ngay", pick("tiếng ngay", ""))            // no second pass: as before
         assertEquals("", pick("", ""))

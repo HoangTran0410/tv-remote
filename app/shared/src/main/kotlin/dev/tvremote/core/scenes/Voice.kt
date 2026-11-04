@@ -59,6 +59,13 @@ object Voice {
     /** [fold] with "tivi" / "ti vi" read as "tv", the form every phrase of the list is kept in. */
     fun norm(s: String): String = fold(s).replace(TIVI, "tv")
 
+    /** The sentence starts with a search word ("tìm …", "search …") or holds a connector ("… trên youtube"): free speech is worth more than the commands' text then. */
+    fun looksLikeSearch(text: String): Boolean {
+        val ph = phrases ?: return false
+        val s = strip(norm(text), ph)
+        return ph.searchBare?.matches(s) == true || ph.connect?.matches(s) == true
+    }
+
     /** Politeness and filler at either end ("giúp tôi", "đi", "nhé", "please") taken off; a sentence that is only filler stays as it is. */
     private fun strip(s0: String, ph: Phrases): String {
         var s = s0

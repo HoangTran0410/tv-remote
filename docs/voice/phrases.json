@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "rev": 7,
+  "rev": 8,
   "about": "Words of the spoken commands (Voice.kt, js/voice.js). What each KEY / verb DOES is code; the words are here. Accents and case do not matter (folded), 'tivi' and 'ti vi' read as 'tv'. Signed: dev/sign/sign_voice.py. An app with tube: a YouTube client the person may pick for 'YouTube' (main = the word YouTube, alt = another); its search link, when it has one, is what 'X on it' and 'search X' open.",
   "never_close": [
     "dev.tvremote.setup",
@@ -506,6 +506,7 @@
         ],
         "minutes": [
           "phut",
+          "phu",
           "p"
         ],
         "hours": [
