@@ -489,6 +489,11 @@
   "n": 1,
   "note": "another FPT Play 650 (Android 11, not the owner's 14): adb_enabled=0, adbd stopped; FPT locks Developer options (memory fpt-isp-box-support), TV Setup already asks to turn ADB on"
  },
+ "2a920a01f1a672f5b5e3208a|0.38.2": {
+  "at": "2026-11-04T18:44:10+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
+ },
  "2c1ad75d9d4e80f1f1768d8c|0.25.0": {
   "at": "2026-10-27T09:37:04+07:00",
   "n": 1,
@@ -1270,9 +1275,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
  "66117b3e1febeea1e420d98a|0.32.1": {
-  "at": "2026-10-29T17:20:04+07:00",
+  "at": "2026-11-04T18:44:10+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
+ },
+ "66117b3e1febeea1e420d98a|0.42.2": {
+  "at": "2026-11-04T18:44:10+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "6643ac5ba371539b73349499|0.26.3": {
   "at": "2026-10-26T21:47:45+07:00",
@@ -2399,6 +2409,11 @@
   "n": 1,
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
+ "c027dc29c86d963f76853764|0.42.2": {
+  "at": "2026-11-04T18:44:11+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
+ },
  "c05b84ecf31e01fbc030366e|0.26.3": {
   "at": "2026-10-26T21:47:47+07:00",
   "n": 1,
@@ -2550,34 +2565,39 @@
   "note": "dev only: 8769, same"
  },
  "cc0ca3bfdda49c7e255d18ca|0.29.0": {
-  "at": "2026-11-03T12:14:12+07:00",
+  "at": "2026-11-04T18:44:11+07:00",
   "n": 1,
-  "note": "Viettel IP151N (KaoS ATV ROM, A11): 5555 refused, network ADB off on the box; not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "cc0ca3bfdda49c7e255d18ca|0.33.1": {
-  "at": "2026-11-03T12:14:12+07:00",
+  "at": "2026-11-04T18:44:11+07:00",
   "n": 1,
-  "note": "Viettel IP151N (KaoS ATV ROM, A11): 5555 refused, network ADB off on the box; not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "cc0ca3bfdda49c7e255d18ca|0.35.0": {
-  "at": "2026-11-03T12:14:12+07:00",
+  "at": "2026-11-04T18:44:11+07:00",
   "n": 1,
-  "note": "Viettel IP151N (KaoS ATV ROM, A11): 5555 refused, network ADB off on the box; not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "cc0ca3bfdda49c7e255d18ca|0.37.0": {
-  "at": "2026-11-03T12:14:12+07:00",
+  "at": "2026-11-04T18:44:11+07:00",
   "n": 1,
-  "note": "Viettel IP151N (KaoS ATV ROM, A11): 5555 refused, network ADB off on the box; not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "cc0ca3bfdda49c7e255d18ca|0.38.4": {
-  "at": "2026-11-03T12:14:12+07:00",
+  "at": "2026-11-04T18:44:11+07:00",
   "n": 1,
-  "note": "Viettel IP151N (KaoS ATV ROM, A11): 5555 refused, network ADB off on the box; not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "cc0ca3bfdda49c7e255d18ca|0.40.0": {
-  "at": "2026-11-03T12:14:12+07:00",
+  "at": "2026-11-04T18:44:11+07:00",
   "n": 1,
-  "note": "Viettel IP151N (KaoS ATV ROM, A11): 5555 refused, network ADB off on the box; not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
+ },
+ "cc0ca3bfdda49c7e255d18ca|0.42.2": {
+  "at": "2026-11-04T18:44:11+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "cdc88b4f64446e3dd3fda07e|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -3110,19 +3130,24 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "fa5d02d9f13f6121886b7727|0.37.0": {
-  "at": "2026-11-03T02:13:11+07:00",
+  "at": "2026-11-04T18:44:12+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (TX5: Wireless debugging port 37081 refused, debugging off or the port changed), not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "fa5d02d9f13f6121886b7727|0.38.2": {
-  "at": "2026-11-03T02:13:11+07:00",
+  "at": "2026-11-04T18:44:12+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (TX5: Wireless debugging port 37081 refused, debugging off or the port changed), not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "fa5d02d9f13f6121886b7727|0.38.4": {
-  "at": "2026-11-03T02:13:11+07:00",
+  "at": "2026-11-04T18:44:12+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (TX5: Wireless debugging port 37081 refused, debugging off or the port changed), not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
+ },
+ "fa5d02d9f13f6121886b7727|0.42.2": {
+  "at": "2026-11-04T18:44:12+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "fad2a14ed1bb2056883cbfb5|0.28.0": {
   "at": "2026-10-27T09:37:25+07:00",
