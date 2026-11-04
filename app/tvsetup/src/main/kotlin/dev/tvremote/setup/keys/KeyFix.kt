@@ -36,7 +36,7 @@ object KeyFix {
     class Rule(val act: String, val pkgs: List<String> = emptyList(), val mine: Boolean = false)   // mine: the person gave this key its app (a toast says so)
 
     /** [LAUNCHER]: the home screen of pkgs[0] ([HomeKey]: Home where the swap is not possible). */
-    const val INPUT = "input"; const val APP = "app"; const val HOME = "home"; const val SETTINGS = "settings"; const val LAUNCHER = "launcher"
+    const val INPUT = "input"; const val APP = "app"; const val HOME = "home"; const val SETTINGS = "settings"; const val LAUNCHER = "launcher"; const val BAR = "homebar"
     /** [CONTROL]: TV Home's Control Center over the app in front (the person gave the key [Target.CONTROL]). */
     const val CONTROL = "controlcenter"
     /** A key the person gave [target] (TV Home's map): an app, or TV Home's action. */
@@ -106,6 +106,7 @@ object KeyFix {
                 HOME -> start(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME))
                 SETTINGS -> start(Intent(Settings.ACTION_SETTINGS))
                 LAUNCHER -> start(HomeKey.intent(c, r.pkgs[0]))
+                BAR -> start(Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.DockBarActivity"))
                 CONTROL -> start(Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.ControlCenterActivity"))
             }
         } catch (e: Exception) { }
@@ -261,6 +262,7 @@ object KeyFix {
             android.util.Log.i("KeyFix", "global keys ${map.size}, to bring back ${now0.keys}, service on=$has")   // adb logcat -s KeyFix
             val need = (wanted(c) && now0.isNotEmpty()) || HoldKeys.on(c) || MicVoice.on(c)   // a dead key to bring back, "hold to use Input" (HoldKeys), or the mic button (MicVoice)
                 || KeyTest.live()                                     // the key tester is open: Home and the app buttons are shown through the filter
+                || HomeKeys.bar(c)                                    // Home over an app shows TV Home's bar ([HomeBar])
                 || HomeKey.pkg(c) != null                             // Home to the launcher picked: asked for on the page, not by the dead-key switch
             if (need && !KeysAddon.current(c)) { KeysAddon.installThen(c) { sync(c) }; return }   // the service is in the add-on: put it on the TV first (it comes back here)
             if (need == has && !old) return

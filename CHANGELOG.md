@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: new option (off by default) "Home key in an app: show a bar": Home pressed over an app shows a glass bar with Home, the Dock apps and the apps opened last, over the running app; OK opens one, Back closes it, Home again goes to TV Home. Works through TV Setup's key filter (flow: `dev/flows/home-bar.md`).
 - TV Games: web games played only with phones no longer let the TV sleep or start its screensaver mid-game; retro games no longer keep the screen on forever when nobody plays. Both stay on until 10 minutes after the last press.
 - TV Games: Suggestions come in rows: the web games made for TV Games first, then one row per retro genre.
 

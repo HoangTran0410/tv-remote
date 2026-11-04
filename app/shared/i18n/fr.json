@@ -3219,6 +3219,7 @@
   "home.show_watch": "Ligne Lire ensuite",
   "home.show_infold": "Afficher seulement les entrées HDMI/AV branchées",
   "home.show_shift": "Déplacer légèrement l’écran chaque minute (protection OLED)",
+ "home.show_homebar": "Touche Accueil dans une appli : barre des applis récentes et du dock (TV Setup requis)",
   "home.watch_at": "Position de la ligne Lire ensuite",
   "home.watch_at_top": "Au-dessus des applications",
   "home.watch_at_under1": "Sous la première ligne",

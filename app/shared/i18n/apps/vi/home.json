@@ -328,6 +328,8 @@
   "show_watch": "Hàng Xem tiếp",
   "show_infold": "Chỉ hiện cổng HDMI/AV đang cắm",
   "show_shift": "Nhích nhẹ màn hình mỗi phút (chống burn-in OLED)",
+  "show_homebar": "Bấm Home trong app: hiện thanh app gần đây và Dock (cần TV Setup)",
+  "bar_home": "Trang chủ",
   "inputs_more": "Nguồn vào khác (%d)",
   "settings_none": "Không mở được Cài đặt của TV. Hãy bấm nút Cài đặt trên điều khiển của TV.",
   "g_sec_grid": "Danh sách app",

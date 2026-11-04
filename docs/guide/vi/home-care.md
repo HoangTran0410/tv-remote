@@ -6,3 +6,7 @@ Hai tùy chọn cho nền của TV Home, tính trên TV, không cần mạng.
 2. Nơi tính lấy từ widget Thời tiết, không có thì theo múi giờ. Tính ngay trên TV, không cần mạng, vài phút vẽ lại một lần.
 3. Màn OLED: chọn nền **Đen**, rồi bật **Nhích nhẹ màn hình mỗi phút** (Tùy chỉnh → Giao diện). Mặc định tắt.
 4. Cả màn hình chính dịch 1 dp mỗi phút trong ô vuông 6 dp, không thấy giật; hình nền đứng yên.
+
+Tùy chỉnh → Giao diện → **Bấm Home trong app: hiện thanh app** (mặc định tắt).
+
+Home trong app mở thanh: Trang chủ, Dock, app gần đây. OK mở, Back đóng, Home lần nữa về TV Home. Cần TV Setup Keys.

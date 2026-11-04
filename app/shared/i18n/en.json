@@ -3210,6 +3210,7 @@
  "home.show_watch": "Play Next row",
  "home.show_infold": "Show only plugged-in HDMI/AV inputs",
  "home.show_shift": "Move the screen a little every minute (OLED care)",
+ "home.show_homebar": "Home key in an app: show a bar of recent and dock apps (needs TV Setup)",
  "home.watch_at": "Play Next row position",
  "home.watch_at_top": "Above the apps",
  "home.watch_at_under1": "Under the first row",

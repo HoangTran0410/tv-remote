@@ -71,8 +71,11 @@ internal object HomeKeys {
     /** The "always" switch: open even when the TV woke into another app or input ([AutoOpen.decide]). Off by default. */
     fun always(c: Context): Boolean = load(c).optBoolean("autoall")
 
+    /** "Home over an app shows TV Home's bar" ([HomeBar]): off by default, then nothing here runs for it. */
+    fun bar(c: Context): Boolean = load(c).optBoolean("homebar")
+
     /** The service has to run for these: the key filter's list is kept by [KeyFixWatch], waking is heard by [AutoOpenWatch]. */
-    fun active(c: Context): Boolean = all(c).isNotEmpty() || auto(c).let { it.first && (it.second.isNotEmpty() || always(c)) }
+    fun active(c: Context): Boolean = all(c).isNotEmpty() || bar(c) || auto(c).let { it.first && (it.second.isNotEmpty() || always(c)) }
 }
 
 /**

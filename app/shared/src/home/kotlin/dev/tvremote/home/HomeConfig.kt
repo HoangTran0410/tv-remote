@@ -62,6 +62,9 @@ import org.json.JSONObject
  *   shift   burn-in care for OLED: every minute Home moves one step round a square of at most 6 dp (clock, widgets, top bar; the wallpaper
  *           stays), default false, nothing runs while off. A TV Home that has this reports it in the config; older ones do not.
  *           The "black" wall is the pure #000 one
+ *   homebar Home pressed while an app is open shows a bar over it (TV Home's [dock] apps and the apps opened last; OK opens one, Back
+ *           closes it, Home again goes to TV Home) instead of going straight home. Default false: nothing new runs. TV Setup's key
+ *           filter takes the key (it needs the add-on TV Setup Keys), so a TV without it keeps Home as it was
  *   motion  how much moves while [anim] is on: "" this TV's choice (calm on one with little memory, 2.25 GB or less, or that Android
  *           calls low on RAM), "calm" (no overshoot, shorter, only the tile grows: fewer frames on a weak chip), "full"
  *   focus   how the focused app shows: "glass" (a pane gliding from tile to tile) or "ring" (a blue ring on the tile)
@@ -688,6 +691,7 @@ object HomeConfig {
             .put("infold", o.optBoolean("infold", false))
             .put("watchAt", o.optString("watchAt").takeIf { it in WATCH_AT } ?: WATCH_AT[0])
             .put("anim", o.optBoolean("anim", true))
+            .put("homebar", o.optBoolean("homebar", false))           // Home over an app shows the bar (DockBarActivity), through TV Setup's key filter
             .put("shift", o.optBoolean("shift", false))               // burn-in care: Home moves a few px every minute (ui/PixelShift)
             .put("motion", o.optString("motion").takeIf { it in MOTIONS } ?: "")
             .put("focus", o.optString("focus").takeIf { it == "ring" } ?: "glass")
