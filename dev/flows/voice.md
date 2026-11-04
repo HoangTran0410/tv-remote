@@ -60,6 +60,14 @@ An older TV Setup: the page asks to update first (`setupFor('mic_offline')`). No
 | 8 | any, `mic_engine` "tv" and the add-on ready | on | TV Setup Voice listens first (`MicActivity.tvFirst`); Google's is not asked |
 | 9 | any, `mic_engine` "tv" but the add-on removed / failed | any | as rows 1-7 (`MicVoice.offline` null) |
 
+## How the mic key reaches TV Setup (before any row above), by what the TV allows
+
+| # | The TV | What happens |
+|---|---|---|
+| a | ADB (WRITE_SECURE_SETTINGS granted) | `MicVoice.takeAssist` makes `.MicAssist` the assistant; the system starts it on the mic key |
+| b | no ADB (Coocaa Android 14, 2026-11-04) | the key sends VOICE_ASSIST and the system starts WEB_SEARCH; `.MicSearch` (a second alias of `MicActivity`, disabled in the manifest, switched on by `MicVoice.syncSearch` from `takeAssist` while the rule `mic` is on, off when it goes off) is offered: the first press asks which app, the person picks TV Setup and "Always". With Kiki or Google also there the chooser lists them too. The page says it in `mic.first_press` when the state has `mic_secure` false |
+| c | the rule off | alias disabled: no chooser ever lists TV Setup |
+
 ## Switching on the TV (TV Home's Control Center mic tile, `HomeControl` words)
 
 | Press | TV Setup does |

@@ -2216,6 +2216,7 @@
  "mic.sub_off": "Tắt: nút mic mở Trợ lý Google như cũ.",
  "mic.eg": "Ví dụ: “mở YouTube”, “kênh VTV1”, “tăng âm lượng”",
  "mic.need": "Cần TV có nhận giọng nói.",
+ "mic.first_press": "TV chưa bật ADB: lần bấm mic đầu TV hỏi dùng app nào. Chọn TV Setup, rồi \"Luôn chọn\".",
  "mic.offline": "Nhận giọng nói ngay trên TV, không cần Google",
  "mic.offline_sub": "Cho TV không có nhận giọng nói. Tải thêm 25 MB, hiểu tiếng Việt (giao diện tiếng Anh: tiếng Anh, 36 MB). Tắt là gỡ.",
  "mic.offline_installing": "Đang cài nhận giọng nói lên TV…",

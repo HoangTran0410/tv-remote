@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Setup: the remote's mic button now reaches TV Setup on TVs with no ADB (Coocaa Android 14): with the mic option on, TV Setup is offered for the mic key (the first press asks which app to use: pick TV Setup, then Always); with it off, TV Setup is never offered. The Setup tab says so.
 - TV Home: the screensaver can go fully black during night hours for hours you choose, in 30-minute steps (Customize → System, or the page: a switch plus From and To), for OLED screens; off by default.
 - TV Home: a "Center the app grid" switch puts short rows of app tiles in the middle instead of at the left; off by default, part of themes.
 - TV Home: Quick settings > Turn off the TV > Power off works on boxes with no ADB (Android 14 without port 5555, not paired): when TV Setup Keys is on it opens the system's own power menu to pick from (never powers off by itself); when it is off, the TV says to turn it on in Settings > Accessibility. Needs TV Setup and TV Setup Keys updated together.

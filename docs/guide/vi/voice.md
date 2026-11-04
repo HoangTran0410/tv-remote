@@ -17,11 +17,11 @@
 
 > 💡 Câu nào lạ thì chuyển cho Trợ lý hoặc tìm trên YouTube.
 
-> Các câu nói là một danh sách có chữ ký trên trang web: thêm câu mới không cần cập nhật app.
-
 > 💻 App máy tính trên Windows, Linux: 🎤 gửi thẳng giọng bạn tới Trợ lý của TV (TV Android), TV tự nghe.
 
 Nút mic của điều khiển TV: bật **Nút mic mở giọng nói của TV Remote** ở tab Thiết lập, thẻ Nút remote (mặc định tắt). Cần TV Setup mới.
+
+TV không có ADB: lần bấm mic đầu tiên TV hỏi dùng app nào, chọn **TV Setup** rồi **Luôn chọn**.
 
 TV không có nhận giọng nói (hộp không Google): bật thêm **Nhận giọng nói ngay trên TV, không cần Google** ở cùng chỗ; tắt là gỡ.
 
