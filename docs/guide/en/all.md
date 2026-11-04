@@ -916,7 +916,7 @@ Once the TV is off it can fall into deep sleep and stop answering. This option k
 1. More keys → **Tools** → **Notify** (🔔 Notify the TV).
 2. Type a **title** (optional) and the **message**.
 3. Pick a corner ↖ ↗ ↙ ↘ and the seconds: 3, 5, 10 or 30.
-4. Tap **Send**. A small card shows on the TV, then goes away. To have the TV read it aloud, set **Read it aloud → Yes** before sending.
+4. Tap **Send**. A small card shows on the TV, then goes. To have the TV read it aloud, set **Read it aloud → Yes** before sending. It reads in the message's language.
 
 > 💡 Needs a recent TV Setup. If it is missing the app asks with one Update button.
 

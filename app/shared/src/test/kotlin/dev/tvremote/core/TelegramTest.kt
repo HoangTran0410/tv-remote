@@ -225,6 +225,10 @@ class TelegramTest {
         bot.onUpdate(msg(42, "/speak Dinner is ready", 2)); now += 1000
         assertEquals("/api/notify", seen[0].path); assertEquals("Dinner is ready", seen[0].body.optString("text"))
         assertTrue(seen[0].body.getBoolean("speak"))
+        assertFalse(seen[0].body.has("lang"))                                      // Telegram told no language
+        seen.clear()
+        bot.onUpdate(JSONObject("""{"update_id":9,"message":{"date":${now / 1000},"text":"/speak an com","from":{"id":42,"language_code":"vi"},"chat":{"id":42,"type":"private"}}}""")); now += 1000
+        assertEquals("vi", seen[0].body.optString("lang"))                         // the sender's own language goes with it
         bot.onUpdate(msg(42, "/help", 3)); assertTrue(api.sent(42).last().contains("/speak"))
     }
 

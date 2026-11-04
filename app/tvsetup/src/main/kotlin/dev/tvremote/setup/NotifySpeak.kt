@@ -30,14 +30,15 @@ internal object NotifySpeak {
     private val giveUp = Runnable { stop() }
 
     /** "noengine" / "nolang" are the reasons it can not be read (given to [done] once, then null when it has begun to speak). */
-    fun speak(c: Context, title: String, text: String, done: (why: String?, lang: String) -> Unit) {
+    fun speak(c: Context, title: String, text: String, hint: String, done: (why: String?, lang: String) -> Unit) {
         stop()                                                  // a newer message takes the place of the one being read
         val mine = gen
         val ctx = c.applicationContext
         val words = Notify.spoken(title, text)
-        val lang = Notify.speechLang(words, Locale.getDefault().language)
+        val langs = Notify.speechLangs(words, hint, Locale.getDefault().language)
+        var lang = langs.first()                                // the first the TV has a voice for, once the engine is up
         var answered = false
-        fun answer(why: String?) { if (!answered) { answered = true; ui.removeCallbacks(giveUp); done(why, lang) } }
+        fun answer(why: String?) { if (!answered) { answered = true; ui.removeCallbacks(giveUp); done(why, langs.first()) } }
         // a missing engine fails at once (status ERROR); a slow one is only waited for: the sender hears "ok" and it reads when ready
         val slow = Runnable { Log.w(TAG, "the engine is slow to start"); answer(null) }
         val timeout = Runnable { if (mine == gen) { Log.w(TAG, "the engine did not start"); stop() }; answer("noengine") }
@@ -48,8 +49,10 @@ internal object NotifySpeak {
                 ui.removeCallbacks(timeout); ui.removeCallbacks(slow)
                 if (mine != gen) { engine.shutdown(); return@TextToSpeech }       // a newer message, or given up, in the meantime
                 if (status != TextToSpeech.SUCCESS) { Log.w(TAG, "no text-to-speech engine: $status"); stop(); return@TextToSpeech answer("noengine") }
-                val have = engine.isLanguageAvailable(Locale(lang))
-                if (have < TextToSpeech.LANG_AVAILABLE) { Log.w(TAG, "no voice for $lang: $have"); stop(); return@TextToSpeech answer("nolang") }
+                val found = langs.firstOrNull { engine.isLanguageAvailable(Locale(it)) >= TextToSpeech.LANG_AVAILABLE }
+                Log.i(TAG, "language: wanted ${langs.joinToString()} (hint '$hint', TV ${Locale.getDefault().language}), voice: ${found ?: "none"}")
+                if (found == null) { Log.w(TAG, "no voice for ${langs.joinToString()}"); stop(); return@TextToSpeech answer("nolang") }
+                lang = found
                 engine.language = Locale(lang)
                 engine.setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ASSISTANT)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build())

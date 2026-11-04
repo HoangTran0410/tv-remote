@@ -32,9 +32,27 @@ object Notify {
     // letters only Vietnamese has: ă ơ ư đ and the tone-marked vowels (U+1EA0..1EF9); â ê ô alone could be French
     private val VIETNAMESE = Regex("[ăơưđĂƠƯĐ\u1EA0-\u1EF9]")
 
-    /** The language to read [text] in: Vietnamese when it has Vietnamese letters, else [tvLang] (the TV's own; "en" when empty). */
-    fun speechLang(text: String, tvLang: String): String =
-        if (VIETNAMESE.containsMatchIn(text)) "vi" else tvLang.trim().lowercase().ifEmpty { "en" }
+    /** Scripts that name one language (the first letter found in a block decides); Latin and Han-only text stay with the hint. */
+    private val SCRIPTS = listOf(
+        0x0400..0x04FF to "ru", 0x0370..0x03FF to "el", 0x0590..0x05FF to "he", 0x0600..0x06FF to "ar", 0x0E00..0x0E7F to "th",
+        0x0900..0x097F to "hi", 0x3040..0x30FF to "ja", 0xAC00..0xD7AF to "ko", 0x0530..0x058F to "hy", 0x10A0..0x10FF to "ka")
+
+    /** The text's language when its letters say it by themselves (Vietnamese letters, Cyrillic, Thai ...), else null. */
+    fun scriptLang(text: String): String? {
+        if (VIETNAMESE.containsMatchIn(text)) return "vi"
+        for (ch in text) { val cp = ch.code; SCRIPTS.firstOrNull { cp in it.first }?.let { return it.second } }
+        return null
+    }
+
+    /** A language tag as its 2-letter code ("vi-VN", "pt_BR", " EN " -> "vi", "pt", "en"), or "" when it is not one. */
+    fun langCode(tag: String?): String = (tag ?: "").trim().lowercase().split('-', '_').first().takeIf { it.length in 2..3 && it.all { c -> c in 'a'..'z' } } ?: ""
+
+    /** The languages to try reading [text] in, best first: its own script, the sender's [hint], the TV's [tvLang], then "en". */
+    fun speechLangs(text: String, hint: String?, tvLang: String): List<String> =
+        listOfNotNull(scriptLang(text), langCode(hint).ifEmpty { null }, langCode(tvLang).ifEmpty { null }, "en").distinct()
+
+    /** The first of [speechLangs]. */
+    fun speechLang(text: String, hint: String?, tvLang: String): String = speechLangs(text, hint, tvLang).first()
 
     /** What is read: the title, then the text (a full stop between), whichever there is. */
     fun spoken(title: String, text: String): String = listOf(title, text).map { it.trim() }.filter { it.isNotEmpty() }
@@ -55,7 +73,10 @@ object Notify {
         val text = o.optString("text").trim().take(MAX_TEXT)
         if (title.isEmpty() && text.isEmpty()) throw IllegalArgumentException("empty")
         val m = JSONObject().put("title", title).put("text", text).put("corner", corner(o.opt("corner") as? String)).put("seconds", seconds(o.opt("seconds")))
-        if (speak(o.opt("speak"))) m.put("speak", true)                // only when asked: an old TV Setup and today's messages stay as they were
+        if (speak(o.opt("speak"))) {                                   // only when asked: an old TV Setup and today's messages stay as they were
+            m.put("speak", true)
+            langCode(o.opt("lang") as? String).takeIf { it.isNotEmpty() }?.let { m.put("lang", it) }   // the sender's language; an old TV Setup ignores the key
+        }
         return m
     }
 

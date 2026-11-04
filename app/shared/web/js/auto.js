@@ -566,7 +566,7 @@ $('#stepadd').addEventListener('click', () => {
   if (k === 'wait') s.s = Math.max(0, Math.min(30, +v || 1));
   if (k === 'timer') s.min = Math.max(0, Math.min(720, Math.round(+v || 0)));
   if (k === 'input') { if (!v) return toast(T('auto.pick_one_input')); s.id = v; s.label = a.selectedOptions[0].textContent; }
-  if (k === 'notify') { if (!v) return toast(T('auto.enter_notify')); s.text = v.slice(0, 300); s.corner = notifyCorner($('#stepcorner').value); s.seconds = notifySeconds($('#stepsecs').value); if ($('#stepspeak').value) s.speak = true; }
+  if (k === 'notify') { if (!v) return toast(T('auto.enter_notify')); s.text = v.slice(0, 300); s.corner = notifyCorner($('#stepcorner').value); s.seconds = notifySeconds($('#stepsecs').value); if ($('#stepspeak').value) { s.speak = true; s.lang = LANG; } else { delete s.speak; delete s.lang; } }   // lang: the page's language when the step was saved
   if (k === 'link') { const l = normalizeLink(v); if (!l) return toast(T('auto.enter_link')); s.url = l; }
   if (draft.length >= 30) return toast(T('auto.max_steps'));
   draft.push(s); drawSteps();

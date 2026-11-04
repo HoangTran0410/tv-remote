@@ -94,14 +94,33 @@ class NotifyTest {
         assertTrue(clean("""{"text":"x","speak":"1"}""").getBoolean("speak"))
     }
 
-    @Test fun theLanguageIsVietnameseOnlyWithVietnameseLettersElseTheTvs() {
-        assertEquals("vi", Notify.speechLang("Cơm xong rồi nhé", "en"))
-        assertEquals("vi", Notify.speechLang("Đi ăn", "fr"))
-        assertEquals("vi", Notify.speechLang("tới giờ ngủ", "ru"))
-        assertEquals("fr", Notify.speechLang("Le dîner est prêt à côté", "fr"))      // â ê ô are French too
-        assertEquals("en", Notify.speechLang("Dinner is ready", " EN "))
-        assertEquals("ru", Notify.speechLang("Ужин готов", "ru"))
-        assertEquals("en", Notify.speechLang("Dinner", ""))
+    @Test fun theLanguageIsTheScriptsThenTheSendersThenTheTvs() {
+        assertEquals("vi", Notify.speechLang("Cơm xong rồi nhé", "en", "en"))
+        assertEquals("vi", Notify.speechLang("tới giờ ngủ", null, "ru"))
+        assertEquals("fr", Notify.speechLang("Le dîner est prêt à côté", "", "fr"))      // â ê ô are French too
+        assertEquals("vi", Notify.speechLang("an com chua", "vi", "en"))                 // unaccented Vietnamese on an English TV
+        assertEquals("ru", Notify.speechLang("Привет", "vi", "vi"))                      // Russian on a Vietnamese TV
+        assertEquals("en", Notify.speechLang("Dinner is ready", "en-US", "vi"))          // English on a Vietnamese TV
+        assertEquals("th", Notify.speechLang("สวัสดี", "en", "en"))
+        assertEquals("ja", Notify.speechLang("ごはん", "", "en"))
+        assertEquals("vi", Notify.speechLang("an com", " vi-VN ", "en"))                 // the tag is cut to its language
+        assertEquals("pt", Notify.speechLang("jantar", "pt_BR", "en"))
+        assertEquals("en", Notify.speechLang("Dinner", "", " EN "))
+        assertEquals("en", Notify.speechLang("Dinner", "", ""))
+        assertEquals("en", Notify.speechLang("Dinner", "x1!", ""))                       // not a language tag
+    }
+
+    @Test fun theCandidatesGoOnToTheNextWhenAVoiceIsMissing() {
+        assertEquals(listOf("ru", "vi", "en"), Notify.speechLangs("Привет", "vi", "en"))
+        assertEquals(listOf("vi", "fr", "en"), Notify.speechLangs("an com", "vi", "fr"))
+        assertEquals(listOf("en"), Notify.speechLangs("hello", "EN", "en"))
+    }
+
+    @Test fun theSendersLanguageTravelsOnlyWithSpeak() {
+        val a = Notify.clean(JSONObject().put("text", "an com").put("speak", true).put("lang", "vi-VN"))
+        assertEquals("vi", a.getString("lang")); assertTrue(a.getBoolean("speak"))
+        assertFalse(Notify.clean(JSONObject().put("text", "an com").put("lang", "vi")).has("lang"))      // no speak: the message stays as before
+        assertFalse(Notify.clean(JSONObject().put("text", "x").put("speak", true).put("lang", "<b>")).has("lang"))
     }
 
     @Test fun whatIsReadIsTheTitleThenTheText() {

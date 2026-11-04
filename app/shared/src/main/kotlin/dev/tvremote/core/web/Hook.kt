@@ -138,6 +138,7 @@ class Hook(
                 extra?.optString("title")?.takeIf { it.isNotBlank() }?.let { m.put("title", it) }
                 extra?.optString("seconds")?.takeIf { it.isNotBlank() }?.let { m.put("seconds", it) }
                 extra?.optString("speak")?.takeIf { it.isNotBlank() }?.let { m.put("speak", it) }     // 1 = read it aloud too
+                extra?.optString("lang")?.takeIf { it.isNotBlank() }?.let { m.put("lang", it) }       // the message's language, for the voice
                 send(via, "/api/notify", m)
             }
             "volume" -> volume(via, v)
@@ -207,7 +208,7 @@ class Hook(
 
     companion object {
         private val ACTIONS = listOf("key", "scene", "app", "text", "notify", "volume", "power", "minutes")
-        private val EXTRA = listOf("title", "seconds", "speak", "for")         // options of notify and minutes, not actions of their own
+        private val EXTRA = listOf("title", "seconds", "speak", "lang", "for")         // options of notify and minutes, not actions of their own
         const val MAX_MINUTES = 240                                   // one call; a parent's own "+30" has no cap
         private val PKG = Regex("[A-Za-z0-9_.]{1,200}")
         private const val MAX_FAILS = 5                               // wrong tokens from one address in a minute: then a minute of 429

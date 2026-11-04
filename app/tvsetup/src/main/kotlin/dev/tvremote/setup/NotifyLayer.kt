@@ -122,7 +122,7 @@ class NotifyReceiver : BroadcastReceiver() {
         if (!msg.optBoolean("speak")) return reply(JSONObject().put("ok", true), null)
         val pending = goAsync()
         try {
-            NotifySpeak.speak(c, msg.optString("title"), msg.optString("text")) { why, lang ->
+            NotifySpeak.speak(c, msg.optString("title"), msg.optString("text"), msg.optString("lang")) { why, lang ->
                 val a = JSONObject().put("ok", true)
                 if (why != null) a.put("speak", why).put("lang", lang)
                 reply(a, pending)

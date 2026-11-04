@@ -40,7 +40,7 @@ async function notifyDialog() {
     if (!title.value.trim() && !text.value.trim()) { toast(T('notify.type_something')); text.focus(); return; }
     if (p.speak && !await setupFor('speak')) return;                // an older TV Setup would only show it: asked to update first
     notifySave(p);
-    const r = await api('/api/notify', { title: title.value.trim(), text: text.value.trim(), corner: p.corner, seconds: p.seconds, ...(p.speak ? { speak: true } : {}) });
+    const r = await api('/api/notify', { title: title.value.trim(), text: text.value.trim(), corner: p.corner, seconds: p.seconds, ...(p.speak ? { speak: true, lang: LANG } : {}) });   // lang: the voice for the words you wrote
     if (r) { toast(notifySpeakWhy(r) || T('notify.sent')); d.close(); }
   };
   title.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); text.focus(); } });

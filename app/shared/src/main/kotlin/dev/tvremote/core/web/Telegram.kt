@@ -228,7 +228,7 @@ class Telegram(
         val secret = cmd.name in HIDDEN                                  // what was typed or said is the family's, not the log's
         WireLog.all.add("←", "telegram ${known.name}: /${cmd.name} ${if (secret) "…(${cmd.arg.length})" else cmd.arg}".trim())
         outcome.set("ok")
-        try { command(known, cmd) } catch (e: Exception) { outcome.set("error"); throw e }
+        try { command(known, cmd, m.optJSONObject("from")?.optString("language_code") ?: "") } catch (e: Exception) { outcome.set("error"); throw e }
         history.add(clock(), known, "/" + cmd.name + (if (secret || cmd.arg.isEmpty()) "" else " " + cmd.arg.take(40)), outcome.get())
     }
 
@@ -314,7 +314,7 @@ class Telegram(
     }
 
     // ---------------------------------------------------------------- commands
-    private fun command(c: Chat, cmd: Cmd) {
+    private fun command(c: Chat, cmd: Cmd, lang: String = "") {    // [lang]: the sender's Telegram language, for /speak's voice
         val a = cmd.arg
         when (cmd.name) {
             "start", "help" -> send(c.id, help(c.scope))
@@ -354,7 +354,7 @@ class Telegram(
             }
             "speak" -> {                                                  // like /say, and the TV reads it aloud
                 if (a.isEmpty()) return send(c.id, w("telegram.usage_speak"))
-                val out = post(c, "/api/notify", JSONObject().put("title", "Telegram · " + c.name.take(30)).put("text", a).put("speak", true))
+                val out = post(c, "/api/notify", JSONObject().put("title", "Telegram · " + c.name.take(30)).put("text", a).put("speak", true).apply { if (lang.isNotEmpty()) put("lang", lang) })
                 send(c.id, done(out, c, speakAnswer(out)))
             }
             "shot" -> shot(c)
