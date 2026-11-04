@@ -6,7 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
-- TV Home: the screensaver can go fully black during night hours for hours you choose, in 30-minute steps (Customize → System, or the page: a switch plus From and To), for OLED screens; off by default.
+- TV Home: Customize has six pages, grouped the same on the TV and the page: Look (header, what shows, motion and focus, app grid, add / edit the home screen), Screensaver (with the screen shift), Keys & startup, System (another launcher, Language as a row that opens the list); "Send anonymous stats" left TV Home (it stays in TV Setup and the app Settings).
+- TV Home: the screensaver can go fully black during night hours for hours you choose, in 30-minute steps (Customize → Screensaver, or the page: a switch plus From and To), for OLED screens; off by default.
 - TV Home: a "Center the app grid" switch puts short rows of app tiles in the middle instead of at the left; off by default, part of themes.
 - TV Home: Quick settings > Turn off the TV > Power off works on boxes with no ADB (Android 14 without port 5555, not paired): when TV Setup Keys is on it opens the system's own power menu to pick from (never powers off by itself); when it is off, the TV says to turn it on in Settings > Accessibility. Needs TV Setup and TV Setup Keys updated together.
 - TV Home: give an app tile its own picture (hold OK > Own picture; set from the phone or computer page under Pictures of apps, shrunk to 480x270 and kept under 300 KB on the TV); "Use the app's own picture" puts the original back. Off until you set one.

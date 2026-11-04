@@ -3013,7 +3013,8 @@
   "home.share_err_rejected": "La boutique n’a pas accepté ce thème (son nom ou son contenu n’est pas valide).",
   "home.share_err_server": "La boutique rencontre un problème. Réessayez plus tard.",
   "home.share_err_tv": "Impossible de communiquer avec la TV. Allumez-la, vérifiez la connexion et réessayez.",
-  "home.sec_show": "Affichage",
+  "home.sec_motion": "Animation et sélection",
+  "home.sec_edit": "Ajouter / modifier l’écran d’accueil",
   "home.sec_grid": "Grille d’applications",
   "home.sec_head": "En-tête",
   "home.dface": "Apparence de l’écran de veille",
@@ -3023,6 +3024,7 @@
   "home.ddark_to": "À",
   "home.g_widgets": "Widgets",
   "home.g_system": "Système",
+  "home.g_dream": "Écran de veille",
   "home.sum_on": "Activé",
   "home.sum_off": "Désactivé",
   "home.sum_bg_set": {
@@ -3038,7 +3040,6 @@
     "one": "{n} widget",
     "other": "{n} widgets"
   },
-  "home.sum_system": "Écran de veille : {dream}",
   "home.sum_keys": "Touches de raccourci : {keys} · Application à l’allumage : {auto}",
   "home.order": "Ordre des applications",
   "home.order_note": "Faites glisser une vignette vers sa nouvelle place (sur téléphone : maintenez un instant, puis faites glisser), ou appuyez sur une vignette puis sur sa destination. La TV ne change que lorsque vous appuyez sur Enregistrer.",

@@ -76,6 +76,7 @@ object Customize {
         var fill: (() -> Unit)? = null                                 // puts the controls in [col]; dropped once it ran
         var made: (() -> Unit)? = null                                 // the fill that ran, for a page made again
         var seen: String? = ""                                         // the settings as this page last showed them ([Store.stamp])
+        var parent: Group? = null                                      // a page with no row of its own (the language list): Back goes up to this page, not to the first level
     }
 
     private val EVERY_WORDS = mapOf("off" to R.string.rot_off, "30m" to R.string.rot_30m, "1h" to R.string.rot_1h, "6h" to R.string.rot_6h, "day" to R.string.rot_day, "show" to R.string.rot_show)
@@ -94,10 +95,10 @@ object Customize {
                 a.getString(R.string.g_cols_n, c.optInt("cols", HomeConfig.COLS_DEFAULT)) + " · " +
                 (c.optDouble("rows", 0.0).let { if (it < 1) a.getString(R.string.g_rows_auto) else a.getString(R.string.g_rows_n, rowsWord(a, it)) })
             "widgets" -> a.getString(R.string.g_widgets_n, c.optJSONArray("widgets")?.length() ?: 0)
-            "system" -> a.getString(R.string.g_dream) + ": " + on("dream")
+            "dream" -> on("dream").replaceFirstChar { it.uppercase() }
             "keys" -> a.getString(R.string.g_keys_sum, HomeConfig.keyApps(c.optJSONObject("keyapps")).size.takeIf { c.optBoolean("keyon") } ?: 0,
                 a.getString(if (c.optBoolean("autoon")) R.string.w_on else R.string.w_off))
-            else -> dev.tvremote.i18n.Langs.NAMES[c.optString("lang")] ?: a.getString(R.string.c_lang_tv)
+            else -> a.getString(R.string.c_home_screen) + " · " + langName(a, c)       // "system": the launcher row and the language in use
         }
     }
 
@@ -108,6 +109,8 @@ object Customize {
         if (v is ViewGroup) for (i in 0 until v.childCount) firstFocusable(v.getChildAt(i))?.let { return it }
         return null
     }
+
+    private fun langName(a: Context, c: JSONObject) = dev.tvremote.i18n.Langs.NAMES[c.optString("lang")] ?: a.getString(R.string.c_lang_tv)
 
     private fun rowsWord(a: Context, v: Double) = if (v < 1) a.getString(R.string.c_rows_auto) else String.format(java.util.Locale.ROOT, "%.1f", v)
 
@@ -362,8 +365,10 @@ object Customize {
             Group(a, "themes", R.string.g_themes, R.drawable.ic_star),
             Group(a, "bg", R.string.bg, R.drawable.ic_image), Group(a, "look", R.string.g_look, R.drawable.ic_sparkle),
             Group(a, "widgets", R.string.w_widgets, R.drawable.ic_gauge),
-            Group(a, "system", R.string.g_system, R.drawable.ic_power), Group(a, "keys", R.string.g_keys, R.drawable.ic_keyboard),
-            Group(a, "lang", R.string.c_lang, R.drawable.ic_globe))
+            Group(a, "dream", R.string.g_dream, R.drawable.ic_moon), Group(a, "keys", R.string.g_keys, R.drawable.ic_keyboard),
+            Group(a, "system", R.string.g_system, R.drawable.ic_power),
+            Group(a, "lang", R.string.c_lang, R.drawable.ic_globe))     // the language list: opened from System's Language row, no row of its own
+        groups[7].parent = groups[6]
         for (g in groups) g.col.setPadding(dp(28), dp(8), dp(28), dp(28))
         val top = LinearLayout(a).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false; setPadding(dp(28), dp(26), dp(28), dp(28)) }
         var col = groups[0].col                                        // the page being filled; each page's controls go into its own column
@@ -381,6 +386,8 @@ object Customize {
             mine + Videos.list(a).map { it.wall } + all.drop(mine.size)
         }
         val tiles = ArrayList<Pair<String, View>>()
+        var langRow: View? = null                                     // System's Language row: where Back from the list lands
+        var openLang: () -> Unit = {}                                 // set below, where [enter] is known
         var ownFace: () -> Unit = {}                                  // the own wall's tile, painted again after its colours changed
         val cols = WALL_COLS; val gap = dp(10); val w = tileW(a)
         val shots = java.util.concurrent.ThreadPoolExecutor(1, 1, 0, java.util.concurrent.TimeUnit.MILLISECONDS, java.util.concurrent.LinkedBlockingQueue(),
@@ -435,8 +442,7 @@ object Customize {
         // with [choices] (value to its words) the tile steps through them on each press instead of switching on / off; on = not the first
         fun tile(res: Int, text: String, sub: String?, key: String, choices: List<Pair<String, String>>? = null, then: () -> Unit = {}, read: () -> String = { conf.optString(key) }, write: ((String) -> Unit)? = null) {
             var pick = choices?.indexOfFirst { it.first == read() }?.coerceAtLeast(0) ?: 0
-            var viaSetup = false                                       // "stats": TV Setup is on the TV and holds the switch (OwnReport)
-            var on = if (key == "stats") dev.tvremote.report.OwnReport.own(a) else if (choices != null || key == "rows" || key == "shade") pick > 0 || key == "cols" || key == "ddark_from" || key == "ddark_to" || key == "watchAt" || key == "rows" || key == "shade" else conf.optBoolean(key, true)
+            var on = if (choices != null || key == "rows" || key == "shade") pick > 0 || key == "cols" || key == "ddark_from" || key == "ddark_to" || key == "watchAt" || key == "rows" || key == "shade" else conf.optBoolean(key, true)
             val ic = ImageView(a).apply { setImageResource(res) }
             val state = label("", 12f, DIM)
             val t = LinearLayout(a).apply {
@@ -456,14 +462,12 @@ object Customize {
                 }
                 ic.imageTintList = ColorStateList.valueOf(if (on) ACCENT else DIM)
                 val word = a.getString(if (on) R.string.w_on else R.string.w_off).replaceFirstChar { it.uppercase() }
-                state.text = if (key == "stats" && viaSetup) a.getString(R.string.stats_setup) else if (key == "rows") rowsWord(a, Store.get(a).optDouble("rows", 0.0)) else if (key == "shade") "${Store.get(a).optInt("shade", HomeConfig.SHADE_DEFAULT)}%" else choices?.get(pick)?.second ?: if (sub != null) "$word · $sub" else word
+                state.text = if (key == "rows") rowsWord(a, Store.get(a).optDouble("rows", 0.0)) else if (key == "shade") "${Store.get(a).optInt("shade", HomeConfig.SHADE_DEFAULT)}%" else choices?.get(pick)?.second ?: if (sub != null) "$word · $sub" else word
                 state.setTextColor(if (on) ACCENT else DIM)
             }
             paint()
-            if (key == "stats") Thread({ dev.tvremote.report.OwnReport.setup(a).first?.let { s -> a.runOnUiThread { viaSetup = true; on = s; paint() } } }, "stats-setup").apply { isDaemon = true }.start()
             t.onFocusChangeListener = View.OnFocusChangeListener { v, f -> lit(v, f) }
             t.setOnClickListener {
-                if (key == "stats") { if (!viaSetup) { on = !on; dev.tvremote.report.OwnReport.setOwn(a, on); paint() }; return@setOnClickListener }
                 if (key == "wcol") { ownColours(a, dialog) { ownFace(); markAll() }; return@setOnClickListener }
                 if (key == "ddark_from" || key == "ddark_to") {         // a time of day: its own small stepper, 30 minutes a press
                     timeStepper(a, text, read()) { v -> write?.invoke(v); pick = choices?.indexOfFirst { it.first == v }?.coerceAtLeast(0) ?: 0; paint() }
@@ -816,9 +820,8 @@ object Customize {
             if (keys.any { HomeConfig.isPhoto(it) || HomeConfig.isVideo(it) }) col.addView(label(a.getString(R.string.photo_del_hint), 12f, DIM), LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(10) })
         }
         groups[2].fill = {
-            col.addView(label(a.getString(R.string.g_sec_show).uppercase(), 12f, DIM).apply { letterSpacing = 0.12f }, LinearLayout.LayoutParams(-2, -2).apply { bottomMargin = dp(2) })
+            col.addView(label(a.getString(R.string.sec_head).uppercase(), 12f, DIM).apply { letterSpacing = 0.12f }, LinearLayout.LayoutParams(-2, -2).apply { bottomMargin = dp(2) })   // the two header lines, each with its own type: blocks, or the two sets of tiles read as one
             tile(R.drawable.ic_timer, a.getString(R.string.clock24), null, "clock24")
-            section(a.getString(R.string.sec_head))                     // the two header lines, each with its own type: blocks, or the two sets of tiles read as one
             tile(R.drawable.ic_message, a.getString(R.string.greet), null, "greet")
             // its words (HomeConfig "gstyle"): typed here with the TV's keyboard, or on a phone (Home settings)
             fun field(key: String, max: Int, hint: Int) = dev.tvremote.tvui.TvField(a).apply {
@@ -894,8 +897,8 @@ object Customize {
             tile(R.drawable.ic_play, a.getString(R.string.show_watch), null, "showWatch")
             tile(R.drawable.ic_input, a.getString(R.string.show_infold), null, "infold")   // default off (HomeConfig "infold")
             tile(R.drawable.ic_updown, a.getString(R.string.watch_at), null, "watchAt", HomeConfig.WATCH_AT.map { it to a.getString(when (it) { "top" -> R.string.watch_at_top; "under1" -> R.string.watch_at_under1; "tiles" -> R.string.watch_at_tiles; else -> R.string.watch_at_bottom }) })
+            section(a.getString(R.string.g_sec_motion))
             tile(R.drawable.ic_sparkle, a.getString(R.string.motion), null, "anim")
-            tile(R.drawable.ic_eye, a.getString(R.string.show_shift), null, "shift")   // burn-in care, default off (HomeConfig "shift")
             tile(R.drawable.ic_sparkle, a.getString(R.string.c_motion), null, "motion",
                 listOf("" to a.getString(R.string.c_motion_auto), "calm" to a.getString(R.string.c_motion_calm), "full" to a.getString(R.string.c_motion_full)))
             tile(R.drawable.ic_eye, a.getString(R.string.c_focus), null, "focus",
@@ -904,6 +907,9 @@ object Customize {
             tile(R.drawable.ic_apps, a.getString(R.string.c_cols), null, "cols", (HomeConfig.COLS_MIN..HomeConfig.COLS_MAX).map { "$it" to "$it" })
             tile(R.drawable.ic_updown, a.getString(R.string.c_rows), null, "rows")
             tile(R.drawable.ic_apps, a.getString(R.string.c_center), null, "center")   // a short row in the middle, default off
+            section(a.getString(R.string.g_sec_edit))
+            val doors = launchPage(a, col, ::glass, ::label, gap, quick = false)
+            doors.getOrNull(doorAt)?.let { v -> groups[2].start = { v } }; doorAt = -1   // come back from a door: on it
         }
         groups[3].fill = {
             val preview = PackGlyph(a)
@@ -953,7 +959,13 @@ object Customize {
             col = outer
             darkBox.visibility = if (span() != null) View.VISIBLE else View.GONE
             col.addView(darkBox, LinearLayout.LayoutParams(-1, -2).apply { if (col.childCount > 0) topMargin = gap })
-            tile(R.drawable.ic_gauge, a.getString(R.string.stats), null, "stats")   // anonymous stats (OwnReport): TV Setup's switch when it is installed, else this one
+            tile(R.drawable.ic_eye, a.getString(R.string.show_shift), null, "shift")   // burn-in care, default off (HomeConfig "shift")
+        }
+        groups[5].fill = {
+            launchPage(a, col, ::glass, ::label, gap, quick = true)
+            tile(R.drawable.ic_home, a.getString(R.string.show_homebar), null, "homebar")   // with the remote keys it changes; Home over an app shows the bar, default off (HomeConfig "homebar")
+        }
+        groups[6].fill = {
             // another launcher as the home screen: TV Home has no ADB to turn the TV's own one off (without that Home goes on landing on it,
             // a BRAVIA on Android 9), so TV Setup's picker does it, opened on that screen; without TV Setup the row says how to get it
             val setup = a.packageManager.getLaunchIntentForPackage("dev.tvremote.setup")?.putExtra("open", "launchers")
@@ -976,13 +988,26 @@ object Customize {
                     try { a.startActivity(go.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)); dialog.dismiss() } catch (e: Exception) { }
                 }
             }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = gap })
+            // Language: a row that opens the list (groups[7]), the one in use under its name
+            col.addView(LinearLayout(a).apply {
+                orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; isFocusable = true; isClickable = true
+                setPadding(dp(14), dp(12), dp(14), dp(12))
+                background = StateListDrawable().apply {
+                    addState(intArrayOf(android.R.attr.state_focused), glass(16, DOOR_FOCUS, Color.WHITE))
+                    addState(intArrayOf(), glass(16, DOOR_REST, DOOR_EDGE))
+                }
+                addView(ImageView(a).apply { setImageResource(R.drawable.ic_globe); imageTintList = ColorStateList.valueOf(ACCENT) }, LinearLayout.LayoutParams(dp(26), dp(26)))
+                addView(LinearLayout(a).apply {
+                    orientation = LinearLayout.VERTICAL
+                    addView(label(a.getString(R.string.c_lang), 15f, Color.WHITE))
+                    addView(label(langName(a, Store.get(a)), 12f, DIM))
+                }, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(12) })
+                addView(ImageView(a).apply { setImageResource(R.drawable.ic_right); imageTintList = ColorStateList.valueOf(DIM) }, LinearLayout.LayoutParams(dp(22), dp(22)))
+                onFocusChangeListener = View.OnFocusChangeListener { v, f -> lit(v, f) }
+                setOnClickListener { openLang() }
+            }.also { langRow = it }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = gap })
         }
-        groups[5].fill = {
-            val doors = launchPage(a, col, ::glass, ::label, gap)
-            tile(R.drawable.ic_home, a.getString(R.string.show_homebar), null, "homebar")   // with the remote keys it changes; Home over an app shows the bar, default off (HomeConfig "homebar")
-            doors.getOrNull(doorAt)?.let { v -> groups[5].start = { v } }; doorAt = -1   // come back from a door: on it
-        }
-        groups[6].fill = {
+        groups[7].fill = {
             // every language at once, each in its own words, the one in use ticked: one tile stepping through them hid which
             // there were, and each press built Home again before the next could be seen
             val sys = Lang.tv()
@@ -1001,7 +1026,7 @@ object Customize {
                     onFocusChangeListener = View.OnFocusChangeListener { v, f -> lit(v, f) }
                     setOnClickListener { if (k != Store.get(a).optString("lang")) Store.change(a, JSONObject().put("lang", k)) }   // Home is built again in it
                 }
-                if (k == now) groups[6].start = { row }
+                if (k == now) groups[7].start = { row }
                 col.addView(row, LinearLayout.LayoutParams(-1, -2).apply { if (col.childCount > 0) topMargin = dp(8) })
             }
         }
@@ -1047,6 +1072,18 @@ object Customize {
         fun refresh() { val c = Store.get(a); for (g in groups) g.sum?.text = summary(a, g.key, c) }   // one read: ~7 ms each on the FPT box
         fun enter(g: Group) {
             build(g); fresh(g)
+            val up = g.parent
+            if (up != null) {                                          // a page under another (the language list under System)
+                if (cur !== up) { build(up); up.last = langRow }       // opened straight at it (Home rebuilt in the new language): Back still goes up
+                if (cur === up) {
+                    up.last = up.page.findFocus()
+                    cur = g; ++gen
+                    up.page.animate().cancel(); up.page.visibility = View.INVISIBLE
+                    g.page.animate().cancel(); g.page.translationX = 0f; g.page.alpha = 1f; g.page.visibility = View.VISIBLE
+                    (g.last?.takeIf { it.isShown } ?: g.start?.invoke() ?: firstFocusable(g.col))?.requestFocus()
+                    return
+                }
+            }
             cur = g; val n = ++gen
             // a page whose change shows on Home (background, veil, look, layout, widgets) lifts the dim: it is seen as it is
             if (g.key in PREVIEW) dialog.window?.setDimAmount(0f)
@@ -1063,6 +1100,13 @@ object Customize {
         }
         fun leave(): Boolean {
             val g = cur ?: return false
+            g.parent?.let { up ->                                      // one level up, not to the first
+                g.last = g.page.findFocus(); cur = up; ++gen
+                g.page.animate().cancel(); g.page.visibility = View.INVISIBLE
+                up.page.animate().cancel(); up.page.translationX = 0f; up.page.alpha = 1f; up.page.visibility = View.VISIBLE
+                (langRow?.takeIf { it.isShown } ?: firstFocusable(up.col))?.requestFocus()
+                return true
+            }
             cur = null; val n = ++gen
             dialog.window?.setDimAmount(Drop.MENU_DIM)
             g.last = g.page.findFocus()
@@ -1080,6 +1124,7 @@ object Customize {
             return true
         }
         stepBack = ::leave
+        openLang = { enter(groups[7]) }
         for (g in groups) {
             val chevron = ImageView(a).apply { setImageResource(R.drawable.ic_right); imageTintList = ColorStateList.valueOf(DIM) }
             g.sum = label("", 12f, TvGlass.HINT).apply { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END }
@@ -1099,7 +1144,7 @@ object Customize {
                 setOnKeyListener { _, code, e -> if (code == android.view.KeyEvent.KEYCODE_DPAD_RIGHT && e.action == android.view.KeyEvent.ACTION_DOWN) { enter(g); true } else false }
             }
             g.row = row
-            top.addView(row, LinearLayout.LayoutParams(-1, -2).apply { topMargin = if (g === groups[0]) dp(16) else dp(8) })
+            if (g.parent == null) top.addView(row, LinearLayout.LayoutParams(-1, -2).apply { topMargin = if (g === groups[0]) dp(16) else dp(8) })
             // the page: a way back as its head ("‹ name"), then the controls
             g.head = LinearLayout(a).apply {
                 orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL; isFocusable = true; isClickable = true
@@ -1217,10 +1262,10 @@ object Customize {
     }
 
     /**
-     * Doors: "Add to home screen" (the grid's own "+ Add" menu, [HomeActivity.addPanel]: one menu for it everywhere) and "Quick keys" ([QuickKeys]: 0-9, colour keys and the power-on app, each shown by the logo of its [Target]).
+     * Doors: on Look, "Add to home screen" (the grid's own "+ Add" menu, [HomeActivity.addPanel]: one menu for it everywhere) and "Quick keys" ([QuickKeys]: 0-9, colour keys and the power-on app, each shown by the logo of its [Target]).
      * They replaced a row list here that could not show logos nor shortcuts. Lines under say what needs TV Setup.
      */
-    private fun launchPage(a: Activity, col: LinearLayout, glass: (Int, Int, Int) -> GradientDrawable, label: (String, Float, Int) -> TextView, gap: Int): List<View> {
+    private fun launchPage(a: Activity, col: LinearLayout, glass: (Int, Int, Int) -> GradientDrawable, label: (String, Float, Int) -> TextView, gap: Int, quick: Boolean): List<View> {
         val d = a.resources.displayMetrics.density
         val doors = ArrayList<View>()
         fun dp(v: Number) = (v.toFloat() * d).toInt()
@@ -1243,11 +1288,11 @@ object Customize {
                 setOnClickListener { open() }
             }.also { doors.add(it) }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = gap })
         }
-        door(R.drawable.ic_apps, a.getString(R.string.c_add_home), { a.getString(R.string.pk_grid_hint) }) {   // the same "+ Add" menu as the grid's tile (apps, folder, link, channels, live widgets): the bare grid picker lacked the half of it
+        if (!quick) door(R.drawable.ic_apps, a.getString(R.string.c_add_home), { a.getString(R.string.pk_grid_hint) }) {   // the same "+ Add" menu as the grid's tile (apps, folder, link, channels, live widgets): the bare grid picker lacked the half of it
             panelDialog?.dismiss(); onHome(a, HomeConfig.ADD) { it.addPanel(back = { backTo(it, 0) }) }
         }
-        door(R.drawable.ic_pen, a.getString(R.string.el_edit), { a.getString(R.string.el_edit_sub) }) { panelDialog?.dismiss(); onHome(a, HomeConfig.EDIT) { it.edit(back = { backTo(it, 1) }) } }
-        door(R.drawable.ic_keyboard, a.getString(R.string.c_quickkeys), { a.getString(if (Keys.setup(a)) R.string.k_everywhere else R.string.k_need_setup) }) { QuickKeys.show(a) }
+        if (!quick) door(R.drawable.ic_pen, a.getString(R.string.el_edit), { a.getString(R.string.el_edit_sub) }) { panelDialog?.dismiss(); onHome(a, HomeConfig.EDIT) { it.edit(back = { backTo(it, 1) }) } }
+        if (quick) door(R.drawable.ic_keyboard, a.getString(R.string.c_quickkeys), { a.getString(if (Keys.setup(a)) R.string.k_everywhere else R.string.k_need_setup) }) { QuickKeys.show(a) }
         return doors
     }
 
@@ -1256,7 +1301,7 @@ object Customize {
      * One level only: the panel's own Back then goes Home as always (no history kept, so no loop); a job done there does not come back.
      */
     private var doorAt = -1
-    private fun backTo(a: Activity, door: Int) { if (a.isFinishing || a.isDestroyed) return; doorAt = door; (a as? HomeActivity)?.customize("keys") ?: show(a, "keys") }
+    private fun backTo(a: Activity, door: Int) { if (a.isFinishing || a.isDestroyed) return; doorAt = door; (a as? HomeActivity)?.customize("look") ?: show(a, "look") }
 
     /** [act] on Home itself; elsewhere (the screensaver's settings) Home is started with [action] for it ([HomeActivity.startAction]), never a copy of its screen. */
     fun onHome(a: Activity, action: String, act: (HomeActivity) -> Unit) {

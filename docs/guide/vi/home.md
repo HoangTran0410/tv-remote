@@ -35,7 +35,7 @@ Chọn nhiều hình rồi đặt **Đổi hình nền** (30 phút → mỗi l�
 | Trên TV Home | Là gì |
 | --- | --- |
 | Thanh trên cùng | Hai nút: **Mạng** (trạng thái) và **Cài đặt** = [Cài đặt nhanh](home-control.md), nơi có Nguồn vào và các nút Tắt nguồn / Khởi động lại / Tắt màn hình / Chế độ chờ. |
-| Tùy chỉnh | Danh sách nhóm, OK để vào từng nhóm: **Chủ đề**, Hình nền, **Giao diện** (gồm bố cục), Widget, **Hệ thống** (màn chờ, **Màn hình chính**), **Phím & khởi động**, Ngôn ngữ. |
+| Tùy chỉnh | Danh sách nhóm, OK để vào từng nhóm: **Chủ đề**, Hình nền, **Giao diện** (cả bố cục), Widget, **Màn chờ**, **Phím & khởi động**, **Hệ thống** (**Màn hình chính**, Ngôn ngữ). |
 | Màn hình chính | Trong **Hệ thống**: mở bộ chọn launcher của TV Setup để đổi sang launcher khác (cần TV Setup) |
 | Phím & khởi động | Phím remote mở app, app tự mở khi bật TV |
 

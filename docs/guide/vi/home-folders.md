@@ -1,6 +1,6 @@
 # Thư mục trên lưới
 
-Gom vài ô (app, lối tắt, widget) vào một ô thư mục (hiện 4 biểu tượng nhỏ và tên). Sửa được ngay trên TV hoặc ở tab TV → Tùy chỉnh → Thư mục.
+Gom vài ô (app, lối tắt, widget) vào một ô thư mục (hiện 4 biểu tượng nhỏ và tên). Sửa được ngay trên TV hoặc ở tab TV → Tùy chỉnh → Giao diện → Thư mục.
 
 1. Giữ OK trên một app, lối tắt hay widget → **Trên màn hình chính** → **Cho vào thư mục**: chọn thư mục có sẵn hoặc **Thư mục mới** rồi đặt tên.
 2. OK trên thư mục mở một bảng các ô của nó; Back đóng. Mỗi app trong đó vẫn có menu riêng, có **Đưa ra khỏi thư mục**, chuyển sang thư mục khác, **Di chuyển** (mũi tên, OK lưu).
