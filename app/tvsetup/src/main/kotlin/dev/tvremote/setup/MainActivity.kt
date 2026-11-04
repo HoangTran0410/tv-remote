@@ -588,6 +588,7 @@ class MainActivity : Activity() {
         }
         shown = true
         voiceWatch()
+        if (MicVoice.on(this)) Thread({ micBlockLog() }, "mic-block").apply { isDaemon = true }.start()   // off: nothing is read
         self.check({ }, { r -> install(r) })                          // back from "install unknown apps" for an update: on with it
         askOnPhone()
         pairLine.removeCallbacks(pairPoll); pairPoll.run()
@@ -1079,13 +1080,32 @@ class MainActivity : Activity() {
                 val on = !MicVoice.on(this)
                 Rules.change(this, org.json.JSONObject().put("do", "mic").put("on", on))
                 log(T("mic.tile") + " · " + T(if (on) "mic.on" else "mic.off") + (if (on && !KeyFix.can(this)) " · " + T("keyfix.need_adb") else ""))
+                if (on) micBlockLog()
             },
             TvUi.Item(R.drawable.ic_mic, T("mic.offline"), { voiceSub() }, on = { MicVoice.offlineOn(this) }) {   // TV Setup Voice: installed while on (MicVoice.syncOffline)
                 val on = !MicVoice.offlineOn(this)
                 Rules.change(this, org.json.JSONObject().put("do", "mic_offline").put("on", on))
                 log(T("mic.offline") + " · " + T(if (on) "mic.offline_installing" else "mic.offline_removed"))
             },
-            TvUi.Item(R.drawable.ic_keyboard, T("keytest.tile"), T("keytest.sub")) { startActivity(android.content.Intent(this, KeyTestActivity::class.java)) }))   // the key tester
+            TvUi.Item(R.drawable.ic_keyboard, T("keytest.tile"), T("keytest.sub")) { startActivity(android.content.Intent(this, KeyTestActivity::class.java)) }) + listOfNotNull(micFixItem()))   // the key tester, and the way out when the mic key cannot reach us
+    }
+
+    /** Why the remote's mic key cannot reach TV Setup ([MicVoice.block]; nothing is read while the rule is off), in words. */
+    private fun micBlockText(b: MicVoice.Block) = if (b.reason == MicVoice.GOOGLE) T("mic.block_google") else T("mic.block_other", "app" to b.label)
+
+    /** A row that fixes it: the Google app off over ADB (Optimize TV's Undo turns it on), else that app's settings page. Absent when nothing blocks. */
+    private fun micFixItem(): TvUi.Item? {
+        val b = MicVoice.block(this).takeIf { it.reason.isNotEmpty() } ?: return null
+        val off = b.reason == MicVoice.GOOGLE && adb != null
+        return TvUi.Item(R.drawable.ic_mic, if (off) T("mic.block_off_google") else T("mic.block_open", "app" to (b.label.ifEmpty { "Google" })), micBlockText(b)) {
+            Thread({ val done = MicVoice.free(this, adb); ui { log(if (done == "off") T("mic.block_done") else T("mic.block_opened")) } }, "mic-free").apply { isDaemon = true }.start()
+        }
+    }
+
+    /** The same reason in the log, once per screen visit, so a person who switched the mic on sees why it does not answer. */
+    private fun micBlockLog() {
+        val b = MicVoice.block(this).takeIf { it.reason.isNotEmpty() } ?: return
+        howto(micBlockText(b) + if (b.reason == MicVoice.GOOGLE) " " + T("mic.block_note") else "")
     }
 
     private fun voiceSub(): String = MicVoice.offlineState(this).let { v -> when {

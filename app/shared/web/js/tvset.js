@@ -184,7 +184,7 @@ async function loadHold(now) {
   holdBusy = false;
   if (gen !== holdGen || !r) return;
   checkSet('mic', !!r.mic);
-  const seen = JSON.stringify([r.holdkeys, r.mic, r.mic_offline, r.voice, r.mic_lang, r.mic_langs, r.mic_engine, r.mic_secure]) + window.LANG;
+  const seen = JSON.stringify([r.holdkeys, r.mic, r.mic_offline, r.voice, r.mic_lang, r.mic_langs, r.mic_engine, r.mic_secure, r.mic_block, r.mic_block_app, r.adb]) + window.LANG;
   if (seen === holdSeen) return;                                       // nothing new: keep what is on screen
   holdSeen = seen;
   const holdOld = r.holdkeys === undefined;
@@ -227,7 +227,14 @@ async function loadHold(now) {
     UI.note(T('tvvoice.size'))] : [];
   const vstate = voice === 'busy' ? T('mic.offline_busy') : voice === 'ready' ? T('mic.offline_ready')
     : voice.startsWith('failed:') && r.mic_offline ? T('mic.offline_failed', { why: voice === 'failed:adb' ? T('mic.needs_adb') : friendly(voice.slice(7)) }) : '';
-  box.replaceChildren(UI.group(T('hold.tile'), hold, UI.note(T('hold.sub')), UI.note(T('hold.sub_off'))), UI.group(T('mic.tile'), mic, UI.note(T('mic.sub')), UI.note(T('mic.sub_off')), UI.note(T('mic.eg')), UI.note(T('mic.need')), ...(r.mic && r.mic_secure === false ? [UI.note(T('mic.first_press'))] : []), offline, UI.note(T('mic.offline_sub')), ...(vstate ? [UI.note(vstate)] : []), ...langs, ...engine),
+  // The mic key cannot reach TV Setup (MicVoice.block): say who holds it, and offer the way out (Rules "mic_free": the Google app off over ADB, else its settings page)
+  const blocked = r.mic && r.mic_block ? [el('p', { className: 'note warn', textContent: r.mic_block === 'google_holds_mic' ? T('mic.block_google') : T('mic.block_other', { app: r.mic_block_app }) }),
+    el('div', { className: 'actions' }, el('button', { type: 'button', textContent: r.mic_block === 'google_holds_mic' && r.adb === 'ready' ? T('mic.block_off_google') : T('mic.block_open', { app: r.mic_block_app || 'Google' }), onclick: async (e) => {
+      const b = e.currentTarget; b.disabled = true;
+      const ok = await api('/api/rules', { do: 'mic_free' });
+      b.disabled = false; if (ok) { toast(r.mic_block === 'google_holds_mic' && r.adb === 'ready' ? T('mic.block_done') : T('mic.block_opened')); holdSeen = ''; setTimeout(() => loadHold(true), 2500); }
+    } })), ...(r.mic_block === 'google_holds_mic' ? [UI.note(T('mic.block_note'))] : [])] : [];
+  box.replaceChildren(UI.group(T('hold.tile'), hold, UI.note(T('hold.sub')), UI.note(T('hold.sub_off'))), UI.group(T('mic.tile'), mic, UI.note(T('mic.sub')), UI.note(T('mic.sub_off')), UI.note(T('mic.eg')), UI.note(T('mic.need')), ...(r.mic && r.mic_secure === false ? [UI.note(T('mic.first_press'))] : []), ...blocked, offline, UI.note(T('mic.offline_sub')), ...(vstate ? [UI.note(vstate)] : []), ...langs, ...engine),
     // The key tester (KeyTestActivity in TV Setup): opened on the TV by `am start`; an older TV Setup is asked to update first.
     UI.group(T('keytest.tile'), el('div', { className: 'actions' }, el('button', { type: 'button', textContent: T('keytest.open'), onclick: async () => { if (await api('/api/keytest/open', {})) toast(T('keytest.opened')); } })), UI.note(T('keytest.note'))));
 }

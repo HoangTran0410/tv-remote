@@ -23,11 +23,11 @@ Nút mic của điều khiển TV: bật **Nút mic mở giọng nói của TV R
 
 TV không có ADB: lần bấm mic đầu tiên TV hỏi dùng app nào, chọn **TV Setup** rồi **Luôn chọn**.
 
+App Google giữ mic? Dưới nút bật có cảnh báo kèm nút tắt nó (Hoàn tác bật lại).
+
 TV không có nhận giọng nói (hộp không Google): bật thêm **Nhận giọng nói ngay trên TV, không cần Google** ở cùng chỗ; tắt là gỡ.
 
 Tiếng Việt 25 MB, tiếng Anh 36 MB: chọn ngôn ngữ ở dòng **Ngôn ngữ** (hay ô TV Voice trong TV Setup); thêm ngôn ngữ mới không gỡ ngôn ngữ cũ.
-
-TV có Google thì Google nghe trước (hiểu mọi câu); mất mạng hay Google không trả lời thì giọng nói của TV Setup nghe thay.
 
 Muốn TV Setup Voice luôn nghe trước (nhanh hơn, giọng nói không rời TV): chọn **TV Setup** ở dòng “Nghe giọng nói bằng”, hoặc bấm ô Nút mic trong Cài đặt nhanh của TV Home.
 
