@@ -170,6 +170,7 @@ object MicVoice {
      * Needs WRITE_SECURE_SETTINGS (granted through ADB, like KeyFix); the recognizer itself (voice_recognition_service) is not touched.
      */
     fun takeAssist(c: Context) {
+        syncSearch(c)                                                 // first: this one needs no ADB
         if (!dev.tvremote.setup.keys.KeyFix.can(c)) return
         val r = c.contentResolver
         val p = c.getSharedPreferences("mic", Context.MODE_PRIVATE)
@@ -191,6 +192,20 @@ object MicVoice {
         } catch (e: Exception) { android.util.Log.w("MicVoice", "assistant unchanged: $e") }
         watchAssist(c)
     }
+
+    /**
+     * A TV with no ADB cannot set the assistant, but its mic key starts WEB_SEARCH (VOICE_ASSIST), and any app with that filter is offered
+     * (Kiki does the same). The alias is off in the manifest and on only while the rule is on, so a TV that never uses the option
+     * never lists TV Setup in a chooser; an app may switch its own components without any permission.
+     */
+    fun syncSearch(c: Context) {
+        val want = if (on(c)) android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_ENABLED else android.content.pm.PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        try {
+            val cn = android.content.ComponentName(c.packageName, SEARCH_ALIAS)
+            if (c.packageManager.getComponentEnabledSetting(cn) != want) c.packageManager.setComponentEnabledSetting(cn, want, android.content.pm.PackageManager.DONT_KILL_APP)
+        } catch (e: Exception) { android.util.Log.w("MicVoice", "search alias unchanged: $e") }
+    }
+    private const val SEARCH_ALIAS = "dev.tvremote.setup.MicSearch"
 
     /** Google's assistant (or none) coming back is taken back; any other is one the person picked. */
     fun takesBack(cur: String?, was: String?): Boolean {

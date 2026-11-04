@@ -2306,6 +2306,7 @@
   "mic.sub_off": "Désactivé : le bouton micro ouvre Google Assistant comme avant.",
   "mic.eg": "Exemples : « ouvre YouTube », « chaîne VTV1 », « monte le volume »",
   "mic.need": "Nécessite une TV avec reconnaissance vocale.",
+  "mic.first_press": "Pas d'ADB sur cette TV : le premier appui sur micro demande quelle app utiliser. Choisissez TV Setup, puis « Toujours ».",
   "mic.offline": "Reconnaître la voix sur la TV elle-même, sans Google",
   "mic.offline_sub": "Pour les TV qui ne reconnaissent pas la voix. 36 Mo à télécharger, commandes en anglais. Désactiver le supprime.",
   "mic.offline_installing": "Installation de la reconnaissance vocale sur la TV…",

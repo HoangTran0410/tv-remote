@@ -83,7 +83,7 @@ class MicActivity : Activity(), RecognitionListener {
     override fun onCreate(b: Bundle?) {
         super.onCreate(b)
         live = this
-        val assist = intent.component?.className?.endsWith(".MicAssist") == true   // anyone may start the alias: it only listens while the rule is on, and never takes "say"
+        val assist = intent.component?.className.let { it?.endsWith(".MicAssist") == true || it?.endsWith(".MicSearch") == true }   // anyone may start the alias: it only listens while the rule is on, and never takes "say"
         if (assist && !MicVoice.on(this)) { finish(); return }
         Thread({ MicVoice.warm(this); if (MicVoice.offline(this) != null) MicVoice.words(this) }, "mic-warm").apply { isDaemon = true }.start()   // the sentences' list (~1.4 s cold on an FPT box) and the app names, while the recognizer starts
         val fake = if (assist) null else intent.getStringExtra("say")                      // `am start -n .../.MicActivity --es say "mở youtube"` (the shell only): a test with no microphone

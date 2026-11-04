@@ -81,6 +81,10 @@
         <activity-alias android:name=".MicAssist" android:targetActivity=".MicActivity" android:exported="true">
             <intent-filter><action android:name="android.intent.action.ASSIST" /><category android:name="android.intent.category.DEFAULT" /></intent-filter>
         </activity-alias>
+        <!-- the same for a TV with no ADB (cannot set the assistant): the mic key starts WEB_SEARCH there, and the person picks TV Setup once. Off in the manifest, on only while the rule "mic" is on (MicVoice.syncSearch), so no other TV sees TV Setup in a chooser -->
+        <activity-alias android:name=".MicSearch" android:targetActivity=".MicActivity" android:exported="true" android:enabled="false">
+            <intent-filter><action android:name="android.speech.action.WEB_SEARCH" /><category android:name="android.intent.category.DEFAULT" /></intent-filter>
+        </activity-alias>
         <!-- a scene tile on TV Home (ScenePin.kt): only TV Home's pinned shortcut starts it, so it is not exported -->
         <activity android:name=".SceneRunActivity" android:exported="false" android:excludeFromRecents="true" android:taskAffinity=""
             android:theme="@android:style/Theme.NoDisplay" android:noHistory="true" />
