@@ -1280,79 +1280,84 @@
   "note": "ADB off / not allowed / unpaired on the user's TV: TV Setup's own notice, no code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.24.1": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.26.2": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 2,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.26.3": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 2,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
+ },
+ "67c022dfb5a21bcb3a3560b8|0.28.0": {
+  "at": "2026-11-04T14:26:15+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.29.0": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.30.0": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 4,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.31.0": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.32.1": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 2,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.34.1": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 4,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.34.2": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.35.0": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.37.0": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.38.0": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.38.2": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.38.4": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.40.0": {
-  "at": "2026-11-03T23:36:47+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "6829ee79c1f5ab7a1c5a60b1|0.39.0": {
   "at": "2026-11-03T06:59:47+07:00",
@@ -2965,9 +2970,14 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "f03fa6b922541471343a37b2|0.30.0": {
-  "at": "2026-10-28T14:05:53+07:00",
+  "at": "2026-11-04T14:26:15+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
+ },
+ "f03fa6b922541471343a37b2|0.42.2": {
+  "at": "2026-11-04T14:26:15+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "f0cc569c0f598d5286f24762|0.42.0": {
   "at": "2026-11-04T08:19:12+07:00",
@@ -2990,34 +3000,39 @@
   "note": "Safari with stale HTML + new JS (auto.js stopped at #supgo); 1 install, left"
  },
  "f450a91c33294b34be468f07|0.30.0": {
-  "at": "2026-10-29T17:20:23+07:00",
+  "at": "2026-11-04T14:26:16+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "f450a91c33294b34be468f07|0.31.0": {
-  "at": "2026-10-29T17:20:23+07:00",
+  "at": "2026-11-04T14:26:16+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "f450a91c33294b34be468f07|0.32.1": {
-  "at": "2026-10-29T17:20:23+07:00",
+  "at": "2026-11-04T14:26:16+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "f450a91c33294b34be468f07|0.33.1": {
-  "at": "2026-10-29T17:20:23+07:00",
+  "at": "2026-11-04T14:26:16+07:00",
   "n": 1,
-  "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "f450a91c33294b34be468f07|0.38.1": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-04T14:26:16+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "f450a91c33294b34be468f07|0.38.2": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-04T14:26:16+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
+ },
+ "f450a91c33294b34be468f07|0.42.0": {
+  "at": "2026-11-04T14:26:16+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "f47e3e4ff3e9c81406ab9094|0.31.0": {
   "at": "2026-10-29T17:19:52+07:00",
