@@ -91,6 +91,7 @@ object AppCopy {
             } catch (e: Exception) {
                 throw IOException("$ODD: ${e.message}")
             } finally { unsigned.delete() }
+            if (!dev.tvremote.core.adb.Pkg.RE.matches(r.newPkg)) throw IOException("not an APK file")   // it goes into monkey -p / pidof
             return r.newPkg
         }
     }

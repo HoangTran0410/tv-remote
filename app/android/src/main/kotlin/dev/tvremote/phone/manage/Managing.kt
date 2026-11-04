@@ -314,7 +314,7 @@ internal class Managing(private val a: MainActivity, root: FrameLayout) : HttpSe
             return HttpServer.Response.json(if (c == null) JSONObject() else JSONObject().put("watch", c.watch).put("listen", c.listen))
         }
         if (r.path == "/api/app/icon") {
-            val png = labels?.icon(r.query["pkg"].toString()) ?: return HttpServer.Response.error(404, "no icon")
+            val png = r.query["pkg"]?.takeIf { it.isNotEmpty() }?.let { labels?.icon(it) } ?: return HttpServer.Response.error(404, "no icon")
             val icon = HttpServer.Response.of("image/png", png)
             icon.headers["Cache-Control"] = "max-age=86400"
             return icon

@@ -10,7 +10,7 @@ class WebPage(private val open: (String) -> java.io.InputStream, private val cor
 
     /** null when the path is not one of the page's files. [acceptEncoding] is the request's header: text files go out gzipped when it allows (1.2 MB -> 0.3 MB on the first load). */
     fun serve(path: String, acceptEncoding: String = ""): HttpServer.Response? {
-        val name = if (path == "/" || path == "/index.html") "index.html" else path.substring(1)
+        val name = if (path == "/" || path == "/index.html") "index.html" else path.drop(1)   // drop: "GET  HTTP/1.1" has an empty path
         if (!FILE.matches(name)) return null
         val bytes = (if (name == VoicePhrases.NAME) VoicePhrases.json() else null) ?: synchronized(cache) {   // the voice phrases: the freshest signed list the app holds, not a copy made once
             cache[name] ?: try {

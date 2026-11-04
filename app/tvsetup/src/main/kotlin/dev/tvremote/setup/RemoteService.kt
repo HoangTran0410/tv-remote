@@ -650,6 +650,9 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         // a web page elsewhere must not be able to talk to us through the visitor's browser (DNS rebinding): only IPs are served
         val host = r.headers["host"].toString().replaceFirst(Regex(":\\d+$"), "")
         if (!host.matches(Regex("[0-9.]+|localhost|\\[[0-9a-fA-F:]+\\]"))) return HttpServer.Response.error(403, "open this page by the TV's IP address")
+        // another page on this TV's address (a web game on TV Games' :8780) is the same "site" to the browser, so the cookie would
+        // go along with its fetch: only this page may call the API, as the computer app's Server.kt checks
+        if (r.path.startsWith("/api/") && HttpServer.crossOrigin(r)) return HttpServer.Response.error(403, "cross-origin")
 
         page.serve(r.path, r.headers["accept-encoding"].orEmpty())?.let { return it }                        // the page and its scripts need no pairing: they hold no secrets
         hook.handle(r)?.let { return it }                            // its own token instead of a pairing (Hook.kt); off until switched on

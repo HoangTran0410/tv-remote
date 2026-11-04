@@ -6,6 +6,7 @@ import dev.tvremote.core.adb.TvShell
 import dev.tvremote.core.manage.TvPaths.TMP_APK
 import dev.tvremote.core.manage.TvPaths.TMP_BASE
 import dev.tvremote.core.manage.TvPaths.safeName
+import dev.tvremote.core.manage.TvPaths.given
 import dev.tvremote.core.manage.TvPaths.safePath
 import dev.tvremote.core.web.Cancel
 import dev.tvremote.core.web.Cancelled
@@ -26,7 +27,7 @@ internal class InstallApi(core: ManageCore, private val copy: TvCopy) : ManagePa
     override fun route(what: String, post: Boolean, r: HttpServer.Request): HttpServer.Response? {
         if (!post) return null
         return when (what) {
-            "file/install" -> HttpServer.Response.json(installPath(safePath(r.json().optString("path"))))
+            "file/install" -> HttpServer.Response.json(installPath(safePath(given(r.json().optString("path")))))
             "fetch" -> HttpServer.Response.json(fetch(r.json().optString("url"), false))
             "install" -> HttpServer.Response.json(fetch(r.json().optString("url"), true))
             else -> null

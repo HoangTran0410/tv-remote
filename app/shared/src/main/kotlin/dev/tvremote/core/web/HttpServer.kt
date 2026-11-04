@@ -227,6 +227,14 @@ class HttpServer(private val handler: Handler) {
     }
 
     companion object {
+        /** A request another page made through the browser: its Origin is not this host, or the browser says the site differs. */
+        fun crossOrigin(r: Request): Boolean {
+            val origin = r.headers["origin"]
+            if (origin != null && origin.substringAfter("//") != r.headers["host"]) return true
+            val site = r.headers["sec-fetch-site"]
+            return site != null && site != "same-origin" && site != "none"
+        }
+
         /** How long one write may be blocked before the connection is cut (a variable so a test need not wait 30 s). */
         @Volatile internal var writeStallMs = 30_000L
 

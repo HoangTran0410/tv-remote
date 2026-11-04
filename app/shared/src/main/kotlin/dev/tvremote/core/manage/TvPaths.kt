@@ -21,6 +21,9 @@ internal object TvPaths {
         return last[at].takeIf { it.matches(DIGITS) }?.toLong()?.times(1024)
     }
 
+    /** A path the request must name: [safePath] reads "" as the Download folder, right for a listing, wrong for delete / rename / install. */
+    internal fun given(p: String?): String = if (p.isNullOrBlank()) throw IllegalArgumentException("path missing") else p
+
     /** Only the shared storage and USB drives; no "..". */
     internal fun safePath(p: String?): String {
         val b = StringBuilder()

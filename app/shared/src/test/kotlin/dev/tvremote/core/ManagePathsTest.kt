@@ -11,6 +11,9 @@ private typealias Proc = Procs.Proc
 
 /** The checks that keep the file manager inside the TV's shared storage. */
 class ManagePathsTest {
+    @Test(expected = IllegalArgumentException::class) fun deleteNeedsAPath() { TvPaths.given("") }   // safePath("") is the Download folder
+    @Test fun aGivenPathIsKept() = assertEquals("/sdcard/a", TvPaths.given("/sdcard/a"))
+
     @Test fun pathsStayInSharedStorage() {
         assertEquals("/sdcard/Download", TvPaths.safePath(""))
         assertEquals("/sdcard/Movies/a b", TvPaths.safePath("/sdcard//Movies/./a b/"))
@@ -130,6 +133,13 @@ class ApkPackageTest {
         assertEquals("apk needs sdk 29, the tv has sdk 28", Apk.fits(mapOf("minSdkVersion" to "29"), emptyList(), 28, emptyList()))
         assertEquals("apk is built for arm64-v8a, the tv runs armeabi-v7a,armeabi", Apk.fits(emptyMap(), listOf("arm64-v8a"), 28, listOf("armeabi-v7a", "armeabi")))
         assertEquals(null, Apk.fits(emptyMap(), listOf("arm64-v8a", "armeabi-v7a"), 28, listOf("armeabi-v7a")))
+    }
+
+    @Test fun aPackageNameThatIsAShellCommandIsDropped() {   // it went into dumpsys package / pm path unquoted (an APK made to do that)
+        val m = javaClass.classLoader!!.getResourceAsStream("setup-manifest.bin").readBytes()
+        val bad = String(m, Charsets.UTF_16LE).replace("dev.tvremote.setup", "x;rm -rf /sdcard/x").toByteArray(Charsets.UTF_16LE)
+        assertEquals(m.size, bad.size)
+        assertEquals(null, Apk.pkg(bad))
     }
 
     @Test fun garbageIsNull() {

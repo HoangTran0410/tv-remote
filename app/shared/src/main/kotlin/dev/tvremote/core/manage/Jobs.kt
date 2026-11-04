@@ -47,7 +47,7 @@ class Jobs {
             try {
                 val msg = at(what) { work(j) }
                 j.put("status", "done").put("pct", 100).put("msg", msg)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {                                  // an Error too (OutOfMemoryError): else the job said "running" for ever
                 // the person's Stop is not an error, whatever the stopped work threw on its way out
                 try { j.put("status", if (cancel.stopped) "cancelled" else "error").put("msg", if (cancel.stopped) "stopped" else e.message ?: e.javaClass.simpleName) } catch (ignored: Exception) { }
             } finally {

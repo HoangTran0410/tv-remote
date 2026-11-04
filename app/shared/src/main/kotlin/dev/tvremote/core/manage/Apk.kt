@@ -54,6 +54,8 @@ internal object Apk {
             }
         } catch (e: RuntimeException) {
         }
+        // the name goes into shell commands (dumpsys package, pm path): a crafted APK named "x;rm -rf …" must not run them
+        out["package"]?.let { if (!dev.tvremote.core.adb.Pkg.RE.matches(it)) out.remove("package") }
         return out
     }
 

@@ -5,6 +5,7 @@ import dev.tvremote.core.manage.TvPaths.CAST_DIR
 import dev.tvremote.core.manage.TvPaths.mime
 import dev.tvremote.core.manage.TvPaths.root
 import dev.tvremote.core.manage.TvPaths.safeName
+import dev.tvremote.core.manage.TvPaths.given
 import dev.tvremote.core.manage.TvPaths.safePath
 import dev.tvremote.core.web.Cancel
 import dev.tvremote.core.web.HttpServer
@@ -70,7 +71,7 @@ internal class FilesApi(core: ManageCore, private val copy: TvCopy, private val 
     }
 
     private fun fileOp(op: String, d: JSONObject): HttpServer.Response {
-        val path = safePath(d.optString("path"))
+        val path = safePath(given(d.optString("path")))
         var out: String
         when (op) {
             "delete" -> {

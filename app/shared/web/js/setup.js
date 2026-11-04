@@ -192,7 +192,7 @@ function hookShow(h) {
 }
 async function hookLoad() {
   put('#hookgroup', 'hidden', SCOPE !== 'full');
-  if (SCOPE !== 'full') return;
+  if (SCOPE !== 'full' || CORE === 'phone') return;                    // the phone has no hook (#hookgroup data-for="pc tv"): its 404 was asked on every About
   hookShow(await api('/api/hook/config', null, true));
 }
 const hookCopy = async (text, done) => { try { await navigator.clipboard.writeText(text); toast(done); } catch { $('#hookurl').select(); toast(T('setup.copy_failed')); } };

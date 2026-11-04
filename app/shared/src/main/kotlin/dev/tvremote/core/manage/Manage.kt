@@ -151,10 +151,15 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
                 "tvapps/install" -> if (post) return HttpServer.Response.json(tvAppsApi.install(r.json().optString("id")))
                 "launchers" -> return HttpServer.Response.json(launcherApi.list())
                 "launcher/thumb" -> return launcherApi.thumb(r.q("id"))
-                "launcher/install" -> return HttpServer.Response.json(launcherApi.install(r.json().optString("id"), r.lang))
-                "launcher/play" -> return HttpServer.Response.json(launcherApi.play(r.json().optString("id")))
-                "launcher/answer" -> return HttpServer.Response.json(launcherApi.answer(r.json().optBoolean("keep")))
-                "launcher/restore" -> return HttpServer.Response.json(launcherApi.restore())
+                // POST only: a GET (a link, a prefetch) must not change the TV's home screen
+                "launcher/install" -> if (post) return HttpServer.Response.json(launcherApi.install(r.json().optString("id"), r.lang))
+                "launcher/play" -> if (post) return HttpServer.Response.json(launcherApi.play(r.json().optString("id")))
+                "launcher/answer" -> if (post) {                      // no answer is not "Go back"
+                    val j = r.json()
+                    if (!j.has("keep")) throw IllegalArgumentException("keep missing")
+                    return HttpServer.Response.json(launcherApi.answer(j.optBoolean("keep")))
+                }
+                "launcher/restore" -> if (post) return HttpServer.Response.json(launcherApi.restore())
                 "adb/prompt" -> {                                     // the TV's "Allow USB debugging?" question, if it is up
                     val p = if (link.state() == "ready") AdbPrompt.read(link.get()) else null
                     val ours = p != null && p.fingerprint == link.get().fingerprint()
@@ -339,7 +344,11 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
 
         /** `/api/census`: the Settings switch of the anonymous stats (Census.kt), the same on every core; POST {on: bool} turns it on or off. */
         fun census(r: HttpServer.Request): HttpServer.Response {
-            if (r.method == "POST") dev.tvremote.core.Census.enabled = r.json().optBoolean("on", true)
+            if (r.method == "POST") {                                 // an empty or broken body must not switch the stats on
+                val j = r.json()
+                if (!j.has("on")) throw IllegalArgumentException("on missing")
+                dev.tvremote.core.Census.enabled = j.optBoolean("on")
+            }
             return HttpServer.Response.json(JSONObject().put("on", dev.tvremote.core.Census.enabled))
         }
 
