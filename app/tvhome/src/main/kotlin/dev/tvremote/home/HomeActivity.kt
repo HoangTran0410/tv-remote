@@ -149,6 +149,7 @@ class HomeActivity : Activity() {
     private var heard: (() -> Unit)? = null                         // this Home's Store.onChange
     private var shownKey = ""                                       // what the tiles were built from: the same again builds nothing
     private var tileCache = HashMap<String, Tile>()                 // a tile is made once per app and size, then moved
+    private var wallKept = false; private var wallStale = false         // [trim] left the sharp photo on the backdrop / the wall was changed while trimmed
     private var soft: Bitmap? = null                                // the photo wallpaper's small blurred copy (the widgets' frost, the stand-in in [trim]); the photo itself is not kept, the [backdrop] has it painted
     private var badges = Badges.NONE
     private var focusNext: String? = null                          // a tile just added: the next [show] focuses it, so it can be moved at once
@@ -633,7 +634,11 @@ class HomeActivity : Activity() {
         trimmed = true
         val id = conf.optString("wall")
         detachWeb()                                                   // a page costs the most memory of any wall: gone while away, made again by [untrim]
-        if (WallArt.has(id)) backdrop.show(wallColors(id, conf), null, id)      // a drawn scene costs nothing to keep: only the picture is repainted
+        wallStale = false
+        // A photo already painted stays: it is one full-size picture on the GPU, and the blurred stand-in was painted into a picture
+        // of the same size (no memory back), so it only showed a blur for ~0.7 s on every return (FPT, 2026-11-04).
+        if (backdrop.photoShown) wallKept = true
+        else if (WallArt.has(id)) backdrop.show(wallColors(id, conf), null, id)      // a drawn scene costs nothing to keep: only the picture is repainted
         else backdrop.show(wallColors(id, conf), soft)                          // the blurred copy stands in, so the return is not a blank
         val keep = firstRows()                                        // the logos seen first on return stay (~10 x 230 KB): a home without them is worse than the memory
         for (t in tileCache.values) if (t.app !in keep) t.release()
@@ -646,7 +651,9 @@ class HomeActivity : Activity() {
     private fun untrim() {
         trimmed = false
         val dm = resources.displayMetrics
-        if (Walls.isPicture(conf.optString("wall")) || conf.optString("wall") == HomeConfig.WEB) loadWall(conf.optString("wall"))
+        val kept = wallKept && !wallStale                              // the sharp photo never left: nothing to read again, no gradient in between
+        wallKept = false
+        if (!kept && (Walls.isPicture(conf.optString("wall")) || conf.optString("wall") == HomeConfig.WEB)) loadWall(conf.optString("wall"))
         for (t in tiles().take(2 * conf.optInt("cols", HomeConfig.COLS_DEFAULT))) { t.app?.let { if (it.banner == null && it.icon == null) it.load(this) }; t.restore() }   // the favourites at once (kept by [trim] unless the list moved), the rest from the side
         bg.execute {
             for (a in apps) if (a.banner == null && a.icon == null) a.load(this)
@@ -1615,7 +1622,7 @@ class HomeActivity : Activity() {
         // FPT box's CPU (a slideshow's list and slide too) and the steps behind the number lagged
         val veilOnly = key == wallShown
         wallShown = key; wallShade = shade
-        if (trimmed) { soft = null; return }          // away and short of memory: [untrim] brings it back
+        if (trimmed) { soft = null; wallStale = true; return }          // away and short of memory: [untrim] brings it back
         if (veilOnly && web == null && video == null && backdrop.reshade(shadeK())) return
         loadWall(id)
     }
