@@ -11,7 +11,7 @@ One panel for all you can pin to the grid, the Play Next row and apps left out a
 | Live widgets | Tiles with live numbers: Free RAM, Sleep timer, Keep watching ([Live widgets](home-tiles.md)) |
 | Scenes & shortcuts | Apps' shortcuts (a VTV1 channel…) and your [scenes](scenes.md) |
 
-1. On the grid press the **＋ Add** tile (or TV tab → Customize → **Add to home screen**).
+1. On the grid press the **＋ Add** tile (or TV tab → Customize → Look → **Add to home screen**).
 2. Pinned shortcuts (VTV1...) show with a check mark: press to unpin or pin again. One already on says **Added**; a press goes to it. A new item lands at the end of the grid, ready to move.
 3. Remove: hold OK on a tile → **On the home screen** → **Remove from the grid**. A shortcut stays gone, its system pin too.
 

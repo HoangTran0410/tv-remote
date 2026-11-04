@@ -496,7 +496,7 @@ Chọn nhiều hình rồi đặt **Đổi hình nền** (30 phút → mỗi l�
 | Trên TV Home | Là gì |
 | --- | --- |
 | Thanh trên cùng | Hai nút: **Mạng** (trạng thái) và **Cài đặt** = [Cài đặt nhanh](#home-control), nơi có Nguồn vào và các nút Tắt nguồn / Khởi động lại / Tắt màn hình / Chế độ chờ. |
-| Tùy chỉnh | Danh sách nhóm, OK để vào từng nhóm: **Chủ đề**, Hình nền, **Giao diện** (gồm bố cục), Widget, **Hệ thống** (màn chờ, **Màn hình chính**), **Phím & khởi động**, Ngôn ngữ. |
+| Tùy chỉnh | Danh sách nhóm, OK để vào từng nhóm: **Chủ đề**, Hình nền, **Giao diện** (cả bố cục), Widget, **Màn chờ**, **Phím & khởi động**, **Hệ thống** (**Màn hình chính**, Ngôn ngữ). |
 | Màn hình chính | Trong **Hệ thống**: mở bộ chọn launcher của TV Setup để đổi sang launcher khác (cần TV Setup) |
 | Phím & khởi động | Phím remote mở app, app tự mở khi bật TV |
 
@@ -589,7 +589,7 @@ Một bảng cho mọi thứ ghim được lên lưới, kể cả hàng Xem ti�
 | Live widget | Ô có số liệu thật: Dọn RAM, Hẹn giờ tắt, Xem tiếp kênh ([Live widget](#home-tiles)) |
 | Cảnh & lối tắt | Lối tắt của app (kênh VTV1…) và [cảnh](#scenes) của bạn |
 
-1. Trên lưới, bấm ô **＋ Thêm** (hoặc tab TV → Tùy chỉnh → **Thêm vào màn hình chính**).
+1. Trên lưới, bấm ô **＋ Thêm** (hoặc tab TV → Tùy chỉnh → Giao diện → **Thêm vào màn hình chính**).
 2. Lối tắt đã ghim (VTV1...) hiện có dấu tích: bấm để gỡ hoặc ghim lại. Cái đã có ghi **Đã thêm**: bấm là tới nó. Mục mới nằm cuối lưới, chọn sẵn để di chuyển.
 3. Gỡ: giữ OK trên ô → **Trên màn hình chính** → **Bỏ khỏi màn hình chính**. Lối tắt gỡ là gỡ hẳn, kể cả ghim của hệ thống.
 
@@ -602,7 +602,7 @@ Một bảng cho mọi thứ ghim được lên lưới, kể cả hàng Xem ti�
 
 ## Thư mục trên lưới
 
-Gom vài ô (app, lối tắt, widget) vào một ô thư mục (hiện 4 biểu tượng nhỏ và tên). Sửa được ngay trên TV hoặc ở tab TV → Tùy chỉnh → Thư mục.
+Gom vài ô (app, lối tắt, widget) vào một ô thư mục (hiện 4 biểu tượng nhỏ và tên). Sửa được ngay trên TV hoặc ở tab TV → Tùy chỉnh → Giao diện → Thư mục.
 
 1. Giữ OK trên một app, lối tắt hay widget → **Trên màn hình chính** → **Cho vào thư mục**: chọn thư mục có sẵn hoặc **Thư mục mới** rồi đặt tên.
 2. OK trên thư mục mở một bảng các ô của nó; Back đóng. Mỗi app trong đó vẫn có menu riêng, có **Đưa ra khỏi thư mục**, chuyển sang thư mục khác, **Di chuyển** (mũi tên, OK lưu).
@@ -654,9 +654,9 @@ Hai tùy chọn cho nền của TV Home, tính trên TV, không cần mạng.
 
 1. Chọn nền **Bầu trời** (Tùy chỉnh → Hình nền): trời đổi từ đêm sang bình minh, ban ngày, hoàng hôn theo giờ mặt trời mọc, lặn.
 2. Nơi tính lấy từ widget Thời tiết, không có thì theo múi giờ. Tính ngay trên TV, không cần mạng, vài phút vẽ lại một lần.
-3. Màn OLED: chọn nền **Đen**, rồi bật **Nhích nhẹ màn hình mỗi phút** (Tùy chỉnh → Giao diện). Mặc định tắt.
+3. Màn OLED: chọn nền **Đen**, rồi bật **Nhích nhẹ màn hình mỗi phút** (Tùy chỉnh → Màn chờ). Mặc định tắt.
 4. Cả màn hình chính dịch 1 dp mỗi phút trong ô vuông 6 dp, không thấy giật; hình nền đứng yên.
-5. Màn chờ tối đen ban đêm (Tùy chỉnh → Hệ thống): bật, rồi chọn **Từ** và **Đến**, mỗi bước 30 phút (trên TV: OK hoặc Phải). Trong giờ đó chỉ còn màn đen. Mặc định tắt.
+5. Màn chờ tối đen ban đêm (Tùy chỉnh → Màn chờ): bật, rồi chọn **Từ** và **Đến**, mỗi bước 30 phút (trên TV: OK hoặc Phải). Trong giờ đó chỉ còn màn đen. Mặc định tắt.
 
 ## Cài đặt nhanh (TV Home)
 

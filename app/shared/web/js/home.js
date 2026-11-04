@@ -1051,22 +1051,24 @@ async function homeOpen() {
       hOnline, wOnline, pageBox, webHead, webLine, webModeHead, webMode, webEveryHead, webEvery, webKeep, webModeNote, sugHead, sugBox, sugNote,
       hVideos, videoAct, vstate, vperf, wVideos, vFold, vnote, file, vfile,
       hScenes, wScenes, hColours, walls, ownHead, ownStops, ownDirHead, ownDir, ownNote]],
-    ['look', 'sparkle', 180, 'home.g_look', [sect('home.sec_show', focusHead, focus, motionHead, motion, check(anim, 'home.anim'), check(clock, 'home.clock24')),
-      sect('home.sec_head', check(greet, 'home.greet'), gstyleHead, gstyle, gnameLine, gtextLine, gtokens, gtype, hsplit, dstyleHead, dstyle, dtextLine, dtokens, dtype),
+    ['look', 'sparkle', 180, 'home.g_look', [
+      sect('home.sec_head', check(clock, 'home.clock24'), check(greet, 'home.greet'), gstyleHead, gstyle, gnameLine, gtextLine, gtokens, gtype, hsplit, dstyleHead, dstyle, dtextLine, dtokens, dtype),
       sect(showHead, check(shows.showClock, 'home.show_clock'), check(shows.showDate, 'home.show_date'), check(shows.showNet, 'home.show_net'), check(shows.showGear, 'home.show_gear'),
-        check(shows.showAdd, 'home.show_add'), check(shows.showSuggest, 'home.show_suggest'), check(shows.showWatch, 'home.show_watch'), check(infold, 'home.show_infold'), check(shift, 'home.show_shift'), watchAtHead, watchAt),
-      sect('home.sec_grid', colsHead, cols, check(center, 'home.center'), rowsHead, rowsLine, rowsNote, orderHead, orderBox, foldHead, foldNote, foldBox),
+        check(shows.showAdd, 'home.show_add'), check(shows.showSuggest, 'home.show_suggest'), check(shows.showWatch, 'home.show_watch'), check(infold, 'home.show_infold'), watchAtHead, watchAt),
+      sect('home.sec_motion', check(anim, 'home.anim'), motionHead, motion, focusHead, focus),
+      sect('home.sec_grid', colsHead, cols, check(center, 'home.center'), rowsHead, rowsLine, rowsNote),
+      sect('home.sec_edit', orderHead, orderBox, foldHead, foldNote, foldBox),
       sect(null, tilesHead, tilesNote, addHome, tilesList),
       sect(null, el('div', { className: 'card-head' }, el('h3', { textContent: T('home.hidden') }), addHidden), hidden),
       sect(null, namesHead, names),
       sect(null, picsHead, pics)]],
     ['widgets', 'chart', 210, 'home.g_widgets', [sect(null, wHead, wList, ...wLines), sect(null, packHead, packBox, packNote), sect(null, layHead, lay, layNote, placeHead, placeLine),
       sect(null, feedHead, feedLine, feedList, feedNote), sect(null, noteHead, noteLine), sect(null, qrHead, qrList, qrNote)]],
-    ['system', 'power', 260, 'home.g_system', [sect(null, check(dream, 'home.dream'), dfaceHead, dface, check(ddarkOn, 'home.ddark'), ddarkTimes)]],
+    ['dream', 'moon', 260, 'home.g_dream', [sect(null, check(dream, 'home.dream'), dfaceHead, dface, check(ddarkOn, 'home.ddark'), ddarkTimes, check(shift, 'home.show_shift'))]],
     ['keys', 'keyboard', 230, 'home.keys', [keysOld, check(keyOn, 'home.keys_on'), keysNote, keysList, autoNote, autoAllBox, autoAllNote, check(homebar, 'home.show_homebar')]],
-    ['lang', 'globe', 200, 'home.lang', [langs]],
+    ['system', 'power', 200, 'home.g_system', [langHead, langs]],                 // the TV's System page also has the launcher row (TV Setup's picker): TV only
   ];
-  keysHead.hidden = langHead.hidden = true;                           // the page's own title says it
+  keysHead.hidden = true;                           // the page's own title says it
   const title = el('h2', { textContent: T('home.title') });
   const backBtn = el('button', { type: 'button', className: 'small', textContent: T('common.back'), hidden: true, onclick: () => page ? history.back() : go(null) });
   const subs = {}, rows = {}, pages = {};
@@ -1079,7 +1081,7 @@ async function homeOpen() {
   let at = null;
   function go(k, push = true) {
     const from = at; at = k;
-    menu.hidden = !!k; prev.hidden = ['keys', 'lang', 'system'].includes(k);   // nothing there the home screen shows
+    menu.hidden = !!k; prev.hidden = ['keys', 'dream', 'system'].includes(k);   // nothing there the home screen shows
     for (const [g, v] of Object.entries(pages)) v.hidden = g !== k;
     put(title, 'textContent', k ? T(GROUPS.find((g) => g[0] === k)[3]) : T('home.title'));
     backBtn.hidden = !k;
@@ -1104,10 +1106,10 @@ async function homeOpen() {
       c.colsOk ? T('home.sum_cols', { n: c.cols || 5 }) : '', c.rowsOk ? (c.rows >= 1 ? T('home.sum_rows', { n: c.rows }) : T('home.sum_rows_auto')) : '',
       c.hidden.length ? T('home.sum_hidden', { n: c.hidden.length }) : ''].filter(Boolean).join(' · '));
     put(subs.widgets, 'textContent', c.widgets ? T('home.sum_widgets', { n: c.widgets.length }) : '');
-    put(subs.system, 'textContent', T('home.sum_system', { dream: onOff(!!c.dream) }));
+    put(subs.dream, 'textContent', onOff(!!c.dream));
     put(subs.keys, 'textContent', T('home.sum_keys', { keys: onOff(!!c.keyon), auto: onOff(!!c.autoon) }));
-    put(subs.lang, 'textContent', LANGS[c.lang] || T('home.lang_tv'));
-    rows.lang.hidden = c.lang === undefined;                        // a TV Home older than the choice
+    put(subs.system, 'textContent', LANGS[c.lang] || T('home.lang_tv'));
+    rows.system.hidden = c.lang === undefined;                        // a TV Home older than the choice
     rows.widgets.hidden = !c.widgets;
   }
   const d = el('dialog', { className: 'ask homeask' + (page ? ' page' : '') }, el('div', { className: 'card' },

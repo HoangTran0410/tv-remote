@@ -1,6 +1,6 @@
 # Folders on the grid
 
-Put several tiles (apps, shortcuts, live widgets) in one folder tile (4 small icons and its name). Edit it on the TV or in the TV tab → Customize → Folders.
+Put several tiles (apps, shortcuts, live widgets) in one folder tile (4 small icons and its name). Edit it on the TV or in the TV tab → Customize → Look → Folders.
 
 1. Hold OK on an app, shortcut or live widget → **On the home screen** → **Put in a folder**: pick a folder or **New folder** and name it.
 2. OK on the folder opens a panel of its tiles; Back closes it. Each tile keeps its own menu, with **Take out of the folder**, move to another folder, **Move** (arrows, OK saves).

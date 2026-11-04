@@ -496,7 +496,7 @@ Pick several; **Change background** rotates them.
 | On TV Home | What it is |
 | --- | --- |
 | Top bar | Two buttons: **Network** (status) and **Settings** = the [Quick settings](#home-control), which holds Inputs and Power off / Restart / Screen off / Standby. |
-| Customize | A list of groups, OK opens each: **Themes**, Background, **Look** (layout too), Widgets, **System** (screensaver, **Home screen**), **Keys & startup**, Language. |
+| Customize | A list of groups, OK opens each: **Themes**, Background, **Look** (layout too), Widgets, **Screensaver**, **Keys & startup**, **System** (**Home screen**, Language). |
 | Home screen | In **System**: opens TV Setup's launcher picker to switch to another launcher (needs TV Setup) |
 | Keys & startup | Remote keys that open apps, an app at power-on |
 
@@ -589,7 +589,7 @@ One panel for all you can pin to the grid, the Play Next row and apps left out a
 | Live widgets | Tiles with live numbers: Free RAM, Sleep timer, Keep watching ([Live widgets](#home-tiles)) |
 | Scenes & shortcuts | Apps' shortcuts (a VTV1 channel…) and your [scenes](#scenes) |
 
-1. On the grid press the **＋ Add** tile (or TV tab → Customize → **Add to home screen**).
+1. On the grid press the **＋ Add** tile (or TV tab → Customize → Look → **Add to home screen**).
 2. Pinned shortcuts (VTV1...) show with a check mark: press to unpin or pin again. One already on says **Added**; a press goes to it. A new item lands at the end of the grid, ready to move.
 3. Remove: hold OK on a tile → **On the home screen** → **Remove from the grid**. A shortcut stays gone, its system pin too.
 
@@ -602,7 +602,7 @@ One panel for all you can pin to the grid, the Play Next row and apps left out a
 
 ## Folders on the grid
 
-Put several tiles (apps, shortcuts, live widgets) in one folder tile (4 small icons and its name). Edit it on the TV or in the TV tab → Customize → Folders.
+Put several tiles (apps, shortcuts, live widgets) in one folder tile (4 small icons and its name). Edit it on the TV or in the TV tab → Customize → Look → Folders.
 
 1. Hold OK on an app, shortcut or live widget → **On the home screen** → **Put in a folder**: pick a folder or **New folder** and name it.
 2. OK on the folder opens a panel of its tiles; Back closes it. Each tile keeps its own menu, with **Take out of the folder**, move to another folder, **Move** (arrows, OK saves).
@@ -654,9 +654,9 @@ Two options for TV Home's look, worked out on the TV with no network.
 
 1. Pick the **Sun sky** background (Customize → Background): the sky goes from night to dawn, day and dusk with the sun.
 2. The place is the Weather widget's, else the time zone. Worked out on the TV, no network, repainted every few minutes.
-3. OLED screen: pick the **Black** background, then turn on **Move the screen a little every minute** (Customize → Look). Off by default.
+3. OLED screen: pick the **Black** background, then turn on **Move the screen a little every minute** (Customize → Screensaver). Off by default.
 4. The whole home screen moves 1 dp a minute inside a 6 dp square, with no visible jump; the wallpaper stays.
-5. Black screensaver at night (Customize → System): turn it on, then set **From** and **To** in 30-minute steps (OK or Right on the TV). Inside them, a plain black screen. Off by default.
+5. Black screensaver at night (Customize → Screensaver): turn it on, then set **From** and **To** in 30-minute steps (OK or Right on the TV). Inside them, a plain black screen. Off by default.
 
 ## Quick settings (TV Home)
 
