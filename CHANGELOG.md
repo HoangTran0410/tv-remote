@@ -4,6 +4,11 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- Safer API: deleting, renaming or installing a file needs its path (an empty request no longer deletes the Download folder); an APK whose package name is not a real name is refused before any command uses it; the launcher actions answer only POST; TV Setup's API answers only its own page (not another page on the same TV, such as a web game).
+- Fixes: a job that hits a memory error ends instead of showing "running" for ever; a photo upload cut short is not set as the background; an empty request does not switch the anonymous stats on.
+
 ## 0.44.1 - 2026-11-04
 
 Web 0.44.1 · Phone app 0.41.1 · TV app 0.42.1 · TV Home 0.26.1 · TV Channels 0.18.3 · TV Games 0.19.1 · TV Apps 0.4.1
