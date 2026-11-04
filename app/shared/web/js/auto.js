@@ -499,7 +499,7 @@ let editing = null, draft = [];
 function editScene(sc) {
   editing = sc; draft = sc ? JSON.parse(JSON.stringify(sc.steps)) : [];
   put('#scenetitle', 'textContent', T(sc ? 'auto.scene_edit_title' : 'auto.scene_new_title'));
-  $('#scenename').value = sc ? sc.name : ''; $('#sceneicon').value = sc ? sc.icon || '' : '';
+  $('#scenename').value = sc ? sc.name : ''; $('#sceneicon').value = sc ? sc.icon || '' : ''; $('#scenesay').value = sc && sc.say ? sc.say.join(', ') : '';
   put('#scenedel', 'hidden', !sc);
   $('#scenetpl').replaceChildren(...(sc ? [] : [el('span', { className: 'muted', textContent: T('auto.examples') }), ...TEMPLATES.map((t) => el('button', { className: 'small', textContent: t.icon + ' ' + t.name, onclick: () => {
     $('#scenename').value = t.name; $('#sceneicon').value = t.icon; draft = JSON.parse(JSON.stringify(t.steps)); drawSteps();
@@ -575,7 +575,8 @@ function draftScene() {
   const name = $('#scenename').value.trim();
   if (!name) { toast(T('auto.name_scene')); $('#scenename').focus(); return null; }
   if (!draft.length) { toast(T('auto.add_step')); return null; }
-  return { id: editing ? editing.id : 's' + Date.now().toString(36), name, icon: $('#sceneicon').value.trim(), steps: draft };
+  const say = $('#scenesay').value.split(',').map((x) => x.trim()).filter(Boolean).slice(0, 5);   // "Câu gọi": the server drops empties and repeats (Scenes.phrases)
+  return { id: editing ? editing.id : 's' + Date.now().toString(36), name, icon: $('#sceneicon').value.trim(), ...(say.length ? { say } : {}), steps: draft };
 }
 $('#scenesave').addEventListener('click', async () => {
   const sc = draftScene(); if (!sc) return;
@@ -671,6 +672,18 @@ async function loadVoicePins() {
   const h = await api('/api/home', null, true);
   if (host === (curHost || '-')) PINS = ((h && h.installed && h.config && h.config.pinned) || []).filter((x) => x && x.key && x.title);
 }
+// The apps picked for voice (TV Setup's rules voice_search / voice_youtube), asked at most every 5 minutes and only when "Ask the TV" is used;
+// an older TV Setup has neither and the answer stays {}: today's behaviour. tvset.js sets voicePrefsAt = 0 after a change.
+let VOICE_PREFS = {}, voicePrefsAt = 0, voicePrefsHost = null;
+async function loadVoicePrefs() {
+  const host = curHost || '-';
+  if (voicePrefsHost === host && Date.now() - voicePrefsAt < 300000) return;
+  voicePrefsHost = host; voicePrefsAt = Date.now(); VOICE_PREFS = {};
+  if (ADB.state !== 'ready') { voicePrefsAt = 0; return; }
+  const r = await api('/api/rules', null, true);
+  if (host === (curHost || '-') && r) VOICE_PREFS = { search: r.voice_search || '', youtube: r.voice_youtube || '' };
+}
+const forgetVoicePrefs = () => { voicePrefsAt = 0; };               // tvset.js: the picks changed, ask again at the next sentence
 const voiceApps = () => [...META.entries()].filter(([, m]) => m && m.label).map(([pkg, m]) => ({ pkg, name: m.label }));
 
 setInterval(() => { if (currentTab === 'auto' && !document.hidden && !stopped && ADB.state === 'ready') loadRules(null, true); }, 20000);

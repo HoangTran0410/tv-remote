@@ -13,6 +13,7 @@ The **Ask the TV: open YouTube** box (in **⌨️ Keyboard**) understands plain 
 | turn off · turn on | Power. |
 | sleep in 30 · cancel the timer | Sleep timer. |
 | open channel BBC News · next channel | Opens it in [TV Channels](channels.md). |
+| search cats · YouTube | Opens and searches in the app picked at Setup → Remote buttons → Voice commands (SmartTube, YouTube; TizenTube only opens). Also picks which app “YouTube” is. Default unchanged. |
 | a scene's name | Runs that scene. |
 
 > 💡 Anything else goes to the Assistant or a YouTube search.

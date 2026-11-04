@@ -37,6 +37,23 @@ class VoiceTest {
         for (i in 0 until cases.length()) { val c = cases.getJSONArray(i); assertEquals(c.getString(0), c.getString(1), show(Voice.parse(c.getString(0), a, sc, pins))) }
     }
 
+    /** tests/voice_picks_cases.json is read by voice.test.js too: the apps picked for "tìm X" / "YouTube" and a scene's own phrases. */
+    @Test fun picksTable() {
+        val t = JSONObject(File("tests/voice_picks_cases.json").readText())
+        val gs = t.getJSONArray("groups")
+        for (g in 0 until gs.length()) {
+            val o = gs.getJSONObject(g)
+            val a = o.getJSONObject("apps").let { x -> x.keys().asSequence().associateWith { x.getString(it) } }
+            val sj = o.getJSONObject("scenes")
+            val sc = sj.keys().asSequence().associateWith { sj.getJSONArray(it).getString(0) }
+            val say = sj.keys().asSequence().associateWith { k -> sj.getJSONArray(k).getJSONArray(1).let { l -> (0 until l.length()).map { l.getString(it) } } }
+            val pj = o.getJSONObject("prefs")
+            val prefs = Voice.Prefs(pj.optString("search"), pj.optString("youtube"))
+            val cases = o.getJSONArray("cases")
+            for (i in 0 until cases.length()) { val c = cases.getJSONArray(i); assertEquals(o.getString("name") + ": " + c.getString(0), c.getString(1), show(Voice.parse(c.getString(0), a, sc, emptyList(), say, prefs))) }
+        }
+    }
+
     @Test fun closeNeedsAdbSaidInThePreview() {
         assertEquals(Voice.Say("talk.close_app", mapOf("name" to "YouTube")), Voice.preview("tắt youtube", apps, scenes)!!.say)
         assertEquals(Voice.Say("talk.close_needs_adb", mapOf("name" to "YouTube")), Voice.preview("tắt youtube", apps, scenes, adb = false)!!.say)

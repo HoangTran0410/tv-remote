@@ -20,4 +20,6 @@ Chạy cảnh từ **Thêm phím → Cảnh**, bằng giọng nói (nói tên c�
 
 **📌 Thêm vào TV Home** (trong cảnh): cảnh thành một ô trên TV Home, cũng có trong ＋ Thêm → **Cảnh & lối tắt**. Cần TV Setup mới.
 
+**Câu gọi:** điền tối đa 5 câu, cách nhau dấu phẩy; nói hoặc gõ đúng câu là cảnh chạy.
+
 Sao lưu: **⬇️ Xuất file sao lưu** và **⬆️ Nhập từ file**.

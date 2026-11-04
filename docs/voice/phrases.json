@@ -1,7 +1,7 @@
 {
   "v": 1,
-  "rev": 6,
-  "about": "Words of the spoken commands (Voice.kt, js/voice.js). What each KEY / verb DOES is code; the words are here. Accents and case do not matter (folded), 'tivi' and 'ti vi' read as 'tv'. Signed: dev/sign/sign_voice.py.",
+  "rev": 7,
+  "about": "Words of the spoken commands (Voice.kt, js/voice.js). What each KEY / verb DOES is code; the words are here. Accents and case do not matter (folded), 'tivi' and 'ti vi' read as 'tv'. Signed: dev/sign/sign_voice.py. An app with tube: a YouTube client the person may pick for 'YouTube' (main = the word YouTube, alt = another); its search link, when it has one, is what 'X on it' and 'search X' open.",
   "never_close": [
     "dev.tvremote.setup",
     "dev.tvremote.setup.keys",
@@ -29,7 +29,40 @@
         "diu tup",
         "youtube tv"
       ],
-      "search": "https://www.youtube.com/results?search_query={q}"
+      "search": "https://www.youtube.com/results?search_query={q}",
+      "tube": "main"
+    },
+    {
+      "label": "SmartTube",
+      "pkgs": [
+        "org.smarttube.stable",
+        "com.liskovsoft.smarttubetv",
+        "com.liskovsoft.smarttubetv.beta",
+        "org.smarttube.beta"
+      ],
+      "names": [
+        "smarttube",
+        "smart tube",
+        "smat tube",
+        "sma tup",
+        "smat tup"
+      ],
+      "search": "https://www.youtube.com/results?search_query={q}",
+      "tube": "alt"
+    },
+    {
+      "label": "TizenTube",
+      "pkgs": [
+        "io.gh.reisxd.tizentube.cobalt",
+        "dev.cobalt.youtube"
+      ],
+      "names": [
+        "tizentube",
+        "tizen tube",
+        "ti zen tube",
+        "tizen tup"
+      ],
+      "tube": "alt"
     },
     {
       "label": "Netflix",
@@ -604,6 +637,15 @@
           "tro nang",
           "ho tro tiep can"
         ]
+      },
+      "search": {
+        "verbs": [
+          "tim kiem",
+          "tim",
+          "tra cuu",
+          "search",
+          "tim giup"
+        ]
       }
     },
     "en": {
@@ -934,6 +976,15 @@
           "accessibility",
           "accessibility settings"
         ]
+      },
+      "search": {
+        "verbs": [
+          "search for",
+          "search",
+          "find",
+          "look up",
+          "look for"
+        ]
       }
     }
   },
@@ -1079,7 +1130,10 @@
         "tram": "trăm",
         "linh": "linh",
         "le": "lẻ",
-        "mot": "một|mốt"
+        "mot": "một|mốt",
+        "tim": "tìm",
+        "kiem": "kiếm",
+        "cuu": "cứu"
       },
       "spell": [
         "vtv",

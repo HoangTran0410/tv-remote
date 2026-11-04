@@ -84,6 +84,20 @@ An older TV Setup: the page asks to update first (`setupFor('mic_offline')`). No
 
 TV Setup's More TV apps row also shows TV Setup Voice (not in `Bundle.apps`, which installs by itself): OK opens `VoiceActivity`.
 
+## Which app "search" and "YouTube" mean, and a scene's own phrases (`Voice.Prefs`, `Scenes.sayings`)
+
+| Case | What happens |
+|---|---|
+| nothing picked (rules `voice_search`, `voice_youtube` empty) | as before: "tìm X" is null (the TV's own search), "YouTube" is the YouTube app |
+| `voice_search` = an installed app | a bare "tìm / search / find X" (`search.verbs` in the signed list) is a search in that app: SmartTube takes the youtube.com/results?search_query= link; TizenTube has no search link, so it is only opened (the page says so); a channel name still wins ("tìm vtv3") |
+| `voice_search` / `voice_youtube` names an app no longer installed | ignored: today's behaviour |
+| `voice_youtube` = SmartTube / TizenTube | "mở / tắt youtube" and "X trên youtube" use that app (alias `tube: main`); "mở smarttube" still opens SmartTube |
+| a scene has `say` phrases | matched first, accents and case folded, before the built-in commands; exact phrase only; `Scenes.clean` keeps at most 5 (`MAX_SAY`) |
+| TV Setup's offline mic | `MicVoice.words` adds the phrases to the Vosk grammar (the free text of a bare search is heard only when its words are in it); only scenes saved in TV Setup's own list are known there |
+| an older TV Setup | no `voice_tubes` in the state: the page shows no picker |
+
+Cases: `app/shared/tests/voice_picks_cases.json` (page and phone). Clients read the picks from `/api/rules` (`loadVoicePrefs` in `auto.js`, `warmAppNames` on the phone).
+
 ## Checking it
 
 `adb logcat -s MicVoice` prints `engine own` / `engine offline`, `network: offline`, `stall: again`. Without a microphone:

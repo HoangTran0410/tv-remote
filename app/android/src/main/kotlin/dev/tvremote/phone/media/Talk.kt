@@ -88,6 +88,7 @@ internal class Talk(private val a: MainActivity) {
     private var fake = false                                       // debug hook: results injected, no recognizer
     private var offline = false
     private var scenes: Map<String, String> = emptyMap()
+    private var sayings: Map<String, List<String>> = emptyMap()      // each scene's own phrases ("Câu gọi")
     private val release = Runnable { rec?.destroy(); rec = null }
 
     // ------------------------------------------------------------ open / close
@@ -102,6 +103,7 @@ internal class Talk(private val a: MainActivity) {
         if (!SpeechRecognizer.isRecognitionAvailable(a) && !debuggable()) { a.speak(); return }   // no speech service: the old way
         h.removeCallbacks(release)
         scenes = SceneStore.list(a).associate { it.optString("id") to it.optString("name") }
+        sayings = dev.tvremote.core.scenes.Scenes.sayings(org.json.JSONArray(SceneStore.list(a)))
         a.warmAppNames()                                           // the TV's app names, once per TV, so "mở <app>" previews at once
         val v = build()
         overlay = v
@@ -219,7 +221,7 @@ internal class Talk(private val a: MainActivity) {
         end()
         if (sentence.isBlank()) { say(T("talk.heard_nothing")); return }
         liveText("“${sentence.trim()}”", true)
-        Voice.preview(sentence, a.appNames, scenes, a.tv?.ready() == true, a.voicePins)?.let { listPlans(listOf(it), true) }
+        Voice.preview(sentence, a.appNames, scenes, a.tv?.ready() == true, a.voicePins, sayings)?.let { listPlans(listOf(it), true) }
         state?.text = T("talk.sent", "sentence" to sentence.trim())
         a.buzz()
         a.voice(sentence)
@@ -244,7 +246,7 @@ internal class Talk(private val a: MainActivity) {
 
     private fun show() {
         if (lastPartial.isBlank()) liveText(T("talk.listening"), false) else liveText(lastPartial, true)
-        val ps = alternatives.distinct().take(3).mapNotNull { Voice.preview(it, a.appNames, scenes, a.tv?.ready() == true, a.voicePins) }.distinctBy { it.say }
+        val ps = alternatives.distinct().take(3).mapNotNull { Voice.preview(it, a.appNames, scenes, a.tv?.ready() == true, a.voicePins, sayings) }.distinctBy { it.say }
         listPlans(ps, false)
     }
 
@@ -385,7 +387,9 @@ internal fun MainActivity.warmAppNames(then: (() -> Unit)? = null) {
         val link = dev.tvremote.core.adb.AdbLink(filesDir, ip)
         val names = try { dev.tvremote.core.ontv.RemoteLabels(link, { assets.open("tvr-helper.jar").use { it.readBytes() } }).names() } catch (e: Exception) { emptyMap() } finally { link.close() }
         val pins = try { dev.tvremote.core.ontv.Home.ownPins { tv.shell(it) } } catch (e: Exception) { emptyList() }   // TV Home's pinned tiles, said by name like apps
-        ui.post { if (!isFinishing && host == ip) { appNames = names; appNamesFor = ip; voicePins = pins; voicePinsAt = System.currentTimeMillis() }; then?.invoke() }
+        // the apps picked for "tìm X" and "YouTube" (TV Setup's rules); an older TV Setup answers without them: today's behaviour
+        val picks = try { dev.tvremote.core.ontv.RulesClient.call({ tv.shell(it) }, null).let { Voice.Prefs(it.optString("voice_search"), it.optString("voice_youtube")) } } catch (e: Exception) { Voice.Prefs() }
+        ui.post { if (!isFinishing && host == ip) { appNames = names; appNamesFor = ip; voicePins = pins; Voice.prefs = picks; voicePinsAt = System.currentTimeMillis() }; then?.invoke() }
     }.start()
 }
 

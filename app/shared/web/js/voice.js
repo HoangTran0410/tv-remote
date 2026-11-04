@@ -41,8 +41,9 @@
       channel: new RegExp('^(?:(?:' + alt(all('channel', 'verbs')) + ') )?(?:' + alt(all('channel', 'words')) + ') (.+)$'),
       channelNames: new RegExp('^(?:' + (list.channel_names || []).join('|') + ')$'),
       neverClose: new Set(list.never_close || []),
-      apps: (list.apps || []).map((a) => ({ label: a.label, pkgs: a.pkgs || [], names: new Set(words(a.names)), search: a.search || null })),
+      apps: (list.apps || []).map((a) => ({ label: a.label, pkgs: a.pkgs || [], names: new Set(words(a.names)), search: a.search || null, tube: a.tube || null })),
       settings: list.settings || {}, settingWords: settingWords(langs, list.settings || {}),     // a Settings page by the list's id: "wifi", "bluetooth"
+      searchBare: all('search', 'verbs').length ? new RegExp('^(?:' + alt(all('search', 'verbs')) + ') (.+)$') : null,   // "tìm X": X searched in the app picked (prefs.search)
       connect: all('connect').length ? new RegExp('^(.+) (?:' + alt(all('connect')) + ') (.+)$') : null,   // "X on Y": X and Y, split at the last connector
     };
     compiled.set(list, c);
@@ -62,8 +63,9 @@
   }
 
   // an app called [want]: its alias in the list (a package the TV has), else the installed names, loosely
-  function findApp(want, apps, c, loose) {
+  function findApp(want, apps, c, loose, prefs) {
     const alias = c.apps.find((a) => a.names.has(want));
+    if (alias && alias.tube === 'main' && prefs && prefs.youtube) { const own = (apps || []).find((a) => a.pkg === prefs.youtube); if (own) return { pkg: own.pkg, name: own.name }; }   // "YouTube" means the client the person picked
     const named = (apps || []).map((a) => ({ a, n: fold(a.name) })).filter((x) => x.n);
     const fuzzy = (w) => {
       const hit = named.find((x) => x.n === w) || named.find((x) => x.n.startsWith(w) || w.startsWith(x.n + ' '))
@@ -84,17 +86,24 @@
   }
 
   // "<open verb>? X <connector> Y" with Y an app (an alias, or an installed name in full) and X more than that app: X is looked up inside Y
-  function searchIn(text, s, apps, c) {
+  function searchIn(text, s, apps, c, prefs) {
     if (!c.connect) return null;
     const o = c.open.exec(s), m = c.connect.exec(o ? o[1] : s);
     if (!m) return null;
-    const known = (w) => findApp(w, apps, c, false) || (apps || []).filter((a) => fold(a.name) === w).map((a) => ({ pkg: a.pkg, name: a.name }))[0] || null;
+    const x = c.searchBare && c.searchBare.exec(m[1]) ? c.searchBare.exec(m[1])[1] : m[1];   // "tìm sơn tùng trên youtube": the search word is not part of the query
+    const known = (w) => findApp(w, apps, c, false, prefs) || (apps || []).filter((a) => fold(a.name) === w).map((a) => ({ pkg: a.pkg, name: a.name }))[0] || null;
     const target = known(m[2]);
     if (!target) return null;
-    const kx = known(m[1]);
+    const kx = known(x);
     if (kx && kx.pkg === target.pkg) return null;                   // "mở youtube trên youtube"
-    const query = spelled(text, m[1]), alias = c.apps.find((a) => a.names.has(m[2]));
-    return { kind: 'search', pkg: target.pkg, name: target.name, query, url: alias && alias.search ? alias.search.replace('{q}', encodeURIComponent(query)) : null };
+    return searchCommand(target, spelled(text, x), c.apps.find((a) => a.pkgs.includes(target.pkg)) || c.apps.find((a) => a.names.has(m[2])));
+  }
+  // [query] in [target]: the web search of the alias that owns it, null when it has none (the app can then only be opened)
+  const searchCommand = (target, query, alias) => ({ kind: 'search', pkg: target.pkg, name: target.name, query, url: alias && alias.search ? alias.search.replace('{q}', encodeURIComponent(query)) : null });
+  // "tìm X" with no app said, when the person picked one to search in (prefs.search, among the apps); else null: the TV's own search
+  function bareSearch(text, s, apps, c, prefs) {
+    const own = prefs && prefs.search && (apps || []).find((a) => a.pkg === prefs.search), m = own && c.searchBare && c.searchBare.exec(s);
+    return m ? searchCommand({ pkg: own.pkg, name: own.name }, spelled(text, m[1]), c.apps.find((a) => a.pkgs.includes(own.pkg))) : null;
   }
   // what [want] names among the installed apps and the pins ([{key, title, app, link}]), best match only. Quality: 0 the whole name, 1 a start of it,
   // 2 [want] inside the name, 3 the name inside [want]. One target at the best quality: it. A pin named like an app that matched too: the app.
@@ -146,7 +155,7 @@
 
   // apps: [{pkg, name}]; scenes: [{id, name}]; list: the phrases (default: the app's, read once); pins: TV Home's pinned tiles [{key, title, app, link}].
   // Returns what to do, or null for "ask the Assistant".
-  function voiceCommand(text, apps, scenes, list, pins) {
+  function voiceCommand(text, apps, scenes, list, pins, prefs) {
     const raw = fold(text);
     if (!raw) return null;
     const scene = (scenes || []).find((x) => fold(x.name) === raw || fold('canh ' + x.name) === raw || fold('scene ' + x.name) === raw);
@@ -154,6 +163,8 @@
     list = list || phrases();
     if (!list) return null;
     const c = compile(list), s = strip(norm(text), c);
+    const said = (scenes || []).find((x) => (x.say || []).some((p) => { const n = norm(p); return n && (n === norm(text) || n === s); }));   // a scene's own phrases ("Câu gọi"): theirs win over the built-in commands
+    if (said) return { kind: 'scene', scene: said };
     if (c.keys.has(s)) return { kind: 'key', key: c.keys.get(s), times: 1 };
     let m = c.volUp.exec(s);
     if (m) return { kind: 'key', key: 'VOL_UP', times: Math.min(+(m[1] || 3), 15) };
@@ -163,11 +174,11 @@
     m = c.timerSet.exec(s);
     if (m) return { kind: 'timer', min: Math.min(+m[1] * (c.hours.has(m[2] || '') ? 60 : 1), 720) };
     m = c.close.exec(s);
-    if (m) { const hit = findApp(m[1], apps, c, true); if (hit && !c.neverClose.has(hit.pkg)) return { kind: 'close', pkg: hit.pkg, name: hit.name }; }
-    const found = searchIn(text, s, apps, c);
+    if (m) { const hit = findApp(m[1], apps, c, true, prefs); if (hit && !c.neverClose.has(hit.pkg)) return { kind: 'close', pkg: hit.pkg, name: hit.name }; }
+    const found = searchIn(text, s, apps, c, prefs);
     if (found) return found;
     const o = c.open.exec(s), verb = o ? o[1] : null, want = verb == null ? s : verb;
-    let hit = findApp(want, apps, c, false);
+    let hit = findApp(want, apps, c, false, prefs);
     if (hit) return { kind: 'app', pkg: hit.pkg, name: hit.name };
     // a name said in full: an installed app (after "open" only: a bare word is not asked to open anything), else a pin; this before the channels, a tile the person named "VTV3" is theirs
     const whole = best(want, apps, pins, true, verb != null);
@@ -181,16 +192,16 @@
     if (c.channelNames.test(want)) return { kind: 'channel', name: chName(want) };
     m = c.tune.exec(s);
     if (m) return { kind: 'channel', name: m[1] };
-    if (verb != null) return best(verb, apps, pins, false, true);
-    return null;
+    if (verb != null) { const b = best(verb, apps, pins, false, true); if (b) return b; }
+    return bareSearch(text, s, apps, c, prefs);                      // last: "tìm vtv3" is a channel first, then a search in the app picked
   }
 
   // True when the sentence asks to open or close something: the phone then asks the TV for its app names first
-  function wantsApp(text, list) {
+  function wantsApp(text, list, prefs) {
     list = list || phrases();
     if (!list) return false;
     const c = compile(list), s = strip(norm(text), c);
-    return c.open.test(s) || c.close.test(s);
+    return c.open.test(s) || c.close.test(s) || !!(prefs && prefs.search && c.searchBare && c.searchBare.test(s));
   }
 
   // the list the app serves, read once and kept (a page reload takes a new one)

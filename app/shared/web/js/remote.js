@@ -259,8 +259,9 @@ document.addEventListener('paste', (e) => {                           // Cmd+V a
 // ---------- ask the TV: typed or spoken here; what is not a command is looked up on YouTube (else the TV's search) ----------
 async function askTv(q) {
   q = q.trim(); if (!q) return;
-  if (voiceWantsApp(q)) await loadVoicePins();                         // "mở <a tile on TV Home>": its pinned tiles are named first
-  const c = voiceCommand(q, voiceApps(), SCENES, null, voicePins());                     // "mở YouTube", "tắt tiếng", a scene's name...: done here, at once (voice.js)
+  await loadVoicePrefs();                                              // the apps picked for "tìm X" and "YouTube" (TV Setup's rules; none: today's behaviour)
+  if (voiceWantsApp(q, null, VOICE_PREFS)) await loadVoicePins();      // "mở <a tile on TV Home>": its pinned tiles are named first
+  const c = voiceCommand(q, voiceApps(), SCENES, null, voicePins(), VOICE_PREFS);                   // "mở YouTube", "tắt tiếng", a scene's name...: done here, at once (voice.js)
   if (c) { doCommand(c); return; }
   const r = await api('/api/search', { query: q });
   if (r) { toast(T(r.to === 'youtube' ? 'remote.searching_youtube' : 'remote.sent_to_tv', { q })); setTimeout(refresh, 2500); }

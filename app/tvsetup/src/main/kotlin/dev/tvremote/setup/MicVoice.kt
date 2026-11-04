@@ -124,7 +124,7 @@ object MicVoice {
 
     /** What TV Setup Voice listens for: the commands as said in its model's language, this TV's apps and scenes ([Phrases.spoken]). */
     fun words(c: Context): ArrayList<String> {
-        val more = apps(c).values + scenes(c).values
+        val more = apps(c).values + scenes(c).values + sayings(c).values.flatten()   // a scene's own phrases too: offline, only these words can be heard
         val lang = offline(c)?.let { VoiceProtocol.langOf(c.packageManager, it.packageName) } ?: "vi"   // the add-on that will listen
         val key = ((Voice.phrases?.hashCode() ?: 0) * 31 + more.hashCode()) * 31 + lang.hashCode()
         spoken?.let { (k, w) -> if (k == key) return w }
@@ -384,6 +384,29 @@ object MicVoice {
         } catch (e: Exception) { }
         names = out; namesAt = System.currentTimeMillis()
         try { file(c).writeText(JSONObject(out as Map<*, *>).toString()) } catch (e: Exception) { }
+        return out
+    }
+
+    /** Each scene's extra phrases ("say"), by scene id: what the person typed under "Câu gọi" on the scene. */
+    fun sayings(c: Context): Map<String, List<String>> = try {
+        Scenes.sayings(JSONArray(c.getSharedPreferences("remote", Context.MODE_PRIVATE).getString("scenes", "[]")))
+    } catch (e: Exception) { emptyMap() }
+
+    /** The apps picked for voice (rules "voice_search", "voice_youtube"; "" = today's behaviour). */
+    fun prefs(c: Context): Voice.Prefs = try {
+        Rules.load(c).let { Voice.Prefs(it.optString("voice_search"), it.optString("voice_youtube")) }
+    } catch (e: Exception) { Voice.Prefs() }
+
+    /** YouTube clients on this TV, for the pickers (state "voice_tubes"): [{pkg, name, query, main}]; cheap, a handful of package lookups. */
+    fun tubes(c: Context): JSONArray {
+        dev.tvremote.core.scenes.VoicePhrases.start({ c.assets.open(it) }, c.filesDir)
+        val pm = c.packageManager
+        val have = HashMap<String, String>()
+        for (a in Voice.phrases?.apps.orEmpty()) for (p in a.pkgs) if (a.tube != null) try {
+            if (pm.getLeanbackLaunchIntentForPackage(p) != null || pm.getLaunchIntentForPackage(p) != null) have[p] = pm.getApplicationInfo(p, 0).loadLabel(pm).toString()
+        } catch (e: Exception) { }
+        val out = JSONArray()
+        for (t in Voice.tubes(have)) out.put(JSONObject().put("pkg", t.pkg).put("name", t.name).put("query", t.query).put("main", t.main))
         return out
     }
 

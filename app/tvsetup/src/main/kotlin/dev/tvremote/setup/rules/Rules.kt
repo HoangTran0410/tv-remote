@@ -134,7 +134,9 @@ internal object Rules {
             "mic_free" -> {}                                                // nothing kept: the answer to mic_block (MicVoice.free), run below
             "mic_lang_remove" -> {}                                         // nothing kept: MicVoice.removeLang uninstalls and moves "mic_lang"
             "mic_lang" -> d.optString("lang").takeIf { it in VoiceProtocol.LANGS }?.let { o.put("mic_lang", it) }   // the language TV Setup Voice listens in (MicVoice.lang); a new one is added, not swapped
-            "awake" -> o.put("awake", d.optBoolean("on"))                   // KeepAwake: the chip kept up while the TV is "off"
+            "voice_search" -> o.put("voice_search", d.optString("pkg").takeIf { PKG.matches(it) } ?: "")    // the app a bare "tìm X" searches in ("" = the TV's own search, today); Voice.Prefs
+            "voice_youtube" -> o.put("voice_youtube", d.optString("pkg").takeIf { PKG.matches(it) } ?: "")  // the app the word "YouTube" means ("" = YouTube, today)
+            "awake" -> o.put("awake", d.optBoolean("on"))                  // KeepAwake: the chip kept up while the TV is "off"
             "family" -> {                                              // Family mode's record of what it set (js/family.js): kept here so every phone sees the same; no rec = off
                 val rec = d.optJSONObject("rec")
                 if (rec != null && rec.toString().length <= FAMILY_MAX) o.put("family", rec) else o.remove("family")
@@ -560,7 +562,7 @@ internal object Rules {
             .put("in_bedtime", inBedtime(o, now)).put("snooze_until", o.optLong("snooze_until").let { if (it > now) it else 0L })
             .put("limits", limits).put("volume", o.optJSONArray("volume") ?: JSONArray()).put("volume_now", volumeCap(o, now) ?: JSONObject.NULL)
             .put("ram", ram(o)).put("volume_fixed", Guard.volumeFixed(c)).put("running", RemoteService.isRunning()).put("wanted", active(c))
-            .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("mic_offline", o.optBoolean("mic_offline")).put("mic_secure", dev.tvremote.setup.keys.KeyFix.can(c)).put("mic_engine", o.optString("mic_engine").ifEmpty { "auto" }).put("voice", MicVoice.offlineState(c)).put("mic_lang", MicVoice.lang(c)).put("mic_active", MicVoice.active(c) ?: "").put("mic_langs", JSONArray(MicVoice.installed(c))).put("homekey", o.optString("homekey"))
+            .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("mic_offline", o.optBoolean("mic_offline")).put("mic_secure", dev.tvremote.setup.keys.KeyFix.can(c)).put("mic_engine", o.optString("mic_engine").ifEmpty { "auto" }).put("voice", MicVoice.offlineState(c)).put("mic_lang", MicVoice.lang(c)).put("mic_active", MicVoice.active(c) ?: "").put("mic_langs", JSONArray(MicVoice.installed(c))).put("voice_search", o.optString("voice_search")).put("voice_youtube", o.optString("voice_youtube")).put("voice_tubes", MicVoice.tubes(c)).put("homekey", o.optString("homekey"))
             .put("family", o.optJSONObject("family") ?: JSONObject.NULL)
             .put("keys", KeysBridge.bound())                           // the key filter is up: LauncherSwap.byKey keeps Home only then (issue #9)
             .put("sched", sched)
