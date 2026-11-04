@@ -39,232 +39,243 @@
    "thumb": "https://tvremote.pages.dev/home/vn-t.jpg"
   },
   {
-   "id": "modern",
+   "id": "easy",
    "names": {
-    "vi": "Hiện đại",
-    "en": "Modern"
+    "vi": "Dễ nhìn",
+    "en": "Easy to read"
    },
    "for": {
-    "vi": "Ai cũng dùng được: đồng hồ kim, thời tiết và lịch âm cỡ lớn",
-    "en": "Anyone: analog clock, big weather and lunar cards"
+    "vi": "Người lớn tuổi: đồng hồ số và lịch âm thật to, chỉ 4 ô ứng dụng, nền xanh đậm, thẻ đặc, viền chọn rõ",
+    "en": "Older people: a huge digital clock and lunar date, only 4 big tiles, deep blue, solid cards, a clear ring"
    },
    "tags": [
     "art"
    ],
    "conf": {
-    "wall": "midnight",
-    "shade": 50,
+    "shade": 0,
     "widgets": [
      "clock",
-     "weather",
      "lunar"
     ],
+    "cols": 4,
+    "focus": "ring",
+    "motion": "calm",
+    "greet": true,
+    "wall": "own",
+    "wcol": "0b2a5b,040d20",
+    "wdir": "tb",
     "wsize": {
      "clock": "big",
-     "weather": "big",
      "lunar": "big"
     },
-    "wstyle": {
-     "clock": "minimal",
-     "weather": "glass",
-     "lunar": "glass"
+    "wopt": {
+     "clock": {
+      "face": "digital",
+      "look": "solid"
+     },
+     "lunar": {
+      "look": "solid"
+     }
     },
-    "cols": 5,
-    "focus": "glass",
-    "motion": "calm",
-    "clock24": true,
-    "greet": true
+    "rows": 1,
+    "center": true,
+    "anim": false,
+    "clock24": true
    }
   },
   {
-   "id": "calm",
+   "id": "kids",
    "names": {
-    "vi": "Dịu mắt",
-    "en": "Calm"
+    "vi": "Bé vui",
+    "en": "Kids"
    },
    "for": {
-    "vi": "Xem tối, đọc không chói",
-    "en": "Evenings, easy on the eyes"
+    "vi": "Nhà có trẻ nhỏ: cánh đồng tulip, 4 ô thật to ở giữa màn hình, một đồng hồ to vui mắt, chuyển động vui",
+    "en": "Homes with small children: a tulip field, 4 very big tiles in the middle, one big cheerful clock, playful motion"
    },
    "tags": [
-    "art",
+    "photo",
+    "kids",
+    "nature"
+   ],
+   "conf": {
+    "shade": 10,
+    "widgets": [
+     "clock"
+    ],
+    "cols": 4,
+    "focus": "glass",
+    "motion": "full",
+    "greet": true,
+    "wall": "web",
+    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Ftulips-sunset.jpg",
+    "wsize": {
+     "clock": "big"
+    },
+    "wopt": {
+     "clock": {
+      "face": "modern",
+      "theme": "light",
+      "look": "solid"
+     }
+    },
+    "rows": 0,
+    "center": true
+   },
+   "look": "candy",
+   "src": "Wikimedia Commons, CC BY 2.0 (rboed*): Tulip field in Holland2.jpg",
+   "thumb": "https://tvremote.pages.dev/home/tulips-sunset-t.jpg"
+  },
+  {
+   "id": "cinema",
+   "names": {
+    "vi": "Rạp phim",
+    "en": "Cinema"
+   },
+   "for": {
+    "vi": "Tối xem phim: ghế đỏ rạp hát, không thẻ, một hàng ứng dụng ở giữa như poster",
+    "en": "Movie night: a theatre in red, no cards, one row of apps in the middle like posters"
+   },
+   "tags": [
+    "photo",
     "night"
    ],
    "conf": {
-    "wall": "dusk",
     "shade": 55,
-    "widgets": [
-     "lunar",
-     "clock"
-    ],
-    "wsize": {
-     "clock": "small",
-     "lunar": "small"
-    },
-    "wstyle": {
-     "clock": "light"
-    },
-    "cols": 5,
-    "focus": "glass",
+    "widgets": [],
+    "cols": 6,
+    "focus": "ring",
     "motion": "calm",
-    "greet": true
-   }
+    "greet": false,
+    "wall": "web",
+    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Ftheatre-red.jpg",
+    "rows": 1.2,
+    "center": true
+   },
+   "look": "canyon",
+   "src": "Wikimedia Commons, CC BY-SA 4.0 (Bretonjulie123): Theatre Lionel Groulx.jpg",
+   "thumb": "https://tvremote.pages.dev/home/theatre-red-t.jpg"
   },
   {
-   "id": "day",
+   "id": "oled",
    "names": {
-    "vi": "Ban ngày",
-    "en": "Daylight"
+    "vi": "Đêm OLED",
+    "en": "OLED night"
    },
    "for": {
-    "vi": "Phòng khách sáng, nhìn từ xa",
-    "en": "A bright living room, read from afar"
+    "vi": "TV OLED xem đêm: đen tuyền, chỉ một đồng hồ nhỏ, 7 ô nhỏ một hàng, không hiệu ứng",
+    "en": "OLED TVs at night: pure black, one small clock, 7 small tiles in one row, no effects"
    },
    "tags": [
-    "art"
+    "minimal",
+    "night"
    ],
    "conf": {
-    "wall": "dawn",
-    "shade": 40,
+    "shade": 0,
     "widgets": [
-     "weather",
-     "calendar",
-     "clock"
+     "weather"
     ],
-    "wsize": {
-     "weather": "big",
-     "calendar": "big",
-     "clock": "small"
-    },
-    "wstyle": {
-     "clock": "classic"
-    },
-    "cols": 5,
+    "cols": 7,
     "focus": "glass",
-    "motion": "full"
+    "motion": "calm",
+    "greet": false,
+    "wall": "black",
+    "wsize": {
+     "weather": "small"
+    },
+    "wopt": {
+     "clock": {
+      "face": "digital",
+      "look": "none"
+     }
+    },
+    "rows": 1,
+    "anim": false,
+    "clock24": true
    }
   },
   {
    "id": "morning",
    "names": {
-    "vi": "Buổi sáng",
-    "en": "Morning news"
+    "vi": "Bản tin sáng",
+    "en": "Morning briefing"
    },
    "for": {
-    "vi": "Xem thời tiết và chất lượng không khí trước khi ra khỏi nhà",
-    "en": "Weather and air quality before leaving home"
+    "vi": "Trước khi ra khỏi nhà: tin mới, thời tiết, chất lượng không khí và giá vàng, thẻ ấm trên nền đào",
+    "en": "Before leaving home: the news, weather, air quality and gold price, warm cards on a peach wall"
    },
    "tags": [
     "art"
    ],
    "conf": {
-    "wall": "peach",
-    "shade": 40,
+    "shade": 20,
     "widgets": [
+     "news",
      "weather",
      "air",
-     "clock"
+     "market"
     ],
-    "wsize": {
-     "weather": "big",
-     "air": "big",
-     "clock": "small"
-    },
-    "wstyle": {
-     "weather": "tonal",
-     "air": "tonal",
-     "clock": "light"
-    },
-    "cols": 5,
+    "cols": 6,
     "focus": "glass",
     "motion": "full",
-    "clock24": true,
-    "greet": true
-   }
-  },
-  {
-   "id": "nature",
-   "names": {
-    "vi": "Thiên nhiên",
-    "en": "Nature"
-   },
-   "for": {
-    "vi": "Ảnh nền đổi mỗi ngày: núi, đồng cỏ, biển, cồn cát",
-    "en": "A background that turns daily: peaks, meadow, sea, dunes"
-   },
-   "tags": [
-    "art",
-    "nature"
-   ],
-   "conf": {
-    "wall": "peaks",
-    "walls": [
-     "peaks",
-     "meadow",
-     "waves",
-     "dunes"
-    ],
-    "wevery": "day",
-    "shade": 45,
-    "widgets": [
-     "weather",
-     "lunar"
-    ],
+    "greet": true,
+    "wall": "peach",
     "wsize": {
+     "news": "big",
      "weather": "big",
-     "lunar": "small"
+     "air": "small",
+     "market": "small"
     },
-    "cols": 5,
-    "focus": "glass",
-    "motion": "full"
+    "wopt": {
+     "news": {
+      "look": "tonal"
+     },
+     "weather": {
+      "look": "tonal"
+     },
+     "air": {
+      "look": "tonal"
+     },
+     "market": {
+      "look": "tonal",
+      "layout": "ticker",
+      "show": "gold"
+     }
+    },
+    "rows": 1,
+    "clock24": true
    }
   },
   {
    "id": "frame",
    "names": {
-    "vi": "Khung ảnh",
-    "en": "Photo frame"
+    "vi": "Khung tranh",
+    "en": "Art frame"
    },
    "for": {
-    "vi": "Phòng khách: ảnh Bing của ngày, đổi vài giờ một lần, ít chữ",
-    "en": "Living room: the day's Bing picture, changing every few hours, few words"
+    "vi": "Phòng khách như treo tranh: tranh nổi tiếng đổi mỗi 5 phút phủ cả màn hình, gần như không có chữ",
+    "en": "A living room that hangs paintings: famous paintings, a new one every 5 minutes, almost no words"
    },
    "tags": [
-    "photo",
-    "nature"
+    "slideshow",
+    "art"
    ],
    "conf": {
-    "wall": "bing",
-    "walls": [
-     "bing",
-     "peaks",
-     "waves",
-     "meadow"
-    ],
-    "wevery": "6h",
-    "shade": 35,
-    "widgets": [
-     "clock"
-    ],
-    "wsize": {
-     "clock": "small"
-    },
-    "cols": 6,
-    "rows": 1,
-    "focus": "ring",
+    "shade": 30,
+    "widgets": [],
+    "cols": 8,
+    "focus": "glass",
     "motion": "calm",
     "greet": false,
-    "wopt": {
-     "clock": {
-      "theme": "light",
-      "look": "none"
-     }
-    },
-    "wstyle": {
-     "clock": "light"
-    }
+    "wall": "web",
+    "wurl": "https://tvremote.pages.dev/home/loop.html?s=art",
+    "rows": 1,
+    "center": true,
+    "clock24": true
    },
-   "look": "peaks"
+   "look": "dusk",
+   "src": "Public domain, Wikimedia Commons (Google Art Project): titles and sources in docs/home/art.json, shown under each picture",
+   "thumb": "https://tvremote.pages.dev/home/art-t.jpg"
   },
   {
    "id": "clear",
@@ -273,15 +284,24 @@
     "en": "See-through"
    },
    "for": {
-    "vi": "Ảnh Bing mỗi ngày, chữ nằm thẳng trên ảnh, không khung thẻ",
-    "en": "The day's Bing picture, the words right on it, no card frames"
+    "vi": "Phòng khách ban ngày: ảnh Bing của ngày, đồng hồ và thời tiết viết thẳng lên ảnh, không khung thẻ",
+    "en": "The living room by day: the day's Bing picture, the clock and weather written right on it, no card frames"
    },
    "tags": [
     "photo",
     "nature"
    ],
-   "since": "0.13.1",
    "conf": {
+    "shade": 40,
+    "widgets": [
+     "clock",
+     "weather",
+     "lunar"
+    ],
+    "cols": 5,
+    "focus": "glass",
+    "motion": "calm",
+    "greet": true,
     "wall": "bing",
     "walls": [
      "bing",
@@ -290,62 +310,17 @@
      "meadow"
     ],
     "wevery": "6h",
-    "shade": 30,
-    "widgets": [
-     "weather",
-     "lunar"
-    ],
     "wsize": {
+     "clock": "big",
      "weather": "big",
      "lunar": "small"
     },
     "wopt": {
-     "weather": {
+     "clock": {
+      "face": "modern",
+      "theme": "light",
       "look": "none"
      },
-     "lunar": {
-      "look": "none"
-     }
-    },
-    "cols": 5,
-    "focus": "ring",
-    "motion": "calm",
-    "greet": true
-   },
-   "look": "peaks"
-  },
-  {
-   "id": "sapa",
-   "names": {
-    "vi": "Ruộng bậc thang",
-    "en": "Rice terraces"
-   },
-   "for": {
-    "vi": "Người nhớ quê: ruộng bậc thang trong sương phủ cả màn hình, qua đường dẫn web",
-    "en": "Homesick: misty rice terraces across the screen, from a web link"
-   },
-   "tags": [
-    "photo",
-    "vietnam",
-    "nature"
-   ],
-   "conf": {
-    "wall": "web",
-    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fterraces.jpg",
-    "shade": 35,
-    "widgets": [
-     "weather",
-     "lunar"
-    ],
-    "wsize": {
-     "weather": "big",
-     "lunar": "small"
-    },
-    "cols": 5,
-    "focus": "glass",
-    "motion": "calm",
-    "greet": true,
-    "wopt": {
      "weather": {
       "look": "none"
      },
@@ -354,219 +329,55 @@
      }
     }
    },
-   "look": "meadow",
-   "src": "Unsplash License: Vu Thang / Unsplash, unsplash.com/photos/0CaHnK7PVCo",
-   "thumb": "https://tvremote.pages.dev/home/terraces-t.jpg"
+   "look": "peaks",
+   "since": "0.13.1"
   },
   {
-   "id": "beach",
+   "id": "fireplace",
    "names": {
-    "vi": "Hoàng hôn biển",
-    "en": "Sunset beach"
+    "vi": "Lò sưởi",
+    "en": "Fireplace"
    },
    "for": {
-    "vi": "Thư giãn cuối ngày: ảnh hoàng hôn trên biển phủ cả màn hình",
-    "en": "Unwinding: a sunset beach photo across the screen"
-   },
-   "tags": [
-    "photo",
-    "nature"
-   ],
-   "conf": {
-    "wall": "web",
-    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fbeach-sunset.jpg",
-    "shade": 30,
-    "widgets": [
-     "clock",
-     "weather"
-    ],
-    "wsize": {
-     "clock": "small",
-     "weather": "big"
-    },
-    "wstyle": {
-     "clock": "light"
-    },
-    "cols": 5,
-    "focus": "glass",
-    "motion": "calm",
-    "greet": true
-   },
-   "look": "sunset",
-   "src": "Unsplash License: Rolando Yera / Unsplash, unsplash.com/photos/ATwi-EmGbSE",
-   "thumb": "https://tvremote.pages.dev/home/beach-sunset-t.jpg"
-  },
-  {
-   "id": "beachlive",
-   "names": {
-    "vi": "Hoàng hôn biển (video)",
-    "en": "Sunset beach (video)"
-   },
-   "for": {
-    "vi": "Thư giãn cuối ngày: video hoàng hôn trên biển chạy nền",
-    "en": "Unwinding: a sunset beach video in the background"
+    "vi": "Tối mùa lạnh cả nhà quây quần: video lò sưởi cháy, đồng hồ La Mã và lịch ngày",
+    "en": "Cold evenings together: a crackling fireplace video, a Roman clock and the date"
    },
    "tags": [
     "video",
-    "nature"
-   ],
-   "conf": {
-    "wall": "web",
-    "wurl": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F18914444%2F18914444-hd_1920_1080_30fps.mp4&p=https%3A%2F%2Fimages.pexels.com%2Fvideos%2F26310139%2Fbeach-background-beach-waves-beautiful-sunset-crashing-waves-26310139.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D330",
-    "wfade": true,
-    "shade": 30,
-    "widgets": [
-     "clock",
-     "weather"
-    ],
-    "wsize": {
-     "clock": "small",
-     "weather": "big"
-    },
-    "cols": 5,
-    "focus": "glass",
-    "motion": "calm",
-    "greet": true,
-    "wopt": {
-     "clock": {
-      "theme": "light",
-      "look": "none"
-     },
-     "weather": {
-      "look": "none"
-     }
-    },
-    "wstyle": {
-     "clock": "light"
-    }
-   },
-   "look": "sunset",
-   "src": "Pexels License: Manoo Media / Pexels, pexels.com/video/the-sun-sets-over-the-ocean-with-waves-26310139",
-   "thumb": "https://images.pexels.com/videos/26310139/beach-background-beach-waves-beautiful-sunset-crashing-waves-26310139.jpeg?auto=compress&cs=tinysrgb&w=330"
-  },
-  {
-   "id": "halonglive",
-   "names": {
-    "vi": "Vịnh Hạ Long (video)",
-    "en": "Ha Long Bay (video)"
-   },
-   "for": {
-    "vi": "Video bay trên các đảo vịnh Hạ Long chạy nền",
-    "en": "A drone flight over Ha Long Bay islands in the background"
-   },
-   "tags": [
-    "video",
-    "vietnam",
-    "nature"
-   ],
-   "conf": {
-    "wall": "web",
-    "wurl": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F3783927%2F3783927-hd_1920_1080_24fps.mp4&p=https%3A%2F%2Fimages.pexels.com%2Fvideos%2F3783927%2Fpexels-photo-3783927.jpeg%3Fauto%3Dcompress%26cs%3Dtinysrgb%26w%3D330",
-    "wfade": true,
-    "shade": 30,
-    "widgets": [
-     "clock",
-     "weather"
-    ],
-    "wsize": {
-     "clock": "small",
-     "weather": "big"
-    },
-    "cols": 5,
-    "focus": "glass",
-    "motion": "calm",
-    "greet": true,
-    "wopt": {
-     "clock": {
-      "theme": "light",
-      "look": "none"
-     },
-     "weather": {
-      "look": "none"
-     }
-    },
-    "wstyle": {
-     "clock": "light"
-    }
-   },
-   "look": "ocean",
-   "src": "Pexels License: Taryn Elliott / Pexels, pexels.com/video/aerial-footage-of-the-islands-3783927",
-   "thumb": "https://images.pexels.com/videos/3783927/pexels-photo-3783927.jpeg?auto=compress&cs=tinysrgb&w=330"
-  },
-  {
-   "id": "city",
-   "names": {
-    "vi": "Đêm thành phố",
-    "en": "City night"
-   },
-   "for": {
-    "vi": "Cú đêm: ảnh thành phố về đêm, đồng hồ lớn",
-    "en": "Night owls: a night-city photo, a big clock"
-   },
-   "tags": [
-    "photo",
-    "city",
     "night"
    ],
    "conf": {
-    "wall": "web",
-    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fcity-night.jpg",
-    "shade": 45,
+    "shade": 35,
     "widgets": [
      "clock",
-     "lunar"
+     "calendar"
     ],
+    "cols": 5,
+    "focus": "glass",
+    "motion": "calm",
+    "greet": true,
+    "wall": "web",
+    "wurl": "https://tvremote.pages.dev/home/loop.html?v=https%3A%2F%2Fvideos.pexels.com%2Fvideo-files%2F855381%2F855381-hd_1920_1080_30fps.mp4&p=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fv-fireplace-t.jpg",
     "wsize": {
      "clock": "big",
-     "lunar": "small"
+     "calendar": "small"
     },
-    "wstyle": {
-     "clock": "minimal"
+    "wopt": {
+     "clock": {
+      "face": "roman",
+      "theme": "light",
+      "look": "none"
+     },
+     "calendar": {
+      "layout": "date"
+     }
     },
-    "cols": 6,
-    "focus": "ring",
-    "motion": "calm",
-    "clock24": true,
-    "greet": false
+    "rows": 1,
+    "center": true
    },
-   "look": "navy",
-   "src": "Unsplash License: Pang Yuhao / Unsplash, unsplash.com/photos/wCi28eq8TF4",
-   "thumb": "https://tvremote.pages.dev/home/city-night-t.jpg"
-  },
-  {
-   "id": "tech",
-   "names": {
-    "vi": "Công nghệ",
-    "en": "Tech"
-   },
-   "for": {
-    "vi": "Người hay chỉnh TV: bộ nhớ, ứng dụng dùng nhiều, 7 cột",
-    "en": "Tinkerers: memory, most-used apps, 7 columns"
-   },
-   "tags": [
-    "art"
-   ],
-   "conf": {
-    "wall": "midnight",
-    "shade": 60,
-    "widgets": [
-     "system",
-     "usage",
-     "clock"
-    ],
-    "wsize": {
-     "system": "big",
-     "usage": "big",
-     "clock": "small"
-    },
-    "wstyle": {
-     "clock": "minimal"
-    },
-    "cols": 7,
-    "focus": "ring",
-    "motion": "calm",
-    "clock24": true
-   }
+   "look": "ember",
+   "src": "Pexels License: pexels.com/video/855381",
+   "thumb": "https://tvremote.pages.dev/home/v-fireplace-t.jpg"
   },
   {
    "id": "gamer",
@@ -575,29 +386,35 @@
     "en": "Gamer"
    },
    "for": {
-    "vi": "Chơi game trên TV: đèn neon, thẻ RAM sống để dọn bộ nhớ",
-    "en": "Gaming on the TV: neon lights, a live RAM tile to clear memory"
+    "vi": "Chơi game trên TV: nền neon tím xanh, game vừa chơi hiện to, thẻ RAM sống để dọn bộ nhớ",
+    "en": "Gaming on the TV: a neon purple-blue wall, the games just played shown big, a live RAM tile"
    },
    "tags": [
     "art",
     "night"
    ],
    "conf": {
-    "wall": "bokeh",
-    "shade": 40,
+    "shade": 25,
     "widgets": [
-     "system",
-     "usage"
+     "recent"
     ],
-    "wsize": {
-     "system": "big",
-     "usage": "big"
-    },
-    "cols": 6,
+    "cols": 7,
     "focus": "ring",
     "motion": "full",
-    "clock24": true,
-    "greet": false
+    "greet": false,
+    "wall": "own",
+    "wcol": "2a0845,061a3a",
+    "wdir": "tr_bl",
+    "wsize": {
+     "recent": "big"
+    },
+    "wopt": {
+     "recent": {
+      "look": "tonal"
+     }
+    },
+    "rows": 0,
+    "clock24": true
    },
    "tiles": [
     "tile:dev.tvremote.setup/ram"
@@ -611,34 +428,40 @@
     "en": "Match day"
    },
    "for": {
-    "vi": "Fan thể thao: nền sân cỏ, thẻ Xem tiếp kênh của TV Channels",
-    "en": "Sports fans: a pitch green background, TV Channels' Continue-watching tile"
+    "vi": "Fan thể thao: sân cỏ ban đêm, đồng hồ số to, ngày thi đấu, thẻ Xem tiếp kênh của TV Channels",
+    "en": "Sports fans: a floodlit pitch, a big digital clock, the match date, TV Channels' Continue-watching tile"
    },
    "tags": [
     "photo",
     "night"
    ],
    "conf": {
-    "wall": "web",
     "shade": 35,
     "widgets": [
      "clock",
-     "weather"
+     "calendar"
     ],
+    "cols": 5,
+    "focus": "ring",
+    "motion": "full",
+    "greet": false,
+    "wall": "web",
+    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fpitch-night.jpg",
     "wsize": {
      "clock": "big",
-     "weather": "big"
+     "calendar": "big"
     },
-    "wstyle": {
-     "clock": "classic",
-     "weather": "glass"
+    "wopt": {
+     "clock": {
+      "face": "digital",
+      "look": "none"
+     },
+     "calendar": {
+      "layout": "date",
+      "look": "solid"
+     }
     },
-    "cols": 5,
-    "focus": "glass",
-    "motion": "full",
-    "clock24": true,
-    "greet": true,
-    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fpitch-night.jpg"
+    "clock24": true
    },
    "tiles": [
     "tile:dev.tvremote.channels/next"
@@ -648,115 +471,50 @@
    "thumb": "https://tvremote.pages.dev/home/pitch-night-t.jpg"
   },
   {
-   "id": "kids",
-   "names": {
-    "vi": "Bé vui",
-    "en": "Kids"
-   },
-   "for": {
-    "vi": "Nhà có trẻ nhỏ: màu kẹo, ô ứng dụng to (4 cột)",
-    "en": "Homes with small children: candy colours, big tiles (4 columns)"
-   },
-   "tags": [
-    "photo",
-    "kids",
-    "nature"
-   ],
-   "conf": {
-    "wall": "web",
-    "shade": 10,
-    "widgets": [
-     "clock",
-     "weather"
-    ],
-    "wsize": {
-     "clock": "big",
-     "weather": "big"
-    },
-    "wstyle": {
-     "clock": "classic",
-     "weather": "glass"
-    },
-    "cols": 4,
-    "focus": "glass",
-    "motion": "full",
-    "greet": true,
-    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Ftulips-sunset.jpg"
-   },
-   "look": "candy",
-   "src": "Wikimedia Commons, CC BY 2.0 (rboed*): Tulip field in Holland2.jpg",
-   "thumb": "https://tvremote.pages.dev/home/tulips-sunset-t.jpg"
-  },
-  {
-   "id": "easy",
-   "names": {
-    "vi": "Dễ nhìn",
-    "en": "Easy to read"
-   },
-   "for": {
-    "vi": "Người lớn tuổi: đồng hồ to, ít ứng dụng, viền chọn rõ, tương phản cao",
-    "en": "Older people: a big clock, few apps, a clear ring, high contrast"
-   },
-   "tags": [
-    "art"
-   ],
-   "conf": {
-    "wall": "navy",
-    "shade": 70,
-    "widgets": [
-     "clock"
-    ],
-    "wsize": {
-     "clock": "big"
-    },
-    "wstyle": {
-     "clock": "classic"
-    },
-    "cols": 4,
-    "rows": 1,
-    "focus": "ring",
-    "motion": "calm",
-    "clock24": true,
-    "greet": true
-   }
-  },
-  {
    "id": "tet",
    "names": {
     "vi": "Tết",
     "en": "Lunar New Year"
    },
    "for": {
-    "vi": "Dịp Tết và rằm: lịch âm và lịch tháng cỡ lớn, thẻ ấm",
-    "en": "Tết and full-moon days: big lunar and month cards in warm tones"
+    "vi": "Dịp Tết và rằm: đèn lồng đỏ, lịch âm và lịch tháng cỡ lớn, đồng hồ La Mã, ô ứng dụng ở giữa",
+    "en": "Tết and full-moon days: red lanterns, big lunar and month cards, a Roman clock, tiles in the middle"
    },
    "tags": [
     "photo",
     "vietnam"
    ],
    "conf": {
-    "wall": "web",
     "shade": 40,
     "widgets": [
      "lunar",
      "calendar",
      "clock"
     ],
+    "cols": 5,
+    "focus": "glass",
+    "motion": "full",
+    "greet": true,
+    "wall": "web",
+    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Flanterns-red.jpg",
     "wsize": {
      "lunar": "big",
      "calendar": "big",
      "clock": "small"
     },
-    "wstyle": {
-     "lunar": "tonal",
-     "calendar": "tonal",
-     "clock": "light"
+    "wopt": {
+     "lunar": {
+      "look": "tonal"
+     },
+     "calendar": {
+      "look": "tonal"
+     },
+     "clock": {
+      "face": "roman",
+      "theme": "light"
+     }
     },
-    "cols": 5,
-    "focus": "glass",
-    "motion": "full",
-    "greet": true,
-    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Flanterns-red.jpg"
+    "center": true
    },
    "look": "ember",
    "src": "Wikimedia Commons, CC BY-SA 4.0 (Tony Ng): Chinese Lanterns at Night in Chinatown (2).jpg",
@@ -769,35 +527,41 @@
     "en": "Bedtime"
    },
    "for": {
-    "vi": "Xem trước khi ngủ: tối, ít động, thẻ Hẹn giờ tắt ở đầu",
-    "en": "Winding down: dark and still, the sleep-timer tile first"
+    "vi": "Xem trước khi ngủ: Ngân Hà tối, ít động, thẻ Hẹn giờ tắt ở đầu",
+    "en": "Winding down: a dark Milky Way, almost still, the sleep-timer tile first"
    },
    "tags": [
     "photo",
     "night"
    ],
    "conf": {
-    "wall": "web",
     "shade": 70,
     "widgets": [
      "timer",
      "clock"
     ],
+    "cols": 5,
+    "focus": "glass",
+    "motion": "calm",
+    "greet": false,
+    "wall": "web",
+    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fmilky-way.jpg",
     "wsize": {
      "timer": "big",
      "clock": "small"
     },
-    "wstyle": {
-     "clock": "light"
+    "wopt": {
+     "timer": {
+      "look": "tonal"
+     },
+     "clock": {
+      "theme": "light"
+     }
     },
-    "cols": 5,
     "rows": 1,
-    "focus": "glass",
-    "motion": "calm",
+    "center": true,
     "anim": false,
-    "clock24": true,
-    "greet": false,
-    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fmilky-way.jpg"
+    "clock24": true
    },
    "tiles": [
     "tile:dev.tvremote.setup/sleep"
@@ -807,59 +571,143 @@
    "thumb": "https://tvremote.pages.dev/home/milky-way-t.jpg"
   },
   {
-   "id": "cinema",
+   "id": "tech",
    "names": {
-    "vi": "Rạp phim",
-    "en": "Cinema"
+    "vi": "Công nghệ",
+    "en": "Tech"
    },
    "for": {
-    "vi": "Tối xem phim: ghế đỏ rạp hát, không thẻ, chỉ ứng dụng",
-    "en": "Movie night: a theatre in red, no cards, just the apps"
+    "vi": "Người hay chỉnh TV: bộ nhớ, ứng dụng dùng nhiều, chặn quảng cáo (DNS), 8 cột",
+    "en": "Tinkerers: memory, most-used apps, the ad-block switch, 8 columns"
    },
    "tags": [
-    "photo",
-    "night"
+    "art"
    ],
    "conf": {
-    "wall": "web",
-    "shade": 55,
-    "widgets": [],
-    "cols": 6,
-    "rows": 1.2,
+    "shade": 40,
+    "widgets": [
+     "system",
+     "usage",
+     "adblock",
+     "clock"
+    ],
+    "cols": 8,
     "focus": "ring",
     "motion": "calm",
     "greet": false,
-    "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Ftheatre-red.jpg"
-   },
-   "look": "canyon",
-   "src": "Wikimedia Commons, CC BY-SA 4.0 (Bretonjulie123): Theatre Lionel Groulx.jpg",
-   "thumb": "https://tvremote.pages.dev/home/theatre-red-t.jpg"
+    "wall": "own",
+    "wcol": "0d2a1c,020806",
+    "wdir": "radial",
+    "wsize": {
+     "system": "big",
+     "usage": "big",
+     "adblock": "small",
+     "clock": "small"
+    },
+    "wopt": {
+     "system": {
+      "look": "solid"
+     },
+     "usage": {
+      "look": "solid"
+     },
+     "adblock": {
+      "look": "solid"
+     },
+     "clock": {
+      "face": "minimal"
+     }
+    },
+    "clock24": true
+   }
   },
   {
-   "id": "minimal",
+   "id": "guest",
    "names": {
-    "vi": "Tối giản",
-    "en": "Minimal"
+    "vi": "Khách lưu trú",
+    "en": "Guest TV"
    },
    "for": {
-    "vi": "Thích gọn: nền xám than, không thẻ, không hiệu ứng",
-    "en": "Clean lovers: charcoal, no cards, no effects"
+    "vi": "TV khách sạn, homestay, Airbnb: lời chào to, thời tiết nhỏ, một hàng ít ô, dễ đoán",
+    "en": "Hotel, homestay and Airbnb TVs: a big welcome, small local weather, a single row of few tiles, nothing to learn"
    },
    "tags": [
-    "art",
-    "minimal"
+    "art"
    ],
    "conf": {
-    "wall": "graphite",
-    "shade": 50,
-    "widgets": [],
-    "cols": 6,
-    "focus": "ring",
+    "shade": 15,
+    "widgets": [
+     "weather"
+    ],
+    "cols": 5,
+    "focus": "glass",
     "motion": "calm",
-    "anim": false,
-    "greet": false
+    "greet": true,
+    "wall": "own",
+    "wcol": "2b6a9e,12304f",
+    "wdir": "tr_bl",
+    "wsize": {
+     "weather": "small"
+    },
+    "wopt": {
+     "weather": {
+      "look": "tonal"
+     }
+    },
+    "rows": 1,
+    "center": true
+   }
+  },
+  {
+   "id": "day",
+   "names": {
+    "vi": "Văn phòng",
+    "en": "Daylight office"
+   },
+   "for": {
+    "vi": "Phòng làm việc, quán, phòng chờ ban ngày: nền bình minh sáng, lịch tháng và đồng hồ to, thời tiết và không khí",
+    "en": "Offices, cafes and waiting rooms by day: a bright dawn wall, a big month and clock, weather and air"
+   },
+   "tags": [
+    "art"
+   ],
+   "conf": {
+    "shade": 20,
+    "widgets": [
+     "clock",
+     "calendar",
+     "weather",
+     "air"
+    ],
+    "cols": 6,
+    "focus": "glass",
+    "motion": "full",
+    "greet": false,
+    "wall": "dawn",
+    "wsize": {
+     "clock": "big",
+     "calendar": "big",
+     "weather": "small",
+     "air": "small"
+    },
+    "wopt": {
+     "clock": {
+      "face": "modern",
+      "theme": "light"
+     },
+     "calendar": {
+      "layout": "month"
+     },
+     "weather": {
+      "look": "solid"
+     },
+     "air": {
+      "look": "solid"
+     }
+    },
+    "clock24": true
    }
   }
  ],
- "rev": 1793412419
+ "rev": 1793812138
 }

@@ -10,10 +10,10 @@ Một chủ đề đổi cả màn hình chính trong một lần bấm: hình n
 
 | Có sẵn | Cho ai |
 | --- | --- |
-| Hiện đại, Buổi sáng, Ban ngày | Đồng hồ, thời tiết, lịch âm lớn |
-| Ruộng bậc thang, Hoàng hôn biển, Đêm thành phố | Ảnh hoặc video nền từ mạng |
-| Game thủ, Bóng đá, Rạp phim | Kèm live widget hợp (Dọn RAM, Xem tiếp kênh) |
-| Bé vui, Dễ nhìn, Đi ngủ | Chữ to, ít thứ, hẹn giờ tắt |
+| Dễ nhìn, Bé vui, Khách lưu trú | Chữ to, vài ô ở giữa màn hình, ít thứ để học |
+| Khung tranh, Trong veo, Việt Nam, Lò sưởi | Một bức ảnh, loạt ảnh hay video phủ cả màn hình |
+| Bản tin sáng, Văn phòng, Công nghệ | Thẻ tin tức, thời tiết, lịch, bộ nhớ, ứng dụng vừa dùng |
+| Game thủ, Bóng đá, Rạp phim, Tết, Đi ngủ, Đêm OLED | Hợp từng dịp, kèm live widget (Dọn RAM, Xem tiếp kênh, Hẹn giờ tắt) |
 
 ### Mẹo
 

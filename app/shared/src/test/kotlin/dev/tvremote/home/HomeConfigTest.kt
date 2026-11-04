@@ -557,11 +557,11 @@ class HomeConfigTest {
         assertEquals("teal", c.getJSONObject("before").getString("wall"))
         c = HomeConfig.merge(c, op("apply" to "before"))                                                                       // the way back; the look left (tech) matches a theme
         assertEquals("teal", c.getString("wall")); assertEquals(7, c.getInt("cols")); assertEquals("before", HomeConfig.themeNow(c))
-        c = HomeConfig.merge(c, JSONObject().put("wall", "ocean")); c = HomeConfig.merge(c, op("apply" to "calm"))             // a new unsaved look replaces the slot
+        c = HomeConfig.merge(c, JSONObject().put("wall", "ocean")); c = HomeConfig.merge(c, op("apply" to "easy"))             // a new unsaved look replaces the slot
         assertEquals("ocean", c.getJSONObject("before").getString("wall"))
         assertTrue(HomeConfig.themeUses(c, "ocean")); assertFalse(HomeConfig.themeUses(c, "teal"))                             // the slot keeps its pictures
         c = HomeConfig.merge(c, op("del" to "before")); assertFalse(c.has("before"))
-        c = HomeConfig.merge(c, op("apply" to "before")); assertEquals("calm", HomeConfig.themeNow(c))                        // nothing there: nothing happens
+        c = HomeConfig.merge(c, op("apply" to "before")); assertEquals("easy", HomeConfig.themeNow(c))                        // nothing there: nothing happens
     }
 
     @Test fun saveApplyDeleteMine() {
@@ -577,7 +577,7 @@ class HomeConfigTest {
         assertEquals(1, themes(c).size); assertEquals("ocean", themes(c)[0].getJSONObject("conf").getString("wall"))
         c = HomeConfig.merge(c, op("save" to "Day"))
         assertEquals(listOf("t1", "t2"), themes(c).map { it.getString("id") })
-        c = HomeConfig.merge(c, op("apply" to "calm")); c = HomeConfig.merge(c, op("apply" to "t1"))
+        c = HomeConfig.merge(c, op("apply" to "easy")); c = HomeConfig.merge(c, op("apply" to "t1"))
         assertEquals("ocean", c.getString("wall")); assertEquals(4, c.getInt("cols"))
         c = HomeConfig.merge(c, op("del" to "t1"))
         assertEquals(listOf("t2"), themes(c).map { it.getString("id") })
