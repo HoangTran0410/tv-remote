@@ -85,6 +85,7 @@ class MicActivity : Activity(), RecognitionListener {
         live = this
         val assist = intent.component?.className.let { it?.endsWith(".MicAssist") == true || it?.endsWith(".MicSearch") == true }   // anyone may start the alias: it only listens while the rule is on, and never takes "say"
         if (assist && !MicVoice.on(this)) { finish(); return }
+        if (assist) MicVoice.noteKey(this)                                                  // the mic key really got here (not the page's test button): MicVoice.block stays quiet
         Thread({ MicVoice.warm(this); if (MicVoice.offline(this) != null) MicVoice.words(this) }, "mic-warm").apply { isDaemon = true }.start()   // the sentences' list (~1.4 s cold on an FPT box) and the app names, while the recognizer starts
         val fake = if (assist) null else intent.getStringExtra("say")                      // `am start -n .../.MicActivity --es say "mở youtube"` (the shell only): a test with no microphone
         if (fake != null) { build(); for (i in 0 until 12) ui.postDelayed({ level.feed(if (i % 3 == 0) 2f else 7f + i % 4) }, i * 100L)

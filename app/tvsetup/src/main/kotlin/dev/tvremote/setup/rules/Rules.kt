@@ -100,6 +100,7 @@ internal object Rules {
         KeepAwake.live?.check()
         if (d.optString("do") == "mic_offline" || d.optString("do") == "mic_lang") MicVoice.syncOffline(c)   // TV Setup Voice put on the TV or taken off, in the background
         if (d.optString("do") == "mic_lang_remove") MicVoice.removeLang(c, d.optString("lang"))   // one language off the TV, the others stay
+        if (d.optString("do") == "mic" && d.optBoolean("on")) MicVoice.forgetKey(c)   // "seen" counts from the moment the rule goes on
         if (d.optString("do") == "mic_free") Thread({ MicVoice.free(c, RemoteService.adb()) }, "mic-free").apply { isDaemon = true }.start()   // the Google app off (ADB) or its settings page
         if (d.optString("do") in setOf("holdkeys", "mic", "homekey")) Thread({
             if (d.optString("do") == "mic" && d.optBoolean("on")) RemoteService.adb()?.let { MicVoice.grant(c, it) }   // the microphone, allowed through ADB

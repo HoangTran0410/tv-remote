@@ -23,7 +23,7 @@ The TV remote's mic button: turn on **Mic button opens TV Remote voice** in the 
 
 A TV with no ADB: the first mic press asks which app to use; pick **TV Setup**, then **Always**.
 
-Google app holding the mic? A warning with a button shows under the switch (Undo restores it).
+Mic button still opens Google? Until a press reaches TV Setup, a warning with a button shows under the switch (Undo restores it).
 
 A TV with no speech recognizer (a box without Google): also turn on **Understand speech on the TV itself, no Google needed** there; off removes it.
 

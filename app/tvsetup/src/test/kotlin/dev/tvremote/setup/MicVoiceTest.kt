@@ -74,6 +74,13 @@ class MicVoiceTest {
         assertEquals("", why(google = false, ble = true))                        // the Google app off: WEB_SEARCH reaches MicSearch
     }
 
+    @Test fun aMicKeyStartSeenMeansItWorks() {                          // FPT Play 650: the same packages as the Skyworth, but the key reaches us
+        val seen = MicVoice.blockReason(true, true, true, true, "", "dev.tvremote.setup", keySeen = true)
+        assertEquals("", seen)
+        assertEquals(MicVoice.GOOGLE, MicVoice.blockReason(true, true, true, true, "", "dev.tvremote.setup", keySeen = false))
+        assertEquals(MicVoice.OTHER, MicVoice.blockReason(true, true, true, false, "ai.zalo.kiki.tv", "dev.tvremote.setup", keySeen = true))   // another app's default is not cleared by a press
+    }
+
     @Test fun anotherAppHoldsWebSearch() {
         assertEquals(MicVoice.OTHER, why(search = "ai.zalo.kiki.tv"))
         assertEquals("", why(search = "ai.zalo.kiki.tv", ours = true))        // the assistant setting is ours: WEB_SEARCH is not the path

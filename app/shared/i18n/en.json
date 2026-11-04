@@ -2301,7 +2301,7 @@
  "mic.eg": "Examples: “open YouTube”, “channel VTV1”, “volume up”",
  "mic.need": "Needs a TV with speech recognition.",
  "mic.first_press": "No ADB on this TV: the first mic press asks which app to use. Pick TV Setup, then \"Always\".",
- "mic.block_google": "The mic button belongs to Google. Turn off the Google app on the TV to use TV Setup's mic.",
+ "mic.block_google": "If the mic button still opens Google: turn off the Google app on the TV so the mic comes to TV Setup.",
  "mic.block_other": "The mic button opens {app}, not TV Setup. Clear {app}'s default in that app's settings.",
  "mic.block_off_google": "Turn off the Google app",
  "mic.block_open": "Open {app} settings",

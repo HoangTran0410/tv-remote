@@ -2217,7 +2217,7 @@
  "mic.eg": "Ví dụ: “mở YouTube”, “kênh VTV1”, “tăng âm lượng”",
  "mic.need": "Cần TV có nhận giọng nói.",
  "mic.first_press": "TV chưa bật ADB: lần bấm mic đầu TV hỏi dùng app nào. Chọn TV Setup, rồi \"Luôn chọn\".",
- "mic.block_google": "Nút mic đang thuộc về Google. Tắt app Google trên TV để dùng mic của TV Setup.",
+ "mic.block_google": "Nếu bấm mic vẫn ra Google: tắt app Google trên TV để mic về TV Setup.",
  "mic.block_other": "Nút mic đang mở {app}, không phải TV Setup. Bỏ mặc định của {app} trong cài đặt app đó.",
  "mic.block_off_google": "Tắt app Google",
  "mic.block_open": "Mở cài đặt {app}",

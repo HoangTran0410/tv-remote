@@ -2307,7 +2307,7 @@
   "mic.eg": "Exemples : « ouvre YouTube », « chaîne VTV1 », « monte le volume »",
   "mic.need": "Nécessite une TV avec reconnaissance vocale.",
   "mic.first_press": "Pas d'ADB sur cette TV : le premier appui sur micro demande quelle app utiliser. Choisissez TV Setup, puis « Toujours ».",
-  "mic.block_google": "Le bouton micro appartient à Google. Désactivez l'app Google sur la TV pour utiliser le micro de TV Setup.",
+  "mic.block_google": "Si le bouton micro ouvre toujours Google : désactivez l'app Google sur la TV pour que le micro revienne à TV Setup.",
   "mic.block_other": "Le bouton micro ouvre {app}, pas TV Setup. Retirez le choix par défaut de {app} dans les réglages de cette app.",
   "mic.block_off_google": "Désactiver l'app Google",
   "mic.block_open": "Ouvrir les réglages de {app}",

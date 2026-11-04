@@ -288,7 +288,7 @@ Nút mic của điều khiển TV: bật **Nút mic mở giọng nói của TV R
 
 TV không có ADB: lần bấm mic đầu tiên TV hỏi dùng app nào, chọn **TV Setup** rồi **Luôn chọn**.
 
-App Google giữ mic? Dưới nút bật có cảnh báo kèm nút tắt nó (Hoàn tác bật lại).
+Bấm mic vẫn ra Google? Tới khi có lần bấm tới TV Setup, dưới nút bật có cảnh báo kèm nút tắt app Google (Hoàn tác bật lại).
 
 TV không có nhận giọng nói (hộp không Google): bật thêm **Nhận giọng nói ngay trên TV, không cần Google** ở cùng chỗ; tắt là gỡ.
 

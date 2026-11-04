@@ -214,14 +214,20 @@ object MicVoice {
      * The decision, pure (tested). A BLE voice remote is driven by Google's TV remote service, which streams the audio to the Google app
      * itself while that is on: nothing reaches the assistant setting or WEB_SEARCH (Skyworth Android 14, 2026-11-05). Else the mic key
      * starts WEB_SEARCH when the assistant setting is not ours, and a default another app was given for it wins over our alias.
-     * [searchApp]: the app WEB_SEARCH opens without asking ("" = none, or the system's chooser).
+     * [searchApp]: the app WEB_SEARCH opens without asking ("" = none, or the system's chooser). [keySeen]: the mic key has started
+     * .MicAssist / .MicSearch since the rule went on, so it works here (an FPT Play 650 has the same packages as the Skyworth): the
+     * packages alone cannot tell them apart, so the Google case is a warning only until a press arrives.
      */
-    fun blockReason(micOn: Boolean, googleOn: Boolean, bleRemote: Boolean, assistantOurs: Boolean, searchApp: String, self: String): String = when {
+    fun blockReason(micOn: Boolean, googleOn: Boolean, bleRemote: Boolean, assistantOurs: Boolean, searchApp: String, self: String, keySeen: Boolean = false): String = when {
         !micOn -> ""
-        googleOn && bleRemote -> GOOGLE
+        googleOn && bleRemote && !keySeen -> GOOGLE
         !assistantOurs && searchApp.isNotEmpty() && searchApp != self && searchApp != "android" -> OTHER
         else -> ""
     }
+    /** Written on the key's start of the mic screen only (no timer), forgotten when the rule goes on, so "seen" means since then. */
+    fun noteKey(c: Context) { c.getSharedPreferences("mic", Context.MODE_PRIVATE).edit().putLong("key_at", System.currentTimeMillis()).apply() }
+    fun keySeen(c: Context): Boolean = c.getSharedPreferences("mic", Context.MODE_PRIVATE).getLong("key_at", 0L) > 0L
+    fun forgetKey(c: Context) { c.getSharedPreferences("mic", Context.MODE_PRIVATE).edit().remove("key_at").apply() }
     const val GOOGLE = "google_holds_mic"
     const val OTHER = "other_app_holds_mic"
     private const val GOOGLE_APP = "com.google.android.katniss"
@@ -238,7 +244,7 @@ object MicVoice {
         fun there(p: String) = try { pm.getApplicationInfo(p, 0); true } catch (e: Exception) { false }
         val search = try { pm.resolveActivity(Intent(android.speech.RecognizerIntent.ACTION_WEB_SEARCH), PackageManager.MATCH_DEFAULT_ONLY)?.activityInfo?.packageName.orEmpty() } catch (e: Exception) { "" }
         val ours = try { android.provider.Settings.Secure.getString(c.contentResolver, ASSISTANT) == ASSIST } catch (e: Exception) { false }
-        val why = blockReason(true, enabled(GOOGLE_APP), there(BLE_REMOTE), ours, search, c.packageName)
+        val why = blockReason(true, enabled(GOOGLE_APP), there(BLE_REMOTE), ours, search, c.packageName, keySeen(c))
         val pkg = if (why == GOOGLE) GOOGLE_APP else if (why == OTHER) search else ""
         val label = if (pkg.isEmpty()) "" else try { pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString() } catch (e: Exception) { pkg }
         return Block(why, pkg, label)
