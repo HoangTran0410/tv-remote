@@ -4,6 +4,11 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- TV Games: web games played only with phones no longer let the TV sleep or start its screensaver mid-game; retro games no longer keep the screen on forever when nobody plays. Both stay on until 10 minutes after the last press.
+- TV Games: Suggestions come in rows: the web games made for TV Games first, then one row per retro genre.
+
 ## 0.44.2 - 2026-11-04
 
 Web 0.44.2 · Phone app 0.41.2 · TV app 0.42.2 · TV Home 0.26.1 · TV Channels 0.18.3 · TV Games 0.19.1 · TV Apps 0.4.1

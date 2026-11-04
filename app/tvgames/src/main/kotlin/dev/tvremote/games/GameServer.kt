@@ -81,6 +81,7 @@ class GameServer private constructor(private val ctx: Context) {
     @Volatile var onAdded: () -> Unit = {}                 // a game or a web link was added
     @Volatile var lastRom: String? = null                  // the file name of the last game sent from a phone
     @Volatile var onText: (player: Int, text: String) -> Unit = { _, _ -> }   // a phone's text field (web games), player 1..4
+    @Volatile var onPlay: () -> Unit = {}                  // a phone pressed, moved or typed something (not a ping): Awake keeps the screen on
     private val layouts = arrayOfNulls<String>(MAX)        // per player: the pad layout a web game asked for (JSON), kept for a reconnect
     private var defaultLayout: String? = null
     private val slots = Array(MAX) { Slot() }
@@ -523,6 +524,7 @@ class GameServer private constructor(private val ctx: Context) {
                     9 -> c.frame(10, data)
                     1 -> {
                         val msg = String(data)
+                        if (slot >= 0 && (msg.length > 1 && msg[1] == ' ' && msg[0] in PLAY || msg == "pc")) onPlay()
                         when {
                             msg.startsWith("hello ") -> {
                                 val rest = msg.substring(6).trim()                 // "hello <client id> [name]"
@@ -574,6 +576,7 @@ class GameServer private constructor(private val ctx: Context) {
     }
 
     companion object {
+        private const val PLAY = "aduomtn"                 // what a player sends: stick, down / up, pointer, motion, text, menu moves ("p " is a ping)
         private const val TAG = "GameServer"
         private const val PORT = 8780
         private const val MAX = 4

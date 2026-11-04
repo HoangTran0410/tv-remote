@@ -208,13 +208,15 @@ class WebGameActivity : ComponentActivity() {
         server.playersNow().let { cards.setPlayers(it); diff(it) }                         // phones that were in before this game started
         server.onAdded = { }
         server.onReload = { runOnUiThread { fresh(); web.reload() } }
+        server.onPlay = { awake.poke() }
     }
 
     /** No cached copy for the rest of this game: the page's server may not say when it changed (a Python test server, a NAS),
      *  and the WebView then kept running an old version of a game fixed since. */
     private fun fresh() { web.settings.cacheMode = WebSettings.LOAD_NO_CACHE }
 
-    override fun onPause() { if (::server.isInitialized) server.onKeyLat = null; super.onPause() }
+    override fun onPause() { awake.stop(); if (::server.isInitialized) { server.onKeyLat = null; server.onPlay = {} }; super.onPause() }
+    private val awake by lazy { Awake(this) }               // the screen stays on while phones play
 
     override fun onDestroy() {
         if (::cards.isInitialized) cards.close()

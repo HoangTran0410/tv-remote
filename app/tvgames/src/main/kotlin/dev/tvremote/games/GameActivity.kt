@@ -101,6 +101,7 @@ class GameActivity : ComponentActivity() {
         if (!GlCheck.ok(this)) { failed(getString(R.string.no_gl), gameName); return }   // its EGL refuses what GLRetroView would ask: no crash (GlCheck)
         GlCheck.guard { runOnUiThread { if (!isDestroyed) failed(getString(R.string.no_gl), gameName) } }
         retro = GLRetroView(this, data)
+        retro.keepScreenOn = false                                    // GLRetroView holds the screen on forever, even with nobody playing: [awake] decides instead
         lifecycle.addObserver(retro)                                  // GLRetroView is a LifecycleObserver; it also needs onCreate
         retro.onCreate(this)
         lifecycleScope.launch { retro.getGLRetroErrors().collect { if (!isDestroyed) failed(getString(R.string.cant_open), gameName) } }   // a broken ROM or core: the reason and Back, not a black screen
@@ -149,6 +150,8 @@ class GameActivity : ComponentActivity() {
         bind()
     }
 
+    private val awake by lazy { Awake(this) }               // the screen stays on while phones play
+
     private fun bind() {
         if (!::server.isInitialized || !::cards.isInitialized) return
         server.inGame = true
@@ -160,6 +163,7 @@ class GameActivity : ComponentActivity() {
         cards.setPlayers(server.playersNow())
         server.onAdded = { }
         server.onPing = { p, ms -> runOnUiThread { cards.setPing(p, ms) } }
+        server.onPlay = { awake.poke() }
         snapLoop.removeCallbacksAndMessages(null); snapLoop.postDelayed(snapTick, 5000)
     }
 
@@ -176,6 +180,7 @@ class GameActivity : ComponentActivity() {
     /** The last picture of the game becomes its tile in the library (when there is no box art): taken while the surface is still there. */
     override fun onPause() {
         snapLoop.removeCallbacksAndMessages(null)
+        awake.stop(); if (::server.isInitialized) server.onPlay = {}
         if (::retro.isInitialized && System.currentTimeMillis() - startedAt > 3000) Thumbs.snapshot(this, retro, "g:" + file.name, 400)
         super.onPause()
     }

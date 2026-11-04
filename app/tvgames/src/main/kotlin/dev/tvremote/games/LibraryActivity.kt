@@ -538,8 +538,8 @@ class LibraryActivity : ComponentActivity() {
             if (fav.isNotEmpty()) box.addView(section("fav", getString(R.string.sec_fav), fav))
             for (g in shelf.groups) box.addView(section("g" + g.id, g.name, g.items.mapNotNull { byId[it] }, group = g))
             box.addView(section("all", getString(R.string.sec_all), lib, add = true))
-            if (sugs.isNotEmpty()) box.addView(section("sug", getString(R.string.suggest), sugs))
-            else if (catOffline) box.addView(label(getString(R.string.sug_offline), 16f, tvColor(R.color.tv_dim)).apply { setPadding(dp(8), dp(18), 0, 0) })
+            for ((key, title, items) in sugRows()) box.addView(section(key, title, items))
+            if (sugs.isEmpty() && catOffline) box.addView(label(getString(R.string.sug_offline), 16f, tvColor(R.color.tv_dim)).apply { setPadding(dp(8), dp(18), 0, 0) })
         }
         val pend = pendingFocus; pendingFocus = null
         val f = wantFolder; wantFolder = null
@@ -548,6 +548,18 @@ class LibraryActivity : ComponentActivity() {
             ?: if ((hadFocus || keepKey != null) && !elsewhere) (keepKey?.let { tileKeys[it] } ?: keepId?.let { id -> tileKeys.entries.firstOrNull { it.key.endsWith("|$id") }?.value }
             ?: keepKey?.let { k -> neighbour(k) ?: firstTile() }) else null
         if (!typing && !(elsewhere && target == null)) (target ?: if (!hadFocus && lastFocus == null) firstTile() else null)?.requestFocus()
+    }
+
+    /** Suggestions in rows a TV is browsed by: our own web games first, then the retro ones one genre a row (the biggest first,
+     *  "Other" last). One row mixing them all was hard to scan with a remote, and the genre button above is rarely opened. */
+    private fun sugRows(): List<Triple<String, String, List<Item>>> {
+        val other = getString(R.string.genre_other)
+        val (web, retro) = sugs.partition { it.sysKey == "web" }
+        val rows = ArrayList<Triple<String, String, List<Item>>>()
+        if (web.isNotEmpty()) rows += Triple("sw", getString(R.string.sug_web), web)
+        retro.groupBy { it.genre }.entries.sortedWith(compareBy({ it.key == other }, { -it.value.size }, { it.key.lowercase() }))
+            .forEach { (g, l) -> rows += Triple("sg:$g", getString(R.string.sug_retro, g), l) }
+        return rows
     }
 
     private val groupHeads = HashMap<String, View>()
