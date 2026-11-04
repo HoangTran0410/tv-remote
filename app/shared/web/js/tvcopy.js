@@ -7,7 +7,7 @@
   const LOOK = ['wall', 'walls', 'wurl', 'wcol', 'wdir', 'wmode', 'wsnap', 'wkeep', 'wevery', 'shade', 'wfit', 'wfade',
     'widgets', 'wsize', 'wopt', 'cols', 'center', 'rows', 'focus', 'motion', 'anim', 'clock24', 'greet'];
   const GRID = ['dock', 'hidden', 'order', 'folders', 'tiles', 'names'];
-  const KEYS = ['keyon', 'keyapps', 'autoon', 'autoapp', 'autoall'];
+  const KEYS = ['keyon', 'keyapps', 'autoon', 'autoapp', 'autolast', 'autoall'];
   const isQr = (w) => /^qr[0-9]+$/.test(w);                              // HomeQr.KEYS: a code (a Wi-Fi password) is not copied
   // id, where it lives (home: TV Home's settings, rules: TV Setup's), the words (tvcopy.g_<id>)
   const GROUPS = [

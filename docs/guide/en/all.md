@@ -708,7 +708,7 @@ Color keys, number keys and buttons that no longer do anything can open the app 
 
 1. On the TV: the **⚙** icon at the top → **Quick settings** → **Customize** → **Keys & startup** → **Quick keys**. Phone or computer: the same name, in the **Keys & startup** card.
 2. Pick a key's tile, then an app, a shortcut or a live widget. The first pick switches the keys on. Outside TV Home the TV says "TV Setup opened…", so it is not a fault.
-3. To open an app when the TV turns on: pick it in the **At power-on** tile. It opens once per power-on, and not if the TV woke into another app.
+3. In the **At power-on** tile pick an app, or **Last app used** (the one open when the TV turned off). It opens once per power-on, not if the TV woke into another app. One choice turns the other off.
 
 | Key | When it can be given an app |
 | --- | --- |
@@ -735,6 +735,7 @@ Quick keys open an app from the home screen with one number or color key on the 
 3. An assigned tile shows the app's banner or icon large. Pressing the real number or color key on the remote picks its tile.
 
 - The **At power-on** slot: pick an app = it opens at power-on, clear = off. **Auto-open … at power-on**: opens it (empty: TV Home) even if the TV woke into HDMI or another app, except during a cast.
+- The same slot offers **Last app used**: the app open when the TV turned off (off by default).
 - Live widgets can be assigned too and show their own icon.
 
 ## Fix dead keys, hold to switch
@@ -1000,7 +1001,7 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 | Card | What it does |
 | --- | --- |
 | 🔊 Volume limits | By time, max 10 to 90%, for the TV's speakers. Does not work with an external HDMI speaker, nor while 🎧 plays the TV's sound elsewhere (its speakers are silent then). |
-| 🧹 Full memory notice | Warns at 80 to 95% memory. Off by default. |
+| 🧹 Full memory notice | Warns at 80 to 95% memory. **Free memory by itself** closes background apps over that level, like the Free RAM button (never the app on screen, TV Home or "Must keep" apps), once per 10 min. Off by default. |
 
 > 💡 All of it lives on the TV and needs TV Setup. It holds even with your device off.
 

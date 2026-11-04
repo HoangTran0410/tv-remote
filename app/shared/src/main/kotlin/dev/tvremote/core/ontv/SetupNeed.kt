@@ -22,6 +22,7 @@ object SetupNeed {
         "notify" to "0.4.2",                                           // 🔔 a card with a message over the TV's screen
         "invite" to "0.4.2",                                           // 📲 sharing the remote by QR (an older one answers with a pass)
         "ram" to "0.4.2",                                              // 🧠 the notice when the memory is nearly full
+        "ramauto" to "0.42.3",                                         // 🧹 background apps closed by itself when the memory stays full (Rules "ram" auto; the release after 0.42.2)
         "awake" to "0.7.1",                                            // 😴 the chip kept up while the TV is off (KeepAwake)
         "launcher" to "0.12.0",                                        // 🏠 the launcher gallery: the question on the TV and the watchdog (only asked about, never required: the swap works without)
         "files" to "0.8.1",                                            // 📈 its files handed over where the shell may not read them (SetupFiles)
@@ -64,6 +65,7 @@ object SetupNeed {
             "notify" -> t("core.need_notify")
             "invite" -> t("core.need_invite")
             "ram" -> t("core.need_ram")
+            "ramauto" -> t("core.need_ramauto")
             "awake" -> t("core.need_awake")
             "files" -> t("core.need_files")
             "welcome" -> t("core.need_welcome")

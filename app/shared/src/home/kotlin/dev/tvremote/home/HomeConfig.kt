@@ -139,6 +139,9 @@ import org.json.JSONObject
  *           answers can be trusted) behind a "More inputs" row; default off (nothing new runs)
  *   autoon  open [autoapp] (a [Target] too) once each time the TV is turned on (boot or wake from standby); default off. TV Setup does it
  *           (TV Home is not running in standby), so it needs TV Setup, said in the setting ("keysSetup")
+ *   autolast the power-on app is "the app that was open when the TV turned off" instead of a fixed [autoapp]; its own setting, default
+ *           off, needs [autoon]. Choosing one of the two turns the other off; if both ever arrive the fixed app wins and this is cleaned to false. TV Setup finds it in the usage events at power-on (never TV Home, TV Setup or a system screen). A TV
+ *           Setup that has it answers "last": true to "keys", which TV Home reports as "keysLast"
  *   autoall "always": open at power-on even when the TV woke into another app or input (default off; the guard of one open per power-on and a
  *           cast just started still hold). With no [autoapp] it brings TV Home (the launcher) up. A TV Setup that has it answers "all": true
  *           to "keys", which TV Home reports as "keysAll"
@@ -726,6 +729,7 @@ object HomeConfig {
             .put("keyapps", JSONObject().also { m -> keyApps(o.optJSONObject("keyapps")).toSortedMap().forEach { (k, v) -> m.put(k.toString(), v) } })
             .put("autoon", o.optBoolean("autoon", false))
             .put("autoapp", if (o.optBoolean("autoon", false)) Target.clean(o.optString("autoapp")) else "")   // one meaning: an app here opens at power-on; "autoon" stays for TV Setups that read it
+            .put("autolast", o.optBoolean("autoon", false) && o.optBoolean("autolast", false) && Target.clean(o.optString("autoapp")).isEmpty())   // its own setting, default off; a fixed app wins if both arrive (the clients clear one when the other is chosen)
             .put("autoall", o.optBoolean("autoall", false))
             .put("tiles", JSONArray(tiles))
             .put("folders", folders)

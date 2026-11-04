@@ -473,6 +473,8 @@
   "qk_yes": "Activé",
   "qk_no": "Désactivé",
   "qk_power": "À l'allumage",
+  "qk_last": "Dernière application",
+  "qk_last_tag": "Celle ouverte à l’extinction de la TV",
   "qk_no_key": "absente de cette télécommande",
   "c_quickkeys": "Touches rapides",
   "pk_loading": "Chargement des applications…",

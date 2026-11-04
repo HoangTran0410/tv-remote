@@ -10,6 +10,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - TV Home: a "Center the app grid" switch puts short rows of app tiles in the middle instead of at the left; off by default, part of themes.
 - TV Home: Quick settings > Turn off the TV > Power off works on boxes with no ADB (Android 14 without port 5555, not paired): when TV Setup Keys is on it opens the system's own power menu to pick from (never powers off by itself); when it is off, the TV says to turn it on in Settings > Accessibility. Needs TV Setup and TV Setup Keys updated together.
 - TV Home: give an app tile its own picture (hold OK > Own picture; set from the phone or computer page under Pictures of apps, shrunk to 480x270 and kept under 300 KB on the TV); "Use the app's own picture" puts the original back. Off until you set one.
+- At power-on: a new choice "Last app used" opens the app that was open when the TV turned off (TV Home and system screens do not count). Its own setting, off by default; picking it or a fixed app turns the other off. Needs the new TV Setup (offered only when TV Setup reports it).
+- Memory limits: "Free memory by itself" closes background apps (the Free RAM button's action; never the app on screen, TV Home, TV Setup, the keyboard or Must keep apps) when memory stays over the chosen level, at most once per 10 minutes. Off by default; uses the check the full memory notice already runs.
 - TV Games: web games played only with phones no longer let the TV sleep or start its screensaver mid-game; retro games no longer keep the screen on forever when nobody plays. Both stay on until 10 minutes after the last press.
 - TV Games: Suggestions come in rows: the web games made for TV Games first, then one row per retro genre.
 

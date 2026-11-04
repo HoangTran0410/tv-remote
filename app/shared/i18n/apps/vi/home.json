@@ -404,6 +404,8 @@
   "qk_yes": "Bật",
   "qk_no": "Tắt",
   "qk_power": "Khi bật TV",
+  "qk_last": "Ứng dụng vừa dùng",
+  "qk_last_tag": "Mở app đang chạy lúc tắt TV",
   "qk_no_key": "remote không có",
   "c_quickkeys": "Phím nhanh",
   "pk_loading": "Đang tải ứng dụng…",

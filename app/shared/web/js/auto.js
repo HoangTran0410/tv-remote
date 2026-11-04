@@ -118,8 +118,9 @@ function renderRules() {
   const ram = r.ram || { on: false, pct: 90 };
   if (document.activeElement !== $('#ramon')) $('#ramon').checked = !!ram.on;
   $('#rampct').replaceChildren(...[80, 85, 90, 95].map((p) => el('button', { type: 'button', className: p === ram.pct ? 'on' : '', textContent: p + '%',
-    onclick: () => saveRam(true, p) })));
-  put('#ramstate', 'textContent', ram.on ? T('auto.ram_on', { pct: ram.pct }) : '');
+    onclick: () => saveRam(!!ramNow().on || !ramNow().auto, p, !!ramNow().auto) })));
+  if (document.activeElement !== $('#ramauto')) $('#ramauto').checked = !!ram.auto;
+  put('#ramstate', 'textContent', ram.auto ? T(ram.on ? 'auto.ram_auto_on_notice' : 'auto.ram_auto_on', { pct: ram.pct }) : ram.on ? T('auto.ram_on', { pct: ram.pct }) : '');
   // folded, each card says what is on (js/fold.js); one that is on starts open
   const off = T('fold.off'), nApps = (n) => T('fold.apps', { n }), ranges = (xs) => xs.map((v) => v.from + ' – ' + v.to).join(', ');
   foldSum('sleepcard', r.sleep_at ? T('fold.sleep', { at: clock(r.sleep_at) }) : off, !!r.sleep_at);
@@ -128,7 +129,7 @@ function renderRules() {
   foldSum('lockcard', lock.apps.length ? nApps(lock.apps.length) : off, lock.apps.length > 0);
   foldSum('schedcard', scheds.length ? nApps(scheds.length) : off, scheds.length > 0);
   foldSum('volcard', vols.length ? ranges(vols) : off, vols.length > 0);
-  foldSum('ramcard', ram.on ? T('fold.ram', { pct: ram.pct }) : off, !!ram.on);
+  foldSum('ramcard', ram.auto ? T('fold.ram_auto', { pct: ram.pct }) : ram.on ? T('fold.ram', { pct: ram.pct }) : off, !!(ram.on || ram.auto));
   if (CORE === 'tv' && r.adb && r.adb !== 'ready') $('#bedstate').append(el('span', { className: 'warnline', textContent: T('auto.setup_no_adb') }));
 }
 
@@ -178,11 +179,15 @@ $('#bedon').addEventListener('change', async () => {
   const r = await saveBeds(list, $('#bedon').checked);
   if (r && r.bedtime.on) toast(T('auto.bed_enabled'));
 });
-async function saveRam(on, pct) {
-  if (RULES && RULES.ram === undefined && !await setupFor('ram')) { $('#ramon').checked = false; return null; }
-  return loadRules({ do: 'ram', on, pct: pct || (RULES && RULES.ram && RULES.ram.pct) || 90 });
+async function saveRam(on, pct, auto) {
+  if (RULES && RULES.ram === undefined && !await setupFor('ram')) { $('#ramon').checked = false; $('#ramauto').checked = false; return null; }
+  const cur = (RULES && RULES.ram) || {};
+  if (auto && cur.auto === undefined && !await setupFor('ramauto')) { $('#ramauto').checked = false; return null; }   // a TV Setup from before it would drop the field
+  return loadRules({ do: 'ram', on, pct: pct || cur.pct || 90, ...(cur.auto === undefined && !auto ? {} : { auto }) });
 }
-$('#ramon').addEventListener('change', () => saveRam($('#ramon').checked));
+const ramNow = () => (RULES && RULES.ram) || {};
+$('#ramon').addEventListener('change', () => saveRam($('#ramon').checked, 0, !!ramNow().auto));
+$('#ramauto').addEventListener('change', () => saveRam(!!ramNow().on, 0, $('#ramauto').checked));
 async function saveVols(list) {
   if (RULES && RULES.volume === undefined && !await setupFor('volume')) return null;
   return loadRules({ do: 'volume', ranges: list });

@@ -131,13 +131,15 @@ object Picker {
 
     private val bg = java.util.concurrent.Executors.newSingleThreadExecutor { r -> Thread(r, "home-picker").apply { isDaemon = true } }
 
+    /** Not a [Target]: what the power-on slot gets back for "the last app" (Keys.setPowerLast). */
+    const val LAST = "last:app"
     private class Item(val key: String, val label: String, val app: App?, val tag: String, val section: Int, val icon: Int = 0, val link: Links.Item? = null)
 
     private fun fold(t: String) = java.text.Normalizer.normalize(t, java.text.Normalizer.Form.NFD).replace(Regex("\\p{M}+"), "").replace('đ', 'd').replace('Đ', 'D').lowercase()
 
     /** [pick]: CHOOSE for a folder: [picked] ticked at first (what an existing folder holds), at most [max], Done hands them over instead of changing the grid. */
     /** [only]: an app's ([Links.Item.group]) channels alone, from "+ Add"'s "Pin a VTVgo channel". [paste]: a card on top with a QR to TV Home's own page, where a link is pasted from a phone ([ManageServer.PASTE_HASH]). */
-    fun show(a: Activity, mode: Mode, title: String, now: String = "", only: String? = null, paste: Boolean = false, actions: Boolean = false, pick: ((List<String>) -> Unit)? = null, picked: List<String> = emptyList(), max: Int = Int.MAX_VALUE, onPick: (String) -> Unit = {}): Dialog {
+    fun show(a: Activity, mode: Mode, title: String, now: String = "", only: String? = null, paste: Boolean = false, actions: Boolean = false, last: Boolean = false, pick: ((List<String>) -> Unit)? = null, picked: List<String> = emptyList(), max: Int = Int.MAX_VALUE, onPick: (String) -> Unit = {}): Dialog {
         val d = a.resources.displayMetrics.density
         fun dp(v: Number) = (v.toFloat() * d).toInt()
         val dm = a.resources.displayMetrics
@@ -343,6 +345,7 @@ object Picker {
             val got = ArrayList<Item>()
             if (only == null) {                                         // one app's channels alone: no apps, shortcuts, widgets
             if (mode == Mode.TARGET) got.add(Item("", a.getString(R.string.pk_none), null, "", 0))
+            if (mode == Mode.TARGET && last) got.add(Item(LAST, a.getString(R.string.qk_last), null, a.getString(R.string.qk_last_tag), 0, R.drawable.ic_power))   // the power-on slot only: no app, "the one open when the TV turned off"
             if (mode == Mode.TARGET && actions) got.add(Item(Target.CONTROL, a.getString(R.string.cc_title), null, a.getString(R.string.pk_over_apps), 0, R.drawable.ic_settings))   // a key's action: the Control Center over any app
             for (p in apps) got.add(Item(p.pkg, p.label, p, if (p.pkg in hidden && mode == Mode.GRID) a.getString(R.string.pk_hidden) else "", 0))
             if (mode == Mode.CHOOSE) { allKeys = apps.map { it.pkg }; chosen.clear(); if (pick == null) chosen.addAll(apps.map { it.pkg }.filter { it !in hidden }) else chosen.addAll(picked); a.runOnUiThread { labels() }

@@ -708,7 +708,7 @@ Phím màu, phím số và nút đã hết tác dụng có thể mở app bạn 
 
 1. Trên TV: biểu tượng **⚙** góc trên → **Cài đặt nhanh** → **Tùy chỉnh** → **Phím & khởi động** → **Phím nhanh**. Điện thoại, máy tính: cùng tên, trong thẻ **Phím & khởi động**.
 2. Chọn ô của một phím, rồi chọn app, lối tắt hoặc live widget. Lần đầu chọn, phím tự bật. Ngoài TV Home, TV hiện "TV Setup đã mở…" để biết không phải TV lỗi.
-3. Muốn một app tự mở khi bật TV: chọn nó ở ô **Khi bật TV**. Chỉ mở một lần mỗi lần bật, và không mở nếu TV đã vào app khác.
+3. Ô **Khi bật TV**: chọn một app, hoặc **Ứng dụng vừa dùng** (app đang chạy lúc tắt TV). Mở một lần mỗi lần bật, không mở nếu TV đã vào app khác. Chọn cái này thì cái kia tắt.
 
 | Phím | Gán được khi nào |
 | --- | --- |
@@ -735,6 +735,7 @@ Phím nhanh mở app ngay từ màn hình chính bằng một phím số hoặc 
 3. Ô đã gán hiện banner hoặc icon app to. Bấm đúng phím số hoặc màu trên remote thật thì ô tương ứng được chọn.
 
 - Ô **Khi bật TV**: chọn app = tự mở, xóa = tắt. Nút **Tự mở … khi bật TV**: mở app đó (trống: TV Home) dù TV tự vào HDMI hay app khác, trừ lúc cast.
+- Cùng ô đó có **Ứng dụng vừa dùng**: mở app đang chạy lúc tắt TV (mặc định tắt).
 - Live widget cũng gán được và hiện icon riêng.
 
 ## Sửa phím chết, giữ để đổi
@@ -1000,7 +1001,7 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 | Thẻ | Làm gì |
 | --- | --- |
 | 🔊 Giới hạn âm lượng | Theo giờ, tối đa 10 đến 90%, cho loa TV. Không chạy nếu dùng loa HDMI ngoài, hay khi đang nghe tiếng TV qua 🎧 (loa TV im khi đó). |
-| 🧹 Báo khi RAM đầy | Báo khi RAM đạt 80 đến 95%. Mặc định tắt. |
+| 🧹 Báo khi RAM đầy | Báo khi RAM đạt 80 đến 95%. **Tự dọn RAM**: RAM quá mức thì TV đóng app nền như nút Dọn RAM (trừ app đang xem, TV Home, app "Giữ lại"), 10 phút một lần. Mặc định tắt. |
 
 > 💡 Tất cả nằm trên TV và cần TV Setup. TV ngủ hay máy bạn tắt vẫn có hiệu lực.
 

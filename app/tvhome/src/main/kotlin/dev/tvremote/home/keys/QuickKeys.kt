@@ -87,8 +87,9 @@ object QuickKeys {
         fun targetOf(code: Int, c: JSONObject = Store.get(a)): String = if (code == POWER) Keys.powerApp(c) else HomeConfig.keyApps(c.optJSONObject("keyapps"))[code].orEmpty()
         fun words(code: Int) = if (code == POWER) a.getString(R.string.qk_power) else Keys.name(a, code)
         fun choose(code: Int) {
-            Picker.show(a, Picker.Mode.TARGET, words(code), targetOf(code), actions = code != POWER) { t ->   // the power-on slot opens an app: an action needs a key press
-                if (code == POWER) Keys.setPowerApp(a, t)                 // the slot alone decides
+            val lastNow = code == POWER && Keys.powerLast(Store.get(a))
+            Picker.show(a, Picker.Mode.TARGET, words(code), if (lastNow) Picker.LAST else targetOf(code), actions = code != POWER, last = code == POWER && Keys.last(a)) { t ->   // the power-on slot opens an app: an action needs a key press
+                if (code == POWER) { if (t == Picker.LAST) Keys.setPowerLast(a) else Keys.setPowerApp(a, t) }                 // the slot alone decides
                 else {
                     val m = JSONObject(); for ((k, v) in HomeConfig.keyApps(Store.get(a).optJSONObject("keyapps"))) if (k != code) m.put(k.toString(), v)
                     if (t.isNotEmpty()) m.put(code.toString(), t)
@@ -104,7 +105,7 @@ object QuickKeys {
             always.visibility = if (Keys.all(a)) View.VISIBLE else View.GONE
             always.isSelected = c.optBoolean("autoall")
             // where it goes, in the words: "Luôn về khi bật TV" did not say to what
-            val to = Keys.powerApp(c).let { if (it.isNotEmpty()) Targets.label(a, it) else "TV Home" }
+            val to = Keys.powerApp(c).let { if (it.isNotEmpty()) Targets.label(a, it) else if (Keys.powerLast(c)) a.getString(R.string.qk_last).lowercase() else "TV Home" }
             always.pillText(a.getString(R.string.qk_always, to, said(always.isSelected)))
             hint.text = a.getString(if (!Keys.setup(a)) R.string.k_need_setup else if (!Keys.can(a)) R.string.k_need_adb else R.string.k_everywhere)
         }
@@ -122,11 +123,12 @@ object QuickKeys {
                     grid.removeAllViews(); tiles.clear()
                     fun slot(code: Int): Keypad.Slot {
                         val target = targetOf(code, conf)
+                        val lastApp = code == POWER && Keys.powerLast(conf)
                         val art = pics[code]
                         val missing = target.isNotEmpty() && art == null                    // the app is gone: the slot shows it, to be cleared or changed
                         val off = code != POWER && have != null && code !in have
                         val info = if (Target.kind(target) == Target.Kind.TILE) LiveWidgets.available(a).firstOrNull { it.key == target } else null
-                        return Keypad.Slot(if (art != null) art.label else if (missing) Targets.label(a, target) else if (off) a.getString(R.string.qk_no_key) else "", art, words(code), target.isEmpty(),
+                        return Keypad.Slot(if (art != null) art.label else if (lastApp) a.getString(R.string.qk_last) else if (missing) Targets.label(a, target) else if (off) a.getString(R.string.qk_no_key) else "", art, words(code), target.isEmpty() && !lastApp,
                             if (art == null) COLOUR[code] ?: PK_EMPTY else 0,
                             icon = if (code == POWER) R.drawable.ic_power else if (Target.kind(target) == Target.Kind.TILE) (info?.let { LiveWidgets.iconRes(a, it) } ?: R.drawable.ic_gauge) else 0,
                             dead = code != POWER && code in HomeConfig.KEY_NUMBERS + HomeConfig.KEY_COLOURS && off && target.isEmpty())

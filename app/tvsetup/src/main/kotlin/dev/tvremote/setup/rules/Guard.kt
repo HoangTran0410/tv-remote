@@ -67,6 +67,25 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
                 if (m.ramQuietUntil > now + 30 * 60_000L) 0L else m.ramQuietUntil)
         }
 
+        /** At most one automatic free in this long. */
+        const val RAM_FREE_EVERY_MS = 10 * 60_000L
+
+        internal data class RamStep(val high: Int, val free: Boolean, val notice: Boolean)
+
+        /**
+         * One memory check. [over]: the memory is past the line now; [high] the checks in a row before. Two in a row act (not a moment's
+         * peak while an app starts). The automatic free comes first, at most once per [RAM_FREE_EVERY_MS]; the notice only when it is
+         * not free to act (off, or it ran a moment ago and the memory is still full), at most once per 30 min.
+         */
+        internal fun ramStep(over: Boolean, high: Int, notice: Boolean, auto: Boolean, now: Long, noticeQuietUntil: Long, tick: Long, freeQuietUntil: Long): RamStep {
+            if (!over) return RamStep(0, false, false)
+            val h = minOf(high + 1, 2)
+            if (h < 2) return RamStep(h, false, false)
+            if (auto && tick >= freeQuietUntil) return RamStep(0, true, false)
+            if (notice && now >= noticeQuietUntil) return RamStep(0, false, true)
+            return RamStep(h, false, false)
+        }
+
         /** (total, available) memory in MB, from /proc/meminfo, which any app may read. */
         fun memory(): Pair<Long, Long> {
             val m = try { java.io.File("/proc/meminfo").readText() } catch (e: Exception) { "" }
@@ -86,6 +105,7 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
     private val audio = c.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var volSaidAt = 0L
     private var ramHigh = 0                                           // checks in a row with the memory past the line
+    private var ramFreeQuietUntil = 0L                                // the automatic free ran: not again before this (SystemClock.elapsedRealtime)
     private var ramQuietUntil = 0L                                    // the notice was shown: not again before this
     private val volume = object : BroadcastReceiver() {                // every change, from any remote: turned down at once
         override fun onReceive(ctx: Context, i: Intent) { capVolume() }
@@ -178,13 +198,17 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
             next = minOf(next, 30_000)
         }
 
-        // ---- memory: full at two checks in a row (half a minute apart), not a moment's peak while an app starts
+        // ---- memory: full at two checks in a row (half a minute apart), not a moment's peak while an app starts. The same check
+        // serves the notice ("on") and the automatic free ("auto"): with both off it does not run
         val ram = Rules.ram(o)
-        if (ram.optBoolean("on")) {
+        if (ram.optBoolean("on") || ram.optBoolean("auto")) {
             val (total, avail) = memory()
-            if (on && total > 0 && (total - avail) * 100 >= total * ram.optInt("pct", 90)) {
-                if (++ramHigh >= 2 && now >= ramQuietUntil) { ramQuietUntil = now + 30 * 60_000L; ramHigh = 0; warn("ram", 0, "") }
-            } else ramHigh = 0
+            val over = on && total > 0 && (total - avail) * 100 >= total * ram.optInt("pct", 90)
+            val tick = android.os.SystemClock.elapsedRealtime()       // not the clock: it jumps on a box that booted in the wrong year
+            val step = ramStep(over, ramHigh, ram.optBoolean("on"), ram.optBoolean("auto"), now, ramQuietUntil, tick, ramFreeQuietUntil)
+            ramHigh = step.high
+            if (step.free) { ramFreeQuietUntil = tick + RAM_FREE_EVERY_MS; android.util.Log.i("tvr-guard", "memory over ${ram.optInt("pct", 90)}%: closing background apps (${total - avail}/$total MB used)");dev.tvremote.setup.home.LiveWidgets.act(c, dev.tvremote.setup.home.LiveWidgets.RAM) }   // the Free RAM button's own action: never the app in front, TV Home, TV Setup, the keyboard, must-keep apps
+            if (step.notice) { ramQuietUntil = now + 30 * 60_000L; warn("ram", 0, "") }
             next = minOf(next, 30_000)
         }
 
