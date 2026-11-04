@@ -152,7 +152,7 @@ class DreamBody(private val c: Context) {
     /** Inside the dark hours: the black view on, the clock hidden, the wall's drift paused; outside, all back. Returns whether it is dark. */
     private fun dark(): Boolean {
         val b = blackout ?: return false
-        val on = HomeConfig.darkAt(darkSpan, Calendar.getInstance().get(Calendar.HOUR_OF_DAY))
+        val on = HomeConfig.darkAt(darkSpan, Calendar.getInstance().let { it.get(Calendar.HOUR_OF_DAY) * 60 + it.get(Calendar.MINUTE) })
         if ((b.visibility == View.VISIBLE) == on) return on
         b.visibility = if (on) View.VISIBLE else View.GONE
         block.visibility = if (on) View.INVISIBLE else View.VISIBLE

@@ -16,15 +16,21 @@ class HomeConfigTest {
     private fun hidden(c: JSONObject) = c.getJSONArray("hidden").let { a -> List(a.length()) { a.getString(it) } }
 
     @Test fun darkHoursWrapMidnightAndDefaultOff() {
+        fun cl(v: String) = HomeConfig.clean(JSONObject().put("ddark", v)).getString("ddark")
         assertEquals("", HomeConfig.clean(JSONObject()).getString("ddark"))
-        assertEquals("", HomeConfig.clean(JSONObject().put("ddark", "5-9")).getString("ddark"))
-        assertEquals("23-6", HomeConfig.clean(JSONObject().put("ddark", "23-6")).getString("ddark"))
-        assertEquals(false, HomeConfig.darkAt("", 3))
-        assertEquals(false, HomeConfig.darkAt("junk", 3))
-        assertEquals(true, HomeConfig.darkAt("22-6", 22)); assertEquals(true, HomeConfig.darkAt("22-6", 23))
-        assertEquals(true, HomeConfig.darkAt("22-6", 0)); assertEquals(true, HomeConfig.darkAt("22-6", 5))
-        assertEquals(false, HomeConfig.darkAt("22-6", 6)); assertEquals(false, HomeConfig.darkAt("22-6", 21))
-        assertEquals(true, HomeConfig.darkAt("0-6", 0)); assertEquals(false, HomeConfig.darkAt("0-6", 23))
+        assertEquals("", cl("5-9x")); assertEquals("", cl("junk")); assertEquals("", cl("24:00-06:00")); assertEquals("", cl("22:15-06:00"))
+        assertEquals("", cl("22:00-22:00")); assertEquals("", cl("6-6"))                  // start == end = off
+        assertEquals("22:00-06:00", cl("22-6")); assertEquals("23:00-06:00", cl("23-6")) // the older hours format
+        assertEquals("23:30-05:30", cl("23:30-05:30")); assertEquals("13:00-15:00", cl("13:00-15:00"))
+        fun at(v: String, h: Int, m: Int) = HomeConfig.darkAt(v, h * 60 + m)
+        assertEquals(false, at("", 3, 0)); assertEquals(false, at("junk", 3, 0)); assertEquals(false, at("22:00-22:00", 22, 0))
+        assertEquals(true, at("22:00-06:00", 22, 0)); assertEquals(false, at("22:00-06:00", 21, 59))   // wraps midnight, start in
+        assertEquals(true, at("22:00-06:00", 23, 59)); assertEquals(true, at("22:00-06:00", 0, 0))
+        assertEquals(true, at("22:00-06:00", 5, 59)); assertEquals(false, at("22:00-06:00", 6, 0))       // end out
+        assertEquals(true, at("22-6", 3, 0)); assertEquals(false, at("22-6", 12, 0))                      // the older format
+        assertEquals(false, at("13:00-15:00", 12, 59)); assertEquals(true, at("13:00-15:00", 13, 0))     // same-day range
+        assertEquals(true, at("13:00-15:00", 14, 59)); assertEquals(false, at("13:00-15:00", 15, 0))
+        assertEquals(true, at("23:30-00:30", 0, 29)); assertEquals(false, at("23:30-00:30", 23, 29)); assertEquals(false, at("23:30-00:30", 0, 30))
     }
 
     @Test fun centerDefaultsOffAndIsALook() {

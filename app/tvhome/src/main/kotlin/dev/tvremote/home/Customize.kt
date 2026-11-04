@@ -111,6 +111,49 @@ object Customize {
     private fun rowsWord(a: Context, v: Double) = if (v < 1) a.getString(R.string.c_rows_auto) else String.format(java.util.Locale.ROOT, "%.1f", v)
 
     /**
+     * A time of day ("HH:MM", half hours) with the remote, in the stepper's look: Up / Down / Left / Right 30 minutes (a held key
+     * repeats), OK saves through [save], Back cancels. Centered over the panel (dimmed), which stays.
+     */
+    private fun timeStepper(a: Activity, title: String, start: String, save: (String) -> Unit) {
+        val d = a.resources.displayMetrics.density
+        fun dp(v: Number) = (v.toFloat() * d).toInt()
+        var m = (start.substring(0, 2).toInt() * 60 + start.substring(3, 5).toInt()) / 30 * 30
+        var saved = false
+        val dialog = Dialog(a, R.style.Menu)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        val num = Font.on(TextView(a)).apply { textSize = 44f; setTextColor(Color.WHITE); gravity = Gravity.CENTER; typeface = Font.light }
+        fun say() { num.text = "%02d:%02d".format(m / 60, m % 60) }
+        val box = LinearLayout(a).apply {
+            orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL; isFocusable = true; isFocusableInTouchMode = true
+            setPadding(dp(28), dp(18), dp(28), dp(18))
+            background = GradientDrawable().apply { cornerRadius = dp(22).toFloat(); setColor(STEP_FILL or 0xFF000000.toInt())   /* opaque: it sits over the panel's rows, whose words showed through */; setStroke(dp(1), ACCENT) }
+            addView(Font.on(TextView(a)).apply { text = title; textSize = 15f; setTextColor(DIM); gravity = Gravity.CENTER })
+            addView(num, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(4) })
+            addView(Font.on(TextView(a)).apply { text = a.getString(R.string.c_time_keys); textSize = 13f; setTextColor(DIM); gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(4) })
+        }
+        box.setOnKeyListener { _, code, e ->
+            if (e.action != android.view.KeyEvent.ACTION_DOWN) return@setOnKeyListener false
+            when (code) {
+                android.view.KeyEvent.KEYCODE_DPAD_UP, android.view.KeyEvent.KEYCODE_DPAD_RIGHT -> m = (m + 30) % 1440
+                android.view.KeyEvent.KEYCODE_DPAD_DOWN, android.view.KeyEvent.KEYCODE_DPAD_LEFT -> m = (m + 1440 - 30) % 1440
+                android.view.KeyEvent.KEYCODE_DPAD_CENTER, android.view.KeyEvent.KEYCODE_ENTER -> { saved = true; dialog.dismiss(); return@setOnKeyListener true }
+                else -> return@setOnKeyListener false
+            }
+            say(); true
+        }
+        say()
+        dialog.setContentView(box)
+        dialog.window?.apply {
+            setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.TRANSPARENT)); setDimAmount(0.5f)
+            setLayout(dp(300), ViewGroup.LayoutParams.WRAP_CONTENT)
+            attributes = attributes.apply { gravity = Gravity.CENTER }   // over the panel, which stays: a time changes nothing on the home screen to watch (unlike [stepper])
+        }
+        dialog.setOnDismissListener { if (saved) save("%02d:%02d".format(m / 60, m % 60)) }   // the panel never hid: focus goes back to the From / To tile
+        dialog.setOnShowListener { box.requestFocus(); box.post { box.requestFocus() } }
+        dialog.show()
+    }
+
+    /**
      * "rows" or "cols" with the remote: rows ◀ ▶ a tenth, ▲ ▼ a whole row; columns ◀ ▶ ▲ ▼ one. OK or Back done. The panel steps
      * aside ([panel] hidden) and the number sits in the clock's corner with no dim, so each step shows on the home screen at once
      * (saved a moment after the last press: holding a key does not rebuild it every repeat). Then the panel is back as it was.
@@ -389,10 +432,10 @@ object Customize {
         fun markEvery() { val e = Store.get(a).optString("wevery"); for ((k, v) in chips) v.isSelected = k == e }
         // switches as tiles, one to a row (two side by side were ~200 dp each: a name on two lines left its neighbour short): an icon, a name, a line under it; on = a blue tint with a blue edge, as everywhere in the app
         // with [choices] (value to its words) the tile steps through them on each press instead of switching on / off; on = not the first
-        fun tile(res: Int, text: String, sub: String?, key: String, choices: List<Pair<String, String>>? = null, then: () -> Unit = {}) {
-            var pick = choices?.indexOfFirst { it.first == conf.optString(key) }?.coerceAtLeast(0) ?: 0
+        fun tile(res: Int, text: String, sub: String?, key: String, choices: List<Pair<String, String>>? = null, then: () -> Unit = {}, read: () -> String = { conf.optString(key) }, write: ((String) -> Unit)? = null) {
+            var pick = choices?.indexOfFirst { it.first == read() }?.coerceAtLeast(0) ?: 0
             var viaSetup = false                                       // "stats": TV Setup is on the TV and holds the switch (OwnReport)
-            var on = if (key == "stats") dev.tvremote.report.OwnReport.own(a) else if (choices != null || key == "rows" || key == "shade") pick > 0 || key == "cols" || key == "watchAt" || key == "rows" || key == "shade" else conf.optBoolean(key, true)
+            var on = if (key == "stats") dev.tvremote.report.OwnReport.own(a) else if (choices != null || key == "rows" || key == "shade") pick > 0 || key == "cols" || key == "ddark_from" || key == "ddark_to" || key == "watchAt" || key == "rows" || key == "shade" else conf.optBoolean(key, true)
             val ic = ImageView(a).apply { setImageResource(res) }
             val state = label("", 12f, DIM)
             val t = LinearLayout(a).apply {
@@ -421,13 +464,19 @@ object Customize {
             t.setOnClickListener {
                 if (key == "stats") { if (!viaSetup) { on = !on; dev.tvremote.report.OwnReport.setOwn(a, on); paint() }; return@setOnClickListener }
                 if (key == "wcol") { ownColours(a, dialog) { ownFace(); markAll() }; return@setOnClickListener }
+                if (key == "ddark_from" || key == "ddark_to") {         // a time of day: its own small stepper, 30 minutes a press
+                    timeStepper(a, text, read()) { v -> write?.invoke(v); pick = choices?.indexOfFirst { it.first == v }?.coerceAtLeast(0) ?: 0; paint() }
+                    return@setOnClickListener
+                }
                 if (key == "rows" || key == "cols" || key == "shade") {
                     stepper(a, dialog, key) { pick = choices?.indexOfFirst { it.first == Store.get(a).optString(key) }?.coerceAtLeast(0) ?: 0; paint() }
                     return@setOnClickListener
                 }
                 if (choices != null) {                                 // the next one in turn (motion, focus)
-                    pick = (pick + 1) % choices.size; on = pick > 0 || key == "cols"; paint()
-                    Store.change(a, JSONObject().put(key, choices[pick].first)); then(); return@setOnClickListener
+                    if (write != null) pick = choices.indexOfFirst { it.first == read() }.coerceAtLeast(0)   // Left / Right may have moved it
+                    pick = (pick + 1) % choices.size; on = pick > 0 || key == "cols" || key == "ddark_from" || key == "ddark_to"; paint()
+                    if (write != null) write(choices[pick].first) else Store.change(a, JSONObject().put(key, choices[pick].first))
+                    then(); return@setOnClickListener
                 }
                 on = !on
                 try { Store.change(a, JSONObject().put(key, on)) } catch (e: SecurityException) { on = !on; systemDream(a) }
@@ -886,7 +935,24 @@ object Customize {
         groups[4].fill = {
             tile(R.drawable.ic_moon, a.getString(R.string.dream), a.getString(R.string.dream_sub), "dream")
             tile(R.drawable.ic_clock, a.getString(R.string.dface), null, "dface", HomeConfig.DFACES.map { it to a.getString(when (it) { "modern" -> R.string.home_ov_modern; "digital" -> R.string.home_ov_digital; else -> R.string.dface_big }) })
-            tile(R.drawable.ic_moon, a.getString(R.string.ddark), null, "ddark", HomeConfig.DDARKS.map { it to if (it.isEmpty()) a.getString(R.string.ddark_off) else it.split("-").let { (x, y) -> "$x:00–$y:00" } })   // black screen in the night hours (OLED care), default off
+            // dark hours (OLED care, default off): a switch, and when on the From and To tiles, OK opens a stepper (timeStepper)
+            fun span() = HomeConfig.dark(Store.get(a).optString("ddark")).ifEmpty { null }?.split("-")
+            fun setSpan(from: String, to: String) { Store.change(a, JSONObject().put("ddark", if (from == to) "" else "$from-$to")) }
+            val halves = List(48) { "%02d:%02d".format(it / 2, it % 2 * 30).let { t -> t to t } }
+            val darkBox = LinearLayout(a).apply { orientation = LinearLayout.VERTICAL }
+            tile(R.drawable.ic_moon, a.getString(R.string.ddark), null, "ddark_on", listOf("" to a.getString(R.string.w_off).replaceFirstChar { it.uppercase() }, "1" to a.getString(R.string.w_on).replaceFirstChar { it.uppercase() }),
+                then = { darkBox.visibility = if (span() != null) View.VISIBLE else View.GONE },
+                read = { if (span() != null) "1" else "" },
+                write = { Store.change(a, JSONObject().put("ddark", if (it.isEmpty()) "" else HomeConfig.DARK_ON)) })
+            val outer = col; col = darkBox
+            for (end in listOf(false, true)) {
+                val label = a.getString(if (end) R.string.ddark_to else R.string.ddark_from)
+                tile(R.drawable.ic_clock, label, null, if (end) "ddark_to" else "ddark_from", halves, read = { (span() ?: HomeConfig.DARK_ON.split("-"))[if (end) 1 else 0] },
+                    write = { v -> val s = span() ?: HomeConfig.DARK_ON.split("-"); if (end) setSpan(s[0], v) else setSpan(v, s[1]) })
+            }
+            col = outer
+            darkBox.visibility = if (span() != null) View.VISIBLE else View.GONE
+            col.addView(darkBox, LinearLayout.LayoutParams(-1, -2).apply { if (col.childCount > 0) topMargin = gap })
             tile(R.drawable.ic_gauge, a.getString(R.string.stats), null, "stats")   // anonymous stats (OwnReport): TV Setup's switch when it is installed, else this one
             // another launcher as the home screen: TV Home has no ADB to turn the TV's own one off (without that Home goes on landing on it,
             // a BRAVIA on Android 9), so TV Setup's picker does it, opened on that screen; without TV Setup the row says how to get it
