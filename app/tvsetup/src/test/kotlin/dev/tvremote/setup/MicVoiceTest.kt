@@ -14,6 +14,20 @@ import org.junit.Test
 class MicVoiceTest {
     private fun s(ready: Boolean, listening: Boolean, code: Int, action: Int, repeat: Int = 0, down: Long = 0, at: Long = 0) = MicVoice.step(ready, listening, code, action, repeat, down, at)
 
+    /** The texts the FPT box gave (2026-11-05) through the real Voice: a garbled grammar text must not hide a free search. */
+    @Test fun pickReadsWhatEachTextParsesTo() {
+        dev.tvremote.core.scenes.Voice.phrases = dev.tvremote.core.scenes.Phrases(java.io.File("../shared/web/voice/phrases.json").readText())
+        val apps = mapOf("com.google.android.youtube.tv" to "YouTube")
+        fun pick(g: String, f: String) = VoiceProtocol.pick(listOf(g, f), { dev.tvremote.core.scenes.Voice.kind(it, dev.tvremote.core.scenes.Voice.parse(it, apps, emptyMap())) }) { dev.tvremote.core.scenes.Voice.asSearch(it) }
+        assertEquals("sơn tùng trên youtube", pick("sau home tục menu 6", "sơn tùng trên youtube"))
+        assertEquals("sơn tùng trên youtube", pick("sơn tùng chia mưu sinh", "sơn tùng trên youtube"))
+        assertTrue(pick("tìm ngay xuống thanh đổi", "kỷ niệm ngày xưa anh nổi").endsWith(" kỷ niệm ngày xưa anh nổi"))
+        assertTrue(dev.tvremote.core.scenes.Voice.looksLikeSearch(pick("tìm ngay xuống thanh đổi", "kỷ niệm ngày xưa anh nổi")))
+        assertEquals("tìm ngày xưa anh nói", pick("tìm ngay xuống thanh đổi", "tìm ngày xưa anh nói"))
+        assertEquals("hẹn giờ tắt 30 phu", pick("hẹn giờ tắt 30 phu", "hẹn giờ tắt mà ngươi phú"))
+        assertEquals("tắt tiếng", pick("tắt tiếng", "tắt tiếng"))
+    }
+
     @Test fun offOrNoRecognizerPassesEverything() {
         for (k in MicVoice.KEYS) for (a in 0..1) assertEquals(Step.PASS, s(false, false, k, a))
         assertEquals(Step.PASS, s(true, false, 24, 0))                  // another key is never ours

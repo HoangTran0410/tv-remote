@@ -109,15 +109,27 @@ object VoiceProtocol {
     /** The commands' list heard every word with this confidence: a command said clearly, so no second look at the sound is needed. */
     fun sure(confs: List<Double>): Boolean = confs.isNotEmpty() && confs.min() >= 0.9 && confs.average() >= 0.95
 
+    const val SEARCH = "search"                                    // what [pick]'s `kind` answers for a search; any other non-null answer names a command
+
     /**
-     * Which of [heard] (grammar text, then free text) TV Setup acts on: the first that is a command ([isCommand]: Voice.parse names it);
-     * else the free text when it is a search ([isSearch]: a search word or connector), which goes on as one ("Ngày xưa anh nói" forced into
-     * "tiếng ngay xuống thanh đổi" is never a command, so the free text wins there); else the grammar text, as before free speech existed
-     * ("hẹn giờ tắt 30 phu" is closer to what was said than a free "phố" and goes to the TV's own search fallback).
+     * Which text TV Setup acts on, from [heard] (grammar text, then free text) when the grammar was not sure. [kind] says what a text is
+     * (null nothing, [SEARCH], else the command it parses to); [asSearch] turns a text into a search sentence.
+     *  a. free is a search: free ("sơn tùng trên youtube" against a garbled "sau home tục menu 6").
+     *  b. grammar is a search and free is no command: a search with the free text ("tìm ngay xuống thanh đổi" against "kỷ niệm ngày xưa anh nổi").
+     *  c. grammar is a command: it, unless free is a different command ("hẹn giờ tắt 30 phu" stays; free "mở youtube" against "tiếng ngay" wins).
+     *  d. neither: the grammar text, as before free speech existed.
      */
-    fun pick(heard: List<String>, isSearch: (String) -> Boolean, isCommand: (String) -> Boolean): String {
-        heard.firstOrNull { it.isNotEmpty() && isCommand(it) }?.let { return it }
-        val free = heard.lastOrNull { it.isNotEmpty() }.orEmpty()
-        return if (heard.size > 1 && isSearch(free)) free else heard.firstOrNull { it.isNotEmpty() } ?: free
+    fun pick(heard: List<String>, kind: (String) -> String?, asSearch: (String) -> String): String {
+        val g = heard.firstOrNull { it.isNotEmpty() }.orEmpty()
+        val f = heard.lastOrNull { it.isNotEmpty() }.orEmpty()
+        if (heard.size < 2 || g == f) return g
+        val gk = kind(g); val fk = kind(f)
+        return when {
+            fk == SEARCH -> f
+            gk == SEARCH -> if (fk == null) asSearch(f) else f
+            gk != null -> if (fk != null && fk != gk) f else g
+            fk != null -> f
+            else -> g
+        }
     }
 }

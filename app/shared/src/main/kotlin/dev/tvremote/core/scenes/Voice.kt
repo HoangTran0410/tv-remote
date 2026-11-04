@@ -66,6 +66,17 @@ object Voice {
         return ph.searchBare?.matches(s) == true || ph.connect?.matches(s) == true
     }
 
+    /** What [parsed] ([parse] of [text]) is, as a short key to compare two sentences: "search" (a parsed search, a search word or a connector), the command itself, or null when it is neither. */
+    fun kind(text: String, parsed: Command?): String? = when {
+        parsed is Command.Search -> "search"
+        parsed != null -> parsed.toString()
+        looksLikeSearch(text) -> "search"
+        else -> null
+    }
+
+    /** [text] as a search sentence: itself when it already is one, else with the list's search verb in front ("kỷ niệm ngày xưa" becomes "tim kiem kỷ niệm ngày xưa"). */
+    fun asSearch(text: String): String = if (looksLikeSearch(text)) text else (phrases?.searchVerb?.let { "$it $text" } ?: text)
+
     /** Politeness and filler at either end ("giúp tôi", "đi", "nhé", "please") taken off; a sentence that is only filler stays as it is. */
     private fun strip(s0: String, ph: Phrases): String {
         var s = s0

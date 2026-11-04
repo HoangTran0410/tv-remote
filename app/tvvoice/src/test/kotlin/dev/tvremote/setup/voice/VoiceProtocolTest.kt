@@ -32,13 +32,17 @@ class VoiceProtocolTest {
     }
 
     @Test fun aCommandWinsElseFreeSpeech() {
-        val cmds = setOf("tắt tiếng", "mở youtube")
-        fun pick(vararg h: String) = VoiceProtocol.pick(h.toList(), { it.startsWith("tìm ") || " trên " in it }) { it in cmds }
+        val cmds = mapOf("tắt tiếng" to "mute", "mở youtube" to "app", "hẹn giờ tắt 30 phu" to "timer30")
+        fun kind(t: String): String? = cmds[t] ?: if (t.startsWith("tìm ") || " trên " in t) VoiceProtocol.SEARCH else null
+        fun pick(vararg h: String) = VoiceProtocol.pick(h.toList(), ::kind) { "tìm $it" }
         assertEquals("tắt tiếng", pick("tắt tiếng", "tắc kiểu"))      // the commands' list is exact: kept
-        assertEquals("tìm ngày xưa anh nổi", pick("tiếng ngay xuống thanh đổi", "tìm ngày xưa anh nổi"))
+        assertEquals("tìm ngày xưa anh nổi", pick("tìm ngay xuống thanh đổi", "tìm ngày xưa anh nổi"))   // a. free is a search
         assertEquals("sơn tùng trên youtube", pick("sau home dụng chơi menu", "sơn tùng trên youtube"))   // a connector: a search
-        assertEquals("hẹn giờ tắt 30 phu", pick("hẹn giờ tắt 30 phu", "hẹn giờ tắt 30 phố"))      // no search word: the commands' text stays
+        assertEquals("tìm kỷ niệm ngày xưa anh nổi", pick("tìm ngay xuống thanh đổi", "kỷ niệm ngày xưa anh nổi"))   // b. grammar a search, free plain words
+        assertEquals("hẹn giờ tắt 30 phu", pick("hẹn giờ tắt 30 phu", "hẹn giờ tắt 30 phố"))      // c. free is nothing: the commands' text stays
         assertEquals("mở youtube", pick("tiếng ngay", "mở youtube"))  // free speech heard a command the list missed
+        assertEquals("mở youtube", pick("tắt tiếng", "mở youtube"))   // c. two different commands: free
+        assertEquals("tắt tiếng", pick("tắt tiếng", "tắt tiếng"))
         assertEquals("tiếng ngay", pick("tiếng ngay", ""))            // no second pass: as before
         assertEquals("", pick("", ""))
     }

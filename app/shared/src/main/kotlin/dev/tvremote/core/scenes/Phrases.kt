@@ -47,6 +47,8 @@ class Phrases(json: String) {
     val connect: Regex? = all("connect").takeIf { it.isNotEmpty() }?.let { Regex("^(.+) (?:" + alt(it) + ") (.+)$") }
     /** "tìm X", "search X": X looked up in the app the person picked ([Voice.Prefs.search]); null before the list has any such verb. */
     val searchBare: Regex? = all("search", "verbs").takeIf { it.isNotEmpty() }?.let { Regex("^(?:" + alt(it) + ") (.+)$") }
+    /** The first search verb of the list ("tim kiem", "search for"), for [Voice.asSearch]; null before the list has any. */
+    val searchVerb: String? = all("search", "verbs").firstOrNull()
     val tuneRe = Regex("^(?:" + alt(tune) + ") (.+)$")
     val channel = Regex("^(?:(?:" + alt(all("channel", "verbs")) + ") )?(?:" + alt(all("channel", "words")) + ") (.+)$")
     val channelNames = Regex("^(?:" + (0 until (o.optJSONArray("channel_names")?.length() ?: 0)).joinToString("|") { o.getJSONArray("channel_names").getString(it) } + ")$")
