@@ -102,7 +102,7 @@ is still poor in real use, the next step is Google's recognizer for searches onl
 | tile, now TV Setup Voice → "mic:google" | `mic_engine` auto, `mic` off: the TV's own Google Assistant again |
 | tile, now Google → "mic:tv", add-on ready | `MicVoice.useTv`: `mic_offline` on, `mic_engine` tv, `mic` on |
 | tile, now Google → "mic:tv", add-on missing | opens `VoiceActivity` (what it does better, Install and use / Later); Install = `useTv`, progress shown, closing it leaves the install running |
-| hold the tile → "voice" | opens `VoiceActivity`: switch back, Remove (asks first) |
+| hold the tile → "voice" | opens `VoiceActivity`: rows Language (+ Remove, asks first) and Listen for (commands only / + free speech); buttons: switch back, Close |
 | an older TV Setup (no `mic_engine` in its answer) | the tile stays the old on/off of `mic` |
 
 TV Setup's More TV apps row also shows TV Setup Voice (not in `Bundle.apps`, which installs by itself): OK opens `VoiceActivity`.

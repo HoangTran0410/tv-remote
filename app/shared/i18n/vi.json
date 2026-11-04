@@ -2261,6 +2261,7 @@
  "tvvoice.remove": "Gỡ",
  "tvvoice.remove_lang": "Gỡ {lang}",
  "tvvoice.lang": "Ngôn ngữ",
+ "tvvoice.mode": "Nghe",
  "tvvoice.lang_none": "Bản phát hành mới nhất chưa có {lang}.",
  "tvvoice.remove_ask": "Gỡ giọng nói {lang}?",
  "tvvoice.remove_note": "Gỡ hết ngôn ngữ thì nút mic quay về Google. Cài lại lúc nào cũng được.",

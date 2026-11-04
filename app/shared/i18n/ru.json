@@ -2333,6 +2333,7 @@
  "tvvoice.remove": "Удалить",
  "tvvoice.remove_lang": "Удалить {lang}",
  "tvvoice.lang": "Язык",
+ "tvvoice.mode": "Слушать",
  "tvvoice.lang_none": "В последнем выпуске пока нет: {lang}.",
  "tvvoice.remove_ask": "Удалить голос ({lang})?",
  "tvvoice.remove_note": "Если языков не останется, кнопка микрофона снова будет открывать Google. Вернуть можно в любой момент.",
