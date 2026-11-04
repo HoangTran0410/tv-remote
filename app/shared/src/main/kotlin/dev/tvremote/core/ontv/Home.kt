@@ -92,7 +92,7 @@ object Home {
 
     /** The newer TV Home put over the one on the TV (its settings stay): checked against the release's signed SHA256SUMS first. */
     @Throws(IOException::class)
-    fun update(adb: Adb, dir: File?, lang: String, go: () -> Boolean = { true }): JSONObject {     // go: as OwnApp.install
+    fun update(adb: Adb, dir: File?, lang: String, go: () -> Boolean = { true }, progress: ((Int) -> Unit)? = null): JSONObject {     // go, progress: as OwnApp.install
         val sh: (String) -> String = { adb.shell(it) }
         val now = call(sh, null)
         if (!now.optBoolean("installed")) throw IOException("home:missing")
@@ -101,7 +101,7 @@ object Home {
         val file = File(dir ?: File(System.getProperty("java.io.tmpdir")), "tv-home-${r.version}.apk")
         PlayProtect.check(dir, r.sha256)                              // refused before: no new "Harmful app blocked" on the TV
         try {
-            r.download(file, null)
+            r.download(file, progress?.let { f -> dev.tvremote.update.Release.Progress { f(it) } })
             if (!go()) return now
             val shown = sh("dumpsys activity activities | grep -m1 -E 'topResumedActivity|mResumedActivity'").contains(HomeConfig.PKG + "/")
             val out = Setup(adb, dir, lang) { }.install(file)

@@ -5,8 +5,11 @@ import java.util.Locale
 internal object TvPaths {
     const val CAST_DIR = "/sdcard/Download"
     const val TMP_DIR = "/data/local/tmp"
-    const val TMP_APK = "$TMP_DIR/tvremote-install.apk"
-    const val TMP_BASE = "$TMP_DIR/tvremote-base.apk"                  // a bundle's base, taken out to read its manifest
+    private val tmpN = java.util.concurrent.atomic.AtomicLong(System.currentTimeMillis() % 1_000_000_000L)
+    /** Where an APK waits on the TV to be installed: one name per install, as two at once (an upload and a link, two tabs) each
+     *  deleted the other's file when it ended. */
+    fun tmpApk(): String = "$TMP_DIR/tvremote-install-${tmpN.incrementAndGet()}.apk"
+    fun tmpBase(): String = "$TMP_DIR/tvremote-base-${tmpN.incrementAndGet()}.apk"   // a bundle's base, taken out to read its manifest
     private const val RESERVE = 16L shl 20                          // never fill the TV to the last byte: it needs room to run
     private val DIGITS = Regex("\\d+")
 

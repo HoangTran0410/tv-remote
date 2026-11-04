@@ -8,6 +8,10 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 - Safer API: deleting, renaming or installing a file needs its path (an empty request no longer deletes the Download folder); an APK whose package name is not a real name is refused before any command uses it; the launcher actions answer only POST; TV Setup's API answers only its own page (not another page on the same TV, such as a web game).
 - Fixes: a job that hits a memory error ends instead of showing "running" for ever; a photo upload cut short is not set as the background; an empty request does not switch the anonymous stats on.
+- Installing or updating TV Home, TV Channels and TV Games shows in Progress with the download % and a Stop button (it used to wait silently until done).
+- Pressing Install twice (two tabs, a double tap) on TV Apps, a launcher, these apps or Optimize TV runs it once; two installs at the same time no longer delete each other's file.
+- A failed download from GitHub or the site says the Internet could not be reached, not "ADB is not on yet".
+- TV Setup's web server: one device on the network can hold at most 16 connections, and a request body must arrive within 10 s, so a slow or stuck device cannot block everyone else.
 
 ## 0.44.1 - 2026-11-04
 

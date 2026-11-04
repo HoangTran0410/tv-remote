@@ -54,10 +54,12 @@ class HttpServer(private val handler: Handler) {
                     if (length > max) return null
                     val b = ByteArray(length.toInt())
                     var off = 0
+                    val until = System.currentTimeMillis() + JSON_MS            // a whole small body, not each read: a byte every 29 s held a slot for hours
                     while (off < b.size) {
                         val n = body.read(b, off, b.size - off)
                         if (n < 0) break
                         off += n
+                        if (off < b.size && System.currentTimeMillis() > until) return null
                     }
                     small = b
                     b
@@ -113,6 +115,9 @@ class HttpServer(private val handler: Handler) {
     // TV Setup listens on the whole network: a host that opens connections without end must not use up the TV's threads and
     // file descriptors (the scrcpy and ADB sockets need them too). A page uses a handful at once; video and sound one each.
     private val slots = Semaphore(48)
+    // and one host alone may not take them all (a slow sender per connection): the page, its pictures, video and sound fit in 16.
+    // This device itself (the computer app's page, the TV's Manage screen) is not counted.
+    private val perPeer = java.util.concurrent.ConcurrentHashMap<String, java.util.concurrent.atomic.AtomicInteger>()
     @Volatile private var server: ServerSocket? = null
     @Volatile private var secure = false
 
@@ -131,8 +136,11 @@ class HttpServer(private val handler: Handler) {
             while (!s.isClosed) {
                 try {
                     val c = s.accept()
-                    if (!slots.tryAcquire()) { try { c.close() } catch (ignored: IOException) { }; continue }
-                    pool.execute { try { serve(c) } finally { slots.release() } }
+                    val peer = c.inetAddress
+                    val n = if (peer == null || trusted(peer)) null else (peer.hostAddress ?: "").let { k -> perPeer[k] ?: java.util.concurrent.atomic.AtomicInteger().let { perPeer.putIfAbsent(k, it) ?: it } }   // no computeIfAbsent: API 24
+                    if (n != null && n.incrementAndGet() > PER_PEER) { n.decrementAndGet(); try { c.close() } catch (ignored: IOException) { }; continue }
+                    if (!slots.tryAcquire()) { n?.decrementAndGet(); try { c.close() } catch (ignored: IOException) { }; continue }
+                    pool.execute { try { serve(c) } finally { slots.release(); n?.decrementAndGet() } }
                 } catch (e: IOException) {
                     if (s.isClosed) break
                     try { Thread.sleep(100) } catch (ignored: InterruptedException) { }   // out of descriptors: don't spin
@@ -227,6 +235,13 @@ class HttpServer(private val handler: Handler) {
     }
 
     companion object {
+        /** Connections one other host may have open at once. */
+        internal const val PER_PEER = 16
+        /** Not counted: this device (a test counts its own connections). */
+        @Volatile internal var trusted: (java.net.InetAddress) -> Boolean = { it.isLoopbackAddress }
+        /** How long a small JSON body may take to arrive, all of it. */
+        @Volatile internal var JSON_MS = 10_000L
+
         /** A request another page made through the browser: its Origin is not this host, or the browser says the site differs. */
         fun crossOrigin(r: Request): Boolean {
             val origin = r.headers["origin"]

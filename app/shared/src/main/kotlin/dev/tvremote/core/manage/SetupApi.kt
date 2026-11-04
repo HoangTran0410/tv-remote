@@ -158,7 +158,7 @@ internal class SetupApi(core: ManageCore, private val copy: TvCopy) : ManagePart
 
     /** "Optimize TV" or its undo; the job's message grows a line per step. */
     private fun setup(undo: Boolean, lang: String, c: Setup.Choice): JSONObject =
-        job(if (undo) "undo" else "optimize") { j ->
+        job(if (undo) "undo" else "optimize", once = "setup") { j ->   // one Optimize or Undo at a time, whichever tab asks
             val lines = StringBuilder()
             // the link, not one connection: Optimize waits out a TV that restarts midway
             val s = Setup(link, dir, lang) { line -> lines.append(line).append('\n'); try { j.put("log", lines.toString().trim()) } catch (ignored: Exception) { } }

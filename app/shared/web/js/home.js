@@ -197,7 +197,7 @@ async function homeCard() {
 
 // a newer TV Home from the latest release, put over the one on the TV: its settings stay
 async function homeUpdate() {
-  const n = await homeLink.update();
+  const n = await ownAppWait(await homeLink.update(), 'TV Home');
   if (n && n.installed) toast(T('home.updated', { v: n.version }));
   homeCard();
 }

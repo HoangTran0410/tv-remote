@@ -67,8 +67,9 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
     private val kbdReader = dev.tvremote.core.adb.TvKeyboard.Reader()   // /api/tvkbd: the proto, or the text dump on a TV without it
     private val draw = Draw { link.get() }                           // strokes for TV Setup to draw over the screen
     private val video = dev.tvremote.core.ontv.Video { link.get() }  // a video or a camera in a box over the screen (VideoLayer)
-    private val launcherApi by lazy { LauncherApi(link, dir, { t, w -> jobs.job(t, null, null, w) }, { jobs.current.get() }) }
-    private val tvAppsApi by lazy { TvAppsApi(link, dir, { t, w -> jobs.job(t, null, null, w) }, { jobs.current.get() }, { i, n, c -> install(i, n, null, c) }) }
+    // once = the title ("launcher Projectivy", "app Kodi"): the same one pressed again while it installs is that job, not a second
+    private val launcherApi by lazy { LauncherApi(link, dir, { t, w -> jobs.job(t, null, null, t, w) }, { jobs.current.get() }) }
+    private val tvAppsApi by lazy { TvAppsApi(link, dir, { t, w -> jobs.job(t, null, null, t, w) }, { jobs.current.get() }, { i, n, c -> install(i, n, null, c) }) }
 
     /**
      * The TV Apps app asking TV Setup (HomeInfo "tvapps") to install one app of the list over this ADB link, no question on the
@@ -259,6 +260,8 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
         } catch (e: SetupNeed.Missing) {                              // the page asks to update or install TV Setup (needSetup in js/core.js)
             return HttpServer.Response.error(409, e.message.toString())
         } catch (e: IOException) {
+            // GitHub or the site out of reach is not the TV's ADB: 503 "adb: …" made the page say ADB was not on yet
+            if (dev.tvremote.core.Errors.fromInternet(e)) return HttpServer.Response.error(502, "net: " + e.javaClass.simpleName + ": " + e.message)
             return HttpServer.Response.error(503, if (link.waitingForUser()) "adb:allow" else "adb: " + e.message)
         }
     }

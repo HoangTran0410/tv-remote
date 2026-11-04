@@ -18,8 +18,7 @@ async function chanCard() {
 }
 
 async function chanInstall() {
-  toast(T('channels.installing'));
-  const n = await api('/api/channels/install', {});
+  const n = await ownAppWait(await api('/api/channels/install', {}), 'TV Channels');
   if (n && n.installed && (!chanNow || n.version !== chanNow.version)) toast(T('channels.installed', { v: n.version }));   // the same version: nothing went on
   chanCard();
 }

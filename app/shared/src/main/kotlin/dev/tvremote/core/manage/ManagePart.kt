@@ -50,7 +50,7 @@ internal abstract class ManagePart(val core: ManageCore) {
     fun text(cmd: String, quietMs: Long): HttpServer.Response = core.text(cmd, quietMs)
     fun pipe(s: Adb.Stream, o: java.io.OutputStream) = core.pipe(s, o)
     inline fun <T> at(what: String, f: () -> T): T = core.jobs.at(what, f)
-    fun job(title: String, kind: String? = null, name: String? = null, work: (JSONObject) -> String): JSONObject = core.jobs.job(title, kind, name, work)
+    fun job(title: String, kind: String? = null, name: String? = null, once: String? = null, work: (JSONObject) -> String): JSONObject = core.jobs.job(title, kind, name, once, work)
 
     abstract fun route(what: String, post: Boolean, r: HttpServer.Request): HttpServer.Response?
 

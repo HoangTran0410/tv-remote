@@ -28,7 +28,7 @@ function homeLinkFor(direct, call, send) {
     link: (data) => via(p.link, data, true),                          // what the TV opens a pasted link with: {kind: app|browser|none, apps, choice} (null: asked nothing, an older TV Home)
     tryOpen: (data) => via(p.linkOpen, data),                         // a link opened once on the TV (any app or browser; the page's "Try on the TV")
     qr: (data) => via(p.qr, data || {}),
-    update: () => via(p.update, {}),
+    update: () => via(p.update, {}),                                  // a job (files.js ownAppWait)
     walls: (quiet) => via(p.walls, null, quiet),
     wall: (id) => via(p.wall, { id }),
     photo: (blob) => send(p.photo, blob),

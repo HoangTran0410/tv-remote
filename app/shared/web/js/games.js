@@ -19,8 +19,7 @@ async function gameCard() {
 }
 
 async function gameInstall() {
-  toast(T('games.installing'));
-  const n = await api('/api/games/install', {});
+  const n = await ownAppWait(await api('/api/games/install', {}), 'TV Games');
   if (n && n.installed && (!gameNow || n.version !== gameNow.version)) toast(T('games.installed', { v: n.version }));   // the same version: nothing went on
   gameCard();
 }

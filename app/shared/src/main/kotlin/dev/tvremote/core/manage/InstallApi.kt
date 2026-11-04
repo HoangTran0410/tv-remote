@@ -3,8 +3,8 @@ import dev.tvremote.core.B64
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.adb.PmInstall
 import dev.tvremote.core.adb.TvShell
-import dev.tvremote.core.manage.TvPaths.TMP_APK
-import dev.tvremote.core.manage.TvPaths.TMP_BASE
+import dev.tvremote.core.manage.TvPaths.tmpApk
+import dev.tvremote.core.manage.TvPaths.tmpBase
 import dev.tvremote.core.manage.TvPaths.safeName
 import dev.tvremote.core.manage.TvPaths.given
 import dev.tvremote.core.manage.TvPaths.safePath
@@ -53,12 +53,13 @@ internal class InstallApi(core: ManageCore, private val copy: TvCopy) : ManagePa
         } else null
         if (plan != null) {
             val base = Splits.pattern(plan.parts[0].name)
+            val baseTmp = tmpBase()
             try {                                                     // only the base, to read its manifest (and to tell a locked bundle)
-                adb.shell("unzip -p $q ${Adb.q(base)} > $TMP_BASE 2>/dev/null", 600000)
-                if (!adb.shell("head -c 2 $TMP_BASE 2>/dev/null").startsWith("PK")) throw IOException(Splits.LOCKED)
-                info = try { Apk.info(B64.decode(adb.shell("unzip -p $TMP_BASE AndroidManifest.xml 2>/dev/null | base64"))) }
+                adb.shell("unzip -p $q ${Adb.q(base)} > $baseTmp 2>/dev/null", 600000)
+                if (!adb.shell("head -c 2 $baseTmp 2>/dev/null").startsWith("PK")) throw IOException(Splits.LOCKED)
+                info = try { Apk.info(B64.decode(adb.shell("unzip -p $baseTmp AndroidManifest.xml 2>/dev/null | base64"))) }
                        catch (e: IllegalArgumentException) { emptyMap() }
-            } finally { adb.shell("rm -f $TMP_BASE") }
+            } finally { adb.shell("rm -f $baseTmp") }
         }
         val pkg = info["package"]
         val abis = if (plan != null) emptyList() else Apk.abis(adb.shell("unzip -l $q 2>/dev/null | grep -o 'lib/[^ ]*\\.so' || true").split(Regex("\\s+")))
@@ -103,8 +104,9 @@ internal class InstallApi(core: ManageCore, private val copy: TvCopy) : ManagePa
     fun install(input: InputStream, length: Long, job: JSONObject?, cancel: Cancel? = null): String {
         current.set(cancel)
         try {
-            copy.push(input, length, TMP_APK, job, 2)
-            try { return pmInstall(TMP_APK) } finally { try { sh("rm -f $TMP_APK") } catch (ignored: IOException) { } }
+            val tmp = tmpApk()
+            copy.push(input, length, tmp, job, 2)
+            try { return pmInstall(tmp) } finally { try { sh("rm -f $tmp") } catch (ignored: IOException) { } }
         } finally { current.remove() }
     }
 
@@ -118,15 +120,16 @@ internal class InstallApi(core: ManageCore, private val copy: TvCopy) : ManagePa
     /** The APK arrives in the request body: it has to be read before we answer, so this one is not a background job. */
     fun installUpload(r: HttpServer.Request): String {
         if (r.length <= 0) throw IllegalArgumentException("empty upload")
-        copy.push(r.body, r.length, TMP_APK, null, 2)
+        val tmp = tmpApk()
+        copy.push(r.body, r.length, tmp, null, 2)
         try {
-            return pmInstall(TMP_APK)
+            return pmInstall(tmp)
         } catch (e: Cancelled) {
             throw e                                                   // a Stop, answered 410 like the copy's
         } catch (e: IOException) {
             throw IllegalArgumentException(e.message)
         } finally {
-            sh("rm -f $TMP_APK")
+            sh("rm -f $tmp")
         }
     }
 
@@ -146,10 +149,11 @@ internal class InstallApi(core: ManageCore, private val copy: TvCopy) : ManagePa
             }
             val pkg = try { dev.tvremote.core.ontv.AppCopy.make(src, out, dir) { cancel?.check() } }
                       catch (e: Cancelled) { throw e } catch (e: IOException) { throw IllegalArgumentException(e.message) }
+            val tmp = tmpApk()
             try {
-                out.inputStream().use { copy.push(it, out.length(), TMP_APK, null, 2) }
-                pmInstall(TMP_APK)
-            } catch (e: Cancelled) { throw e } catch (e: IOException) { throw IllegalArgumentException(e.message) } finally { sh("rm -f $TMP_APK") }
+                out.inputStream().use { copy.push(it, out.length(), tmp, null, 2) }
+                pmInstall(tmp)
+            } catch (e: Cancelled) { throw e } catch (e: IOException) { throw IllegalArgumentException(e.message) } finally { sh("rm -f $tmp") }
             val adb = link.get()
             val started = adb.shell("monkey -p $pkg -c android.intent.category.LEANBACK_LAUNCHER 1 2>&1; monkey -p $pkg -c android.intent.category.LAUNCHER 1 2>&1", 30000)
             if (started.contains("Events injected: 1")) {
@@ -212,13 +216,14 @@ internal class InstallApi(core: ManageCore, private val copy: TvCopy) : ManagePa
                 if (m != null && m.find()) name = URLDecoder.decode(m.group(1), "UTF-8")
                 if (name == null) { val p = c.url.path; name = URLDecoder.decode(p.substring(p.lastIndexOf('/') + 1), "UTF-8") }
                 name = safeName(name)
-                val dest = if (install) TMP_APK else "/sdcard/Download/$name"
+                val tmp = tmpApk()
+                val dest = if (install) tmp else "/sdcard/Download/$name"
                 j.put("msg", name)
                 val md = MessageDigest.getInstance("SHA-256")
                 DigestInputStream(c.inputStream, md).use { copy.push(it, len, dest, j, if (install) 2 else 1) }
-                if (setup != null) try { setup.check(md) } catch (e: IOException) { sh("rm -f $TMP_APK"); throw e }
+                if (setup != null) try { setup.check(md) } catch (e: IOException) { sh("rm -f $tmp"); throw e }
                 if (!install) { j.put("dest", dest); "saved $dest" }
-                else try { pmInstall(dest) } finally { sh("rm -f $TMP_APK") }
+                else try { pmInstall(dest) } finally { sh("rm -f $tmp") }
             } finally {
                 c.disconnect()
             }

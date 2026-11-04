@@ -299,6 +299,7 @@ const FRIENDLY = [
   [/home:photo/, T('core.fr_home_photo')],
   [/launcher list not signed/i, T('core.fr_launcher_list')],
   [/launcher file does not match/i, T('core.fr_launcher_file')],
+  [/^net: /, T('core.fr_net_failed')],                            // last: a download or the site failed (Errors.fromInternet), none of the above
 ];
 const LAUNCH_KEPT = ['wifi', 'wifi_unknown', 'cast', 'zte', 'users', 'board', 'boot', 'keys'];   // refused before anything changed (LauncherSwap.REFUSED)
 const LAUNCH_WENT = { crash: 'launcher.why_crash', home: 'launcher.why_home', timeout: 'launcher.why_timeout', interrupted: 'launcher.why_interrupted', user: 'launcher.why_user',

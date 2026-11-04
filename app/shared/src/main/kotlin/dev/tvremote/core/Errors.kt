@@ -8,6 +8,12 @@ import dev.tvremote.core.ontv.SetupNeed
 import dev.tvremote.core.ontv.Tailscale
 /** Turns the errors people actually meet (a TV with the wrong date, no Internet, a TV that stops answering) into words they can act on. */
 object Errors {
+    /** A failure on the way to the Internet (a download, GitHub, a signed list), not on the TV's ADB link: its stack went through
+     *  an HTTP client or the update code. Told apart where it is answered, so the page does not say "ADB is not on yet". */
+    fun fromInternet(e: Throwable): Boolean = generateSequence(e) { it.cause }.any { x ->
+        x.stackTrace.any { f -> f.className.let { it.startsWith("sun.net.www.") || it.startsWith("com.android.okhttp.") || it.startsWith("dev.tvremote.update.") || it.startsWith("java.net.HttpURLConnection") || it.startsWith("javax.net.ssl.HttpsURLConnection") } }
+    }
+
 
     fun say(e: Throwable, lang: String): String {
         fun t(id: String, vararg a: Pair<String, Any?>) = Words.get(lang, id, *a)

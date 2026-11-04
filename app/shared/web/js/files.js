@@ -124,6 +124,25 @@ async function trackJob(j, label, after, src) {
   if (j.status === 'done' && filesLoaded) loadFiles(cwd);
   if (j.status === 'done') { appsStale(); if (/install/.test(j.title)) loadQuick(); }
 }
+// TV Home / Channels / Games from the latest release (HomeApi.ownJob), the route's answer [j]: a job in the Progress card, download % then install,
+// with Stop. Resolves to the app's new state, or null when it did not end well (the card and a toast said why).
+async function ownAppWait(j, name) {
+  if (!j) return null;
+  if (!j.id) return j;                                                // a core from before the job answered the state at once
+  const label = T('tvapps.job', { name }), id = j.id, stop = () => api('/api/cancel', { id }, true);
+  const step = (x) => x.status !== 'running' ? x : { ...x, msg: x.msg === 'install' ? T('launcher.step_install') : T('launcher.step_download', { pct: x.pct || 0 }) };
+  const show = (x) => { const row = showJob(step(x), label, stop); if (row.stop && x.msg === 'install') row.stop.hidden = true; };   // installing: too late to stop
+  show(j);
+  for (let misses = 0; j.status === 'running' && misses < 10;) {     // ten failed polls in a row: give up waiting, not the TV
+    await sleep(1000); const r = await api('/api/job?id=' + id, null, true);
+    if (!r) { misses++; continue; }
+    misses = 0; j = r; show(j);
+  }
+  if (j.status === 'running') { showJob({ ...j, status: 'error', msg: T('tvapps.lost') }, label); return null; }
+  if (j.status === 'done') { showJob({ ...j, msg: T('tvapps.done', { name }) }, label); appsStale(); return j.state || null; }
+  const msg = j.status === 'cancelled' ? T('files.stopped') : friendly(j.msg);
+  showJob({ ...j, msg, said: true, pct: 0 }, label); toast(msg); return null;
+}
 // What the TV must have free for this file, asked of it before a byte is sent (Manage.space); '' when there is room or the TV did not say.
 async function roomError(size, kind, dest) {
   const r = await api('/api/space?size=' + size + (kind === 'file' || kind === 'welcome' ? '&path=' + encodeURIComponent(dest || '') : '&apk=1'), null, true);

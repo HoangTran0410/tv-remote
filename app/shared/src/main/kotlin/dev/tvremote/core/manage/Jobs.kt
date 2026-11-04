@@ -14,6 +14,7 @@ class Jobs {
     val current = ThreadLocal<Cancel?>()
 
     val working = java.util.concurrent.ConcurrentHashMap<Any, String>()
+    private val onceIds = HashMap<String, String>()                   // a [job]'s once key -> its id, guarded by all
     /** Told when work starts or ends (the phone keeps itself running meanwhile, and asks before leaving the TV). */
     @Volatile var onWork: ((String) -> Unit)? = null
 
@@ -34,11 +35,19 @@ class Jobs {
     fun nextId(): Int = nextJob.getAndIncrement()
 
     /** [kind] + [name]: the same title as structured parts for the page to word (files.job_<kind>), the title staying for old pages. */
-    fun job(title: String, kind: String?, name: String?, work: (JSONObject) -> String): JSONObject {
+    fun job(title: String, kind: String?, name: String?, once: String? = null, work: (JSONObject) -> String): JSONObject {
         val j = JSONObject().put("id", nextId().toString()).put("title", title).put("status", "running").put("pct", 0).put("msg", "")
         if (kind != null) j.put("kind", kind).put("name", name ?: "")
-        all[j.getString("id")] = j
-        while (all.size > 20) all.remove(all.keys.iterator().next())
+        synchronized(all) {
+            // [once]: the same work asked again while it runs (a second tab, a double press) is the job already under way
+            if (once != null) onceIds[once]?.let { all[it] }?.takeIf { it.optString("status") == "running" }?.let { return snapshot(it) }
+            all[j.getString("id")] = j
+            if (once != null) onceIds[once] = j.getString("id")
+            while (all.size > 20) {                                   // the oldest finished one goes; a running one stays polled
+                val k = all.entries.firstOrNull { it.value.optString("status") != "running" }?.key ?: all.keys.first()
+                all.remove(k)
+            }
+        }
         val what = title.substringBefore(' ').takeIf { it in setOf("install", "update", "tailscale") } ?: "work"
         val cancel = Cancel()
         stops[j.getString("id")] = cancel

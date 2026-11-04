@@ -64,7 +64,7 @@ internal class HomeApi(core: ManageCore) : ManagePart(core) {
             "home/link" -> if (post) return HttpServer.Response.json(dev.tvremote.core.ontv.Home.link({ sh(it) }, r.json()))   // what the TV opens a pasted link with (the paste box's preview)
             "home/link/open" -> if (post) { val j = r.json(); dev.tvremote.core.ontv.Home.openLink({ sh(it) }, j.optString("url"), j.optString("pkg").ifBlank { null }); return HttpServer.Response.json(JSONObject().put("ok", true)) }
             "youtube/open" -> if (post) { dev.tvremote.core.ontv.Home.openYoutube({ sh(it) }, r.json().optString("url")); return HttpServer.Response.json(JSONObject().put("ok", true)) }
-            "home/update" -> if (post) return HttpServer.Response.json(at("install") { dev.tvremote.core.ontv.Home.update(link.get(), dir, r.lang) })
+            "home/update" -> if (post) return ownJob("TV Home", r) { go, pct -> dev.tvremote.core.ontv.Home.update(link.get(), dir, r.lang, go, pct) }
             "channels" -> if (!post) return HttpServer.Response.json(dev.tvremote.core.ontv.Channels.state { sh(it) })   // TV Channels: on the TV, and a newer one
             "channels/manage" -> {                                // favourites and groups (the page's dialog): read, or the whole state saved
                 val c = dev.tvremote.core.ontv.Channels
@@ -84,7 +84,7 @@ internal class HomeApi(core: ManageCore) : ManagePart(core) {
                 val c = dev.tvremote.core.ontv.Channels
                 return HttpServer.Response.json(c.manage({ sh(it) }, null, import = r.json()))
             }
-            "channels/install" -> if (post) return HttpServer.Response.json(at("install") { dev.tvremote.core.ontv.Channels.install(link.get(), dir, r.lang) })   // at(): the phone keeps going in the background, with its notification
+            "channels/install" -> if (post) return ownJob("TV Channels", r) { go, pct -> dev.tvremote.core.ontv.Channels.install(link.get(), dir, r.lang, go, pct) }   // at(): the phone keeps going in the background, with its notification
             "channels/open" -> if (post) {                        // a channel by its name; TV Channels finds it (or shows its search)
                 if (!dev.tvremote.core.ontv.Channels.open({ sh(it) }, r.json().optString("q"))) throw IOException("channels:missing")
                 return HttpServer.Response.ok()
@@ -98,7 +98,7 @@ internal class HomeApi(core: ManageCore) : ManagePart(core) {
                 return HttpServer.Response.ok()
             }
             "games" -> if (!post) return HttpServer.Response.json(dev.tvremote.core.ontv.Games.state { sh(it) })   // TV Games: on the TV, a newer one, or "soon"
-            "games/install" -> if (post) return HttpServer.Response.json(at("install") { dev.tvremote.core.ontv.Games.install(link.get(), dir, r.lang) })
+            "games/install" -> if (post) return ownJob("TV Games", r) { go, pct -> dev.tvremote.core.ontv.Games.install(link.get(), dir, r.lang, go, pct) }
             "games/pad" -> if (!post) return HttpServer.Response.json(JSONObject().put("url", dev.tvremote.core.ontv.Games.pad({ sh(it) }, link.host) ?: ""))   // the pad page's address; "" while TV Games is not running
             "games/open" -> if (post) {
                 if (!dev.tvremote.core.ontv.Games.open { sh(it) }) throw IOException("games:missing")
@@ -131,4 +131,22 @@ internal class HomeApi(core: ManageCore) : ManagePart(core) {
 
     @Volatile private var shareJob: dev.tvremote.core.ontv.ThemeShare.Job? = null   // the theme being sent to the store (home/theme/share)
 
+
+    /**
+     * TV Home / Channels / Games from the latest release, as a job the page polls: the download's %, then "install", and Stop
+     * (a few MB over a slow line held the request for minutes, with nothing to show and nothing to press). The same app asked
+     * again while it runs is that job. Done, the job's `state` is the app's new state, as the route answered before.
+     */
+    private fun ownJob(name: String, r: HttpServer.Request, run: (go: () -> Boolean, pct: (Int) -> Unit) -> JSONObject): HttpServer.Response {
+        r.lang                                                        // read now: the request is gone when the job thread runs
+        return HttpServer.Response.json(job("install $name", "install", name, once = "own:$name") { j ->
+            val c = current.get()
+            j.put("msg", "download")
+            var installing = false                                    // past this a Stop cannot take the install back: it ends as done
+            val state = run({ installing = c?.stopped != true; if (installing) j.put("msg", "install").put("pct", 95); installing }, { p -> c?.check(); j.put("pct", p * 9 / 10) })
+            if (!installing && c?.stopped == true) throw dev.tvremote.core.web.Cancelled()
+            j.put("state", state)
+            ""
+        })
+    }
 }
