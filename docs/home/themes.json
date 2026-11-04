@@ -90,8 +90,8 @@
     "en": "Kids"
    },
    "for": {
-    "vi": "Nhà có trẻ nhỏ: cánh đồng tulip, 4 ô to ở giữa màn hình, đồng hồ kim và thời tiết to, chuyển động vui",
-    "en": "Homes with small children: a tulip field, 4 big tiles in the middle, a big clock and weather, playful motion"
+    "vi": "Nhà có trẻ nhỏ: cánh đồng tulip, 4 ô thật to ở giữa màn hình, một đồng hồ to vui mắt, chuyển động vui",
+    "en": "Homes with small children: a tulip field, 4 very big tiles in the middle, one big cheerful clock, playful motion"
    },
    "tags": [
     "photo",
@@ -101,8 +101,7 @@
    "conf": {
     "shade": 10,
     "widgets": [
-     "clock",
-     "weather"
+     "clock"
     ],
     "cols": 4,
     "focus": "glass",
@@ -111,14 +110,16 @@
     "wall": "web",
     "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Ftulips-sunset.jpg",
     "wsize": {
-     "clock": "big",
-     "weather": "big"
+     "clock": "big"
     },
     "wopt": {
-     "weather": {
-      "look": "tonal"
+     "clock": {
+      "face": "modern",
+      "theme": "light",
+      "look": "solid"
      }
     },
+    "rows": 0,
     "center": true
    },
    "look": "candy",
@@ -172,7 +173,7 @@
    "conf": {
     "shade": 0,
     "widgets": [
-     "clock"
+     "weather"
     ],
     "cols": 7,
     "focus": "glass",
@@ -180,7 +181,7 @@
     "greet": false,
     "wall": "black",
     "wsize": {
-     "clock": "small"
+     "weather": "small"
     },
     "wopt": {
      "clock": {
@@ -385,41 +386,34 @@
     "en": "Gamer"
    },
    "for": {
-    "vi": "Chơi game trên TV: đèn neon, bộ nhớ và ứng dụng dùng nhiều, game vừa chơi, thẻ RAM sống để dọn bộ nhớ",
-    "en": "Gaming on the TV: neon lights, memory and most-used apps, the games just played, a live RAM tile"
+    "vi": "Chơi game trên TV: nền neon tím xanh, game vừa chơi hiện to, thẻ RAM sống để dọn bộ nhớ",
+    "en": "Gaming on the TV: a neon purple-blue wall, the games just played shown big, a live RAM tile"
    },
    "tags": [
     "art",
     "night"
    ],
    "conf": {
-    "shade": 40,
+    "shade": 25,
     "widgets": [
-     "system",
-     "usage",
      "recent"
     ],
     "cols": 7,
     "focus": "ring",
     "motion": "full",
     "greet": false,
-    "wall": "bokeh",
+    "wall": "own",
+    "wcol": "2a0845,061a3a",
+    "wdir": "tr_bl",
     "wsize": {
-     "system": "big",
-     "usage": "big",
-     "recent": "small"
+     "recent": "big"
     },
     "wopt": {
-     "system": {
-      "look": "solid"
-     },
-     "usage": {
-      "look": "solid"
-     },
      "recent": {
-      "look": "solid"
+      "look": "tonal"
      }
     },
+    "rows": 0,
     "clock24": true
    },
    "tiles": [
@@ -634,8 +628,8 @@
     "en": "Guest TV"
    },
    "for": {
-    "vi": "TV khách sạn, homestay, Airbnb: lời chào, đồng hồ và thời tiết nơi khách ở, ít ô, dễ đoán",
-    "en": "Hotel, homestay and Airbnb TVs: a welcome, the clock and local weather, few tiles, nothing to learn"
+    "vi": "TV khách sạn, homestay, Airbnb: lời chào to, thời tiết nhỏ, một hàng ít ô, dễ đoán",
+    "en": "Hotel, homestay and Airbnb TVs: a big welcome, small local weather, a single row of few tiles, nothing to learn"
    },
    "tags": [
     "art"
@@ -643,7 +637,6 @@
    "conf": {
     "shade": 15,
     "widgets": [
-     "clock",
      "weather"
     ],
     "cols": 5,
@@ -654,14 +647,9 @@
     "wcol": "2b6a9e,12304f",
     "wdir": "tr_bl",
     "wsize": {
-     "clock": "big",
-     "weather": "big"
+     "weather": "small"
     },
     "wopt": {
-     "clock": {
-      "face": "classic",
-      "theme": "light"
-     },
      "weather": {
       "look": "tonal"
      }
@@ -721,5 +709,5 @@
    }
   }
  ],
- "rev": 1793811469
+ "rev": 1793812138
 }

@@ -12,8 +12,8 @@ Một chủ đề đổi cả màn hình chính trong một lần bấm: hình n
 | --- | --- |
 | Dễ nhìn, Bé vui, Khách lưu trú | Chữ to, vài ô ở giữa màn hình, ít thứ để học |
 | Khung tranh, Trong veo, Việt Nam, Lò sưởi | Một bức ảnh, loạt ảnh hay video phủ cả màn hình |
-| Bản tin sáng, Văn phòng, Công nghệ, Game thủ | Thẻ tin tức, thời tiết, lịch, bộ nhớ, ứng dụng vừa dùng |
-| Bóng đá, Rạp phim, Tết, Đi ngủ, Đêm OLED | Hợp từng dịp, kèm live widget (Dọn RAM, Xem tiếp kênh, Hẹn giờ tắt) |
+| Bản tin sáng, Văn phòng, Công nghệ | Thẻ tin tức, thời tiết, lịch, bộ nhớ, ứng dụng vừa dùng |
+| Game thủ, Bóng đá, Rạp phim, Tết, Đi ngủ, Đêm OLED | Hợp từng dịp, kèm live widget (Dọn RAM, Xem tiếp kênh, Hẹn giờ tắt) |
 
 ### Mẹo
 

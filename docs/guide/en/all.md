@@ -638,8 +638,8 @@ A theme changes the whole home screen in one press: background, widgets, widget 
 | --- | --- |
 | Easy to read, Kids, Guest TV | Big text, a few tiles in the middle, little to learn |
 | Art frame, See-through, Vietnam, Fireplace | A picture, a slideshow or a video fills the screen |
-| Morning briefing, Daylight office, Tech, Gamer | Cards of news, weather, calendar, memory, recent apps |
-| Match day, Cinema, Tết, Bedtime, OLED night | For the occasion, with a fitting live widget (Free RAM, Keep watching, Sleep timer) |
+| Morning briefing, Daylight office, Tech | Cards of news, weather, calendar, memory, recent apps |
+| Gamer, Match day, Cinema, Tết, Bedtime, OLED night | For the occasion, with a fitting live widget (Free RAM, Keep watching, Sleep timer) |
 
 ### Tips
 
