@@ -138,11 +138,36 @@ object TvUi {
     }
 
     /** A button that does something: a verb, bold, on a card with the ring. Not for a choice (that is [pill]). */
-    fun button(c: Context, label: CharSequence, go: () -> Unit) = text(c, label, SP_BUTTON, bold = true).apply {
+    fun button(c: Context, label: CharSequence, go: () -> Unit) = button(c, label, 0, CARD, FOCUS_FILL, go)   // callers pass go third
+
+    fun button(c: Context, label: CharSequence, icon: Int, rest: Int = CARD, focus: Int = FOCUS_FILL, go: () -> Unit) = text(c, label, SP_BUTTON, bold = true).apply {
         setPadding(dp(c, 24).toInt(), dp(c, 10).toInt(), dp(c, 24).toInt(), dp(c, 10).toInt()); isFocusable = true; isClickable = true
         gravity = Gravity.CENTER                                      // a caller that sets the height (the picker's 46 dp Done) left the words at the top
-        background = states(c, CARD, dp(c, R_BUTTON))
+        background = states(c, rest, dp(c, R_BUTTON), focus)          // [rest]: on a CARD panel pass PILL_REST or the accent, or it reads as plain words
+        if (icon != 0) lead(c, this, icon)
         setOnClickListener { go() }
+    }
+
+    /** A choice among a few ([on] = the chosen one): a faint fill at rest, the chosen white with dark words, focus = the ring. */
+    fun pill(c: Context, label: CharSequence, on: Boolean, icon: Int = 0, go: () -> Unit) = text(c, label, SP_BUTTON, bold = true).apply {
+        setPadding(dp(c, 20).toInt(), dp(c, 9).toInt(), dp(c, 20).toInt(), dp(c, 9).toInt()); isFocusable = true; isClickable = true
+        gravity = Gravity.CENTER
+        val r = dp(c, 30)
+        background = StateListDrawable().apply {
+            val f = ring(c, if (on) PILL_ON else PILL_FOCUS, r)
+            addState(intArrayOf(android.R.attr.state_focused), f); addState(intArrayOf(android.R.attr.state_pressed), f)
+            addState(intArrayOf(), round(if (on) PILL_ON else PILL_REST, r))
+        }
+        setTextColor(if (on) BTN_INK_ON else PILL_INK)
+        if (icon != 0) lead(c, this, icon)
+        setOnClickListener { go() }
+    }
+
+    /** [icon] before the words, 20 dp, in the words' colour (set the colour first) (§ icons: icon colour = the words' colour). */
+    fun lead(c: Context, t: android.widget.TextView, icon: Int) {
+        val d = c.getDrawable(icon)?.mutate() ?: return
+        val s = dp(c, 20).toInt(); d.setBounds(0, 0, s, s); d.setTint(t.currentTextColor)
+        t.setCompoundDrawablesRelative(d, null, null, null); t.compoundDrawablePadding = dp(c, 10).toInt()
     }
 
     /**

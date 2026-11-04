@@ -30,6 +30,7 @@ class VoiceActivity : Activity() {
     private lateinit var wheel: ProgressBar
     private lateinit var bar: ProgressBar                             // the download's percent ([MicVoice.offlinePct])
     private lateinit var buttons: LinearLayout
+    private lateinit var mode: LinearLayout                           // commands only / + free speech, a pick like the languages
     private lateinit var langs: LinearLayout                          // one button per language: on the TV, in use, or to add
     private var waiting = false                                       // Install pressed: the state polled until ready or failed
 
@@ -51,16 +52,18 @@ class VoiceActivity : Activity() {
             Triple(R.drawable.ic_zap, "tvvoice.fast", "tvvoice.fast_sub"),
             Triple(R.drawable.ic_wifi, "tvvoice.offline", "tvvoice.offline_sub"),
             Triple(R.drawable.ic_shield, "tvvoice.private", "tvvoice.private_sub"),
-            Triple(R.drawable.ic_apps, "tvvoice.knows", "tvvoice.knows_sub"))) card.addView(point(icon, T(title), T(sub)), lp(top = 18))
-        card.addView(TvUi.text(this, T("tvvoice.size"), TvUi.SP_COUNT, TvUi.DIM), lp(top = 20))
+            Triple(R.drawable.ic_apps, "tvvoice.knows", "tvvoice.knows_sub"))) card.addView(point(icon, T(title), T(sub)), lp(top = 12))
+        card.addView(TvUi.text(this, T("tvvoice.size"), TvUi.SP_COUNT, TvUi.DIM), lp(top = 16))
         langs = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
-        card.addView(langs, lp(top = 12))
+        card.addView(langs, lp(top = 8))
+        mode = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
+        card.addView(mode, lp(top = 10))
         val row = LinearLayout(this).apply { gravity = Gravity.CENTER_VERTICAL }
         wheel = ProgressBar(this).apply { isIndeterminate = true; indeterminateTintList = android.content.res.ColorStateList.valueOf(ACCENT); visibility = View.GONE }
         row.addView(wheel, LinearLayout.LayoutParams(dp(22), dp(22)).apply { rightMargin = dp(10) })
         state = TvUi.text(this, "", TvUi.SP_ROW, TvUi.TEXT)
         row.addView(state)
-        card.addView(row, lp(top = 14))
+        card.addView(row, lp(top = 10))
         bar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {
             max = 100; visibility = View.GONE
             progressTintList = android.content.res.ColorStateList.valueOf(ACCENT)
@@ -68,8 +71,9 @@ class VoiceActivity : Activity() {
         }
         card.addView(bar, LinearLayout.LayoutParams(-1, dp(6)).apply { topMargin = dp(10) })
         buttons = LinearLayout(this)
-        card.addView(buttons, lp(top = 18))
-        page.addView(card, FrameLayout.LayoutParams(-2, -2, Gravity.CENTER))
+        card.addView(buttons, lp(top = 14))
+        page.addView(dev.tvremote.tvui.TvScroll(this).apply { isFillViewport = true; isVerticalScrollBarEnabled = false   // big fonts / long words: scrolls to the focus, never clipped
+            addView(FrameLayout(this@VoiceActivity).apply { addView(card, FrameLayout.LayoutParams(-2, -2, Gravity.CENTER)) }) }, FrameLayout.LayoutParams(-1, -1))
         setContentView(page)
         paint(true)
     }
@@ -104,24 +108,34 @@ class VoiceActivity : Activity() {
         }
         state.visibility = if (state.text.isEmpty()) View.GONE else View.VISIBLE
         paintLangs(voice)
-        buttons.removeAllViews()
+        paintMode(voice, r)
+        buttons.removeAllViews()                                     // one main action + Close; the picks sit in their rows (the user, 2026-11-05: too many buttons)
         when {
-            voice == "busy" -> add(T("common.close")) { finish() }  // the install goes on: its own thread
-            used -> { add(T("tvvoice.use_google")) { work { Rules.change(this, JSONObject().put("do", "mic_engine").put("engine", "auto")) } }; addFreeSpeech(r)
-                add(T("tvvoice.remove_lang", "lang" to NAMES.getValue(MicVoice.active(this) ?: MicVoice.lang(this))), danger = true) { remove() }; add(T("common.close")) { finish() } }
-            voice == "ready" -> { add(T("tvvoice.use")) { work { MicVoice.useTv(this) } }; addFreeSpeech(r)
-                add(T("tvvoice.remove_lang", "lang" to NAMES.getValue(MicVoice.active(this) ?: MicVoice.lang(this))), danger = true) { remove() }; add(T("common.close")) { finish() } }
-            else -> { add(T("tvvoice.install")) { waiting = true; work { MicVoice.useTv(this) } }; add(T("common.later")) { finish() } }
+            voice == "busy" -> add(T("common.close"), R.drawable.ic_close) { finish() }  // the install goes on: its own thread
+            used -> { add(T("tvvoice.use_google"), R.drawable.ic_mic, main = true) { work { Rules.change(this, JSONObject().put("do", "mic_engine").put("engine", "auto")) } }; add(T("common.close"), R.drawable.ic_close) { finish() } }
+            voice == "ready" -> { add(T("tvvoice.use"), R.drawable.ic_mic, main = true) { work { MicVoice.useTv(this) } }; add(T("common.close"), R.drawable.ic_close) { finish() } }
+            else -> { add(T("tvvoice.install"), R.drawable.ic_download, main = true) { waiting = true; work { MicVoice.useTv(this) } }; add(T("common.later"), R.drawable.ic_close) { finish() } }
         }
         if (focus || buttons.findFocus() == null) buttons.getChildAt(0)?.let { it.isFocusableInTouchMode = true; it.requestFocus() }   // opened by TV Home: OK must land somewhere
         ui.removeCallbacks(poll)
         if (voice == "busy" || waiting && voice == "none") ui.postDelayed(poll, 1000)   // "none" for a moment after Install: the thread not started yet
     }
 
-    /** The button for the other of the two ways to listen (Rules "mic_freespeech"): commands only, or commands + free speech. */
-    private fun addFreeSpeech(r: JSONObject) {
-        val on = r.optBoolean("mic_freespeech")
-        add(T(if (on) "mic.free_cmd" else "mic.free_on")) { work { Rules.change(this, JSONObject().put("do", "mic_freespeech").put("on", !on)) } }
+    /** The two ways to listen (Rules "mic_freespeech"), the one in use lit like the language; only once a language is on the TV. */
+    private fun paintMode(voice: String, r: JSONObject) {
+        val had = mode.findFocus() != null
+        mode.removeAllViews()
+        mode.visibility = if (voice == "ready") View.VISIBLE else View.GONE
+        if (voice != "ready") return
+        mode.addView(TvUi.text(this, T("tvvoice.mode"), TvUi.SP_ROW, TvUi.DIM), LinearLayout.LayoutParams(-2, -2).apply { rightMargin = dp(6) })
+        val free = r.optBoolean("mic_freespeech")
+        for (on in listOf(false, true)) {
+            val b = TvUi.pill(this, T(if (on) "mic.free_on" else "mic.free_cmd"), on == free, if (on) R.drawable.ic_list else R.drawable.ic_zap) {
+                if (on != free) work { Rules.change(this, JSONObject().put("do", "mic_freespeech").put("on", on)) }
+            }
+            mode.addView(b, LinearLayout.LayoutParams(-2, -2).apply { leftMargin = dp(10) })
+            if (had && on == free) b.post { b.requestFocus() }
+        }
     }
 
     private val poll = Runnable { if (!isFinishing) paint(false) }
@@ -137,20 +151,23 @@ class VoiceActivity : Activity() {
         for (l in dev.tvremote.core.ontv.VoiceAddon.LANGS) {
             val on = l in has
             val label = NAMES.getValue(l) + if (on) "" else "  ↓ " + SIZES.getValue(l)
-            val b = TvUi.button(this, label) {
-                if (voice == "busy") return@button
+            val b = TvUi.pill(this, label, l == now) {
+                if (voice == "busy") return@pill
                 waiting = !on
                 work { Rules.change(this, JSONObject().put("do", "mic_lang").put("lang", l)); if (!on) MicVoice.useTv(this) }
             }
-            if (l == now) b.setTextColor(ACCENT)
             b.alpha = if (voice == "busy") 0.5f else 1f
             langs.addView(b, LinearLayout.LayoutParams(-2, -2).apply { leftMargin = dp(10) })
             if (had && l == now) b.post { b.requestFocus() }
         }
+        if (voice == "ready") langs.addView(TvUi.button(this, T("tvvoice.remove_lang", "lang" to NAMES.getValue(now ?: MicVoice.lang(this))), 0, rest = TvUi.PILL_REST) { remove() }.also { it.setTextColor(TvUi.DANGER); TvUi.lead(this, it, R.drawable.ic_trash) },
+            LinearLayout.LayoutParams(-2, -2).apply { leftMargin = dp(10) })   // one button, for the language in use (the lit one): its name on it, so two languages never read as "which?"
     }
 
-    private fun add(label: String, danger: Boolean = false, go: () -> Unit) {
-        val btn = TvUi.button(this, label, go).also { if (danger) it.setTextColor(TvUi.DANGER) }
+    /** [main]: the one thing this screen is for, in the accent fill (two blues: a full fill = it does something); the rest faint. */
+    private fun add(label: String, icon: Int, main: Boolean = false, go: () -> Unit) {
+        val btn = if (main) TvUi.button(this, label, icon, rest = ACCENT, focus = ACCENT, go = go).apply { setTextColor(Color.WHITE) }
+            else TvUi.button(this, label, icon, rest = TvUi.PILL_REST, go = go)
         buttons.addView(btn, LinearLayout.LayoutParams(-2, -2).apply { if (buttons.childCount > 0) leftMargin = dp(12) })
     }
 
