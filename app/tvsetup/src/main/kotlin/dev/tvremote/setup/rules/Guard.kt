@@ -207,7 +207,7 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
             val tick = android.os.SystemClock.elapsedRealtime()       // not the clock: it jumps on a box that booted in the wrong year
             val step = ramStep(over, ramHigh, ram.optBoolean("on"), ram.optBoolean("auto"), now, ramQuietUntil, tick, ramFreeQuietUntil)
             ramHigh = step.high
-            if (step.free) { ramFreeQuietUntil = tick + RAM_FREE_EVERY_MS; dev.tvremote.setup.home.LiveWidgets.act(c, dev.tvremote.setup.home.LiveWidgets.RAM) }   // the Free RAM button's own action: never the app in front, TV Home, TV Setup, the keyboard, must-keep apps
+            if (step.free) { ramFreeQuietUntil = tick + RAM_FREE_EVERY_MS; android.util.Log.i("tvr-guard", "memory over ${ram.optInt("pct", 90)}%: closing background apps (${total - avail}/$total MB used)");dev.tvremote.setup.home.LiveWidgets.act(c, dev.tvremote.setup.home.LiveWidgets.RAM) }   // the Free RAM button's own action: never the app in front, TV Home, TV Setup, the keyboard, must-keep apps
             if (step.notice) { ramQuietUntil = now + 30 * 60_000L; warn("ram", 0, "") }
             next = minOf(next, 30_000)
         }

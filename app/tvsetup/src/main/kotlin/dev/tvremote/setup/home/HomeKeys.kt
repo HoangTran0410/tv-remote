@@ -112,7 +112,8 @@ internal object AutoOpen {
      * The app the TV was left in: the newest of [opened] (foreground events, oldest first) that is not in [skip] (TV Home, TV Setup, a
      * launcher, a system screen: nothing a person chose), "" when none. Event order, never times: a box boots with a wrong year.
      */
-    fun lastOf(opened: List<String>, skip: Set<String>): String = opened.lastOrNull { it.isNotEmpty() && it !in skip } ?: ""
+    fun lastOf(opened: List<String>, skip: (String) -> Boolean): String = opened.lastOrNull { it.isNotEmpty() && !skip(it) } ?: ""
+
 
     /** Chromecast built-in's receiver: a cast that woke the TV is on screen at the first look. Cheap to see, so kept; an HDMI input has no package to see. */
     val CAST = setOf("com.google.android.apps.mediashell")
@@ -133,7 +134,7 @@ internal object AutoOpen {
     @Synchronized
     private fun run(c: Context, event: String) {
         val (on, fixed) = HomeKeys.auto(c)
-        val pkg = if (HomeKeys.last(c)) lastApp(c) else fixed
+        val pkg = if (HomeKeys.last(c)) (if (event == "boot") remembered(c).ifEmpty { lastApp(c) } else lastApp(c)) else fixed
         val always = HomeKeys.always(c)
         val now = SystemClock.elapsedRealtime()
         val p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -149,12 +150,25 @@ internal object AutoOpen {
         p.edit().putInt("last_boot", boot).putLong("last_at", now).apply()
     }
 
+    /**
+     * The screen went off: keep the app in front. A boot cannot tell it from the apps that start by themselves (a channel service, the
+     * usage log writes its boot marker after them), so the power-on after a boot reads this; a wake reads the events.
+     */
+    fun remember(c: Context) {
+        if (!HomeKeys.last(c)) return
+        val pkg = lastApp(c)
+        if (pkg.isNotEmpty()) c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString("last_app", pkg).apply()
+    }
+
+    private fun remembered(c: Context): String = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("last_app", "") ?: ""
+
     /** Whichever app was in front when the TV turned off, from the usage events (still there after a boot); read on a power-on only. */
     private fun lastApp(c: Context): String = try {
         val opened = ArrayList<String>()
         val far = Long.MAX_VALUE / 4                                  // no clock: a boot with a wrong year would hide a window
         Usage.events(c, 0L, far) { e -> if (e.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND) e.packageName?.let { opened.add(it) } }
-        lastOf(opened, homes(c) + HomeInfo.SYSTEM_SCREENS + setOf(HomeInfo.HOME, c.packageName))
+        val never = homes(c) + HomeInfo.SYSTEM_SCREENS + setOf(HomeInfo.HOME, c.packageName)
+        lastOf(opened) { it in never || !HomeKeys.can(c, it) }       // also what has no screen to open: a launcher the query did not list, a service
     } catch (e: Exception) { "" }
 
     private fun defaultHome(c: Context): String = try {
@@ -171,9 +185,11 @@ internal object AutoOpen {
 /** Hears the screen come on (from [RemoteService], as [WelcomeWatch] does: a manifest receiver cannot hear it). The boot is [BootReceiver]'s. */
 internal class AutoOpenWatch(private val c: Context) {
     private val screen = object : BroadcastReceiver() {
-        override fun onReceive(ctx: Context, i: Intent) { AutoOpen.trigger(c, "wake"); HomeKey.trigger(c, "wake") }
+        override fun onReceive(ctx: Context, i: Intent) {
+            if (i.action == Intent.ACTION_SCREEN_OFF) AutoOpen.remember(c) else { AutoOpen.trigger(c, "wake"); HomeKey.trigger(c, "wake") }
+        }
     }
 
-    fun start() { try { c.registerReceiver(screen, IntentFilter(Intent.ACTION_SCREEN_ON)) } catch (e: Exception) { } }
+    fun start() { try { c.registerReceiver(screen, IntentFilter(Intent.ACTION_SCREEN_ON).apply { addAction(Intent.ACTION_SCREEN_OFF) }) } catch (e: Exception) { } }
     fun stop() { try { c.unregisterReceiver(screen) } catch (e: Exception) { } }
 }
