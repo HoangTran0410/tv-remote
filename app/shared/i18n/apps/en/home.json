@@ -342,6 +342,7 @@
   "show_shift": "Move the screen a little every minute (OLED care)",
   "show_homebar": "Home key in an app: show the app bar",
   "bar_home": "Home",
+  "bar_settings": "TV Home settings",
   "inputs_more": "More inputs (%d)",
   "settings_none": "Could not open the TV's Settings. Press the Settings button on the TV's own remote.",
   "g_sec_grid": "App grid",

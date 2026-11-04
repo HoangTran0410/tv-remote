@@ -106,7 +106,7 @@ object KeyFix {
                 HOME -> start(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME))
                 SETTINGS -> start(Intent(Settings.ACTION_SETTINGS))
                 LAUNCHER -> start(HomeKey.intent(c, r.pkgs[0]))
-                BAR -> start(Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.DockBarActivity"))
+                BAR -> start(Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.DockBarActivity").putExtra("front", r.pkgs.firstOrNull()))   // the app under the bar: not offered again (it would only restart)
                 CONTROL -> start(Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.ControlCenterActivity"))
             }
         } catch (e: Exception) { }

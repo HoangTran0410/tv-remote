@@ -41,7 +41,7 @@ the app beneath stays visible and running. No service, receiver or timer of our 
 
 OK on an item opens it (a leanback or launcher intent) and closes the bar; Back closes it only. The apps are `dock` (first
 `DOCK_MAX`, apps only) then HomeInfo `recent` (`RECENT_MAX`, event order, never by time) without the dock's; an app behind TV Home's PIN
-is left out; TV Setup missing: the dock alone. The bar scrolls sideways when there are more than the screen holds.
+is left out, and so is the app under the bar (TV Setup passes it as `front`: picking it only restarted it); TV Setup missing: the dock alone. Last, a slim ⚙ (row height, no label) opens Customize at `keys`, where the bar is switched off. The bar scrolls sideways when there are more than the screen holds.
 
 ## Android versions
 

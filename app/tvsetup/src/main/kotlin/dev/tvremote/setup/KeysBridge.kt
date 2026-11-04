@@ -217,7 +217,7 @@ class KeysBridge : Service() {
             val front = Usage.front(this)
             val over = HomeBar.opens(front, HomeBar.homes(this))
             android.util.Log.i("HomeBar", "front '$front': ${if (over) "bar" else "home"}")      // adb logcat -s HomeBar
-            ui.post { KeyFix.run(this, if (over) KeyFix.Rule(KeyFix.BAR, emptyList()) else rule) }
+            ui.post { KeyFix.run(this, if (over) KeyFix.Rule(KeyFix.BAR, listOf(front).filter { it.isNotEmpty() }) else rule) }
         }, "home-bar").apply { isDaemon = true }.start()
     }
 

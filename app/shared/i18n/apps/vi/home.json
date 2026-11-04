@@ -342,6 +342,7 @@
   "show_shift": "Nhích nhẹ màn hình mỗi phút (chống burn-in OLED)",
   "show_homebar": "Phím Home trong app: hiện thanh app",
   "bar_home": "Trang chủ",
+  "bar_settings": "Tùy chỉnh TV Home",
   "inputs_more": "Nguồn vào khác (%d)",
   "settings_none": "Không mở được Cài đặt của TV. Hãy bấm nút Cài đặt trên điều khiển của TV.",
   "g_sec_grid": "Danh sách app",

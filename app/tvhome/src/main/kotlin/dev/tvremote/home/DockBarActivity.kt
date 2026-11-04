@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
+import android.view.ViewGroup
 import android.view.KeyEvent
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -43,6 +44,7 @@ class DockBarActivity : Activity() {
         }
         setContentView(root)
         val dock = Store.list(this, "dock")
+        front = intent.getStringExtra("front")                         // TV Setup names the app it saw in front; an older one sends nothing
         fill(dock, emptyList())                                        // the dock now; the recent apps join when TV Setup answers
         Thread({
             val recent = try { contentResolver.call(Uri.parse(HomeConfig.USAGE), "recent", null, null)?.getString("json")?.let { JSONObject(it).optJSONArray("apps") } } catch (e: Exception) { null }
@@ -51,17 +53,20 @@ class DockBarActivity : Activity() {
         }, "home-bar").apply { isDaemon = true }.start()
     }
 
+    private var front: String? = null
+
     /** The Home item, then the dock's apps, then the recent ones; the focus stays where it is, else lands on the first app. */
     private fun fill(dock: List<String>, recent: List<String>) {
         val kept = (0 until row.childCount).firstOrNull { row.getChildAt(it).hasFocus() }
         row.removeAllViews()
         add(getString(R.string.bar_home), resources.getDrawable(R.drawable.ic_home, theme), true) { go(Intent(this, HomeActivity::class.java)) }
         for (p in (dock.filter { Target.kind(it) == Target.Kind.APP }.take(DOCK_MAX) + recent).distinct()) {
-            if (HomeLock.isLocked(this, p)) continue
+            if (p == front || HomeLock.isLocked(this, p)) continue           // the app under the bar is already open: picking it restarted it
             val intent = packageManager.getLeanbackLaunchIntentForPackage(p) ?: packageManager.getLaunchIntentForPackage(p) ?: continue
             val label = try { packageManager.getApplicationLabel(packageManager.getApplicationInfo(p, 0)).toString() } catch (e: Exception) { continue }
             add(label, shrink(this, try { packageManager.getApplicationIcon(p) } catch (e: Exception) { null }, 128), false) { go(intent) }
         }
+        gear()
         row.getChildAt(kept?.coerceAtMost(row.childCount - 1) ?: if (row.childCount > 1) 1 else 0).requestFocus()
     }
 
@@ -77,6 +82,23 @@ class DockBarActivity : Activity() {
             setOnClickListener { press() }
         }
         row.addView(item, LinearLayout.LayoutParams(-2, -2).apply { if (row.childCount > 0) leftMargin = dp(8) })
+    }
+
+    /**
+     * Last, a slim ⚙ (the row's height, about half an app's width, no label): opens TV Home's settings at Keys & startup, where this
+     * bar is switched off. Slim so it reads as a tool beside the apps, not one more app; the full height keeps the row one line.
+     */
+    private fun gear() {
+        val d = resources.displayMetrics.density
+        fun dp(v: Int) = (v * d).toInt()
+        val item = FrameLayout(this).apply {
+            isFocusable = true; isClickable = true; background = TvGlass.rowBg(this@DockBarActivity, 14)
+            contentDescription = getString(R.string.bar_settings)
+            addView(ImageView(context).apply { setImageDrawable(resources.getDrawable(R.drawable.ic_settings, theme)); setColorFilter(Color.WHITE) },
+                FrameLayout.LayoutParams(dp(30), dp(30), Gravity.CENTER))
+            setOnClickListener { go(Intent(this@DockBarActivity, HomeActivity::class.java).setAction(HomeConfig.CUSTOMIZE).putExtra(HomeConfig.AT, "keys")) }
+        }
+        row.addView(item, LinearLayout.LayoutParams(dp(56), ViewGroup.LayoutParams.MATCH_PARENT).apply { leftMargin = dp(8) })
     }
 
     private fun go(i: Intent) {
