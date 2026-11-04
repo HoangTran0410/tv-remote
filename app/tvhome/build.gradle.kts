@@ -41,6 +41,7 @@ android {
         }
         debug { if (keystore.exists()) signingConfig = signingConfigs.getByName("release") }
     }
+    testOptions { unitTests.isIncludeAndroidResources = true }
     lint { checkReleaseBuilds = false; checkOnly += "NewApi" }        // lintDebug: a call newer than minSdk 21 (Android 5-6 boxes crashed); release.sh runs it
     compileOptions { sourceCompatibility = JavaVersion.VERSION_11; targetCompatibility = JavaVersion.VERSION_11 }
     kotlinOptions { jvmTarget = "11" }
@@ -53,6 +54,8 @@ apply(from = "../gradle/i18n.gradle")
 dependencies {
     testImplementation("junit:junit:4.13.2")                          // ./gradlew :tvhome:testDebugUnitTest
     testImplementation("org.json:json:20240303")
+    testImplementation("org.robolectric:robolectric:4.13")              // PicsBadFilesTest: real BitmapFactory on bad pictures
+    testImplementation("androidx.test:core:1.5.0")
 }
 
 // The QR screen draws with Qr.kt, copied from :shared at build time (a srcDir of its folder would pull the web page / server in).
