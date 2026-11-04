@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: the ready-made themes are redone, 16 that each serve one person and look different at a glance: Easy to read (huge clock, 4 tiles), Kids, Guest TV (hotel / Airbnb), Daylight office, Morning briefing (news, weather, air, gold), Art frame (paintings, almost no words), See-through, Fireplace (video), Gamer, Tech, Match day, Cinema, Tết, Bedtime, OLED night and Vietnam. They use the centered grid, own colour walls, the clock faces, widget looks, the news / air / recent / ad-block widgets and live tiles; a theme from the old list (Modern, Calm, Nature, Rice terraces, Sunset beach and its video, Ha Long video, City night, Minimal) is gone from the list, but a TV that had it keeps its look (the look is saved in the settings, not the theme's name).
 - TV Home: an optional Inputs button in the top bar, next to Wi-Fi and Settings (off by default; Customize > Look > On the home screen, and the page), opening the same Inputs list as the Control Center (issue #19).
 - TV Home: coming back from another app no longer shows the wallpaper blurry for about a second before it turns sharp; the photo that was on screen stays (memory use is the same).
 - TV Setup: the remote's mic button now reaches TV Setup on TVs with no ADB (Coocaa Android 14): with the mic option on, TV Setup is offered for the mic key (the first press asks which app to use: pick TV Setup, then Always); with it off, TV Setup is never offered. The Setup tab says so.

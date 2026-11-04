@@ -18,8 +18,8 @@ class HomeThemesTest {
         val t = HomeConfig.parseReady(String(list), "99.0.0")
         assertEquals("vietnam", t.first().id)                         // the site's showcase theme, first
         assertEquals("Việt Nam", t.first().name("vi")); assertEquals("Vietnam", t.first().name("en"))
-        val m = t.first { it.id == "modern" }
-        assertEquals("Hiện đại", m.name("vi")); assertEquals("Modern", m.name("en")); assertEquals("Modern", m.name("fr"))
+        val m = t.first { it.id == "easy" }
+        assertEquals("Dễ nhìn", m.name("vi")); assertEquals("Easy to read", m.name("en")); assertEquals("Easy to read", m.name("fr"))
         for (r in t) assertEquals(r.id, HomeConfig.THEME_KEYS.sorted(), r.conf.keys().asSequence().toList().sorted())
     }
 
@@ -30,7 +30,7 @@ class HomeThemesTest {
     }
 
     @Test fun anAlteredListIsNotTrustedAndSinceWaits() {
-        assertTrue(!SignedList.verify(String(list).replace("Modern", "Evil").toByteArray(), sig))
+        assertTrue(!SignedList.verify(String(list).replace("Easy to read", "Evil").toByteArray(), sig))
         val j = """{"v":1,"themes":[{"id":"a","names":{"en":"A"},"conf":{"wall":"night"}},{"id":"b","names":{"en":"B"},"since":"9.0.0","conf":{"wall":"night"}},{"id":"Bad id","conf":{}}]}"""
         assertEquals(listOf("a"), HomeConfig.parseReady(j, "0.8.0").map { it.id })
         assertEquals(listOf("a", "b"), HomeConfig.parseReady(j, "9.0.0").map { it.id })
@@ -50,7 +50,7 @@ class HomeThemesTest {
         for (bad in listOf("http://x.dev/a.jpg", "javascript:alert(1)", "https://x.dev/a b.jpg", "https://x.dev/a\"b", "https://", "https://x.dev/" + "a".repeat(HomeConfig.THUMB_MAX), "file:///sdcard/a.jpg", ""))
             assertEquals(bad, "", thumb(bad))
         val r = HomeConfig.parseReady(String(list), "99.0.0")
-        for (id in listOf("sapa", "beach", "city", "sports", "cinema", "tet", "kids", "bed")) assertTrue("$id: thumb", r.first { it.id == id }.thumb.startsWith("https://tvremote.pages.dev/home/"))
+        for (id in listOf("frame", "fireplace", "sports", "cinema", "tet", "kids", "bed")) assertTrue("$id: thumb", r.first { it.id == id }.thumb.startsWith("https://tvremote.pages.dev/home/"))
     }
 
     @Test fun everyShippedThemeHasAudienceNamesAndNoFlatBlack() {
@@ -59,13 +59,13 @@ class HomeThemesTest {
             val t = j.getJSONObject(i); val id = t.getString("id")
             assertTrue("$id: for", t.getJSONObject("for").optString("vi").isNotEmpty() && t.getJSONObject("for").optString("en").isNotEmpty())
             assertTrue("$id: names", t.getJSONObject("names").optString("vi").isNotEmpty() && t.getJSONObject("names").optString("en").isNotEmpty())
-            assertTrue("$id: a flat black wall is no look", t.getJSONObject("conf").optString("wall") != "black")
+            assertTrue("$id: a flat black wall is no look (only OLED night is one on purpose)", id == "oled" || t.getJSONObject("conf").optString("wall") != "black")
             t.getJSONObject("conf").optString("wurl").takeIf { it.isNotEmpty() }?.let { assertTrue("$id: https", it.startsWith("https://")); assertTrue("$id: src", t.optString("src").isNotEmpty()) }
         }
         val r = HomeConfig.parseReady(String(list), "99.0.0")
         assertEquals(j.length(), r.size)
         assertEquals(listOf("tile:dev.tvremote.setup/sleep"), r.first { it.id == "bed" }.live)
-        assertEquals("sunset", r.first { it.id == "beach" }.look)
+        assertEquals("forest", r.first { it.id == "sports" }.look)
     }
 
     @Test fun aThemesLiveWidgetsGoFirstBesideTheOwnAndAMissingProviderIsSkipped() {
@@ -82,5 +82,17 @@ class HomeThemesTest {
         assertEquals(1, off.getJSONArray("order").length())
         val twice = HomeConfig.merge(on, apply, { true }, { true })
         assertEquals(on.getJSONArray("tiles").length(), twice.getJSONArray("tiles").length())     // applied again: no copies
+    }
+
+    /** The themes must look different at a glance (the user, 2026-11-04: "Photo frame" and "See-through" differed only by the focus ring). */
+    @Test fun noTwoThemesShareMostOfTheirLayout() {
+        val r = HomeConfig.parseReady(String(list), "99.0.0")
+        fun knobs(c: org.json.JSONObject) = listOf(c.optString("wall") + c.optString("wurl") + c.optString("wcol"), c.optJSONArray("widgets").toString(), c.optInt("cols"),
+            c.optDouble("rows"), c.optBoolean("center"), c.optString("focus"), c.optJSONObject("wopt").toString())
+        for (a in r.indices) for (b in a + 1 until r.size) {
+            val x = knobs(r[a].conf); val y = knobs(r[b].conf)
+            assertTrue("${r[a].id} and ${r[b].id} differ in only ${x.indices.count { x[it] != y[it] }} of ${x.size} looks", x.indices.count { x[it] != y[it] } >= 3)
+        }
+        assertTrue(r.size in 12..16)
     }
 }
