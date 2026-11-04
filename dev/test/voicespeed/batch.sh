@@ -6,11 +6,11 @@ T=$1; TAG=$2; RUNS=${3:-3}
 S=$(cd "$(dirname "$0")" && pwd); mkdir -p "$S/logs"
 RS=$S/rules.sh
 DUR=(0 1.42 1.63 0.62 1.44 1.68 1.23 5.43)
-for MODE in cmd free; do
+for MODE in ${MODES:-cmd free}; do                  # MODES=free WAVS="1 2 5" runs only those
   if [ $MODE = free ]; then ON=true; else ON=false; fi
   $RS $T "{\"do\":\"mic_freespeech\",\"on\":$ON}" >/dev/null
   sleep 1
-  for W in 1 2 3 4 5 6 7; do
+  for W in ${WAVS:-1 2 3 4 5 6 7}; do
     adb -s $T push $S/wav/w$W.wav /data/local/tmp/w.wav >/dev/null
     adb -s $T shell run-as dev.tvremote.setup.voice cp /data/local/tmp/w.wav files/test.wav
     for R in $(seq 1 $RUNS); do

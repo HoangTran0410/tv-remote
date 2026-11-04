@@ -117,7 +117,8 @@ object VoiceProtocol {
      *  a. free is a search: free ("sơn tùng trên youtube" against a garbled "sau home tục menu 6").
      *  b. grammar is a search and free is no command: a search with the free text ("tìm ngay xuống thanh đổi" against "kỷ niệm ngày xưa anh nổi").
      *  c. grammar is a command: it, unless free is a different command ("hẹn giờ tắt 30 phu" stays; free "mở youtube" against "tiếng ngay" wins).
-     *  d. neither: the grammar text, as before free speech existed.
+     *  d. neither parses: free (it goes to the TV's own search like the grammar text would, and the grammar was forced onto words it
+     *     did not know: "sau home tục menu 6" against "sơn tùng chia mưu sinh"). No free text = the grammar text, as before.
      */
     fun pick(heard: List<String>, kind: (String) -> String?, asSearch: (String) -> String): String {
         val g = heard.firstOrNull { it.isNotEmpty() }.orEmpty()
@@ -129,7 +130,7 @@ object VoiceProtocol {
             gk == SEARCH -> if (fk == null) asSearch(f) else f
             gk != null -> if (fk != null && fk != gk) f else g
             fk != null -> f
-            else -> g
+            else -> f
         }
     }
 }

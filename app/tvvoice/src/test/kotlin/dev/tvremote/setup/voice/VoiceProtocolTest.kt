@@ -43,6 +43,7 @@ class VoiceProtocolTest {
         assertEquals("mở youtube", pick("tiếng ngay", "mở youtube"))  // free speech heard a command the list missed
         assertEquals("mở youtube", pick("tắt tiếng", "mở youtube"))   // c. two different commands: free
         assertEquals("tắt tiếng", pick("tắt tiếng", "tắt tiếng"))
+        assertEquals("sơn tùng chia mưu sinh", pick("sau home tục menu 6", "sơn tùng chia mưu sinh"))   // d. neither parses: free
         assertEquals("tiếng ngay", pick("tiếng ngay", ""))            // no second pass: as before
         assertEquals("", pick("", ""))
     }

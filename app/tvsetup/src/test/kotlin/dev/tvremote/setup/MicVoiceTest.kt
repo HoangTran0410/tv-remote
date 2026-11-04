@@ -21,6 +21,7 @@ class MicVoiceTest {
         fun pick(g: String, f: String) = VoiceProtocol.pick(listOf(g, f), { dev.tvremote.core.scenes.Voice.kind(it, dev.tvremote.core.scenes.Voice.parse(it, apps, emptyMap())) }) { dev.tvremote.core.scenes.Voice.asSearch(it) }
         assertEquals("sơn tùng trên youtube", pick("sau home tục menu 6", "sơn tùng trên youtube"))
         assertEquals("sơn tùng trên youtube", pick("sơn tùng chia mưu sinh", "sơn tùng trên youtube"))
+        assertEquals("sơn tùng chia mưu sinh", pick("sau home tục menu 6", "sơn tùng chia mưu sinh"))
         assertTrue(pick("tìm ngay xuống thanh đổi", "kỷ niệm ngày xưa anh nổi").endsWith(" kỷ niệm ngày xưa anh nổi"))
         assertTrue(dev.tvremote.core.scenes.Voice.looksLikeSearch(pick("tìm ngay xuống thanh đổi", "kỷ niệm ngày xưa anh nổi")))
         assertEquals("tìm ngày xưa anh nói", pick("tìm ngay xuống thanh đổi", "tìm ngày xưa anh nói"))
