@@ -658,10 +658,6 @@ Hai tùy chọn cho nền của TV Home, tính trên TV, không cần mạng.
 4. Cả màn hình chính dịch 1 dp mỗi phút trong ô vuông 6 dp, không thấy giật; hình nền đứng yên.
 5. Màn chờ tối đen ban đêm (Tùy chỉnh → Hệ thống): bật, rồi chọn **Từ** và **Đến**, mỗi bước 30 phút (trên TV: OK hoặc Phải). Trong giờ đó chỉ còn màn đen. Mặc định tắt.
 
-Tùy chỉnh → Giao diện → **Bấm Home trong app: hiện thanh app** (mặc định tắt).
-
-Home trong app mở thanh: Trang chủ, Dock, app gần đây. OK mở, Back đóng, Home lần nữa về TV Home. Cần TV Setup Keys.
-
 ## Cài đặt nhanh (TV Home)
 
 Nút Cài đặt (bánh răng) trên thanh trên mở bảng theo kiểu Android. Ô lớn: Tùy chỉnh, Hẹn giờ tắt.
@@ -717,6 +713,10 @@ Phím nhanh mở app ngay từ màn hình chính bằng một phím số hoặc 
 - Ô **Khi bật TV**: chọn app = tự mở, xóa = tắt. Nút **Tự mở … khi bật TV**: mở app đó (trống: TV Home) dù TV tự vào HDMI hay app khác, trừ lúc cast.
 - Cùng ô đó có **Ứng dụng vừa dùng**: mở app đang chạy lúc tắt TV (mặc định tắt).
 - Live widget cũng gán được và hiện icon riêng.
+
+Tùy chỉnh → Phím & khởi động → **Phím Home trong app: hiện thanh app** (mặc định tắt).
+
+Home trong app mở thanh: Trang chủ, Dock, app gần đây. OK mở, Back đóng, Home lần nữa về TV Home. Cần TV Setup Keys.
 
 ## Phím trên remote: gán app, sửa phím chết, giữ để đổi
 

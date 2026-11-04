@@ -1054,7 +1054,7 @@ async function homeOpen() {
     ['look', 'sparkle', 180, 'home.g_look', [sect('home.sec_show', focusHead, focus, motionHead, motion, check(anim, 'home.anim'), check(clock, 'home.clock24')),
       sect('home.sec_head', check(greet, 'home.greet'), gstyleHead, gstyle, gnameLine, gtextLine, gtokens, gtype, hsplit, dstyleHead, dstyle, dtextLine, dtokens, dtype),
       sect(showHead, check(shows.showClock, 'home.show_clock'), check(shows.showDate, 'home.show_date'), check(shows.showNet, 'home.show_net'), check(shows.showGear, 'home.show_gear'),
-        check(shows.showAdd, 'home.show_add'), check(shows.showSuggest, 'home.show_suggest'), check(shows.showWatch, 'home.show_watch'), check(infold, 'home.show_infold'), check(homebar, 'home.show_homebar'), check(shift, 'home.show_shift'), watchAtHead, watchAt),
+        check(shows.showAdd, 'home.show_add'), check(shows.showSuggest, 'home.show_suggest'), check(shows.showWatch, 'home.show_watch'), check(infold, 'home.show_infold'), check(shift, 'home.show_shift'), watchAtHead, watchAt),
       sect('home.sec_grid', colsHead, cols, check(center, 'home.center'), rowsHead, rowsLine, rowsNote, orderHead, orderBox, foldHead, foldNote, foldBox),
       sect(null, tilesHead, tilesNote, addHome, tilesList),
       sect(null, el('div', { className: 'card-head' }, el('h3', { textContent: T('home.hidden') }), addHidden), hidden),
@@ -1063,7 +1063,7 @@ async function homeOpen() {
     ['widgets', 'chart', 210, 'home.g_widgets', [sect(null, wHead, wList, ...wLines), sect(null, packHead, packBox, packNote), sect(null, layHead, lay, layNote, placeHead, placeLine),
       sect(null, feedHead, feedLine, feedList, feedNote), sect(null, noteHead, noteLine), sect(null, qrHead, qrList, qrNote)]],
     ['system', 'power', 260, 'home.g_system', [sect(null, check(dream, 'home.dream'), dfaceHead, dface, check(ddarkOn, 'home.ddark'), ddarkTimes)]],
-    ['keys', 'keyboard', 230, 'home.keys', [keysOld, check(keyOn, 'home.keys_on'), keysNote, keysList, autoNote, autoAllBox, autoAllNote]],
+    ['keys', 'keyboard', 230, 'home.keys', [keysOld, check(keyOn, 'home.keys_on'), keysNote, keysList, autoNote, autoAllBox, autoAllNote, check(homebar, 'home.show_homebar')]],
     ['lang', 'globe', 200, 'home.lang', [langs]],
   ];
   keysHead.hidden = langHead.hidden = true;                           // the page's own title says it

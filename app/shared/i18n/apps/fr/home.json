@@ -409,7 +409,7 @@
   "show_watch": "Ligne « À suivre »",
   "show_infold": "Afficher seulement les entrées HDMI/AV branchées",
   "show_shift": "Décaler un peu l'écran chaque minute (protection OLED)",
-  "show_homebar": "Touche Accueil dans une appli : barre des applis récentes et du dock (TV Setup requis)",
+  "show_homebar": "Touche Accueil dans une appli : barre d’applis",
   "bar_home": "Accueil",
   "inputs_more": "Autres entrées (%d)",
   "settings_none": "Impossible d'ouvrir les paramètres de la TV. Appuyez sur la touche Paramètres de la télécommande de la TV.",

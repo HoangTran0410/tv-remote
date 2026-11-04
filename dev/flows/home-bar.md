@@ -11,7 +11,7 @@ Read [README.md](README.md) first: change the row a fault belongs to, and this f
 
 ## The goal, for the person
 
-With the option on (Customize > Look, the page's Look, "Home key in an app"), Home pressed while an app is open shows a glass bar
+With the option on (Customize > Keys & startup, the page's Keys tab, "Home key in an app"), Home pressed while an app is open shows a glass bar
 over that app: the Home item, TV Home's dock apps, the apps opened last. OK opens one, Back closes the bar and the app is as it was,
 Home again (or the Home item) goes to the home screen. Off (default): Home is exactly what it was, nothing extra runs.
 

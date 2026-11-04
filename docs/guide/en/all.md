@@ -658,10 +658,6 @@ Two options for TV Home's look, worked out on the TV with no network.
 4. The whole home screen moves 1 dp a minute inside a 6 dp square, with no visible jump; the wallpaper stays.
 5. Black screensaver at night (Customize → System): turn it on, then set **From** and **To** in 30-minute steps (OK or Right on the TV). Inside them, a plain black screen. Off by default.
 
-Customize → Look → **Home key in an app: show a bar** (off by default).
-
-Home in an app opens a bar: Home, Dock, recent apps. OK opens, Back closes, Home again goes to TV Home. Needs TV Setup Keys.
-
 ## Quick settings (TV Home)
 
 The Settings button (gear) on the top bar opens a panel in Android's look. Big tiles: Customize, Sleep timer.
@@ -717,6 +713,10 @@ Quick keys open an app from the home screen with one number or color key on the 
 - The **At power-on** slot: pick an app = it opens at power-on, clear = off. **Auto-open … at power-on**: opens it (empty: TV Home) even if the TV woke into HDMI or another app, except during a cast.
 - The same slot offers **Last app used**: the app open when the TV turned off (off by default).
 - Live widgets can be assigned too and show their own icon.
+
+Customize → Keys & startup → **Home key in an app: show the app bar** (off by default).
+
+Home in an app opens a bar: Home, Dock, recent apps. OK opens, Back closes, Home again goes to TV Home. Needs TV Setup Keys.
 
 ## Remote keys: give a key an app, fix dead keys, hold
 

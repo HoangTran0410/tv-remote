@@ -895,7 +895,6 @@ object Customize {
             tile(R.drawable.ic_input, a.getString(R.string.show_infold), null, "infold")   // default off (HomeConfig "infold")
             tile(R.drawable.ic_updown, a.getString(R.string.watch_at), null, "watchAt", HomeConfig.WATCH_AT.map { it to a.getString(when (it) { "top" -> R.string.watch_at_top; "under1" -> R.string.watch_at_under1; "tiles" -> R.string.watch_at_tiles; else -> R.string.watch_at_bottom }) })
             tile(R.drawable.ic_sparkle, a.getString(R.string.motion), null, "anim")
-            tile(R.drawable.ic_home, a.getString(R.string.show_homebar), null, "homebar")   // Home over an app shows the bar, default off (HomeConfig "homebar")
             tile(R.drawable.ic_eye, a.getString(R.string.show_shift), null, "shift")   // burn-in care, default off (HomeConfig "shift")
             tile(R.drawable.ic_sparkle, a.getString(R.string.c_motion), null, "motion",
                 listOf("" to a.getString(R.string.c_motion_auto), "calm" to a.getString(R.string.c_motion_calm), "full" to a.getString(R.string.c_motion_full)))
@@ -980,6 +979,7 @@ object Customize {
         }
         groups[5].fill = {
             val doors = launchPage(a, col, ::glass, ::label, gap)
+            tile(R.drawable.ic_home, a.getString(R.string.show_homebar), null, "homebar")   // with the remote keys it changes; Home over an app shows the bar, default off (HomeConfig "homebar")
             doors.getOrNull(doorAt)?.let { v -> groups[5].start = { v } }; doorAt = -1   // come back from a door: on it
         }
         groups[6].fill = {
