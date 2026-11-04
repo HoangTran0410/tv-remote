@@ -104,16 +104,29 @@ internal object NotifyLayer {
     }
 }
 
-/** The shell's way to [NotifyLayer] (Notify.kt): only the shell may send it (the manifest). Extra "n": the message as base64 JSON. */
+/**
+ * The shell's way to [NotifyLayer] (Notify.kt): only the shell may send it (the manifest). Extra "n": the message as base64 JSON.
+ * With "speak" the answer waits for the TV's voice engine ([NotifySpeak]) to say whether it can read it: {"ok":true} when it is
+ * reading, plus {"speak":"noengine"} or {"speak":"nolang","lang":"vi"} when the card showed but nothing could read it.
+ */
 class NotifyReceiver : BroadcastReceiver() {
     override fun onReceive(c: Context, i: Intent) {
-        val answer = try {
-            val msg = Notify.clean(JSONObject(String(Base64.decode(i.getStringExtra("n") ?: "", Base64.DEFAULT), Charsets.UTF_8)))
-            if (NotifyLayer.show(c, msg)) JSONObject().put("ok", true) else JSONObject().put("error", "overlay")
-        } catch (e: Exception) {
-            JSONObject().put("error", e.message ?: e.javaClass.simpleName)
+        val reply = { answer: JSONObject, pending: PendingResult? ->
+            val data = Base64.encodeToString(answer.toString().toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
+            if (pending == null) { resultCode = Activity.RESULT_OK; resultData = data }
+            else { pending.resultCode = Activity.RESULT_OK; pending.resultData = data; pending.finish() }
         }
-        resultCode = Activity.RESULT_OK
-        resultData = Base64.encodeToString(answer.toString().toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
+        val msg = try { Notify.clean(JSONObject(String(Base64.decode(i.getStringExtra("n") ?: "", Base64.DEFAULT), Charsets.UTF_8))) }
+        catch (e: Exception) { return reply(JSONObject().put("error", e.message ?: e.javaClass.simpleName), null) }
+        if (!NotifyLayer.show(c, msg)) return reply(JSONObject().put("error", "overlay"), null)
+        if (!msg.optBoolean("speak")) return reply(JSONObject().put("ok", true), null)
+        val pending = goAsync()
+        try {
+            NotifySpeak.speak(c, msg.optString("title"), msg.optString("text")) { why, lang ->
+                val a = JSONObject().put("ok", true)
+                if (why != null) a.put("speak", why).put("lang", lang)
+                reply(a, pending)
+            }
+        } catch (e: Exception) { reply(JSONObject().put("ok", true).put("speak", "noengine"), pending) }
     }
 }

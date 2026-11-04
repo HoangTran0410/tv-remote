@@ -200,7 +200,7 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
                 "adb/pair" -> { if (canPair && post) return pairing(r.json()); HttpServer.Response.error(404, "not here") }
                 "adb/connect" -> HttpServer.Response.json(JSONObject().put("state", link.reconnect()))
                 "shell" -> shell(r.json().optString("cmd"))
-                "notify" -> { Notify.send({ sh(it) }, r.json()); HttpServer.Response.json(JSONObject().put("ok", true)) }
+                "notify" -> HttpServer.Response.json(Notify.send({ sh(it) }, r.json()))       // TV Setup's answer: ok, and why it could not read aloud
                 "share" -> HttpServer.Response.json(Invite.share({ sh(it) }, link.host, r.json().optString("scope"), r.json().optBoolean("again")))   // a QR another phone scans (Invite.kt)
                 "search" -> {
                     val d = r.json()

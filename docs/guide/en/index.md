@@ -54,7 +54,7 @@ Remote control for Android TV / Google TV (and LG, Samsung, Roku, VIDAA) with no
 - [Manage right on the TV](ontv.md): No phone or computer at hand? Do it on the TV itself with the TV's own remote. _(quan ly tren tv khong co dien thoai may tinh remote cua tv back tv setup man hinh tv)_
 - [TV Setup repairs DNS and ADB by itself](tvguard.md): TV Setup watches two things that often cut the TV off, and fixes them itself. _(dns loc dns keepadb adb tu bat lai tat loc dns cat mang youtube khong ket noi dns filter)_
 - [Stay reachable when the TV is off](awake.md): Once the TV is off it can fall into deep sleep and stop answering. This option keeps the chip awake so you can still connect. _(giu ket noi khi tat tv awake keepawake chip ngu sau tcl standby tailscale)_
-- [Send a notification to the TV](notify.md): More keys → Tools → Notify (🔔 Notify the TV). _(thong bao notification the nhan goc man hinh message card)_
+- [Send a notification to the TV](notify.md): Reading aloud needs Google Speech Services (or another engine) with that language on the TV. Without it the card still shows and the app… _(thong bao notification the nhan goc man hinh message card)_
 - [Draw on the TV](draw.md): Tap ✏️ by the picture (or More keys → Draw on the TV). _(ve len tv but pen anh chu text hinh draw)_
 - [Put a picture on the TV](photo.md): Two ways: lay a picture over the TV's screen (above every app), or play a photo or video from your device. _(dua anh len tv hinh anh phu len man hinh pic phat anh video)_
 - [TV screenshot](screenshot.md): Tap More keys on the Remote tab. _(chup man hinh screenshot anh png)_

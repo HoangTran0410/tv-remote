@@ -218,6 +218,16 @@ class TelegramTest {
         assertTrue(s.contains("on") && s.contains("7/15") && s.contains("Netflix"))
     }
 
+    @Test fun speakShowsACardAndAsksTheTvToReadItAndSaysWhyWhenItCannot() {
+        pairChat()
+        assertEquals("speak" to "ăn cơm nhé", Telegram.parse("/speak ăn cơm nhé", "")!!.let { it.name to it.arg })
+        bot.onUpdate(msg(42, "/speak", 1)); assertTrue(api.sent(42).last().contains("/speak")); assertEquals(0, seen.size); now += 1000   // usage
+        bot.onUpdate(msg(42, "/speak Dinner is ready", 2)); now += 1000
+        assertEquals("/api/notify", seen[0].path); assertEquals("Dinner is ready", seen[0].body.optString("text"))
+        assertTrue(seen[0].body.getBoolean("speak"))
+        bot.onUpdate(msg(42, "/help", 3)); assertTrue(api.sent(42).last().contains("/speak"))
+    }
+
     @Test fun statusWithNoAppRunningDoesNotSayNull() {
         pairChat(); state.put("app", JSONObject.NULL).put("app_label", JSONObject.NULL)
         bot.onUpdate(msg(42, "/status")); assertFalse(api.sent(42).last().contains("null"))
@@ -314,7 +324,7 @@ class TelegramTest {
         bot.step(); bot.step(); bot.step()
         assertEquals(1, api.named("deleteWebhook").size); assertEquals(1, api.named("setMyCommands").size)
         assertEquals(3, api.named("getUpdates").size)
-        assertEquals(26, api.named("setMyCommands")[0].getJSONArray("commands").length())
+        assertEquals(27, api.named("setMyCommands")[0].getJSONArray("commands").length())
         assertEquals("ok", bot.status)
     }
 

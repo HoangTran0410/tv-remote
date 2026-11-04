@@ -907,9 +907,11 @@ Once the TV is off it can fall into deep sleep and stop answering. This option k
 1. More keys → **Tools** → **Notify** (🔔 Notify the TV).
 2. Type a **title** (optional) and the **message**.
 3. Pick a corner ↖ ↗ ↙ ↘ and the seconds: 3, 5, 10 or 30.
-4. Tap **Send**. A small card shows on the TV, then goes away.
+4. Tap **Send**. A small card shows on the TV, then goes away. To have the TV read it aloud, set **Read it aloud → Yes** before sending.
 
 > 💡 Needs a recent TV Setup. If it is missing the app asks with one Update button.
+
+Reading aloud needs Google Speech Services (or another engine) with that language on the TV. Without it the card still shows and the app says what to install.
 
 ## Draw on the TV
 
@@ -1079,10 +1081,10 @@ Commands:
 ```
 /status  /off  /on  /vol 30  /key HOME
 /open netflix  /scene Xem phim  /timer 30 (0 = huỷ/cancel)
-/say Ăn cơm nhé  /shot  /remote  /help
+/say Ăn cơm nhé  /speak Ăn cơm nhé  /shot  /remote  /help
 ```
 
-A new chat gets **Remote only** rights; the owner can raise it to **Full access** in the chat list.
+A new chat gets **Remote only** rights; the owner can raise it to **Full access** in the chat list. **/speak** is /say, and the TV also reads the message aloud (it needs a voice engine on the TV).
 
 YouTube, Netflix and other apps with protected video block screenshots: **/shot** sends a black picture, with a line saying why.
 

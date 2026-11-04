@@ -3936,7 +3936,7 @@
   "core.need_telegram": "Contrôle de la TV par Telegram",
   "telegram.plain": "Envoyez /help pour voir les commandes.",
   "telegram.paired": "✅ Associé. Droits de cette discussion : {scope}.",
-  "telegram.help": "📺 Contrôle de la TV (droits : {scope})\n/status – TV allumée ou non, volume, application\n/now – ce qui est en lecture (+ capture d'écran)\n/off – éteindre la TV · /on – la rallumer\n/vol 30 – volume de 0 à 100 (ou up, down, mute)\n/key HOME – appuyer sur une touche (UP, DOWN, OK, BACK, MENU…)\n/type bonjour – écrire dans le champ de la TV\n/open Netflix – ouvrir une application · /apps – vos applications les plus utilisées en boutons\n/channel TF1 – ouvrir une chaîne dans TV Channels\n/scene Film – lancer une scène · /scenes – toutes en boutons\n/timer 30 – éteindre dans 30 minutes (/timer 0 annule)\n/usage – temps d'écran aujourd'hui\n/bedtime · /limits · /schedule – les règles (le propriétaire peut les modifier)\n/alerts – choisir ce que la TV vous signale d'elle-même\n/say Dîner – afficher un message sur la TV\n/shot – capture d'écran de la TV\n/remote – un clavier de télécommande",
+  "telegram.help": "📺 Contrôle de la TV (droits : {scope})\n/status – TV allumée ou non, volume, application\n/now – ce qui est en lecture (+ capture d'écran)\n/off – éteindre la TV · /on – la rallumer\n/vol 30 – volume de 0 à 100 (ou up, down, mute)\n/key HOME – appuyer sur une touche (UP, DOWN, OK, BACK, MENU…)\n/type bonjour – écrire dans le champ de la TV\n/open Netflix – ouvrir une application · /apps – vos applications les plus utilisées en boutons\n/channel TF1 – ouvrir une chaîne dans TV Channels\n/scene Film – lancer une scène · /scenes – toutes en boutons\n/timer 30 – éteindre dans 30 minutes (/timer 0 annule)\n/usage – temps d'écran aujourd'hui\n/bedtime · /limits · /schedule – les règles (le propriétaire peut les modifier)\n/alerts – choisir ce que la TV vous signale d'elle-même\n/say Dîner – afficher un message sur la TV\n/speak Dîner – afficher un message et le lire à voix haute\n/shot – capture d'écran de la TV\n/remote – un clavier de télécommande",
   "telegram.off_done": "✅ TV éteinte. /on la rallume.",
   "telegram.on_done": "✅ TV allumée.",
   "telegram.usage_vol": "Utilisation : /vol 30 (0-100), /vol up, /vol down ou /vol mute",
@@ -4538,5 +4538,17 @@
   "core.fr_video_cam": "Impossible d’ouvrir la caméra.",
   "core.fr_video_link": "Liaison avec la TV perdue : la caméra s’est arrêtée.",
   "core.fr_video_copy": "Impossible de copier la vidéo pour TV Setup.",
-  "vbox.paused": "En pause sur la TV"
+  "vbox.paused": "En pause sur la TV",
+  "notify.read_aloud": "Lire à voix haute",
+  "notify.speak_no": "Non",
+  "notify.speak_yes": "Oui",
+  "notify.speak_noengine": "Affiché sur la TV, non lu : aucun moteur vocal. Installez Google Speech Services sur la TV.",
+  "notify.speak_nolang": "Affiché sur la TV, non lu : pas de voix « {lang} ». Installez Google Speech Services et téléchargez-la.",
+  "auto.step_notify_speak": "🔊 À voix haute : {text}",
+  "core.need_speak": "la lecture d’un message à voix haute sur la TV",
+  "telegram.usage_speak": "Utilisation : /speak votre message",
+  "telegram.speak_done": "✅ Affiché sur la TV et lu à voix haute.",
+  "telegram.speak_noengine": "⚠️ Affiché sur la TV, non lu : aucun moteur vocal. Installez Google Speech Services sur la TV.",
+  "telegram.speak_nolang": "⚠️ Affiché sur la TV, non lu : pas de voix « {lang} ». Installez Google Speech Services et téléchargez-la.",
+  "telegram.cmd_speak": "Afficher un message sur la TV et le lire à voix haute"
 }

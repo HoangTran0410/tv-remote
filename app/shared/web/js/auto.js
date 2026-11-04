@@ -448,7 +448,7 @@ function stepText(s) {
     case 'link': return '🔗 ' + s.url.replace(/^https?:\/\//, '').slice(0, 40);
     case 'wait': return T('auto.step_wait', { s: s.s });
     case 'input': return T('auto.step_input', { name: s.label || s.id });
-    case 'notify': return T('auto.step_notify', { text: (s.text || s.title || '').slice(0, 30) });
+    case 'notify': return T(s.speak ? 'auto.step_notify_speak' : 'auto.step_notify', { text: (s.text || s.title || '').slice(0, 30) });
     case 'timer': return s.min ? T('auto.step_timer', { time: mins(s.min) }) : T('auto.step_timer_off');
   }
   return s.do;
@@ -545,7 +545,9 @@ function stepArgs() {
     const p = notifyPrefs();
     box.replaceChildren(el('input', { id: 'steparg', placeholder: T('auto.notify_text'), maxLength: 300 }),
       el('select', { id: 'stepcorner', 'aria-label': T('notify.screen_corner') }, ...NOTIFY_CORNERS.map(([v]) => el('option', { value: v, textContent: notifyCornerName(v), selected: v === p.corner }))),
-      el('select', { id: 'stepsecs', 'aria-label': T('notify.stays_for') }, ...NOTIFY_SECONDS.map((n) => el('option', { value: n, textContent: T('notify.seconds_n', { n }), selected: n === p.seconds }))));
+      el('select', { id: 'stepsecs', 'aria-label': T('notify.stays_for') }, ...NOTIFY_SECONDS.map((n) => el('option', { value: n, textContent: T('notify.seconds_n', { n }), selected: n === p.seconds }))),
+      el('select', { id: 'stepspeak', 'aria-label': T('notify.read_aloud') },     // off unless chosen for this step
+        el('option', { value: '', textContent: T('notify.read_aloud') + ': ' + T('notify.speak_no') }), el('option', { value: '1', textContent: T('notify.read_aloud') + ': ' + T('notify.speak_yes') })));
   }
   else box.replaceChildren();
 }
@@ -559,7 +561,7 @@ $('#stepadd').addEventListener('click', () => {
   if (k === 'wait') s.s = Math.max(0, Math.min(30, +v || 1));
   if (k === 'timer') s.min = Math.max(0, Math.min(720, Math.round(+v || 0)));
   if (k === 'input') { if (!v) return toast(T('auto.pick_one_input')); s.id = v; s.label = a.selectedOptions[0].textContent; }
-  if (k === 'notify') { if (!v) return toast(T('auto.enter_notify')); s.text = v.slice(0, 300); s.corner = notifyCorner($('#stepcorner').value); s.seconds = notifySeconds($('#stepsecs').value); }
+  if (k === 'notify') { if (!v) return toast(T('auto.enter_notify')); s.text = v.slice(0, 300); s.corner = notifyCorner($('#stepcorner').value); s.seconds = notifySeconds($('#stepsecs').value); if ($('#stepspeak').value) s.speak = true; }
   if (k === 'link') { const l = normalizeLink(v); if (!l) return toast(T('auto.enter_link')); s.url = l; }
   if (draft.length >= 30) return toast(T('auto.max_steps'));
   draft.push(s); drawSteps();

@@ -19,7 +19,8 @@
     <queries>                                                          <!-- to list the apps on the TV's home screen -->
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LEANBACK_LAUNCHER" /></intent>
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent>
-        <package android:name="com.tailscale.ipn" />                  <!-- its updates, to switch it back on (TailscaleWatch) -->
+        <intent><action android:name="android.intent.action.TTS_SERVICE" /></intent>   <!-- the TV's voice engines, to read a message aloud (NotifySpeak) -->
+        <package android:name="com.tailscale.ipn" />                 <!-- its updates, to switch it back on (TailscaleWatch) -->
         <intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.HOME" /></intent>   <!-- home screens left out of TV Home's usage widget (HomeInfo) -->
         <package android:name="dev.tvremote.home" />                  <!-- TV Home's key, checked before it is told the usage -->
         <package android:name="dev.tvremote.channels" />              <!-- Channels and Games: their key, checked before they are told the stats switch (HomeInfo "census") -->

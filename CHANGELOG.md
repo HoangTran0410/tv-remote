@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Messages to the TV can be read aloud: "Read it aloud" in Notify (and as a scene step), `speak=1` on the Home Assistant / Shortcuts notify call, and `/speak` in Telegram. TV Setup speaks it in Vietnamese when the text has Vietnamese letters, else in the TV's language, and only starts the voice engine for that message. With no engine or no voice for the language the card still shows and the sender is told what to install. Needs the next TV Setup (the app asks to update).
 - TV Games: web games played only with phones no longer let the TV sleep or start its screensaver mid-game; retro games no longer keep the screen on forever when nobody plays. Both stay on until 10 minutes after the last press.
 - TV Games: Suggestions come in rows: the web games made for TV Games first, then one row per retro genre.
 

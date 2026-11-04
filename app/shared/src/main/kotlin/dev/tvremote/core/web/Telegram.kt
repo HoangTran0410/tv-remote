@@ -352,6 +352,11 @@ class Telegram(
                 if (a.isEmpty()) return send(c.id, w("telegram.usage_say"))
                 send(c.id, done(post(c, "/api/notify", JSONObject().put("title", "Telegram · " + c.name.take(30)).put("text", a)), c, w("telegram.say_done")))
             }
+            "speak" -> {                                                  // like /say, and the TV reads it aloud
+                if (a.isEmpty()) return send(c.id, w("telegram.usage_speak"))
+                val out = post(c, "/api/notify", JSONObject().put("title", "Telegram · " + c.name.take(30)).put("text", a).put("speak", true))
+                send(c.id, done(out, c, speakAnswer(out)))
+            }
             "shot" -> shot(c)
             "remote" -> send(c.id, w("telegram.remote_title"), keypad())
             "alerts" -> send(c.id, w("telegram.alerts_title"), alertsMarkup(c))
@@ -423,6 +428,16 @@ class Telegram(
 
     /** The answer for a finished command: [ok] words when it went through, else why not. */
     private fun done(out: HttpServer.Response, c: Chat, ok: String) = if (out.status in 200..299) ok else say(out, c)
+
+    /** The answer to /speak: read aloud, or shown with the reason it was not (nothing to read it with / no voice for the language). */
+    private fun speakAnswer(out: HttpServer.Response): String {
+        val b = body(out)
+        return when (b?.optString("speak")) {
+            "noengine" -> w("telegram.speak_noengine")
+            "nolang" -> w("telegram.speak_nolang", "lang" to b.optString("lang"))
+            else -> w("telegram.speak_done")
+        }
+    }
 
     private fun say(out: HttpServer.Response, c: Chat): String {
         val e = try { JSONObject(String(out.body)).optString("error") } catch (x: Exception) { "" }
@@ -804,7 +819,7 @@ class Telegram(
     private fun commandList(): JSONArray = JSONArray(listOf(
         "help" to w("telegram.cmd_help"), "status" to w("telegram.cmd_status"), "off" to w("telegram.cmd_off"), "on" to w("telegram.cmd_on"),
         "vol" to w("telegram.cmd_vol"), "key" to w("telegram.cmd_key"), "open" to w("telegram.cmd_open"), "scene" to w("telegram.cmd_scene"),
-        "timer" to w("telegram.cmd_timer"), "say" to w("telegram.cmd_say"), "shot" to w("telegram.cmd_shot"), "remote" to w("telegram.cmd_remote"),
+        "timer" to w("telegram.cmd_timer"), "say" to w("telegram.cmd_say"), "speak" to w("telegram.cmd_speak"), "shot" to w("telegram.cmd_shot"), "remote" to w("telegram.cmd_remote"),
         "now" to w("telegram.cmd_now"), "apps" to w("telegram.cmd_apps"), "usage" to w("telegram.cmd_usage"), "channel" to w("telegram.cmd_channel"),
         "type" to w("telegram.cmd_type"), "scenes" to w("telegram.cmd_scenes"), "bedtime" to w("telegram.cmd_bedtime"), "limits" to w("telegram.cmd_limits"),
         "schedule" to w("telegram.cmd_schedule"), "alerts" to w("telegram.cmd_alerts"),
@@ -920,7 +935,7 @@ class Telegram(
         private const val MIN_GAP = 1000L                   // one command a second from one chat
         private const val MIN_GAP_TAP = 400L                // a keypad is tapped faster, but not without end
         private val ALLOWED = listOf("message", "callback_query")
-        private val HIDDEN = setOf("say", "type", "pair", "start")      // commands whose words are never kept in a log or the history
+        private val HIDDEN = setOf("say", "speak", "type", "pair", "start")      // commands whose words are never kept in a log or the history
         const val HISTORY_MAX = 200
         const val HISTORY_DAYS = 7
         const val HISTORY_PAGE = 20

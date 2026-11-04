@@ -14,10 +14,10 @@ Lệnh:
 ```
 /status  /off  /on  /vol 30  /key HOME
 /open netflix  /scene Xem phim  /timer 30 (0 = huỷ/cancel)
-/say Ăn cơm nhé  /shot  /remote  /help
+/say Ăn cơm nhé  /speak Ăn cơm nhé  /shot  /remote  /help
 ```
 
-Chat mới ghép chỉ có quyền **Chỉ remote**; chủ TV nâng lên **Toàn quyền** trong danh sách chat.
+Chat mới ghép chỉ có quyền **Chỉ remote**; chủ TV nâng lên **Toàn quyền** trong danh sách chat. **/speak** giống /say nhưng TV còn đọc to lời nhắn (cần giọng đọc trên TV).
 
 YouTube, Netflix và các app phim có bản quyền chặn chụp màn hình: **/shot** ra ảnh đen, kèm một câu giải thích.
 
