@@ -51,6 +51,7 @@ object Customize {
     private fun lit(v: View, f: Boolean) { v.animate().cancel(); v.scaleX = 1f; v.scaleY = 1f }
     private const val ACCENT = 0xFF8AB4F8.toInt()
     private const val STEP_FILL = 0xF0161A24.toInt()                   // the rows stepper: nearly opaque, its number read over any background
+    private const val TIME_FILL = 0xFF161A24.toInt()                   // the time stepper: opaque, it sits over the panel's rows whose words showed through
     private const val DIM = 0xA6FFFFFF.toInt()
     private const val DOOR_FOCUS = 0x2EFFFFFF                          // a settings row that opens a screen: fill under focus, at rest, its edge
     private const val DOOR_REST = 0x12FFFFFF
@@ -126,7 +127,7 @@ object Customize {
         val box = LinearLayout(a).apply {
             orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL; isFocusable = true; isFocusableInTouchMode = true
             setPadding(dp(28), dp(18), dp(28), dp(18))
-            background = GradientDrawable().apply { cornerRadius = dp(22).toFloat(); setColor(STEP_FILL or 0xFF000000.toInt())   /* opaque: it sits over the panel's rows, whose words showed through */; setStroke(dp(1), ACCENT) }
+            background = GradientDrawable().apply { cornerRadius = dp(22).toFloat(); setColor(TIME_FILL); setStroke(dp(1), ACCENT) }
             addView(Font.on(TextView(a)).apply { text = title; textSize = 15f; setTextColor(DIM); gravity = Gravity.CENTER })
             addView(num, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(4) })
             addView(Font.on(TextView(a)).apply { text = a.getString(R.string.c_time_keys); textSize = 13f; setTextColor(DIM); gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(4) })
