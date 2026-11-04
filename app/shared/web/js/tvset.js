@@ -184,7 +184,7 @@ async function loadHold(now) {
   holdBusy = false;
   if (gen !== holdGen || !r) return;
   checkSet('mic', !!r.mic);
-  const seen = JSON.stringify([r.holdkeys, r.mic, r.mic_offline, r.voice, r.mic_lang, r.mic_langs, r.mic_engine, r.mic_secure, r.mic_block, r.mic_block_app, r.adb]) + window.LANG;
+  const seen = JSON.stringify([r.holdkeys, r.mic, r.mic_offline, r.voice, r.mic_lang, r.mic_langs, r.mic_engine, r.mic_secure, r.mic_block, r.mic_block_app, r.adb, r.voice_search, r.voice_youtube, r.voice_tubes]) + window.LANG;
   if (seen === holdSeen) return;                                       // nothing new: keep what is on screen
   holdSeen = seen;
   const holdOld = r.holdkeys === undefined;
@@ -216,6 +216,19 @@ async function loadHold(now) {
   const engine = voice === 'ready' ? [el('p', { className: 'note', textContent: T('mic.engine') }), UI.chips([
     { label: T('mic.engine_google'), on: !tvFirst, fn: () => pickEngine('auto') },
     { label: T('mic.engine_tv'), on: tvFirst, fn: () => pickEngine('tv') }]), UI.note(T('mic.engine_sub'))] : [];
+  // Which app "search …" and "YouTube" mean (Rules voice_search / voice_youtube; Voice.Prefs): only the YouTube clients on the TV (r.voice_tubes) are
+  // offered; the first chip is today's behaviour. A TV Setup older than this reports no voice_tubes and shows nothing.
+  const tubes = r.voice_tubes || [];
+  const pickVoice = async (rule, pkg) => { if (await api('/api/rules', { do: rule, pkg })) { forgetVoicePrefs(); holdSeen = ''; loadHold(true); } };
+  const mainTube = tubes.find((t) => t.main), others = tubes.filter((t) => !t.main);
+  const pickedSearch = tubes.find((t) => t.pkg === r.voice_search);
+  const voicePick = tubes.length ? [UI.group(T('voice.title'),
+    el('p', { className: 'note', textContent: T('voice.search') }),
+    UI.chips([{ label: T('voice.search_tv'), on: !pickedSearch, fn: () => pickVoice('voice_search', '') }, ...tubes.map((t) => ({ label: t.name, on: t === pickedSearch, fn: () => pickVoice('voice_search', t.pkg) }))]),
+    ...(pickedSearch && !pickedSearch.query ? [UI.note(T('voice.open_only'))] : []),
+    ...(mainTube && others.length ? [el('p', { className: 'note', textContent: T('voice.youtube') }),
+      UI.chips([mainTube, ...others].map((t) => ({ label: t.name, on: t.pkg === r.voice_youtube || (t === mainTube && !tubes.some((x) => x.pkg === r.voice_youtube)), fn: () => pickVoice('voice_youtube', t === mainTube ? '' : t.pkg) })))] : []),
+    UI.note(T('voice.note')))] : [];
   // Its language (Rules "mic_lang"): each one its own download, added beside the others (the user, 2026-11-03); a TV Setup that does not
   // report mic_langs is older than languages, and shows none
   const VLANGS = { vi: [LANGS.vi, '39 MB'], en: [LANGS.en, '47 MB'] }, has = r.mic_langs || [];   // each by its own name (langs.json)
@@ -234,7 +247,7 @@ async function loadHold(now) {
       const ok = await api('/api/rules', { do: 'mic_free' });
       b.disabled = false; if (ok) { toast(r.mic_block === 'google_holds_mic' && r.adb === 'ready' ? T('mic.block_done') : T('mic.block_opened')); holdSeen = ''; setTimeout(() => loadHold(true), 2500); }
     } })), ...(r.mic_block === 'google_holds_mic' ? [UI.note(T('mic.block_note'))] : [])] : [];
-  box.replaceChildren(UI.group(T('hold.tile'), hold, UI.note(T('hold.sub')), UI.note(T('hold.sub_off'))), UI.group(T('mic.tile'), mic, UI.note(T('mic.sub')), UI.note(T('mic.sub_off')), UI.note(T('mic.eg')), UI.note(T('mic.need')), ...(r.mic && r.mic_secure === false ? [UI.note(T('mic.first_press'))] : []), ...blocked, offline, UI.note(T('mic.offline_sub')), ...(vstate ? [UI.note(vstate)] : []), ...langs, ...engine),
+  box.replaceChildren(UI.group(T('hold.tile'), hold, UI.note(T('hold.sub')), UI.note(T('hold.sub_off'))), UI.group(T('mic.tile'), mic, UI.note(T('mic.sub')), UI.note(T('mic.sub_off')), UI.note(T('mic.eg')), UI.note(T('mic.need')), ...(r.mic && r.mic_secure === false ? [UI.note(T('mic.first_press'))] : []), ...blocked, offline, UI.note(T('mic.offline_sub')), ...(vstate ? [UI.note(vstate)] : []), ...langs, ...engine), ...voicePick,
     // The key tester (KeyTestActivity in TV Setup): opened on the TV by `am start`; an older TV Setup is asked to update first.
     UI.group(T('keytest.tile'), el('div', { className: 'actions' }, el('button', { type: 'button', textContent: T('keytest.open'), onclick: async () => { if (await api('/api/keytest/open', {})) toast(T('keytest.opened')); } })), UI.note(T('keytest.note'))));
 }

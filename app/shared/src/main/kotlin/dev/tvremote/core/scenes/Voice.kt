@@ -27,6 +27,24 @@ object Voice {
     data class PinRef(val key: String, val title: String, val app: String = "", val link: String? = null)
     const val MAX_CHOICES = 3
 
+    /**
+     * What the person picked for voice (TV Setup's rules "voice_search" / "voice_youtube"; "" = today's behaviour). [search]: the package a bare
+     * "tìm X" opens and searches in (instead of the TV's own search); [youtube]: the package the word "YouTube" means. A package that is not
+     * among the TV's apps is ignored, so an app that was removed falls back to today's behaviour.
+     */
+    data class Prefs(val search: String = "", val youtube: String = "")
+    /** The prefs in use: each client sets it from TV Setup's rules (the TV's own screen from its rules, the phone when it asks for the app names). */
+    @Volatile var prefs: Prefs = Prefs()
+
+    /** A YouTube client installed on the TV that the person may pick ([query] false: it can only be opened, no search words reach it). */
+    data class Tube(val pkg: String, val name: String, val query: Boolean, val main: Boolean)
+
+    /** The aliases of the list marked "tube" whose packages are in [installed] (package to name), for the pickers. */
+    fun tubes(installed: Map<String, String>): List<Tube> {
+        val ph = phrases ?: return emptyList()
+        return ph.apps.filter { it.tube != null }.flatMap { a -> a.pkgs.filter { it in installed }.map { Tube(it, installed[it] ?: a.label, a.search != null, a.tube == "main") } }
+    }
+
     /** Lower case, no accents, no punctuation: "Mở YouTube!" and "mo youtube" read the same. */
     fun fold(s: String): String = Normalizer.normalize(s, Normalizer.Form.NFD).replace(MARKS, "").replace('đ', 'd').replace('Đ', 'd')
         .lowercase().replace(SIGNS, " ").replace(SPACES, " ").trim()
@@ -56,14 +74,15 @@ object Voice {
     }
 
     /** True when [sentence] asks to open or close something ("mo youtube"): the Phone app then asks the TV for its app names before giving up on it. */
-    fun wantsApp(sentence: String): Boolean { val ph = phrases ?: return false; val s = strip(norm(sentence), ph); return ph.open.matches(s) || ph.close.matches(s) }
+    fun wantsApp(sentence: String): Boolean { val ph = phrases ?: return false; val s = strip(norm(sentence), ph); return ph.open.matches(s) || ph.close.matches(s) || prefs.search.isNotEmpty() && ph.searchBare?.matches(s) == true }
 
     /** The link TV Channels (dev.tvremote.channels) takes; spaces as %20, not +. */
     fun channelLink(name: String): String = "tvchannels://find/" + java.net.URLEncoder.encode(name, "UTF-8").replace("+", "%20")
 
     /** An app named [want] among [apps] (package to name): its alias in the list (a package that is there), else the installed names, loosely. */
-    private fun app(want: String, apps: Map<String, String>, ph: Phrases, loose: Boolean): Pair<String, String>? {
+    private fun app(want: String, apps: Map<String, String>, ph: Phrases, loose: Boolean, prefs: Prefs = Voice.prefs): Pair<String, String>? {
         val alias = ph.apps.firstOrNull { want in it.names }
+        if (alias?.tube == "main" && prefs.youtube.isNotEmpty() && prefs.youtube in apps) return prefs.youtube to apps.getValue(prefs.youtube)   // "YouTube" means the client the person picked
         val named = apps.entries.map { it to fold(it.value) }.filter { it.second.isNotEmpty() }
         fun fuzzy(w: String): Pair<String, String>? {
             val hit = named.firstOrNull { it.second == w } ?: named.firstOrNull { it.second.startsWith(w) || w.startsWith(it.second + " ") }
@@ -87,16 +106,27 @@ object Voice {
     }
 
     /** "<open verb>? X <connector> Y" with Y an app (an alias, or an installed name in full) and X more than that app: X is looked up inside Y. */
-    private fun search(text: String, s: String, apps: Map<String, String>, ph: Phrases): Command.Search? {
+    private fun search(text: String, s: String, apps: Map<String, String>, ph: Phrases, prefs: Prefs): Command.Search? {
         val re = ph.connect ?: return null
         val rest = ph.open.matchEntire(s)?.groupValues?.get(1) ?: s
         val m = re.matchEntire(rest) ?: return null
-        val x = m.groupValues[1]; val y = m.groupValues[2]
-        fun known(w: String) = app(w, apps, ph, false) ?: apps.entries.firstOrNull { fold(it.value) == w }?.let { it.key to it.value }
+        val x = ph.searchBare?.matchEntire(m.groupValues[1])?.groupValues?.get(1) ?: m.groupValues[1]   // "tìm sơn tùng trên youtube": the search word is not part of the query
+        val y = m.groupValues[2]
+        fun known(w: String) = app(w, apps, ph, false, prefs) ?: apps.entries.firstOrNull { fold(it.value) == w }?.let { it.key to it.value }
         val target = known(y) ?: return null
         if (known(x)?.first == target.first) return null                  // "mở youtube trên youtube"
-        val url = ph.apps.firstOrNull { y in it.names }?.search?.replace("{q}", java.net.URLEncoder.encode(spelled(text, x), "UTF-8").replace("+", "%20"))
-        return Command.Search(target.first, target.second, spelled(text, x), url)
+        return searchCommand(target.first, target.second, spelled(text, x), ph.apps.firstOrNull { target.first in it.pkgs } ?: ph.apps.firstOrNull { y in it.names })
+    }
+
+    /** [query] in [pkg]: the web search of the alias [a] that owns it, null when it has none (the app can then only be opened). */
+    private fun searchCommand(pkg: String, name: String, query: String, a: Phrases.Alias?) =
+        Command.Search(pkg, name, query, a?.search?.replace("{q}", java.net.URLEncoder.encode(query, "UTF-8").replace("+", "%20")))
+
+    /** "tìm X" with no app said, when the person picked one to search in ([Prefs.search], among [apps]); else null: the TV's own search, as before. */
+    private fun bareSearch(text: String, s: String, apps: Map<String, String>, ph: Phrases, prefs: Prefs): Command.Search? {
+        val name = apps[prefs.search] ?: return null
+        val x = ph.searchBare?.matchEntire(s)?.groupValues?.get(1) ?: return null
+        return searchCommand(prefs.search, name, spelled(text, x), ph.apps.firstOrNull { prefs.search in it.pkgs })
     }
 
     /**
@@ -157,12 +187,15 @@ object Voice {
     private fun channelName(w: String) = w.replace(Regex("([a-z]) (\\d)"), "\$1\$2")
 
     /** [apps]: package to name; [scenes]: id to name; [pins]: TV Home's pinned tiles. Null means: ask the TV's Assistant. */
-    fun parse(text: String, apps: Map<String, String>, scenes: Map<String, String>, pins: List<PinRef> = emptyList()): Command? {
+    fun parse(text: String, apps: Map<String, String>, scenes: Map<String, String>, pins: List<PinRef> = emptyList(),
+              sayings: Map<String, List<String>> = emptyMap(), prefs: Prefs = Voice.prefs): Command? {
         val raw = fold(text)
         if (raw.isEmpty()) return null
         scenes.entries.firstOrNull { (_, n) -> fold(n) == raw || fold("canh $n") == raw || fold("scene $n") == raw }?.let { return Command.Scene(it.key) }
         val ph = phrases ?: return null
         val s = strip(norm(text), ph)
+        // a scene's own phrases ("Câu gọi"): exactly what the person typed for it, before the built-in commands, so theirs win
+        if (sayings.isNotEmpty()) { val n = norm(text); sayings.entries.firstOrNull { (id, l) -> id in scenes && l.any { val p = norm(it); p.isNotEmpty() && (p == n || p == s) } }?.let { return Command.Scene(it.key) } }
         ph.keys[s]?.let { return Command.Key(it, 1) }
         ph.volUp.matchEntire(s)?.let { return Command.Key("VOL_UP", minOf(it.groupValues[1].toIntOrNull() ?: 3, 15)) }
         ph.volDown.matchEntire(s)?.let { return Command.Key("VOL_DOWN", minOf(it.groupValues[1].toIntOrNull() ?: 3, 15)) }
@@ -172,13 +205,13 @@ object Voice {
             return Command.Timer(minOf((m.groupValues[1].toIntOrNull() ?: 720) * (if (hours) 60 else 1), 720))   // "99999999999 phút": the most, not a crash
         }
         ph.close.matchEntire(s)?.let { m ->
-            val hit = app(m.groupValues[1], apps, ph, true)
+            val hit = app(m.groupValues[1], apps, ph, true, prefs)
             if (hit != null && hit.first !in ph.neverClose) return Command.Close(hit.first, hit.second)
         }
-        search(text, s, apps, ph)?.let { return it }
+        search(text, s, apps, ph, prefs)?.let { return it }
         val verb = ph.open.matchEntire(s)?.groupValues?.get(1)
         val want = verb ?: s
-        app(want, apps, ph, false)?.let { return Command.App(it.first, it.second) }
+        app(want, apps, ph, false, prefs)?.let { return Command.App(it.first, it.second) }
         // a name said in full: an installed app (after "open" only: a bare word is not asked to open anything), else a pin; this before the channels, a tile the person named "VTV3" is theirs
         best(want, apps, pins, true, withApps = verb != null)?.let { return it }
         ph.appWord.matchEntire(s)?.groupValues?.get(1)?.let { n -> (best(n, apps, pins, false) ?: near(n, apps))?.let { return it } }   // "app" said: a name close to one installed
@@ -188,6 +221,7 @@ object Voice {
         if (ph.channelNames.matches(want)) return Command.Channel(channelName(want))
         ph.tuneRe.matchEntire(s)?.let { return Command.Channel(it.groupValues[1]) }
         if (verb != null) best(verb, apps, pins, false)?.let { return it }
+        bareSearch(text, s, apps, ph, prefs)?.let { return it }          // last: "tìm vtv3" is a channel first, then a search in the app picked
         return null
     }
 
@@ -240,9 +274,10 @@ object Voice {
     fun names(c: Command.Choice): String = c.options.joinToString(" · ") { names1(it) }
 
     /** [parse] plus its words ([adb] false: no ADB link, so closing an app is said to need it); null for nothing heard. A scene is named from [scenes]. Pure: the preview calls it on every partial result. */
-    fun preview(text: String, apps: Map<String, String>, scenes: Map<String, String>, adb: Boolean = true, pins: List<PinRef> = emptyList()): Plan? {
+    fun preview(text: String, apps: Map<String, String>, scenes: Map<String, String>, adb: Boolean = true, pins: List<PinRef> = emptyList(),
+                sayings: Map<String, List<String>> = emptyMap()): Plan? {
         if (fold(text).isEmpty()) return null
-        val c = parse(text, apps, scenes, pins) ?: return Plan(null, Say("talk.ask", mapOf("sentence" to text.trim())))
+        val c = parse(text, apps, scenes, pins, sayings) ?: return Plan(null, Say("talk.ask", mapOf("sentence" to text.trim())))
         val say = if (c is Command.Scene) Say("talk.scene", mapOf("name" to (scenes[c.id] ?: ""))) else if (c is Command.Close && !adb) Say("talk.close_needs_adb", mapOf("name" to c.name)) else say(c)
         return Plan(c, say)
     }

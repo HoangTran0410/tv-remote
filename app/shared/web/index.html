@@ -575,6 +575,9 @@
   <div class="scenebox">
     <div class="presets" id="scenetpl"></div>
     <div class="line2"><input id="sceneicon" maxlength="4" aria-label="Biểu tượng" placeholder="🎬" data-i18n-aria-label="scenedlg.icon"><input id="scenename" maxlength="40" placeholder="Tên cảnh, vd Xem phim" data-i18n-placeholder="scenedlg.scene_name_e_g"></div>
+    <h3 data-i18n="scenedlg.say">Câu gọi</h3>
+    <input id="scenesay" maxlength="200" aria-label="Câu gọi" placeholder="vd bật phim, xem phim đi" data-i18n-aria-label="scenedlg.say" data-i18n-placeholder="scenedlg.say_e_g">
+    <p class="note" data-i18n="scenedlg.say_note">Nói câu này (hoặc gõ vào ô “Hỏi TV”) là cảnh chạy. Cách nhau bằng dấu phẩy, tối đa 5.</p>
     <h3 data-i18n="scenedlg.steps">Các bước</h3>
     <div id="scenesteps"></div>
     <div class="line2"><select id="stepkind" aria-label="Loại bước" data-i18n-aria-label="scenedlg.kind_of_step"><option value="wake" data-i18n="scenedlg.turn_the_tv_on">☀️ Bật TV</option><option value="app" data-i18n="scenedlg.open_an_app">📱 Mở app</option><option value="volume" data-i18n="scenedlg.set_the_volume">🔊 Đặt âm lượng</option><option value="key" data-i18n="scenedlg.press_a_key">🎮 Bấm phím</option><option value="link" data-i18n="scenedlg.open_a_link">🔗 Mở link</option><option value="wait" data-i18n="scenedlg.wait">⏱️ Chờ</option><option value="input" data-i18n="scenedlg.switch_input">📺 Chuyển nguồn vào</option><option value="timer" data-i18n="scenedlg.sleep_timer">😴 Hẹn giờ tắt</option><option value="notify" data-i18n="scenedlg.send_a_notification">🔔 Gửi thông báo</option><option value="sleep" data-i18n="scenedlg.turn_the_tv_off">🌙 Tắt TV</option></select><span id="stepargs"></span><button class="small" id="stepadd" data-i18n="scenedlg.add_step">＋ Thêm bước</button></div>

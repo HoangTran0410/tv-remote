@@ -278,6 +278,7 @@ The **Ask the TV: open YouTube** box (in **⌨️ Keyboard**) understands plain 
 | turn off · turn on | Power. |
 | sleep in 30 · cancel the timer | Sleep timer. |
 | open channel BBC News · next channel | Opens it in [TV Channels](#channels). |
+| search cats · YouTube | Opens and searches in the app picked at Setup → Remote buttons → Voice commands (SmartTube, YouTube; TizenTube only opens). Also picks which app “YouTube” is. Default unchanged. |
 | a scene's name | Runs that scene. |
 
 > 💡 Anything else goes to the Assistant or a YouTube search.
@@ -1075,6 +1076,8 @@ A scene is a chain of steps run with one tap. For example “Movie”: turn on t
 Run a scene from **More keys → Scenes**, by voice (say its name), or from the phone's widget, Quick Settings tile or shortcut.
 
 **📌 Add to TV Home** (in the scene): the scene becomes a TV Home tile, also in ＋ Add → **Scenes & shortcuts**. Needs a newer TV Setup.
+
+**Voice phrases:** add up to 5, separated by commas; saying or typing one runs the scene.
 
 Back up with **⬇️ Export a backup file** and **⬆️ Import from a file**.
 

@@ -110,3 +110,12 @@ test('"X on Y": a search inside the app, with its link when the list has one', (
   assert.equal(voiceCommand('open cats on netflix', APPS, SCENES, LIST).url, null);       // no link in the list: the app's own SEARCH or just the app
   assert.deepEqual(voiceCommand('mở vtv3 trên fpt play', [], SCENES, LIST).pkg, 'net.fptplay.ottbox');   // no app list: the alias's package
 });
+
+test('picked search app, what "YouTube" means, a scene\'s own phrases (shared with VoiceTest.kt)', () => {
+  const T2 = JSON.parse(fs.readFileSync(path.join(__dirname, 'voice_picks_cases.json'), 'utf8'));
+  for (const g of T2.groups) {
+    const apps = Object.entries(g.apps).map(([pkg, name]) => ({ pkg, name }));
+    const scenes = Object.entries(g.scenes).map(([id, [name, say]]) => ({ id, name, say }));
+    for (const [text, want] of g.cases) assert.equal(show(voiceCommand(text, apps, scenes, LIST, [], g.prefs)), want, g.name + ': ' + text);
+  }
+});

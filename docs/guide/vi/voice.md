@@ -13,6 +13,7 @@
 | tắt TV · bật TV | Nguồn. |
 | hẹn giờ tắt 30 phút · hủy hẹn giờ | Hẹn giờ tắt. |
 | mở kênh VTV1 · kênh tiếp | Mở kênh trên [TV Channels](channels.md). |
+| tìm sơn tùng · YouTube | Mở và tìm trong app chọn ở Thiết lập → Nút remote → Lệnh giọng nói (SmartTube, YouTube; TizenTube chỉ mở). Cũng chọn app nào là “YouTube”. Mặc định như cũ. |
 | tên một cảnh | Chạy cảnh đó. |
 
 > 💡 Câu nào lạ thì chuyển cho Trợ lý hoặc tìm trên YouTube.

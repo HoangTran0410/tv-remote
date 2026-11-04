@@ -1,0 +1,76 @@
+{
+  "about": "Voice.Prefs (the apps picked for 'tìm X' and 'YouTube') and a scene's own phrases ('say'). Read by voice.test.js and VoiceTest.kt: the page and the phone must agree. Each group: prefs, apps, scenes {id: [name, [phrases]]}, cases [[sentence, want]].",
+  "groups": [
+    {
+      "name": "nothing picked: today's behaviour",
+      "prefs": {},
+      "apps": {"com.google.android.youtube.tv": "YouTube", "org.smarttube.stable": "SmartTube", "io.gh.reisxd.tizentube.cobalt": "TizenTube"},
+      "scenes": {},
+      "cases": [
+        ["tìm sơn tùng", "null"],
+        ["search cats", "null"],
+        ["mở youtube", "app:com.google.android.youtube.tv"],
+        ["mở smarttube", "app:org.smarttube.stable"],
+        ["sơn tùng trên youtube", "search:com.google.android.youtube.tv:sơn tùng"]
+      ]
+    },
+    {
+      "name": "search with SmartTube",
+      "prefs": {"search": "org.smarttube.stable"},
+      "apps": {"com.google.android.youtube.tv": "YouTube", "org.smarttube.stable": "SmartTube", "io.gh.reisxd.tizentube.cobalt": "TizenTube"},
+      "scenes": {},
+      "cases": [
+        ["tìm Sơn Tùng", "search:org.smarttube.stable:Sơn Tùng"],
+        ["tim kiem son tung", "search:org.smarttube.stable:son tung"],
+        ["search cats", "search:org.smarttube.stable:cats"],
+        ["find funny cats please", "search:org.smarttube.stable:funny cats"],
+        ["mở youtube", "app:com.google.android.youtube.tv"],
+        ["tìm sơn tùng trên youtube", "search:com.google.android.youtube.tv:sơn tùng"],
+        ["tìm", "null"]
+      ]
+    },
+    {
+      "name": "search with an app that is not installed: ignored",
+      "prefs": {"search": "org.smarttube.beta"},
+      "apps": {"com.google.android.youtube.tv": "YouTube"},
+      "scenes": {},
+      "cases": [["tìm sơn tùng", "null"]]
+    },
+    {
+      "name": "YouTube means TizenTube",
+      "prefs": {"youtube": "io.gh.reisxd.tizentube.cobalt"},
+      "apps": {"com.google.android.youtube.tv": "YouTube", "org.smarttube.stable": "SmartTube", "io.gh.reisxd.tizentube.cobalt": "TizenTube"},
+      "scenes": {},
+      "cases": [
+        ["mở youtube", "app:io.gh.reisxd.tizentube.cobalt"],
+        ["tắt youtube", "close:io.gh.reisxd.tizentube.cobalt"],
+        ["mèo trên youtube", "search:io.gh.reisxd.tizentube.cobalt:mèo"],
+        ["mở smarttube", "app:org.smarttube.stable"]
+      ]
+    },
+    {
+      "name": "YouTube means a client that was removed: YouTube again",
+      "prefs": {"youtube": "org.smarttube.beta"},
+      "apps": {"com.google.android.youtube.tv": "YouTube"},
+      "scenes": {},
+      "cases": [["mở youtube", "app:com.google.android.youtube.tv"]]
+    },
+    {
+      "name": "a scene's own phrases",
+      "prefs": {},
+      "apps": {"com.google.android.youtube.tv": "YouTube"},
+      "scenes": {"s1": ["Xem phim", ["bật phim", "Phim thôi!", "mở rạp"]], "s2": ["Đi ngủ", ["tắt hết"]]},
+      "cases": [
+        ["bật phim", "scene:s1"],
+        ["BẬT PHIM", "scene:s1"],
+        ["bat phim", "scene:s1"],
+        ["phim thôi", "scene:s1"],
+        ["mở rạp đi", "scene:s1"],
+        ["tắt hết", "scene:s2"],
+        ["xem phim", "scene:s1"],
+        ["mở youtube", "app:com.google.android.youtube.tv"],
+        ["bật", "null"]
+      ]
+    }
+  ]
+}

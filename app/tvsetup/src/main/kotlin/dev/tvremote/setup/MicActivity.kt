@@ -262,7 +262,7 @@ class MicActivity : Activity(), RecognitionListener {
         else { MicVoice.broke(); say(T("mic.no_perm"), T("mic.use_phone"), 3500) }
     }
 
-    private fun parse(t: String, last: Boolean = false): Voice.Command? { MicVoice.warm(this); return Voice.parse(t, MicVoice.apps(this), MicVoice.scenes(this), MicVoice.pins(this, wait = last)) }   // waits for warm() only when a sentence comes before it is done
+    private fun parse(t: String, last: Boolean = false): Voice.Command? { MicVoice.warm(this); return Voice.parse(t, MicVoice.apps(this), MicVoice.scenes(this), MicVoice.pins(this, wait = last), MicVoice.sayings(this), MicVoice.prefs(this)) }   // waits for warm() only when a sentence comes before it is done
 
     /** The sentence is complete (or clear enough): carry it out, say so, close. */
     private fun finish(text: String, cut: Boolean) {

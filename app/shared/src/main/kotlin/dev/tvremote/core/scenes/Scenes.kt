@@ -185,10 +185,30 @@ object Scenes {
             val name = sc.optString("name").trim().take(40)
             if (name.isEmpty() || steps.length() == 0) continue
             val id = sc.optString("id").let { if (it.matches(Regex("[A-Za-z0-9_-]{1,24}"))) it else "s" + System.nanoTime().toString(36) }
-            out.put(JSONObject().put("id", id).put("name", name).put("icon", sc.optString("icon").take(8)).put("steps", steps))
+            val o = JSONObject().put("id", id).put("name", name).put("icon", sc.optString("icon").take(8)).put("steps", steps)
+            val say = phrases(sc.optJSONArray("say"))
+            if (say.isNotEmpty()) o.put("say", JSONArray(say))               // absent = none: scenes saved before stay byte-for-byte the same
+            out.put(o)
         }
         return out
     }
+
+    /** The extra voice phrases of a scene ("say": what a person types for "Câu gọi"): trimmed, at most [MAX_SAY] of 40 letters, no empty, none twice (folded). */
+    fun phrases(a: JSONArray?): List<String> {
+        val seen = HashSet<String>()
+        val out = ArrayList<String>()
+        for (i in 0 until (a?.length() ?: 0)) {
+            val p = a!!.optString(i).trim().replace(Regex("\\s+"), " ").take(40)
+            if (Voice.norm(p).isNotEmpty() && seen.add(Voice.norm(p))) out.add(p)
+            if (out.size == MAX_SAY) break
+        }
+        return out
+    }
+    const val MAX_SAY = 5
+
+    /** scene id to its phrases, for [Voice.parse]. */
+    fun sayings(list: JSONArray): Map<String, List<String>> = (0 until list.length()).mapNotNull { list.optJSONObject(it) }
+        .associate { it.optString("id") to phrases(it.optJSONArray("say")) }.filterValues { it.isNotEmpty() }
 
     /** Opens an app on its own TV screen, or its phone-style one: the launcher activity is looked up first, `monkey` is slow and noisy. */
     const val FACTORY_APP = "factory app: not opened"

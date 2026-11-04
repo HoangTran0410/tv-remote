@@ -20,4 +20,6 @@ Run a scene from **More keys → Scenes**, by voice (say its name), or from the 
 
 **📌 Add to TV Home** (in the scene): the scene becomes a TV Home tile, also in ＋ Add → **Scenes & shortcuts**. Needs a newer TV Setup.
 
+**Voice phrases:** add up to 5, separated by commas; saying or typing one runs the scene.
+
 Back up with **⬇️ Export a backup file** and **⬆️ Import from a file**.

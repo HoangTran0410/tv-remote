@@ -15,7 +15,8 @@ PACK = os.path.join(ROOT, "app", "shared", "web", "voice")
 KEY = os.environ.get("LAUNCHERS_KEY", os.path.expanduser("~/.tv-remote-release/launchers.key"))
 KEYS = {"HOME", "BACK", "MUTE", "PLAY_PAUSE", "NEXT", "PREV", "CH_UP", "CH_DOWN", "SLEEP", "WAKE", "SETTINGS", "OK", "UP", "DOWN", "LEFT", "RIGHT", "MENU"}  # what Voice.kt can press by these names
 PARTS = {"fillers": None, "keys": None, "volume": ("up", "down"), "timer": ("set", "cancel", "minutes", "hours"),
-         "open": ("verbs", "noise"), "close": ("verbs",), "channel": ("words", "verbs", "tune")}
+         "open": ("verbs", "noise"), "close": ("verbs",), "channel": ("words", "verbs", "tune"),
+         "search": ("verbs",)}              # "tìm X" / "search X": looked up in the app the person picked (Voice.Prefs), else the TV's own search
 
 
 def fail(m):

@@ -134,11 +134,12 @@ internal fun MainActivity.runScene(sc: JSONObject) {
 /** Carries out a sentence here when it can (Voice.kt); otherwise the TV's search / Assistant gets it, as before. */
 internal fun MainActivity.voice(sentence: String) {
     val scenes = SceneStore.list(this).associate { it.optString("id") to it.optString("name") }
-    Voice.parse(sentence, appNames, scenes, voicePins)?.let { doVoice(it); return }
+    val sayings = Scenes.sayings(JSONArray(SceneStore.list(this)))
+    Voice.parse(sentence, appNames, scenes, voicePins, sayings)?.let { doVoice(it); return }
     val tv = tv
     val ip = host
     if ((appNamesFor != ip || System.currentTimeMillis() - voicePinsAt > 300_000) && ip != null && tv != null && tv.ready() && Voice.wantsApp(sentence)) {
-        warmAppNames { Voice.parse(sentence, appNames, scenes, voicePins)?.let { doVoice(it) } ?: ask(sentence) }   // "open <app>": the names of this TV's apps, asked once per TV
+        warmAppNames { Voice.parse(sentence, appNames, scenes, voicePins, sayings)?.let { doVoice(it) } ?: ask(sentence) }   // "open <app>": the names of this TV's apps, asked once per TV
         return
     }
     ask(sentence)
