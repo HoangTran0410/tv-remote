@@ -23,6 +23,24 @@ class VoiceProtocolTest {
         assertEquals("open netflix and play", VoiceProtocol.digits("open netflix and play", "en"))
     }
 
+    @Test fun freeSpeechOnlyWhenTheCommandsWereNotClear() {
+        assertEquals(true, VoiceProtocol.sure(listOf(1.0, 1.0)))
+        assertEquals(true, VoiceProtocol.sure(listOf(0.97, 0.93)))
+        assertEquals(false, VoiceProtocol.sure(listOf(1.0, 0.6)))     // one weak word
+        assertEquals(false, VoiceProtocol.sure(listOf(0.92, 0.9)))    // all middling
+        assertEquals(false, VoiceProtocol.sure(emptyList()))
+    }
+
+    @Test fun aCommandWinsElseFreeSpeech() {
+        val cmds = setOf("tắt tiếng", "mở youtube")
+        fun pick(vararg h: String) = VoiceProtocol.pick(h.toList()) { it in cmds }
+        assertEquals("tắt tiếng", pick("tắt tiếng", "tắc kiểu"))      // the commands' list is exact: kept
+        assertEquals("tìm ngày xưa anh nổi", pick("tiếng ngay xuống thanh đổi", "tìm ngày xưa anh nổi"))
+        assertEquals("mở youtube", pick("tiếng ngay", "mở youtube"))  // free speech heard a command the list missed
+        assertEquals("tiếng ngay", pick("tiếng ngay", ""))            // no second pass: as before
+        assertEquals("", pick("", ""))
+    }
+
     /** build.gradle.kts folds the model's words with its own copy of fold (a build script cannot call this one): both must agree. */
     @Test fun buildFoldsLikeTheApp() {
         val f = File("build/generated/model-vi/model/graph/fold.txt")

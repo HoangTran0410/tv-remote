@@ -27,7 +27,7 @@ Bấm mic vẫn ra Google? Tới khi có lần bấm tới TV Setup, dưới nú
 
 TV không có nhận giọng nói (hộp không Google): bật thêm **Nhận giọng nói ngay trên TV, không cần Google** ở cùng chỗ; tắt là gỡ.
 
-Tiếng Việt 25 MB, tiếng Anh 36 MB: chọn ngôn ngữ ở dòng **Ngôn ngữ** (hay ô TV Voice trong TV Setup); thêm ngôn ngữ mới không gỡ ngôn ngữ cũ.
+Tiếng Việt 39 MB, tiếng Anh 47 MB: chọn ngôn ngữ ở dòng **Ngôn ngữ** (hay ô TV Voice trong TV Setup); thêm ngôn ngữ mới không gỡ ngôn ngữ cũ.
 
 Muốn TV Setup Voice luôn nghe trước (nhanh hơn, giọng nói không rời TV): chọn **TV Setup** ở dòng “Nghe giọng nói bằng”, hoặc bấm ô Nút mic trong Cài đặt nhanh của TV Home.
 

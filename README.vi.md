@@ -52,7 +52,7 @@ Mọi thứ đi thẳng từ máy bạn tới TV: không qua đám mây, không 
 
 Tự cập nhật app điện thoại: [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22dev.tvremote.phone%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FHoangTran0410%2Ftv-remote%22%2C%22author%22%3A%22HoangTran0410%22%2C%22name%22%3A%22TV%20Remote%22%2C%22additionalSettings%22%3A%22%7B%5C%22apkFilterRegEx%5C%22%3A%20%5C%22%5Etv-remote%5C%5C%5C%5C.apk%24%5C%22%2C%20%5C%22releaseDateAsVersion%5C%22%3A%20true%2C%20%5C%22includePrereleases%5C%22%3A%20false%7D%22%7D) (chỉ theo dõi `tv-remote.apk`). TV hay box chạy được, hay không? Gửi một [báo cáo thiết bị](https://github.com/HoangTran0410/tv-remote/issues/new?template=device_report.yml) giúp rất nhiều.
 
-Mã nhập trong app **Downloader** trên TV, luôn trỏ tới bản mới nhất. *tv-voice.apk* (nhận giọng nói ngay trên TV, tiếng Việt, 25 MB) và *tv-voice-en.apk* (tiếng Anh, 36 MB, khi TV Setup ở ngôn ngữ khác) không có mã: TV Setup tự cài khi bạn bật "Nhận giọng nói ngay trên TV" (tab Thiết lập, thẻ Nút remote) và gỡ khi tắt.
+Mã nhập trong app **Downloader** trên TV, luôn trỏ tới bản mới nhất. *tv-voice.apk* (nhận giọng nói ngay trên TV, tiếng Việt, 39 MB) và *tv-voice-en.apk* (tiếng Anh, 47 MB, khi TV Setup ở ngôn ngữ khác) không có mã: TV Setup tự cài khi bạn bật "Nhận giọng nói ngay trên TV" (tab Thiết lập, thẻ Nút remote) và gỡ khi tắt.
 
 ## Bắt đầu nhanh
 

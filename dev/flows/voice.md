@@ -5,9 +5,9 @@ Read [README.md](README.md) first: change the row a fault belongs to, and this f
 **Code:** `app/tvsetup/src/main/kotlin/dev/tvremote/setup/MicActivity.kt`, `app/tvsetup/src/main/kotlin/dev/tvremote/setup/MicVoice.kt`,
 `app/tvsetup/src/main/kotlin/dev/tvremote/setup/VoiceActivity.kt`, `app/tvsetup/src/main/kotlin/dev/tvremote/setup/home/HomeControl.kt`,
 `app/tvhome/src/main/kotlin/dev/tvremote/home/ui/ControlCenter.kt`, `app/shared/src/main/kotlin/dev/tvremote/core/ontv/VoiceAddon.kt`,
-`app/shared/web/js/tvset.js`.
+`app/shared/web/js/tvset.js`, `app/tvvoice/src/main/kotlin/dev/tvremote/setup/voice/VoiceService.kt`, `app/tvvoice/src/protocol/kotlin/dev/tvremote/setup/voice/VoiceProtocol.kt`.
 
-**Tests:** `app/tvsetup/src/test/kotlin/dev/tvremote/setup/MicVoiceTest.kt`, `app/tvsetup/src/test/kotlin/dev/tvremote/setup/home/HomeControlTest.kt`.
+**Tests:** `app/tvsetup/src/test/kotlin/dev/tvremote/setup/MicVoiceTest.kt`, `app/tvsetup/src/test/kotlin/dev/tvremote/setup/home/HomeControlTest.kt`, `app/tvvoice/src/test/kotlin/dev/tvremote/setup/voice/VoiceProtocolTest.kt`; the numbers: `dev/test/voice_wer.py`.
 
 ## The goal, for the person
 
@@ -44,6 +44,28 @@ While it installs, TV Setup's main screen shows it in its log, with the download
 
 `tv-voice.apk` has no Downloader code on purpose: alone it does nothing (TV Setup grants its mic and gives it the words to listen for).
 An older TV Setup: the page asks to update first (`setupFor('mic_offline')`). No ADB: the page says it needs ADB (`failed:adb`).
+
+## Free speech: a search is not a command (TV Setup Voice, 2026-11-05)
+
+The add-on listens with a grammar (the commands, app and channel names as one list): exact and fast, but a sentence outside it is
+forced onto grammar words (a real user: "Ngày xưa anh nói" came out "nghệ xoá hẹn noi phút"; "[unk]" in the list never wins). So the
+same sound also goes, from the first word on and in a thread of its own, through the model's own language model (Gr.fst, now packed:
++14 MB per APK, vi 39 MB, en 47 MB; `VoiceService.Free`). Measured offline (`dev/test/voice_wer.py`, 30 sentences, `say -v Linh` voice, so
+flattering): word error rate commands / searches, grammar 33 / 92 %, free 64-71 / 23-25 %, the big model (`vosk-model-vn-0.4`, 168 MB on
+disk, a server model) 60 / 27 %: no better than the small one for searches, so the small model stays.
+
+| # | What was said | What the add-on answers | What TV Setup does (`MicActivity.onResults`) |
+|---|---|---|---|
+| F1 | a command heard clearly (every word of the grammar text at confidence 0.9 or more, mean 0.95: `VoiceProtocol.sure`) | the grammar text alone; the free pass is dropped | acts on it as before (a clear command is also run early from the partials, no wait) |
+| F2 | a search ("tìm ngày xưa anh nói", "sơn tùng trên youtube") | `[grammar text, free text]` + `VoiceProtocol.FREE` | `VoiceProtocol.pick`: the first that `Voice.parse` names as a command, else the free text, which goes to the search (`MicVoice.search`) |
+| F3 | a command heard unclearly | both, as F2 | the grammar text still wins when `Voice.parse` names a command (the 15 grammar texts of the searches above: none parsed as one) |
+| F4 | the free pass is slower than the sound (a weak box: FPT about 1x real time, BRAVIA 2x) | after 6 s (`FREE_MS`) of waiting it is cut and the grammar text alone is answered, as before this change | `MicActivity.LATE_FREE_MS` (8 s, was 1.2 s) is how long the card waits for the final text when TV Setup Voice listens |
+| F5 | the partials on the card while speaking | still the grammar's (a search shows forced words until the final text replaces them) | unchanged |
+
+Google's alternatives are never reordered: only a Bundle with `FREE` is picked from. The extra cost is one more core while the person
+speaks (not at all when a command was heard clearly and the key was early-run), nothing when the add-on is off. Noise breaks every
+column (white noise at 15 dB: grammar 92 %, free 96 %, big 91 % of words wrong): the small model is for a quiet room. If its free text
+is still poor in real use, the next step is Google's recognizer for searches only (not built).
 
 ## Who listens, case by case (`MicActivity.listen`: `MicVoice.own` first, `MicVoice.offline` where there is no own)
 

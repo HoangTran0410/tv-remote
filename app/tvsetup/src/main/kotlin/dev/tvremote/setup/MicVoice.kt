@@ -75,7 +75,7 @@ object MicVoice {
     /** The rule "mic_offline" on: TV Setup Voice installed (from the release, over our own ADB). */
     fun offlineOn(c: Context): Boolean = try { Rules.load(c).optBoolean("mic_offline") } catch (e: Exception) { false }
 
-    /** The add-on's download, 0-100 while it runs, else -1: VoiceActivity's bar (25 MB). */
+    /** The add-on's download, 0-100 while it runs, else -1: VoiceActivity's bar (39 MB). */
     @Volatile var offlinePct = -1
     @Volatile private var offlineJob = ""                              // "busy", or the last failure's words for the page ("" when none)
 

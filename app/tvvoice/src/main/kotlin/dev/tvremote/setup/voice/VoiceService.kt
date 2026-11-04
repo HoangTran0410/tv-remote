@@ -27,6 +27,7 @@ class VoiceService : RecognitionService() {
     override fun onStartListening(intent: Intent, cb: Callback) {
         job?.cancel()
         val test = if (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0) java.io.File(filesDir, "test.wav").takeIf { it.isFile } else null
+        if (test != null) Log.i("TvVoice", "test audio ${test.length()} bytes")
         job = Listen(intent.getStringArrayListExtra(VoiceProtocol.WORDS).orEmpty(), cb, test).also { it.start() }
     }
     override fun onStopListening(cb: Callback) { job?.finish() }
@@ -38,6 +39,9 @@ class VoiceService : RecognitionService() {
         @Volatile private var stop = false                            // finish: the sentence as heard so far
         @Volatile private var dead = false                            // cancel: nothing more is said
         @Volatile var written: List<Pair<String, String>> = emptyList()   // said -> written ("vê tê vê" -> "vtv"), see [grammar]
+        @Volatile private var model: org.vosk.Model? = null          // for [free]
+        private var second: Free? = null                             // the free-speech pass, started with the first sound of speech
+        private val pre = java.util.ArrayDeque<ByteArray>()           // the last chunks before speech was noticed: a word's start is quiet
         fun finish() { stop = true }
         fun cancel() { dead = true; stop = true }
 
@@ -56,11 +60,13 @@ class VoiceService : RecognitionService() {
             val t0 = System.currentTimeMillis()
             VoiceModel.get(this@VoiceService) { m, vocab ->
                 if (m == null) { failed.set(true); return@get }
+                model = m
                 val (g, back) = grammar(words, vocab)
                 written = back
                 val list = JSONArray(g)
+                // setWords below: each word's confidence says whether the sound needs a second look ([answer])
                 list.put("[unk]")                                     // anything else: heard as unknown, not forced into a command word
-                try { synchronized(held) { vosk = Recognizer(m, rate.toFloat(), list.toString()) } } catch (e: Exception) { failed.set(true) }
+                try { synchronized(held) { vosk = Recognizer(m, rate.toFloat(), list.toString()).also { it.setWords(true) } } } catch (e: Exception) { failed.set(true) }
                 Log.i("TvVoice", "ready +${System.currentTimeMillis() - t0} ms, ${list.length()} words")
             }
             try {
@@ -75,13 +81,20 @@ class VoiceService : RecognitionService() {
                     val db = level(buf, n)
                     say { cb.rmsChanged(db) }
                     if (!spoke && db > 5f) { spoke = true; say { cb.beginningOfSpeech() } }
+                    second.let { f ->                             // free speech hears the same sound from its first word on, in a thread of its own
+                        if (f != null) f.feed(buf.copyOf(n))
+                        else {
+                            pre.addLast(buf.copyOf(n)); if (pre.size > 3) pre.removeFirst()
+                            if (spoke && model != null) Free().also { second = it; it.start(); for (c in pre) it.feed(c); pre.clear() }
+                        }
+                    }
                     val r = synchronized(held) { vosk.also { if (it == null) held += buf.copyOf(n) } } ?: continue
                     val feed = synchronized(held) { ArrayList(held).also { held.clear() } } + buf.copyOf(n)
                     var end = false
                     for (b in feed) if (r.acceptWaveForm(b, b.size)) end = true
                     if (end) {
-                        val t = text(r.result, "text", written)
-                        if (t.isNotEmpty()) { say { cb.endOfSpeech(); cb.results(bundle(t)) }; return }
+                        val json = r.result
+                        if (text(json, "text", written).isNotEmpty()) { say { cb.endOfSpeech() }; val b = answer(json); say { cb.results(b) }; return }
                         last = ""                                     // a pause after noise: still listening
                     } else {
                         val p = text(r.partialResult, "partial", written)
@@ -89,20 +102,73 @@ class VoiceService : RecognitionService() {
                     }
                 }
                 if (failed.get()) { say { cb.error(SpeechRecognizer.ERROR_SERVER) }; return }
-                val t = vosk?.let { text(it.finalResult, "text", written) }.orEmpty()
-                say { cb.endOfSpeech(); if (t.isNotEmpty()) cb.results(bundle(t)) else cb.error(SpeechRecognizer.ERROR_NO_MATCH) }
+                say { cb.endOfSpeech() }
+                val b = vosk?.let { answer(it.finalResult) }
+                say { if (b != null) cb.results(b) else cb.error(SpeechRecognizer.ERROR_NO_MATCH) }
             } catch (e: Exception) {
                 Log.w("TvVoice", "listen: $e"); say { cb.error(SpeechRecognizer.ERROR_CLIENT) }
             } finally {
                 try { rec.stop() } catch (e: Exception) { }
                 wav?.close()
                 rec.release()
+                second?.stop(); second = null                         // before the model is let go
                 synchronized(held) { vosk?.close(); vosk = null }
                 VoiceModel.done()
             }
         }
 
+        /**
+         * The results for the commands' list's [json]: its text alone when every word was heard clearly (a command: exact, no extra work),
+         * else also what free speech hears in the same sound ([free]), as [VoiceProtocol.FREE]. Null: nothing heard at all.
+         */
+        private fun answer(json: String): Bundle? {
+            val g = text(json, "text", written)
+            val confs = try { JSONObject(json).optJSONArray("result")?.let { a -> List(a.length()) { a.getJSONObject(it).optDouble("conf", 0.0) } } } catch (e: Exception) { null }.orEmpty()
+            if (g.isNotEmpty() && VoiceProtocol.sure(confs)) { second?.stop(); return bundle(g) }   // a command heard clearly: the second look is dropped
+            val f = second?.result().orEmpty()
+            if (f.isEmpty() || f == g) return if (g.isEmpty()) null else bundle(g)
+            return Bundle().apply { putStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION, arrayListOf(g, f)); putBoolean(VoiceProtocol.FREE, true) }
+        }
+
+        /**
+         * The same sound through the model's own language model (Gr.fst), no list: any words. On a TV box it runs at about real time
+         * (FPT 1.07x, BRAVIA 2x), so it listens from the first word on in its own thread and is mostly done when the person stops; a
+         * command heard clearly drops it ([stop]), and [result] gives up after [FREE_MS] (the commands' text is then used alone).
+         */
+        private inner class Free {
+            private val q = java.util.concurrent.LinkedBlockingQueue<ByteArray>()
+            private val end = ByteArray(0)
+            @Volatile private var quit = false
+            @Volatile private var text = ""
+            private val th = Thread({ run() }, "voice-free")
+            fun start() { th.start() }
+            fun feed(b: ByteArray) { q.offer(b) }
+            private fun run() {
+                val t0 = System.currentTimeMillis(); var ms = 0
+                val m = model ?: return
+                val r = try { Recognizer(m, 16000f) } catch (e: Exception) { return }
+                val made = System.currentTimeMillis() - t0
+                try {
+                    val out = ArrayList<String>()
+                    while (!quit) {
+                        val b = q.poll(100, java.util.concurrent.TimeUnit.MILLISECONDS) ?: continue
+                        if (b === end) { out += text(r.finalResult, "text", emptyList()); text = out.filter { it.isNotEmpty() }.joinToString(" "); break }
+                        ms += b.size / 32
+                        if (r.acceptWaveForm(b, b.size)) out += text(r.result, "text", emptyList())
+                    }
+                    Log.i("TvVoice", "free: ${if (quit) "dropped" else "\"$text\""} after ${System.currentTimeMillis() - t0} ms (recognizer $made ms) for $ms ms of sound")
+                } catch (e: Exception) { Log.w("TvVoice", "free: $e") } finally { r.close() }
+            }
+            /** What free speech heard, waiting for it to catch up with the sound; "" when it did not in time. */
+            fun result(): String { q.offer(end); th.join(FREE_MS); if (th.isAlive) { quit = true; return "" }; return text }
+            fun stop() { quit = true; th.join(1500) }
+        }
+
         private fun say(f: () -> Unit) { if (!dead) try { f() } catch (e: Exception) { dead = true; stop = true } }   // TV Setup went away
+    }
+
+    private companion object {
+        const val FREE_MS = 6_000L                                    // the second look is dropped (the first answer kept) when it needs longer than this after the sound ended
     }
 
     private fun bundle(t: String) = Bundle().apply { putStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION, arrayListOf(t)) }

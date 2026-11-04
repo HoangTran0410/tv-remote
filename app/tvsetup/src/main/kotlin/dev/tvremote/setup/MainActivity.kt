@@ -368,7 +368,7 @@ class MainActivity : Activity() {
         val logBox = android.widget.FrameLayout(this)
         logBox.addView(scroll, android.widget.FrameLayout.LayoutParams(-1, -1))
         logBox.addView(spinner, android.widget.FrameLayout.LayoutParams(dp(16), dp(16), Gravity.TOP or Gravity.END).apply { setMargins(0, dp(10), dp(12), 0) })
-        bar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {   // a download's percent, under the lines: TV Setup Voice is 25 MB
+        bar = ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal).apply {   // a download's percent, under the lines: TV Setup Voice is 39 MB
             max = 100; visibility = View.GONE
             progressTintList = android.content.res.ColorStateList.valueOf(ACCENT)
             progressBackgroundTintList = android.content.res.ColorStateList.valueOf(TvUi.FOCUS_FILL)

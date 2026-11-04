@@ -2309,7 +2309,7 @@
  "mic.block_done": "Google app turned off. Press the mic button to try.",
  "mic.block_opened": "Settings opened on the TV.",
  "mic.offline": "Understand speech on the TV itself, no Google needed",
- "mic.offline_sub": "For TVs that can't recognize speech. A 36 MB download, in English (Vietnamese when TV Setup is in Vietnamese). Turning it off removes it.",
+ "mic.offline_sub": "For TVs that can't recognize speech. A 47 MB download, in English (Vietnamese when TV Setup is in Vietnamese). Turning it off removes it.",
  "mic.offline_installing": "Installing speech recognition on the TV…",
  "mic.offline_removed": "Speech recognition removed from the TV",
  "mic.offline_busy": "Installing on the TV…",

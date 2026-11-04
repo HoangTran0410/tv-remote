@@ -70,6 +70,7 @@ class MicActivity : Activity(), RecognitionListener {
         private const val SHADE = 0x66000000                              // the screen under the card, a little dimmed (TvUi.SCRIM hides the video the person is speaking about)
         private const val SETTLE_MS = 900L
         private const val LATE_MS = 1200L
+        private const val LATE_FREE_MS = 8000L
         private const val STALL_MS = 3500L                            // speech began, no word yet by then
         @Volatile var live: MicActivity? = null
         /** The key came again, or was let go after a hold: stop listening and work with what was heard. */
@@ -131,7 +132,7 @@ class MicActivity : Activity(), RecognitionListener {
         level.stop()
         ui.removeCallbacks(settle)
         swap(act, T("mic.thinking"), TvUi.DIM)
-        ui.postDelayed(late, LATE_MS)
+        ui.postDelayed(late, if (offline) LATE_FREE_MS else LATE_MS)   // TV Setup Voice may take a second look at the sound (free speech, up to 6 s on a weak box)
     }
 
     private fun listen() {
@@ -226,8 +227,10 @@ class MicActivity : Activity(), RecognitionListener {
     }
 
     override fun onResults(r: Bundle?) {
-        val t = r?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()?.trim().orEmpty()
-        log("results \"$t\"")
+        val all = r?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).orEmpty()
+        // TV Setup Voice sends [commands' text, free text] when the commands were not heard clearly: a command is kept, else free speech (a search)
+        val t = (if (r?.getBoolean(VoiceProtocol.FREE) == true) VoiceProtocol.pick(all.map { it.trim() }) { parse(it, last = true) != null } else all.firstOrNull()?.trim()).orEmpty()
+        log("results \"$t\"" + if (all.size > 1) " of $all" else "")
         finish(t.ifEmpty { partial }, cut = false)
     }
 

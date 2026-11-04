@@ -69,12 +69,12 @@ extra["i18nApps"] = listOf("tvvoice")
 apply(from = "../gradle/i18n.gradle")
 
 // The model: Alpha Cephei's small Vietnamese one (Apache-2.0), fetched once at build time and checked against its SHA-256, never
-// committed (51 MB). Only what a command list needs is packed: Gr.fst (24 MB, the free-speech language model) is left out, and its
-// word list, which the recognizer needs to build a list's graph, is written out as graph/words.txt. assets/model/files.txt lists the
+// committed (51 MB). Everything is packed, Gr.fst too (24 MB, the free-speech language model: the second pass for a search the commands' list cannot
+// hold, VoiceService.free); its word list, which the recognizer needs to build a list's graph, is also written out as graph/words.txt. assets/model/files.txt lists the
 // files for VoiceModel.unpack; assets/model/VERSION is the hash, so a new model is unpacked again.
 val modelUrl = models.getValue(voiceLang)[0]
 val modelSha = models.getValue(voiceLang)[1]
-val modelLayout = 3                                                   // raise when what is packed changes (3: fold.txt, likely words): TVs unpack it again
+val modelLayout = 4                                                   // raise when what is packed changes (3: fold.txt, likely words; 4: Gr.fst kept, for free speech): TVs unpack it again
 val modelOut = layout.buildDirectory.dir("generated/model-$voiceLang")
 val packModel = tasks.register("packModel") {
     val zip = layout.buildDirectory.file("model-dl/model-$voiceLang.zip")
@@ -97,7 +97,7 @@ val packModel = tasks.register("packModel") {
                 if (e.isDirectory) continue
                 val rel = e.name.substringAfter('/')                  // the zip's own top folder
                 if (rel.isEmpty() || rel.contains("..")) continue
-                if (rel == "graph/Gr.fst") { zf.getInputStream(e).use { words(it, dir.resolve("graph")) }; names += listOf("graph/words.txt", "graph/fold.txt"); continue }
+                if (rel == "graph/Gr.fst") { zf.getInputStream(e).use { words(it, dir.resolve("graph")) }; names += listOf("graph/words.txt", "graph/fold.txt") }   // and kept below: free speech needs it
                 val f = dir.resolve(rel); f.parentFile.mkdirs()
                 zf.getInputStream(e).use { i -> f.outputStream().use { i.copyTo(it) } }
                 names += rel

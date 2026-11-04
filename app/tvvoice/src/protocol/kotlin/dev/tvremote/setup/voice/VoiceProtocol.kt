@@ -14,6 +14,11 @@ object VoiceProtocol {
     const val WARM = "dev.tvremote.setup.voice.Warm"
     /** ArrayList<String> of folded words; every word of the model that folds to one of them is listened for. */
     const val WORDS = "dev.tvremote.voice.WORDS"
+    /**
+     * Boolean extra of the results Bundle: RESULTS_RECOGNITION is then [what the commands' list heard, what free speech heard] (not Google's
+     * ranked alternatives), for [pick]. The add-on adds the second only when the first is not [sure] (dev/flows/voice.md, "free speech").
+     */
+    const val FREE = "dev.tvremote.voice.FREE"
     /** Application meta-data of the add-on: the language of its model ("vi", "en"). Absent = an old add-on, which is Vietnamese. */
     const val LANG_META = "dev.tvremote.voice.LANG"
 
@@ -99,4 +104,15 @@ object VoiceProtocol {
         }
         return out.joinToString(" ")
     }
+
+    /** The commands' list heard every word with this confidence: a command said clearly, so no second look at the sound is needed. */
+    fun sure(confs: List<Double>): Boolean = confs.isNotEmpty() && confs.min() >= 0.9 && confs.average() >= 0.95
+
+    /**
+     * Which of [heard] (grammar text, then free text) TV Setup acts on: the first that is a command ([isCommand]: Voice.parse names it),
+     * else the last non-empty one, free speech, which goes on as a search. A list with the commands' words forced onto a song's name
+     * ("Ngày xưa anh nói" -> "tiếng ngay xuống thanh đổi") is never a command, so the free text wins there.
+     */
+    fun pick(heard: List<String>, isCommand: (String) -> Boolean): String =
+        heard.firstOrNull { it.isNotEmpty() && isCommand(it) } ?: heard.lastOrNull { it.isNotEmpty() }.orEmpty()
 }

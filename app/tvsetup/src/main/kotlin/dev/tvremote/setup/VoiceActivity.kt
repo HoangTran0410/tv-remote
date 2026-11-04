@@ -168,6 +168,6 @@ class VoiceActivity : Activity() {
     private companion object {
         val ACCENT = Color.rgb(59, 115, 246)                          // = MainActivity's: TV Setup's blue
         val NAMES = dev.tvremote.core.ontv.VoiceAddon.LANGS.associateWith { dev.tvremote.i18n.Langs.NAMES[it] ?: it }   // each in its own language (langs.json)
-        val SIZES = mapOf("vi" to "25 MB", "en" to "36 MB")            // the APKs' sizes (app/tvvoice/AGENTS.md)
+        val SIZES = mapOf("vi" to "39 MB", "en" to "47 MB")            // the APKs' sizes (app/tvvoice/AGENTS.md)
     }
 }

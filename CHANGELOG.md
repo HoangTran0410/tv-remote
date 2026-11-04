@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Setup Voice (on-TV speech) now hears searches and song or film names: a sentence the command list cannot hold used to come out as forced command words ("Ngày xưa anh nói" became "nghệ xoá hẹn noi phút"); the same sound is also decoded freely and used when the commands do not understand the grammar text. Commands stay exact and instant. The add-on grows by about 14 MB (Vietnamese 39 MB, English 47 MB); a search on a weak box can take a few seconds more.
 - TV Setup: says when the remote's mic button cannot reach it (on a Bluetooth voice remote with the Google app on, a warning "if the mic button still opens Google" until a real mic press reaches TV Setup; or another app is the default for voice search) on the page's mic card, in its log and in its Optimize menu; one button turns the Google app off over ADB (Optimize TV's Undo turns it back on), or opens that app's settings without ADB. Nothing is checked while the mic option is off.
 
 ## 0.45.0 - 2026-11-05

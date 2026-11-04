@@ -218,7 +218,7 @@ async function loadHold(now) {
     { label: T('mic.engine_tv'), on: tvFirst, fn: () => pickEngine('tv') }]), UI.note(T('mic.engine_sub'))] : [];
   // Its language (Rules "mic_lang"): each one its own download, added beside the others (the user, 2026-11-03); a TV Setup that does not
   // report mic_langs is older than languages, and shows none
-  const VLANGS = { vi: [LANGS.vi, '25 MB'], en: [LANGS.en, '36 MB'] }, has = r.mic_langs || [];   // each by its own name (langs.json)
+  const VLANGS = { vi: [LANGS.vi, '39 MB'], en: [LANGS.en, '47 MB'] }, has = r.mic_langs || [];   // each by its own name (langs.json)
   const pickLang = async (lang) => { if (await api('/api/rules', { do: 'mic_lang', lang })) { holdSeen = ''; loadHold(true); } };
   const dropLang = async (lang) => { if (await api('/api/rules', { do: 'mic_lang_remove', lang })) { holdSeen = ''; toast(T('mic.offline_removed')); loadHold(true); } };
   const langs = r.mic_offline && r.mic_langs && voice !== 'busy' ? [el('p', { className: 'note', textContent: T('tvvoice.lang') }),
