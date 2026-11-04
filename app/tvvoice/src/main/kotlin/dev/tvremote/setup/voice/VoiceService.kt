@@ -52,7 +52,7 @@ class VoiceService : RecognitionService() {
                 AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION, rate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
                     maxOf(AudioRecord.getMinBufferSize(rate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT), chunk * 4))
             } catch (e: Exception) { null }
-            if (rec == null || rec.state != AudioRecord.STATE_INITIALIZED) { rec?.release(); say { cb.error(SpeechRecognizer.ERROR_AUDIO) }; return }
+            if (test == null && (rec == null || rec.state != AudioRecord.STATE_INITIALIZED)) { rec?.release(); say { cb.error(SpeechRecognizer.ERROR_AUDIO) }; return }
             var vosk: Recognizer? = null
             var wav: java.io.InputStream? = null
             val failed = java.util.concurrent.atomic.AtomicBoolean(false)  // the model or the list could not load
@@ -70,23 +70,27 @@ class VoiceService : RecognitionService() {
                 Log.i("TvVoice", "ready +${System.currentTimeMillis() - t0} ms, ${list.length()} words")
             }
             try {
-                rec.startRecording()
+                if (test == null) rec!!.startRecording()
                 wav = test?.inputStream()?.also { it.skip(44) }
                 say { cb.readyForSpeech(Bundle()) }
                 val buf = ByteArray(chunk)
+                val tw = System.currentTimeMillis(); var nchunk = 0; var ended = false
                 var spoke = false; var last = ""
+                var fed = false; var quiet = 0; val gap = java.util.ArrayDeque<ByteArray>()   // free speech: fed from the first word on; a long silence held back
                 while (!stop && !failed.get()) {
-                    val n = if (wav == null) rec.read(buf, 0, buf.size) else { Thread.sleep(100); java.util.Arrays.fill(buf, 0); wav.read(buf); buf.size }   // after its end: silence
+                    val n = if (wav == null) rec!!.read(buf, 0, buf.size) else { val due = tw + 100L * ++nchunk; Thread.sleep(maxOf(0L, due - System.currentTimeMillis())); java.util.Arrays.fill(buf, 0); if (wav.read(buf) < 0 && !ended) { ended = true; Log.i("TvVoice", "test audio ended") }; buf.size }   // paced by the clock, not by sleep+decode (a slow box would play it slower than said, a mic is buffered); after its end: silence
                     if (n <= 0) { say { cb.error(SpeechRecognizer.ERROR_AUDIO) }; return }
                     val db = level(buf, n)
                     say { cb.rmsChanged(db) }
                     if (!spoke && db > 5f) { spoke = true; say { cb.beginningOfSpeech() } }
-                    if (freeSpeech) second.let { f ->                             // free speech hears the same sound from its first word on, in a thread of its own
-                        if (f != null) f.feed(buf.copyOf(n))
-                        else {
+                    if (freeSpeech && model != null) {                            // free speech hears the same sound in a thread of its own; its recognizer is built while the person is still silent (0.5 s of CPU on a TV box)
+                        val f = second ?: Free().also { second = it; it.start() }
+                        if (!fed) {
                             pre.addLast(buf.copyOf(n)); if (pre.size > 3) pre.removeFirst()
-                            if (spoke && model != null) Free().also { second = it; it.start(); for (c in pre) it.feed(c); pre.clear() }
-                        }
+                            if (spoke) { fed = true; for (c in pre) f.feed(c); pre.clear() }
+                        } else if (db > 5f) { for (c in gap) f.feed(c); gap.clear(); quiet = 0; f.feed(buf.copyOf(n)) }
+                        else if (++quiet <= 3) f.feed(buf.copyOf(n))              // a word's end and a short pause go in; a long silence is held back (and added only if speech returns): it costs as much to decode as speech and the answer waits for it
+                        else { gap.addLast(buf.copyOf(n)); if (gap.size > 10) gap.removeFirst() }
                     }
                     val r = synchronized(held) { vosk.also { if (it == null) held += buf.copyOf(n) } } ?: continue
                     val feed = synchronized(held) { ArrayList(held).also { held.clear() } } + buf.copyOf(n)
@@ -108,9 +112,9 @@ class VoiceService : RecognitionService() {
             } catch (e: Exception) {
                 Log.w("TvVoice", "listen: $e"); say { cb.error(SpeechRecognizer.ERROR_CLIENT) }
             } finally {
-                try { rec.stop() } catch (e: Exception) { }
+                try { rec?.stop() } catch (e: Exception) { }
                 wav?.close()
-                rec.release()
+                rec?.release()
                 second?.stop(); second = null                         // before the model is let go
                 synchronized(held) { vosk?.close(); vosk = null }
                 VoiceModel.done()
@@ -146,7 +150,7 @@ class VoiceService : RecognitionService() {
             private fun run() {
                 val t0 = System.currentTimeMillis(); var ms = 0
                 val m = model ?: return
-                val r = try { Recognizer(m, 16000f) } catch (e: Exception) { return }
+                val r = VoiceModel.takeSpare() ?: try { Recognizer(m, 16000f) } catch (e: Exception) { return }
                 val made = System.currentTimeMillis() - t0
                 try {
                     val out = ArrayList<String>()
@@ -157,7 +161,9 @@ class VoiceService : RecognitionService() {
                         if (r.acceptWaveForm(b, b.size)) out += text(r.result, "text", emptyList())
                     }
                     Log.i("TvVoice", "free: ${if (quit) "dropped" else "\"$text\""} after ${System.currentTimeMillis() - t0} ms, ${android.os.Debug.threadCpuTimeNanos() / 1_000_000} ms of cpu (recognizer $made ms) for $ms ms of sound")   // cpu vs wall: a busy or swapping box shows in the gap
-                } catch (e: Exception) { Log.w("TvVoice", "free: $e") } finally { r.close() }
+                } catch (e: Exception) { Log.w("TvVoice", "free: $e"); try { r.close() } catch (x: Exception) { }; return }
+                try { if (quit) r.finalResult; r.reset(); VoiceModel.putSpare(r) }   // a cut-off one ends its sentence first: reset alone left it garbling the next (tested)
+                catch (e: Exception) { r.close() }
             }
             /** What free speech heard, waiting for it to catch up with the sound; "" when it did not in time. */
             fun result(): String { q.offer(end); th.join(FREE_MS); if (th.isAlive) { quit = true; return "" }; return text }

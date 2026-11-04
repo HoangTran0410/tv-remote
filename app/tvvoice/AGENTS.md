@@ -38,4 +38,5 @@ app/tvvoice/              TV Setup Voice (`dev.tvremote.setup.voice`): speech he
   check build `:tvvoice:assembleRelease -Pvoicetest` (release code, `isDebuggable`; never ship it), then `run-as dev.tvremote.setup.voice
   cp … test.wav` into that folder and open TV Setup's `MicActivity`. The log (`TvVoice`, `MicVoice`) says the free pass's time and its text.
   Free speech is a request extra (`VoiceProtocol.FREE_SPEECH`, from the rule `mic_freespeech`): off by default, then nothing of it runs.
+  Real-TV speed: `dev/test/voicespeed/` (batch.sh both modes x 7 WAVs; the add-on needs no microphone in a -Pvoicetest build). The free pass's cost is the lazily composed graph, not the beams (max-active 400 cost the same), so the Recognizer is kept between uses.
   The model's config beams are narrowed at build time (max-active 3000, beam 10, lattice-beam 4: free decode 0.65 to 0.38 s on a Mac, same WER).

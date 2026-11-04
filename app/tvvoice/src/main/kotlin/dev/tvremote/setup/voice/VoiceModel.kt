@@ -7,6 +7,7 @@ import android.util.Log
 import org.vosk.LibVosk
 import org.vosk.LogLevel
 import org.vosk.Model
+import org.vosk.Recognizer
 import java.io.File
 
 /**
@@ -24,7 +25,10 @@ object VoiceModel {
 
     /** The model's words ([all]), and by folded spelling the likely ones that fold to it ([fold]: "tat" -> tất, tắt, tật; build.gradle.kts). */
     class Vocab(val all: Set<String>, val fold: Map<String, List<String>>)
-    private val free = Runnable { synchronized(this) { model?.close(); model = null; vocab = null; Log.i(TAG, "model freed") } }
+    private var spare: Recognizer? = null                              // the free-speech recognizer of the last use, reset: its composed graph is already built (the first seconds of a new one cost 3x the sound)
+    @Synchronized fun takeSpare(): Recognizer? = spare.also { spare = null }
+    @Synchronized fun putSpare(r: Recognizer) { if (model == null || spare != null) r.close() else spare = r }
+    private val free = Runnable { synchronized(this) { spare?.close(); spare = null; model?.close(); model = null; vocab = null; Log.i(TAG, "model freed") } }
 
     /** Copies the model out of the APK when files/model is not this APK's (VERSION differs); blocks. */
     @Synchronized fun unpack(c: Context): File {

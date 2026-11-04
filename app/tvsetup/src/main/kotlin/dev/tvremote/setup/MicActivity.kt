@@ -43,6 +43,9 @@ class MicActivity : Activity(), RecognitionListener {
     private val settle = Runnable { if (!done) { log("settled"); sr?.stopListening(); think() } }   // the sentence stopped changing: that is its end
     private val late = Runnable { log("late"); finish(partial, cut = true) }                         // no final text in time: the partial one
     private var thinking = false
+    private var ready = false                                         // the recognizer said it is ready (its service is connected)
+    private var again: (() -> Unit)? = null                       // the start to repeat while the service is still binding
+    private var binds = 0
     private var retried = false
     private var offline = false                                       // TV Setup Voice is listening, not the TV's own recognizer
     private val tvFirst by lazy { MicVoice.engineTv(this) }           // TV Setup Voice picked over Google's (rule "mic_engine")
@@ -143,7 +146,7 @@ class MicActivity : Activity(), RecognitionListener {
         log(if (off != null) "engine offline" else "engine own")
         val r = try { if (off != null) SpeechRecognizer.createSpeechRecognizer(this, off) else SpeechRecognizer.createSpeechRecognizer(this) } catch (e: Exception) { null }
         if (r == null) { fail(); return }
-        sr = r
+        sr = r; ready = false; binds = 0
         r.setRecognitionListener(this)
         if (off == null) { start(r, null); return }
         Thread({                                                      // the list takes ~2 s on a TV box the first time: never on the main thread (the card froze, FPT)
@@ -153,6 +156,7 @@ class MicActivity : Activity(), RecognitionListener {
     }
 
     private fun start(r: SpeechRecognizer, words: ArrayList<String>?) {
+        again = { if (!done && sr === r) start(r, words) }
         val lang = if (android.os.Build.VERSION.SDK_INT >= 24)            // the app's language with its region (vi-VN, fr-FR): recognizers want one
             android.icu.util.ULocale.addLikelySubtags(android.icu.util.ULocale(Words.lang)).let { it.language + "-" + it.country }
             else if (Words.lang == "en") "en-US" else Words.lang
@@ -199,7 +203,7 @@ class MicActivity : Activity(), RecognitionListener {
     }
 
     // ---- RecognitionListener
-    override fun onReadyForSpeech(p: Bundle?) { log("ready"); heard.text = T("mic.listening") }
+    override fun onReadyForSpeech(p: Bundle?) { ready = true; log("ready"); heard.text = T("mic.listening") }
     override fun onBeginningOfSpeech() { log("speech"); level.speech(true); ui.removeCallbacks(stall); ui.postDelayed(stall, STALL_MS) }
     override fun onRmsChanged(rms: Float) {
         level.feed(rms)
@@ -251,7 +255,8 @@ class MicActivity : Activity(), RecognitionListener {
                 if (!MicVoice.granted(this)) ask() else { MicVoice.broke(); say(T("mic.no_perm"), T("mic.use_phone"), 3500) }
             }
             SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> say(T("mic.busy"), "", 1800)
-            SpeechRecognizer.ERROR_CLIENT -> { }                       // our own cancel (a stall, Back, the time up) echoed back: never "no recognizer", the timers end it
+            SpeechRecognizer.ERROR_CLIENT ->                           // our own cancel (a stall, Back, the time up) echoed back: never "no recognizer", the timers end it
+                if (!ready && ++binds <= 20) { log("service not bound yet: again"); ui.postDelayed({ again?.invoke() }, 150) }   // Android 9 (BRAVIA): the words were cached, so startListening came before the service was bound
             else -> fail()
         }
     }
