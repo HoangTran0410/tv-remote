@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: coming back from another app no longer shows the wallpaper blurry for about a second before it turns sharp; the photo that was on screen stays (memory use is the same).
 - TV Setup: the remote's mic button now reaches TV Setup on TVs with no ADB (Coocaa Android 14): with the mic option on, TV Setup is offered for the mic key (the first press asks which app to use: pick TV Setup, then Always); with it off, TV Setup is never offered. The Setup tab says so.
 - TV Home: Customize has six pages, grouped the same on the TV and the page: Look (header, what shows, motion and focus, app grid, add / edit the home screen), Screensaver (with the screen shift), Keys & startup, System (another launcher, Language as a row that opens the list); "Send anonymous stats" left TV Home (it stays in TV Setup and the app Settings).
 - TV Home: the screensaver can go fully black during night hours for hours you choose, in 30-minute steps (Customize → Screensaver, or the page: a switch plus From and To), for OLED screens; off by default.

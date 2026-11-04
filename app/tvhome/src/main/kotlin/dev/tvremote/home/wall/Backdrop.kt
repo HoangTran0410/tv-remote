@@ -35,6 +35,9 @@ class Backdrop(private val target: View) {
     @Volatile private var gen = 0
     /** The photo last shown as it fills the screen, small and without the veil (448 px wide, ~0.3 MB): the live preview's background (ThemeShots.current), null for colours or a scene. */
     @Volatile var small: Bitmap? = null
+    /** What the window shows now is a sharp photo (set with the swap, main thread): [HomeActivity.trim] leaves it, as a stand-in would only blur it. */
+    var photoShown = false
+        private set
 
     /** The last look again with veil [k], when it was kept ([hold]); false: there is none, load it. */
     fun reshade(k: Float): Boolean {
@@ -64,6 +67,7 @@ class Backdrop(private val target: View) {
             target.post {
                 if (g != gen) return@post
                 target.background = BitmapDrawable(target.resources, out).apply { setDither(true) }
+                photoShown = l.photo != null
                 target.invalidate()
                 then?.invoke()
             }
