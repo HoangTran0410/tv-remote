@@ -120,6 +120,7 @@ class HomeActivity : Activity() {
     private lateinit var greetLine: TextView
     private lateinit var netPill: BarBtn
     private lateinit var settingsPill: BarBtn
+    private lateinit var inputsPill: BarBtn                    // showInputs, default off: GONE then, no listener or timer of its own
     private lateinit var bar: TopBar
     private lateinit var grid: LinearLayout                         // the favourites first, then every other app, then the hidden apps' tile: one grid
     private var apps: List<App> = emptyList()
@@ -269,12 +270,13 @@ class HomeActivity : Activity() {
         head.addView(slot, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = -dp(14); rightMargin = dp(16) })   // its padding is the ring's room: the clock stays where it was
         bar = TopBar(this, ::dp)
         netPill = BarBtn(this, R.drawable.ic_wifi, getString(R.string.wifi), ::dp) { if (editing) barMenu(netPill) else open(Settings.ACTION_WIFI_SETTINGS) }
+        inputsPill = BarBtn(this, R.drawable.ic_input, getString(R.string.inputs), ::dp) { if (editing) barMenu(inputsPill) else inputs() }
         // one button for the TV's settings, TV Home's and the everyday switches: the Control Center (ui/ControlCenter.kt); a second button beside it read as the same thing
         settingsPill = BarBtn(this, R.drawable.ic_settings, getString(R.string.cc_title), ::dp) {   // the gear people know; its name says Control Center (the user tried a switches icon, 2026-10-25)
             if (editing) { barMenu(settingsPill); return@BarBtn }
             open = dev.tvremote.home.ui.ControlCenter.show(this, bar.capsule, { open(it) }, { inputs() }, { customize() })
         }
-        for (b in listOf(netPill, settingsPill)) bar.add(b)
+        for (b in listOf(netPill, inputsPill, settingsPill)) bar.add(b)
         for (b in bar.buttons) b.setOnLongClickListener { barMenu(b); true }
         for (b in bar.buttons) b.setOnKeyListener { v, code, e ->           // Down from the bar: the widget below it first, the grid only when there is none
             if (code == KeyEvent.KEYCODE_MENU) { if (e.action == KeyEvent.ACTION_UP) barMenu(v as BarBtn); return@setOnKeyListener true }
@@ -579,7 +581,8 @@ class HomeActivity : Activity() {
 
     private fun barMenu(b: BarBtn) {
         val gear = b === settingsPill
-        elementMenu(b.label, listOf(hideItem(if (gear) R.string.el_hide_gear else R.string.el_hide_net, if (gear) "showGear" else "showNet"), moreItem(), editItem()),
+        val ins = b === inputsPill
+        elementMenu(b.label, listOf(hideItem(if (gear) R.string.el_hide_gear else if (ins) R.string.el_hide_inputs else R.string.el_hide_net, if (gear) "showGear" else if (ins) "showInputs" else "showNet"), moreItem(), editItem()),
             if (gear) getString(R.string.el_note_gear) else "", anchor = b)
     }
 
@@ -2008,6 +2011,7 @@ class HomeActivity : Activity() {
         dateLine.visibility = if (conf.optBoolean("showDate", true)) View.VISIBLE else View.GONE
         rule.visibility = if (clock.isShown && (dateLine.isShown || greetLine.isShown)) View.VISIBLE else View.GONE   // the line between them only while there are two sides
         netPill.visibility = if (conf.optBoolean("showNet", true)) View.VISIBLE else View.GONE
+        inputsPill.visibility = if (conf.optBoolean("showInputs", false)) View.VISIBLE else View.GONE
         settingsPill.visibility = if (conf.optBoolean("showGear", true)) View.VISIBLE else View.GONE
         headLeft.isFocusable = clock.isShown || dateLine.isShown || greetLine.isShown   // a stop (the user, 2026-10-27): OK is its menu
         val ends = bar.buttons.filter { it.visibility == View.VISIBLE }

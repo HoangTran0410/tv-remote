@@ -47,7 +47,8 @@ import org.json.JSONObject
  *   show*   whether each thing TV Home draws on its first screen is there ([SHOWS], all true: nothing is forced on the person):
  *           showClock, showDate (the clock and the day beside it), showNet (the Wi-Fi button), showGear (the settings button; the
  *           Menu key and the clients still reach Customize), showAdd (the "+ Add" tile), showSuggest (the "Get TV Setup" tile),
- *           showWatch (the Play Next / channels row, on top of hiding one app's from its menu). A TV Home older than these
+ *           showWatch (the Play Next / channels row, on top of hiding one app's from its menu); showInputs (an Inputs button in the top
+ *           bar, default OFF, unlike the rest; it opens the Inputs list). A TV Home older than these
  *           does not report them, so a page offers them only to one that does
  *   watchAt where the Play Next items go ([WATCH_AT], default "bottom"): "top" a row of their own above the apps, "under1" under
  *           the first row of apps, "bottom" after the last row of apps, "tiles" no row: they follow the grid's last tile in its columns.
@@ -725,6 +726,7 @@ object HomeConfig {
             .also { n -> for ((k, d) in HEAD_TYPE) n.put(k, o.optString(k).takeIf { it in (if (k.endsWith("size")) HEAD_SIZES else HEAD_COLORS) } ?: d) }
             .also { n -> for (k in HEAD_FLAGS) n.put(k, o.optBoolean(k, false)) }
             .also { n -> for (k in SHOWS) n.put(k, o.optBoolean(k, true)) }
+            .put("showInputs", o.optBoolean("showInputs", false))   // the one switch that starts off: an extra button nobody asked for
             .put("infold", o.optBoolean("infold", false))
             .put("watchAt", o.optString("watchAt").takeIf { it in WATCH_AT } ?: WATCH_AT[0])
             .put("anim", o.optBoolean("anim", true))

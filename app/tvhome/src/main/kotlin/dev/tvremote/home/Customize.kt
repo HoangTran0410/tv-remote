@@ -891,6 +891,7 @@ object Customize {
             tile(R.drawable.ic_timer, a.getString(R.string.show_clock), null, "showClock")
             tile(R.drawable.ic_calendar, a.getString(R.string.show_date), null, "showDate")
             tile(R.drawable.ic_wifi, a.getString(R.string.show_net), null, "showNet")
+            tile(R.drawable.ic_input, a.getString(R.string.show_inputs), null, "showInputs")   // default off (HomeConfig "showInputs")
             tile(R.drawable.ic_settings, a.getString(R.string.show_gear), null, "showGear")
             tile(R.drawable.ic_plus, a.getString(R.string.show_add), null, "showAdd")
             tile(R.drawable.ic_download, a.getString(R.string.show_suggest), null, "showSuggest")

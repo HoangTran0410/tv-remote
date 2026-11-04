@@ -3224,6 +3224,7 @@
  "home.show_clock": "Clock",
  "home.show_date": "Date",
  "home.show_net": "Wi-Fi button",
+ "home.show_inputs": "Inputs button",
  "home.show_gear": "Settings button",
  "home.show_add": "Add tile",
  "home.show_suggest": "Get TV Setup tile",

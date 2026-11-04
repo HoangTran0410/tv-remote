@@ -14,6 +14,8 @@ Power off with no ADB: turn on TV Setup Keys (Accessibility) and the TV opens th
 
 The **Tint color** button beside it: Dark, Blue light filter, Yellow, Sepia, Night red, Blue. Needs a newer TV Setup.
 
+An **Inputs button** of its own in the top bar (off by default): Customize → Look → **On the home screen**.
+
 Customize → Look → **Show only plugged-in HDMI/AV inputs** (off by default): empty ports go in More inputs.
 
 TV settings opens even on TVs that hide the standard Settings screen (HY300 projectors, Xiaomi, TCL, Fire TV).
