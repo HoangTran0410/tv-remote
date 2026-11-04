@@ -324,3 +324,4 @@ dialog.ldetail .card { width:min(640px, 94vw); }
 .ltag.use { background:var(--sel); color:var(--accent-text); box-shadow:inset 0 0 0 1px var(--accent); }
 .ltag.ours { background:var(--ok-bg); color:var(--ok); box-shadow:inset 0 0 0 1px currentColor; font-weight:600; }
 .ltag.warn, .item .name small.warn { color:var(--warn); }
+.note.warn { background:var(--warn-bg); color:var(--warn); padding:8px 10px; border-radius:8px; }

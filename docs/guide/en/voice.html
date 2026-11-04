@@ -23,11 +23,11 @@ The TV remote's mic button: turn on **Mic button opens TV Remote voice** in the 
 
 A TV with no ADB: the first mic press asks which app to use; pick **TV Setup**, then **Always**.
 
+Mic button still opens Google? Until a press reaches TV Setup, a warning with a button shows under the switch (Undo restores it).
+
 A TV with no speech recognizer (a box without Google): also turn on **Understand speech on the TV itself, no Google needed** there; off removes it.
 
 Vietnamese 25 MB, English 36 MB: pick one under **Language** (or on TV Setup's TV Voice tile); adding one keeps the other.
-
-On a TV with Google, Google listens first (it understands any sentence); with no Internet, or no answer from Google, TV Setup's takes over.
 
 To have TV Setup Voice always listen first (faster, your voice stays on the TV): pick **TV Setup** under “Listen with”, or press the Mic button tile in TV Home's Quick settings.
 

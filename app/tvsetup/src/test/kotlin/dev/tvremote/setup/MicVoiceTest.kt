@@ -64,4 +64,32 @@ class MicVoiceTest {
         assertTrue(MicVoice.takesBack("com.other.tv/.Assist", "com.other.tv/.Old"))
         assertFalse(MicVoice.takesBack("com.amazon.alexa/.Voice", katniss))
     }
+
+    private fun why(mic: Boolean = true, google: Boolean = false, ble: Boolean = false, ours: Boolean = false, search: String = "") =
+        MicVoice.blockReason(mic, google, ble, ours, search, "dev.tvremote.setup")
+
+    @Test fun googleHoldsTheMicOnABleRemote() {                          // Skyworth SWTV-24AE-4K, Android 14: audio goes straight to the Google app
+        assertEquals(MicVoice.GOOGLE, why(google = true, ble = true, ours = true))   // even with our assistant set
+        assertEquals("", why(google = true, ble = false, ours = true))           // no BLE service: the assistant setting works
+        assertEquals("", why(google = false, ble = true))                        // the Google app off: WEB_SEARCH reaches MicSearch
+    }
+
+    @Test fun aMicKeyStartSeenMeansItWorks() {                          // FPT Play 650: the same packages as the Skyworth, but the key reaches us
+        val seen = MicVoice.blockReason(true, true, true, true, "", "dev.tvremote.setup", keySeen = true)
+        assertEquals("", seen)
+        assertEquals(MicVoice.GOOGLE, MicVoice.blockReason(true, true, true, true, "", "dev.tvremote.setup", keySeen = false))
+        assertEquals(MicVoice.OTHER, MicVoice.blockReason(true, true, true, false, "ai.zalo.kiki.tv", "dev.tvremote.setup", keySeen = true))   // another app's default is not cleared by a press
+    }
+
+    @Test fun anotherAppHoldsWebSearch() {
+        assertEquals(MicVoice.OTHER, why(search = "ai.zalo.kiki.tv"))
+        assertEquals("", why(search = "ai.zalo.kiki.tv", ours = true))        // the assistant setting is ours: WEB_SEARCH is not the path
+        assertEquals("", why(search = "dev.tvremote.setup"))
+        assertEquals("", why(search = "android"))                           // the system chooser: the first press asks
+        assertEquals("", why(search = ""))
+    }
+
+    @Test fun ruleOffMeansNoBlock() {
+        assertEquals("", why(mic = false, google = true, ble = true, search = "ai.zalo.kiki.tv"))
+    }
 }

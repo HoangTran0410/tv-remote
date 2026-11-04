@@ -100,6 +100,8 @@ internal object Rules {
         KeepAwake.live?.check()
         if (d.optString("do") == "mic_offline" || d.optString("do") == "mic_lang") MicVoice.syncOffline(c)   // TV Setup Voice put on the TV or taken off, in the background
         if (d.optString("do") == "mic_lang_remove") MicVoice.removeLang(c, d.optString("lang"))   // one language off the TV, the others stay
+        if (d.optString("do") == "mic" && d.optBoolean("on")) MicVoice.forgetKey(c)   // "seen" counts from the moment the rule goes on
+        if (d.optString("do") == "mic_free") Thread({ MicVoice.free(c, RemoteService.adb()) }, "mic-free").apply { isDaemon = true }.start()   // the Google app off (ADB) or its settings page
         if (d.optString("do") in setOf("holdkeys", "mic", "homekey")) Thread({
             if (d.optString("do") == "mic" && d.optBoolean("on")) RemoteService.adb()?.let { MicVoice.grant(c, it) }   // the microphone, allowed through ADB
             if (d.optString("do") == "mic") MicVoice.takeAssist(c)            // the mic button reaches us through the assistant (Google TV)
@@ -129,6 +131,7 @@ internal object Rules {
             "mic" -> o.put("mic", d.optBoolean("on"))                       // MicVoice: the remote's mic button opens TV Remote's voice, not the Assistant
             "mic_offline" -> o.put("mic_offline", d.optBoolean("on"))       // TV Setup Voice on the TV: speech heard without Google (MicVoice.syncOffline)
             "mic_engine" -> o.put("mic_engine", if (d.optString("engine") == "tv") "tv" else "auto")   // who listens first: "tv" = TV Setup Voice over Google's (MicVoice.engineTv)
+            "mic_free" -> {}                                                // nothing kept: the answer to mic_block (MicVoice.free), run below
             "mic_lang_remove" -> {}                                         // nothing kept: MicVoice.removeLang uninstalls and moves "mic_lang"
             "mic_lang" -> d.optString("lang").takeIf { it in VoiceProtocol.LANGS }?.let { o.put("mic_lang", it) }   // the language TV Setup Voice listens in (MicVoice.lang); a new one is added, not swapped
             "awake" -> o.put("awake", d.optBoolean("on"))                   // KeepAwake: the chip kept up while the TV is "off"
@@ -569,6 +572,7 @@ internal object Rules {
             .put("total", JSONObject().put("min", o.optJSONObject("total")?.optInt("min") ?: 0).put("used", Kids.usedToday(c, used) / 60).put("extra", totalExtra(o, now))
                 .put("warn", o.optJSONObject("total")?.optInt("warn", 5) ?: 5).put("days", o.optJSONObject("total")?.optJSONArray("days") ?: JSONArray()))
             .put("clock", Clock.info(c))
+            .also { st -> if (o.optBoolean("mic")) MicVoice.block(c).let { b -> st.put("mic_block", b.reason).put("mic_block_app", b.label) } }   // why the mic key cannot reach us; nothing is read while the rule is off
     }
 
     private fun label(c: Context, pkg: String): String = try {
