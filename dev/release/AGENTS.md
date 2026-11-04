@@ -25,12 +25,14 @@ so Android installs over the old APKs, and `release.sh` stops before 1.3.0 until
   A new topic needs both attributes and an entry in `docs/data/since.json` (`"since": "next"`, plus `setup` / `phone` / `pc` minimum versions where the feature needs a newer app; `release.sh` stamps "next" with the version and its date; `guide_stale.py` warns when missing). Point to another topic with a link (`<a href="#id" data-t="id">`), never “see … below”.
 - Keep the next release's notes under `## Unreleased` at the top of `CHANGELOG.md` (English only, plain `- ` bullets: `Release.brief` takes every bullet when a release has no **Tiếng Việt** list, so the apps show them in every language), added to as features land.
 - `dev/release/release.sh` does the rest: bumps `VERSION` and the number of each app whose code (or `app/shared`) changed since the last tag (beyond comments: `dev/release/code_changed.py`) (patch; `BUMP=minor`), turns `## Unreleased` into `## <VERSION> - <date>` with the line `Web x · Phone app y · TV app z`, commits, pushes, builds and creates the GitHub release with both APKs and `versions.json` (APKs are never committed). It needs `gh` logged in and both `signing.jks` files. Run again after a failure: nothing is bumped twice.
-- The computer apps are not built by `release.sh`: when `app/desktop` or `app/shared` changed since the last tag it starts
-  `.github/workflows/desktop.yml` with the new tag, which builds them on each system and attaches them (names without a version,
-  so `releases/latest/download/TV-Remote-<os>-<arch>.zip` always works), and waits for it; otherwise it attaches the last
-  release's archives again, and `versions.json` "web" (the number the computer app's Updater.kt reads) keeps theirs.
+- The computer apps are not built by `release.sh`: it first creates the release as a draft (tag pushed first), attaches the
+  last built computer archives again (names without a version, so `releases/latest/download/TV-Remote-<os>-<arch>.zip` always
+  works), signs and publishes it, so `/releases/latest` is never a release without `SHA256SUMS` (v0.45.0 was, 30 min, while
+  GitHub's Mac runners queued: TVs could install no add-on). Then, when `app/desktop` or `app/shared` changed since the
+  release that last built them (`NO_DESKTOP=1`: skip once), it starts `.github/workflows/desktop.yml`, which replaces the
+  archives, and only then raises `versions.json` "web" (the number the computer app's Updater.kt reads) and signs again.
 - Both apps update themselves from GitHub releases (`update/Release.kt`). Every app installs only a file listed in the
   release's `SHA256SUMS` with its SHA-256, signed (`SHA256SUMS.sig`, Ed25519) by a key in `Release.KEYS`; a release without
-  them is not offered. `release.sh` runs `dev/release/sums.sh <tag>` last (after the computer apps are attached); run it again after
+  them is not offered. `release.sh` runs `dev/release/sums.sh <tag>` before publishing and again after the computer apps are attached; run it again after
   replacing any file of a release by hand. The keys (`~/.tv-remote-release/`, never on GitHub) and their
   backup: `dev/README.md`.

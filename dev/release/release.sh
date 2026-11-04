@@ -103,18 +103,19 @@ if [ -n "$(git status --porcelain)" ]; then
   echo "numbers: web $VER, phone $(cat app/android/VERSION), TV $(cat app/tvsetup/VERSION)"
 fi
 git push -q origin HEAD                                               # the release is made from what GitHub has
-# the computer app is built again (on GitHub, each system) only when its code changed; otherwise the last release's archives
-# are attached again and "web" (what the computer app reads) keeps their version, so nobody is offered the same app again
-# NO_DESKTOP=1: only the APKs, no GitHub Actions run (its minutes are limited). Changes are counted from the release that
-# last built the computer app, so what a NO_DESKTOP release skipped is built by the next one
-DESK=$VER
+# the computer app is built again (GitHub Actions, each system) when its code changed since the release that last built it, after
+# the release is out (nobody waits for it). NO_DESKTOP=1: not this time (its minutes are limited); the next release builds what
+# was skipped. Until then, and while it builds, the last built archives are attached again and "web" (what the computer app reads) keeps their version, so a
+# download link always works and nobody is offered the same app again
+DESK=$VER; WEB=$VER
 if [ -n "$LAST" ]; then
   BUILT=$(gh release download "$LAST" -p versions.json -O - | python3 -c 'import json, sys; d = json.load(sys.stdin); print(d["web"])')
   if [ -n "$NO_DESKTOP" ] || ! LAST="v$BUILT" changed desktop >/dev/null; then DESK=$BUILT; fi
+  WEB=$BUILT
 fi
 ./app/android/build.sh && ./app/tvsetup/build.sh && ./app/tvhome/build.sh && ./app/tvchannels/build.sh && ./app/tvgames/build.sh && ./app/tvapps/build.sh && ./app/tvvoice/build.sh
 unzip -l app/tvsetup/build/tv-setup.apk | grep -q 'assets/tvkeys.apk' || { echo "tv-setup.apk has no assets/tvkeys.apk (TV Setup Keys, the add-on with the accessibility services): not releasing"; exit 1; }
-printf '{"android": "%s", "tv": "%s", "home": "%s", "channels": "%s", "games": "%s", "tvapps": "%s", "web": "%s"}\n' "$(cat app/android/VERSION)" "$(cat app/tvsetup/VERSION)" "$(cat app/tvhome/VERSION)" "$(cat app/tvchannels/VERSION)" "$(cat app/tvgames/VERSION)" "$(cat app/tvapps/VERSION)" "$DESK" > app/android/build/versions.json
+printf '{"android": "%s", "tv": "%s", "home": "%s", "channels": "%s", "games": "%s", "tvapps": "%s", "web": "%s"}\n' "$(cat app/android/VERSION)" "$(cat app/tvsetup/VERSION)" "$(cat app/tvhome/VERSION)" "$(cat app/tvchannels/VERSION)" "$(cat app/tvgames/VERSION)" "$(cat app/tvapps/VERSION)" "$WEB" > app/android/build/versions.json
 D=https://github.com/HoangTran0410/tv-remote/releases/latest/download
 NOTES="$NOTES
 
@@ -131,14 +132,22 @@ NOTES="$NOTES
 | Mac (Apple Silicon + Intel) | [TV-Remote-mac.zip]($D/TV-Remote-mac.zip) |
 | Windows 10/11 | [TV-Remote-windows-x64.zip]($D/TV-Remote-windows-x64.zip) |
 | Linux x64 / arm64 | [TV-Remote-linux-x64.tar.gz]($D/TV-Remote-linux-x64.tar.gz) · [TV-Remote-linux-arm64.tar.gz]($D/TV-Remote-linux-arm64.tar.gz) |"
+# a draft until signed: /releases/latest stays the last signed release meanwhile (v0.45.0 was latest for 30 min without
+# SHA256SUMS while GitHub's Mac runners queued, and TVs could install no add-on). A draft makes no tag: pushed first, the
+# desktop workflow checks it out
+git rev-parse -q --verify "refs/tags/v$VER" >/dev/null || git tag "v$VER"
+git push -q origin "v$VER"
 # the APKs live only in releases, never in git
-gh release create "v$VER" app/android/build/tv-remote.apk app/tvsetup/build/tv-setup.apk app/tvhome/build/tv-home.apk app/tvchannels/build/tv-channels.apk app/tvgames/build/tv-games.apk app/tvapps/build/tv-apps.apk app/tvvoice/build/tv-voice.apk app/tvvoice/build/tv-voice-en.apk app/android/build/versions.json --title "v$VER" --notes "$NOTES" --latest  # by date: GitHub would still call 2.24.2 the latest
-if [ "$DESK" != "$VER" ]; then
-  echo "computer app not built: the $DESK archives attached again"
+gh release view "v$VER" >/dev/null 2>&1 || gh release create "v$VER" app/android/build/tv-remote.apk app/tvsetup/build/tv-setup.apk app/tvhome/build/tv-home.apk app/tvchannels/build/tv-channels.apk app/tvgames/build/tv-games.apk app/tvapps/build/tv-apps.apk app/tvvoice/build/tv-voice.apk app/tvvoice/build/tv-voice-en.apk app/android/build/versions.json --title "v$VER" --notes "$NOTES" --draft --verify-tag
+if [ -n "$LAST" ] && ! gh release view "v$VER" --json assets -q '.assets[].name' | grep -q '^TV-Remote-'; then
+  echo "the computer app of $BUILT attached again"
   T=$(mktemp -d); gh release download "$LAST" -p 'TV-Remote-*' -D "$T" && gh release upload "v$VER" "$T"/TV-Remote-*; rm -rf "$T"
-else
-  # built on each system by .github/workflows/desktop.yml, which attaches them: waited for, so the release is only called
-  # done once every download link works
+fi
+dev/release/sums.sh "v$VER" >/dev/null                                       # the signed list of every file: until it is there no app offers this release
+gh release edit "v$VER" --draft=false --latest                               # by date: GitHub would still call 2.24.2 the latest
+if [ "$DESK" = "$VER" ]; then
+  # built on each system by .github/workflows/desktop.yml, which replaces the archives (--clobber); "web" is raised only
+  # once all of them are the new ones, then signed again
   echo "building the computer apps (.github/workflows/desktop.yml)..."
   START=$(date -u +%Y-%m-%dT%H:%M:%SZ)
   gh workflow run desktop.yml -f tag="v$VER"
@@ -146,9 +155,11 @@ else
   [ -n "$RUN" ] || { echo "the desktop workflow did not start: gh workflow run desktop.yml -f tag=v$VER"; exit 1; }
   # one rerun of the failed jobs first: a runner image brownout or a flaky window check (Windows, v0.39.x) passes the second time
   gh run watch "$RUN" --exit-status >/dev/null || { echo "a computer app failed: its jobs once more"; gh run rerun "$RUN" --failed && sleep 10 && gh run watch "$RUN" --exit-status >/dev/null; } \
-    || { echo "a computer app failed to build twice: gh run view $RUN --log-failed (gh api .../check-runs/<job>/annotations says why a job was cancelled)"; exit 1; }
+    || { echo "a computer app failed to build twice (the release is out with the last computer app): gh run view $RUN --log-failed"; exit 1; }
+  python3 -c 'import json, sys; p = sys.argv[1]; d = json.load(open(p)); d["web"] = sys.argv[2]; open(p, "w").write(json.dumps(d) + "\n")' app/android/build/versions.json "$VER"
+  gh release upload "v$VER" app/android/build/versions.json --clobber
+  dev/release/sums.sh "v$VER" >/dev/null
 fi
-dev/release/sums.sh "v$VER"                                                   # the signed list of every file, last: until it is there no app offers this release
 gh release view "v$VER" --json assets -q '.assets[].name'
 echo; node dev/admin/issues.js || true                                  # issues labelled next-release: this release is what they wait for
 echo; dev/release/churn.sh || true                                           # how settled the /api is: says when 1.0 is worth thinking about
