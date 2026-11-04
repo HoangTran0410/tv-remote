@@ -184,7 +184,7 @@ async function loadHold(now) {
   holdBusy = false;
   if (gen !== holdGen || !r) return;
   checkSet('mic', !!r.mic);
-  const seen = JSON.stringify([r.holdkeys, r.mic, r.mic_offline, r.voice, r.mic_lang, r.mic_langs, r.mic_engine, r.mic_secure, r.mic_block, r.mic_block_app, r.adb, r.voice_search, r.voice_youtube, r.voice_tubes]) + window.LANG;
+  const seen = JSON.stringify([r.holdkeys, r.mic, r.mic_offline, r.voice, r.mic_lang, r.mic_langs, r.mic_engine, r.mic_freespeech, r.mic_secure, r.mic_block, r.mic_block_app, r.adb, r.voice_search, r.voice_youtube, r.voice_tubes]) + window.LANG;
   if (seen === holdSeen) return;                                       // nothing new: keep what is on screen
   holdSeen = seen;
   const holdOld = r.holdkeys === undefined;
@@ -216,6 +216,13 @@ async function loadHold(now) {
   const engine = voice === 'ready' ? [el('p', { className: 'note', textContent: T('mic.engine') }), UI.chips([
     { label: T('mic.engine_google'), on: !tvFirst, fn: () => pickEngine('auto') },
     { label: T('mic.engine_tv'), on: tvFirst, fn: () => pickEngine('tv') }]), UI.note(T('mic.engine_sub'))] : [];
+  // What TV Setup Voice hears (Rules "mic_freespeech"): commands only, or also free speech (searches, song names; slower). Off is today's behaviour.
+  const pickFree = async (on) => {
+    if ((r.mic_freespeech !== undefined || await setupFor('mic_freespeech')) && await api('/api/rules', { do: 'mic_freespeech', on })) { holdSeen = ''; loadHold(true); }
+  };
+  const free = voice === 'ready' ? [UI.chips([
+    { label: T('mic.free_cmd'), on: !r.mic_freespeech, fn: () => pickFree(false) },
+    { label: T('mic.free_on'), on: !!r.mic_freespeech, fn: () => pickFree(true) }]), UI.note(T('mic.free_sub'))] : [];
   // Which app "search …" and "YouTube" mean (Rules voice_search / voice_youtube; Voice.Prefs): only the YouTube clients on the TV (r.voice_tubes) are
   // offered; the first chip is today's behaviour. A TV Setup older than this reports no voice_tubes and shows nothing.
   const tubes = r.voice_tubes || [];
@@ -247,7 +254,7 @@ async function loadHold(now) {
       const ok = await api('/api/rules', { do: 'mic_free' });
       b.disabled = false; if (ok) { toast(r.mic_block === 'google_holds_mic' && r.adb === 'ready' ? T('mic.block_done') : T('mic.block_opened')); holdSeen = ''; setTimeout(() => loadHold(true), 2500); }
     } })), ...(r.mic_block === 'google_holds_mic' ? [UI.note(T('mic.block_note'))] : [])] : [];
-  box.replaceChildren(UI.group(T('hold.tile'), hold, UI.note(T('hold.sub')), UI.note(T('hold.sub_off'))), UI.group(T('mic.tile'), mic, UI.note(T('mic.sub')), UI.note(T('mic.sub_off')), UI.note(T('mic.eg')), UI.note(T('mic.need')), ...(r.mic && r.mic_secure === false ? [UI.note(T('mic.first_press'))] : []), ...blocked, offline, UI.note(T('mic.offline_sub')), ...(vstate ? [UI.note(vstate)] : []), ...langs, ...engine), ...voicePick,
+  box.replaceChildren(UI.group(T('hold.tile'), hold, UI.note(T('hold.sub')), UI.note(T('hold.sub_off'))), UI.group(T('mic.tile'), mic, UI.note(T('mic.sub')), UI.note(T('mic.sub_off')), UI.note(T('mic.eg')), UI.note(T('mic.need')), ...(r.mic && r.mic_secure === false ? [UI.note(T('mic.first_press'))] : []), ...blocked, offline, UI.note(T('mic.offline_sub')), ...(vstate ? [UI.note(vstate)] : []), ...langs, ...engine, ...free), ...voicePick,
     // The key tester (KeyTestActivity in TV Setup): opened on the TV by `am start`; an older TV Setup is asked to update first.
     UI.group(T('keytest.tile'), el('div', { className: 'actions' }, el('button', { type: 'button', textContent: T('keytest.open'), onclick: async () => { if (await api('/api/keytest/open', {})) toast(T('keytest.opened')); } })), UI.note(T('keytest.note'))));
 }

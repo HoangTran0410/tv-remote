@@ -132,7 +132,7 @@ class MicActivity : Activity(), RecognitionListener {
         level.stop()
         ui.removeCallbacks(settle)
         swap(act, T("mic.thinking"), TvUi.DIM)
-        ui.postDelayed(late, if (offline) LATE_FREE_MS else LATE_MS)   // TV Setup Voice may take a second look at the sound (free speech, up to 6 s on a weak box)
+        ui.postDelayed(late, if (offline && MicVoice.freeSpeech(this)) LATE_FREE_MS else LATE_MS)   // TV Setup Voice may take a second look at the sound (free speech, up to 6 s on a weak box)
     }
 
     private fun listen() {
@@ -156,7 +156,7 @@ class MicActivity : Activity(), RecognitionListener {
         val lang = if (android.os.Build.VERSION.SDK_INT >= 24)            // the app's language with its region (vi-VN, fr-FR): recognizers want one
             android.icu.util.ULocale.addLikelySubtags(android.icu.util.ULocale(Words.lang)).let { it.language + "-" + it.country }
             else if (Words.lang == "en") "en-US" else Words.lang
-        r.startListening(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply { if (words != null) putStringArrayListExtra(VoiceProtocol.WORDS, words) }
+        r.startListening(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply { if (words != null) putStringArrayListExtra(VoiceProtocol.WORDS, words); if (offline && MicVoice.freeSpeech(this@MicActivity)) putExtra(VoiceProtocol.FREE_SPEECH, true) }
             .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             .putExtra(RecognizerIntent.EXTRA_LANGUAGE, lang).putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             .putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1).putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, packageName)

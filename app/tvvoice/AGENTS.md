@@ -33,3 +33,9 @@ app/tvvoice/              TV Setup Voice (`dev.tvremote.setup.voice`): speech he
 - Commands stay on the grammar (exact); a sentence it cannot hold (a search) is also decoded free in a second thread and both texts go
   back (`VoiceProtocol.FREE`, `pick`): dev/flows/voice.md "Free speech". Do not swap in `vosk-model-vn-0.4` (168 MB on disk, no better
   for searches: `dev/test/voice_wer.py`).
+
+- **Testing with a WAV on an emulator:** a debuggable build plays a WAV named test.wav in the add-on's private files folder (16 kHz mono) as if said. For a release-speed
+  check build `:tvvoice:assembleRelease -Pvoicetest` (release code, `isDebuggable`; never ship it), then `run-as dev.tvremote.setup.voice
+  cp … test.wav` into that folder and open TV Setup's `MicActivity`. The log (`TvVoice`, `MicVoice`) says the free pass's time and its text.
+  Free speech is a request extra (`VoiceProtocol.FREE_SPEECH`, from the rule `mic_freespeech`): off by default, then nothing of it runs.
+  `model.conf` beams are narrowed at build time (max-active 3000, beam 10, lattice-beam 4: free decode 0.65 to 0.38 s on a Mac, same WER).

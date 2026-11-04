@@ -131,6 +131,7 @@ internal object Rules {
             "mic" -> o.put("mic", d.optBoolean("on"))                       // MicVoice: the remote's mic button opens TV Remote's voice, not the Assistant
             "mic_offline" -> o.put("mic_offline", d.optBoolean("on"))       // TV Setup Voice on the TV: speech heard without Google (MicVoice.syncOffline)
             "mic_engine" -> o.put("mic_engine", if (d.optString("engine") == "tv") "tv" else "auto")   // who listens first: "tv" = TV Setup Voice over Google's (MicVoice.engineTv)
+            "mic_freespeech" -> o.put("mic_freespeech", d.optBoolean("on"))   // TV Setup Voice also decodes free speech (MicVoice.freeSpeech); off = nothing of it runs
             "mic_free" -> {}                                                // nothing kept: the answer to mic_block (MicVoice.free), run below
             "mic_lang_remove" -> {}                                         // nothing kept: MicVoice.removeLang uninstalls and moves "mic_lang"
             "mic_lang" -> d.optString("lang").takeIf { it in VoiceProtocol.LANGS }?.let { o.put("mic_lang", it) }   // the language TV Setup Voice listens in (MicVoice.lang); a new one is added, not swapped
@@ -562,7 +563,7 @@ internal object Rules {
             .put("in_bedtime", inBedtime(o, now)).put("snooze_until", o.optLong("snooze_until").let { if (it > now) it else 0L })
             .put("limits", limits).put("volume", o.optJSONArray("volume") ?: JSONArray()).put("volume_now", volumeCap(o, now) ?: JSONObject.NULL)
             .put("ram", ram(o)).put("volume_fixed", Guard.volumeFixed(c)).put("running", RemoteService.isRunning()).put("wanted", active(c))
-            .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("mic_offline", o.optBoolean("mic_offline")).put("mic_secure", dev.tvremote.setup.keys.KeyFix.can(c)).put("mic_engine", o.optString("mic_engine").ifEmpty { "auto" }).put("voice", MicVoice.offlineState(c)).put("mic_lang", MicVoice.lang(c)).put("mic_active", MicVoice.active(c) ?: "").put("mic_langs", JSONArray(MicVoice.installed(c))).put("voice_search", o.optString("voice_search")).put("voice_youtube", o.optString("voice_youtube")).put("voice_tubes", MicVoice.tubes(c)).put("homekey", o.optString("homekey"))
+            .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("mic_offline", o.optBoolean("mic_offline")).put("mic_secure", dev.tvremote.setup.keys.KeyFix.can(c)).put("mic_engine", o.optString("mic_engine").ifEmpty { "auto" }).put("mic_freespeech", o.optBoolean("mic_freespeech")).put("voice", MicVoice.offlineState(c)).put("mic_lang", MicVoice.lang(c)).put("mic_active", MicVoice.active(c) ?: "").put("mic_langs", JSONArray(MicVoice.installed(c))).put("voice_search", o.optString("voice_search")).put("voice_youtube", o.optString("voice_youtube")).put("voice_tubes", MicVoice.tubes(c)).put("homekey", o.optString("homekey"))
             .put("family", o.optJSONObject("family") ?: JSONObject.NULL)
             .put("keys", KeysBridge.bound())                           // the key filter is up: LauncherSwap.byKey keeps Home only then (issue #9)
             .put("sched", sched)

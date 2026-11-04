@@ -62,6 +62,9 @@ object MicVoice {
     fun lang(c: Context): String = try { Rules.load(c).optString("mic_lang") } catch (e: Exception) { "" }
         .takeIf { it in VoiceProtocol.LANGS } ?: dev.tvremote.core.ontv.VoiceAddon.lang(dev.tvremote.core.Words.lang)
 
+    /** The rule "mic_freespeech": TV Setup Voice also decodes free speech (searches, song names); off = commands only, today's speed. */
+    fun freeSpeech(c: Context): Boolean = try { Rules.load(c).optBoolean("mic_freespeech") } catch (e: Exception) { false }
+
     /** The rule "mic_engine" is "tv": TV Setup Voice listens first, where it is on the TV, Google's only when it is not (the user, 2026-11-03: faster). */
     fun engineTv(c: Context): Boolean = try { Rules.load(c).optString("mic_engine") == "tv" } catch (e: Exception) { false }
 

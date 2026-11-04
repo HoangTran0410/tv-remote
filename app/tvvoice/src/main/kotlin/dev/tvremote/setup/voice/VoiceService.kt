@@ -28,14 +28,14 @@ class VoiceService : RecognitionService() {
         job?.cancel()
         val test = if (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0) java.io.File(filesDir, "test.wav").takeIf { it.isFile } else null
         if (test != null) Log.i("TvVoice", "test audio ${test.length()} bytes")
-        job = Listen(intent.getStringArrayListExtra(VoiceProtocol.WORDS).orEmpty(), cb, test).also { it.start() }
+        job = Listen(intent.getStringArrayListExtra(VoiceProtocol.WORDS).orEmpty(), cb, test, intent.getBooleanExtra(VoiceProtocol.FREE_SPEECH, false)).also { it.start() }
     }
     override fun onStopListening(cb: Callback) { job?.finish() }
     override fun onCancel(cb: Callback) { job?.cancel(); job = null }
     override fun onDestroy() { job?.cancel(); job = null; super.onDestroy() }
 
     /** [test]: a debug build's files/test.wav (16 kHz mono) played as if said, in real time: the tests' way to speak to a TV. */
-    private inner class Listen(private val words: List<String>, private val cb: Callback, private val test: java.io.File?) : Thread("voice-listen") {
+    private inner class Listen(private val words: List<String>, private val cb: Callback, private val test: java.io.File?, private val freeSpeech: Boolean) : Thread("voice-listen") {
         @Volatile private var stop = false                            // finish: the sentence as heard so far
         @Volatile private var dead = false                            // cancel: nothing more is said
         @Volatile var written: List<Pair<String, String>> = emptyList()   // said -> written ("vê tê vê" -> "vtv"), see [grammar]
@@ -81,7 +81,7 @@ class VoiceService : RecognitionService() {
                     val db = level(buf, n)
                     say { cb.rmsChanged(db) }
                     if (!spoke && db > 5f) { spoke = true; say { cb.beginningOfSpeech() } }
-                    second.let { f ->                             // free speech hears the same sound from its first word on, in a thread of its own
+                    if (freeSpeech) second.let { f ->                             // free speech hears the same sound from its first word on, in a thread of its own
                         if (f != null) f.feed(buf.copyOf(n))
                         else {
                             pre.addLast(buf.copyOf(n)); if (pre.size > 3) pre.removeFirst()
@@ -156,7 +156,7 @@ class VoiceService : RecognitionService() {
                         ms += b.size / 32
                         if (r.acceptWaveForm(b, b.size)) out += text(r.result, "text", emptyList())
                     }
-                    Log.i("TvVoice", "free: ${if (quit) "dropped" else "\"$text\""} after ${System.currentTimeMillis() - t0} ms (recognizer $made ms) for $ms ms of sound")
+                    Log.i("TvVoice", "free: ${if (quit) "dropped" else "\"$text\""} after ${System.currentTimeMillis() - t0} ms, ${android.os.Debug.threadCpuTimeNanos() / 1_000_000} ms of cpu (recognizer $made ms) for $ms ms of sound")   // cpu vs wall: a busy or swapping box shows in the gap
                 } catch (e: Exception) { Log.w("TvVoice", "free: $e") } finally { r.close() }
             }
             /** What free speech heard, waiting for it to catch up with the sound; "" when it did not in time. */

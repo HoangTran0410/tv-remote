@@ -107,15 +107,21 @@ class VoiceActivity : Activity() {
         buttons.removeAllViews()
         when {
             voice == "busy" -> add(T("common.close")) { finish() }  // the install goes on: its own thread
-            used -> { add(T("tvvoice.use_google")) { work { Rules.change(this, JSONObject().put("do", "mic_engine").put("engine", "auto")) } }
+            used -> { addFreeSpeech(r); add(T("tvvoice.use_google")) { work { Rules.change(this, JSONObject().put("do", "mic_engine").put("engine", "auto")) } }
                 add(T("tvvoice.remove_lang", "lang" to NAMES.getValue(MicVoice.active(this) ?: MicVoice.lang(this))), danger = true) { remove() }; add(T("common.close")) { finish() } }
-            voice == "ready" -> { add(T("tvvoice.use")) { work { MicVoice.useTv(this) } }
+            voice == "ready" -> { addFreeSpeech(r); add(T("tvvoice.use")) { work { MicVoice.useTv(this) } }
                 add(T("tvvoice.remove_lang", "lang" to NAMES.getValue(MicVoice.active(this) ?: MicVoice.lang(this))), danger = true) { remove() }; add(T("common.close")) { finish() } }
             else -> { add(T("tvvoice.install")) { waiting = true; work { MicVoice.useTv(this) } }; add(T("common.later")) { finish() } }
         }
         if (focus || buttons.findFocus() == null) buttons.getChildAt(0)?.let { it.isFocusableInTouchMode = true; it.requestFocus() }   // opened by TV Home: OK must land somewhere
         ui.removeCallbacks(poll)
         if (voice == "busy" || waiting && voice == "none") ui.postDelayed(poll, 1000)   // "none" for a moment after Install: the thread not started yet
+    }
+
+    /** The button for the other of the two ways to listen (Rules "mic_freespeech"): commands only, or commands + free speech. */
+    private fun addFreeSpeech(r: JSONObject) {
+        val on = r.optBoolean("mic_freespeech")
+        add(T(if (on) "mic.free_cmd" else "mic.free_on")) { work { Rules.change(this, JSONObject().put("do", "mic_freespeech").put("on", !on)) } }
     }
 
     private val poll = Runnable { if (!isFinishing) paint(false) }

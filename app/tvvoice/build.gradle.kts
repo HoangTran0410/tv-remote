@@ -50,6 +50,7 @@ android {
     }
     buildTypes {
         release {
+            isDebuggable = project.hasProperty("voicetest")           // -Pvoicetest: a release build that plays files/test.wav (dev/flows/voice.md "Checking it"); never for a release
             isMinifyEnabled = false                                   // JNA finds Vosk's classes by name: kept whole (the code is small next to the model)
             if (keystore.exists()) signingConfig = signingConfigs.getByName("release")
         }
@@ -74,7 +75,7 @@ apply(from = "../gradle/i18n.gradle")
 // files for VoiceModel.unpack; assets/model/VERSION is the hash, so a new model is unpacked again.
 val modelUrl = models.getValue(voiceLang)[0]
 val modelSha = models.getValue(voiceLang)[1]
-val modelLayout = 4                                                   // raise when what is packed changes (3: fold.txt, likely words; 4: Gr.fst kept, for free speech): TVs unpack it again
+val modelLayout = 5                                                   // raise when what is packed changes (3: fold.txt, likely words; 4: Gr.fst kept, for free speech; 5: narrower beams): TVs unpack it again
 val modelOut = layout.buildDirectory.dir("generated/model-$voiceLang")
 val packModel = tasks.register("packModel") {
     val zip = layout.buildDirectory.file("model-dl/model-$voiceLang.zip")
@@ -103,6 +104,9 @@ val packModel = tasks.register("packModel") {
                 names += rel
             }
         }
+        // Narrower search: the free-speech pass decodes in 0.38 s instead of 0.65 s on a Mac, same WER (dev/test/voice_wer.py; max-active 3000, beam 10, lattice-beam 4), commands unchanged
+        dir.resolve("conf/model.conf").let { c -> c.writeText(c.readLines().map { l ->
+            when { l.startsWith("--max-active") -> "--max-active=3000"; l.startsWith("--beam") -> "--beam=10.0"; l.startsWith("--lattice-beam") -> "--lattice-beam=4.0"; else -> l } }.joinToString("\n") + "\n") }
         dir.resolve("files.txt").writeText(names.sorted().joinToString("\n") + "\n")
         dir.resolve("VERSION").writeText("${modelSha.take(16)}-$modelLayout")
     }
