@@ -38,4 +38,4 @@ app/tvvoice/              TV Setup Voice (`dev.tvremote.setup.voice`): speech he
   check build `:tvvoice:assembleRelease -Pvoicetest` (release code, `isDebuggable`; never ship it), then `run-as dev.tvremote.setup.voice
   cp … test.wav` into that folder and open TV Setup's `MicActivity`. The log (`TvVoice`, `MicVoice`) says the free pass's time and its text.
   Free speech is a request extra (`VoiceProtocol.FREE_SPEECH`, from the rule `mic_freespeech`): off by default, then nothing of it runs.
-  `model.conf` beams are narrowed at build time (max-active 3000, beam 10, lattice-beam 4: free decode 0.65 to 0.38 s on a Mac, same WER).
+  The model's config beams are narrowed at build time (max-active 3000, beam 10, lattice-beam 4: free decode 0.65 to 0.38 s on a Mac, same WER).
