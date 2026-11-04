@@ -46,7 +46,12 @@ class KeyFixService : AccessibilityService() {
 
     override fun onServiceConnected() {
         power = getSystemService(Context.POWER_SERVICE) as? PowerManager
-        if (!menuOn) menuOn = try { registerReceiver(menu, IntentFilter(KeysProtocol.ACTION_POWER_MENU), KeysProtocol.PERMISSION, null); true } catch (e: Exception) { false }
+        if (!menuOn) menuOn = try {
+            val f = IntentFilter(KeysProtocol.ACTION_POWER_MENU)                 // exported, but only TV Setup's signature permission may send
+            if (android.os.Build.VERSION.SDK_INT >= 33) registerReceiver(menu, f, KeysProtocol.PERMISSION, null, Context.RECEIVER_EXPORTED)
+            else registerReceiver(menu, f, KeysProtocol.PERMISSION, null)
+            true
+        } catch (e: Exception) { false }
         bind()
     }
 
