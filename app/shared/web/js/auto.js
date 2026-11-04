@@ -361,6 +361,7 @@ const verNewer = (a, b) => {
 function showSetupUpd(r) {
   setupNow = r;
   const b = $('#setupupd');
+  if (!b) return;                                                     // not in this document (Safari on an iPhone, twice: census cdd33145): no banner, no error
   const undone = r && r.state === 'rolledback' && Date.now() - r.at < 3 * 86400000 && seenUndo() !== String(r.at) && verNewer(r.version, r.installed);
   const offers = updOffers(r);
   b.hidden = picking || !(undone || offers.length);
