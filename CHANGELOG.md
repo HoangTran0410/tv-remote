@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.45.0 - 2026-11-05
+
+Web 0.45.0 · Phone app 0.42.0 · TV app 0.43.0 · TV Home 0.27.0 · TV Channels 0.18.3 · TV Games 0.20.0 · TV Apps 0.4.1
 
 - TV Home: an optional Inputs button in the top bar, next to Wi-Fi and Settings (off by default; Customize > Look > On the home screen, and the page), opening the same Inputs list as the Control Center (issue #19).
 - TV Home: coming back from another app no longer shows the wallpaper blurry for about a second before it turns sharp; the photo that was on screen stays (memory use is the same).
