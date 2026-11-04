@@ -446,7 +446,7 @@ async function homeOpen() {
   const shift = el('input', { type: 'checkbox', onchange: () => send({ shift: shift.checked }) });   // HomeConfig "shift", default off
   const dream = el('input', { type: 'checkbox', onchange: () => send({ dream: dream.checked }) });
   const dfaceHead = el('h3', { textContent: T('home.dface') }), dface = el('div', { className: 'fchips' });   // the screensaver's look (HomeConfig "dface"); only a TV Home that reports it
-  const ddarkHead = el('h3', { textContent: T('home.ddark') }), ddark = el('div', { className: 'fchips' });   // black screen in the night hours (HomeConfig "ddark", "" = off); only a TV Home that reports it
+  const ddarkHead = el('h3', { textContent: T('home.ddark') }), ddark = el('div', { className: 'fchips wrapc' });   // black screen in the night hours (HomeConfig "ddark", "" = off); only a TV Home that reports it
   const center = el('input', { type: 'checkbox', onchange: () => send({ center: center.checked }) });   // the app grid's tiles in the middle of their row (HomeConfig "center", default off)
   // remote keys that open an app, and the app that opens each time the TV turns on (HomeConfig keyon / keyapps / autoon / autoapp).
   // Both default off. TV Home answers a key on its own screen; TV Setup does it everywhere and the power-on app: said under each

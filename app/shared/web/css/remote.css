@@ -274,6 +274,7 @@ dialog.wset .card { width:min(520px, 94vw); }
 .fchips.htokens button { font-family:ui-monospace,Menlo,monospace; }
 .fchips.htype, .fchips.htokens { flex-wrap:wrap; overflow:visible; align-items:center; row-gap:6px; }   /* every choice in view: a scrolled-away colour is a missing one */
 .fchips.htype { column-gap:14px; }
+.fchips.wrapc { flex-wrap:wrap; overflow:visible; row-gap:6px; }   /* five night-hour choices: a 400 px dialog cut the last ones off */
 .fchips.htype .hgrp { display:inline-flex; gap:6px; }
 .wclock.modern .num { font-size:9px; }
 .wclock .tick.min { stroke-width:.7; opacity:.45; }
