@@ -239,7 +239,7 @@ object Scenes {
         }
         override fun volume(level: Int) = volume(sh, level)
         override fun input(id: String) { Inputs.switch(sh, id) }
-        override fun notify(msg: JSONObject) = Notify.send(sh, msg)
+        override fun notify(msg: JSONObject) { Notify.send(sh, msg) }
         override fun timer(minutes: Int) {
             if (timer != null) { timer.invoke(minutes); return }
             val r = RulesClient.call(sh, JSONObject().put("do", "sleep").put("minutes", minutes))

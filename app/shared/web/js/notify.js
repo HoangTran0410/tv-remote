@@ -16,9 +16,11 @@ function notifyPrefs() {
   let o = null;
   try { o = JSON.parse(localStorage.getItem('notify')); } catch {}
   const s = notifySeconds(o && o.seconds);
-  return { corner: notifyCorner(o && o.corner), seconds: NOTIFY_SECONDS.includes(s) ? s : NOTIFY_SECOND };   // only the chips' lengths come back
+  return { corner: notifyCorner(o && o.corner), seconds: NOTIFY_SECONDS.includes(s) ? s : NOTIFY_SECOND, speak: !!(o && o.speak === true) };   // only the chips' lengths come back; read aloud is off until chosen
 }
-function notifySave(p) { try { localStorage.setItem('notify', JSON.stringify({ corner: p.corner, seconds: p.seconds })); } catch {} }
+function notifySave(p) { try { localStorage.setItem('notify', JSON.stringify({ corner: p.corner, seconds: p.seconds, speak: !!p.speak })); } catch {} }
+// why the TV showed the message but did not read it (TV Setup's answer: "noengine", or "nolang" with the language); '' when it did
+const notifySpeakWhy = (r) => !r || !r.speak ? '' : r.speak === 'nolang' ? T('notify.speak_nolang', { lang: r.lang || '' }) : T('notify.speak_noengine');
 
 async function notifyDialog() {
   if (await needAdbSoon()) return;
@@ -26,24 +28,27 @@ async function notifyDialog() {
   const p = notifyPrefs();
   const title = el('input', { placeholder: T('notify.title_optional'), maxLength: 60, spellcheck: false, 'aria-label': T('notify.title') });
   const text = el('textarea', { placeholder: T('notify.short_message'), rows: 3, maxLength: 300, 'aria-label': T('notify.text') });
-  const corners = el('div'), secs = el('div');
+  const corners = el('div'), secs = el('div'), aloud = el('div');
   const draw = () => {
     corners.replaceChildren(UI.chips(NOTIFY_CORNERS.map(([v]) => ({ label: notifyCornerName(v), on: p.corner === v, fn: () => { p.corner = v; draw(); } }))));
     corners.firstChild.classList.add('two');                        // 2 x 2 like the screen's corners: four in a row wrap one alone on a phone
     secs.replaceChildren(UI.chips(NOTIFY_SECONDS.map((n) => ({ label: T('notify.seconds_n', { n }), on: p.seconds === n, fn: () => { p.seconds = n; draw(); } }))));
+    aloud.replaceChildren(UI.chips([[false, 'notify.speak_no'], [true, 'notify.speak_yes']].map(([v, id]) => ({ label: T(id), on: p.speak === v, fn: () => { p.speak = v; draw(); } }))));
   };
   draw();
   const send = async () => {
     if (!title.value.trim() && !text.value.trim()) { toast(T('notify.type_something')); text.focus(); return; }
+    if (p.speak && !await setupFor('speak')) return;                // an older TV Setup would only show it: asked to update first
     notifySave(p);
-    if (await api('/api/notify', { title: title.value.trim(), text: text.value.trim(), corner: p.corner, seconds: p.seconds })) { toast(T('notify.sent')); d.close(); }
+    const r = await api('/api/notify', { title: title.value.trim(), text: text.value.trim(), corner: p.corner, seconds: p.seconds, ...(p.speak ? { speak: true } : {}) });
+    if (r) { toast(notifySpeakWhy(r) || T('notify.sent')); d.close(); }
   };
   title.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); text.focus(); } });
   text.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); send(); } });
   const d = el('dialog', { className: 'ask' }, el('div', { className: 'card' },
     UI.head(T('notify.dialog_title'), el('button', { className: 'small iconbtn', textContent: '✕', title: T('common.close'), 'aria-label': T('common.close'), onclick: () => d.close() })),
     title, text,
-    UI.group(T('notify.screen_corner'), corners), UI.group(T('notify.stays_for'), secs),
+    UI.group(T('notify.screen_corner'), corners), UI.group(T('notify.stays_for'), secs), UI.group(T('notify.read_aloud'), aloud),
     UI.actions(el('button', { textContent: T('common.cancel'), onclick: () => d.close() }), UI.btn('📤 ' + T('notify.send'), send, 'primary'))));
   d.addEventListener('close', () => d.remove());
   document.body.append(d); d.showModal(); text.focus();

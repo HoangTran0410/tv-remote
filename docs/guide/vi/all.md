@@ -672,7 +672,7 @@ Khoá trẻ em: chạm để bật; bật rồi thì chạm (hỏi mã PIN) đ�
 
 Nút tròn: Dọn RAM, Cài đặt TV, Tắt TV (Màn chờ, Tắt màn hình, Khởi động lại, Tắt hẳn).
 
-Tắt hẳn khi TV không có ADB: nếu TV Setup Keys đang bật (Cài đặt → Hỗ trợ tiếp cận), TV mở menu nguồn của chính hệ thống để bạn tự chọn; nó không tự tắt. Chưa bật thì TV nói cách bật.
+Tắt hẳn khi TV không có ADB: bật TV Setup Keys (Hỗ trợ tiếp cận) thì TV mở menu nguồn của hệ thống để bạn chọn.
 
 **Độ sáng** (biểu tượng mặt trời): OK để chỉnh, Trái / Phải mỗi lần 10 %, Back là xong; 100 % = không phủ.
 
@@ -696,15 +696,15 @@ Giữ OK trên một app mở menu của riêng app đó, chia nhóm. Back trên
 ### Mẹo
 
 - Gán phím: trang vẽ như remote, mỗi phím hiện app đang giữ nó. Bấm thẳng phím số hoặc phím màu trên remote là gán ngay.
-- Ảnh riêng: app trông giống nhau (SmartTube, TizenTube) thì cho mỗi app một ảnh dễ nhận ra. Chọn ảnh trên điện thoại hoặc máy tính (Quản lý từ điện thoại → Ảnh riêng cho app); trên TV, mục Ảnh riêng chỉ chỉ cách làm và có nút Dùng ảnh gốc của app để quay lại.
-- Đổi tên: phân biệt hai app trùng tên (như hai YouTube). Tên hiện khi chọn ô.
+- Ảnh riêng: chọn ảnh trên điện thoại hoặc máy tính (Ảnh riêng cho app); Dùng ảnh gốc của app để quay lại.
+- Đổi tên: phân biệt hai app trùng tên (như hai YouTube).
 - Chỉ cài TV Home (chưa có TV Setup): khóa vẫn dùng được, TV Home tự giữ mã PIN và danh sách app khóa. Giới hạn mỗi ngày cần TV Setup để đếm giờ.
 - Khóa của TV Home chặn mở app từ TV Home (lưới, dock, phím gán). Nút app trên remote, Trợ lý hay màn hình gần đây thì KHÔNG bị chặn: cần TV Setup.
 - Cài TV Setup sau đó: lần đầu vào Khóa & giới hạn với đúng mã PIN, các khóa tự chuyển sang TV Setup.
 - Quên mã PIN: chỉ TV Home thì vào Cài đặt → Ứng dụng → TV Home → Xóa dữ liệu (mất cả cài đặt TV Home).
 - Có TV Setup: đổi mã từ app điện thoại hoặc máy tính, không cần mã cũ.
 - Sai 5 lần liên tiếp thì chờ 1, 5, 15, rồi 60 phút.
-- Khóa thật cho trẻ: khóa luôn app Cài đặt (chế độ trẻ em), không thì trẻ gỡ được TV Setup từ Cài đặt. TV Setup tự hỏi mã PIN khi mở nó hoặc màn Quản lý của nó.
+- Khóa thật cho trẻ: khóa luôn app Cài đặt (chế độ trẻ em), không thì trẻ gỡ được TV Setup từ Cài đặt.
 
 ## Phím nhanh của TV Home
 
@@ -916,9 +916,11 @@ Tắt TV xong, TV có thể ngủ sâu và không trả lời nữa. Tùy chọn
 1. Thêm phím → **Tiện ích** → **Thông báo** (🔔 Gửi thông báo lên TV).
 2. Gõ **tiêu đề** (không bắt buộc) và **lời nhắn**.
 3. Chọn góc ↖ ↗ ↙ ↘ và số giây: 3, 5, 10 hoặc 30.
-4. Bấm **Gửi**. Một thẻ nhỏ hiện lên TV rồi tự mất.
+4. Bấm **Gửi**. Một thẻ nhỏ hiện lên TV rồi tự mất. Muốn TV đọc to lời nhắn, chọn **Đọc to → Có** trước khi gửi.
 
 > 💡 Cần TV Setup bản mới. Nếu thiếu, app sẽ hỏi cập nhật bằng một nút.
+
+Đọc to cần TV có Google Speech Services (hoặc bộ đọc khác) và giọng của ngôn ngữ đó. Thiếu thì thẻ vẫn hiện và app báo cần cài gì.
 
 ## Vẽ lên TV
 
@@ -1088,10 +1090,10 @@ Lệnh:
 ```
 /status  /off  /on  /vol 30  /key HOME
 /open netflix  /scene Xem phim  /timer 30 (0 = huỷ/cancel)
-/say Ăn cơm nhé  /shot  /remote  /help
+/say Ăn cơm nhé  /speak Ăn cơm nhé  /shot  /remote  /help
 ```
 
-Chat mới ghép chỉ có quyền **Chỉ remote**; chủ TV nâng lên **Toàn quyền** trong danh sách chat.
+Chat mới ghép chỉ có quyền **Chỉ remote**; chủ TV nâng lên **Toàn quyền** trong danh sách chat. **/speak** giống /say nhưng TV còn đọc to lời nhắn (cần giọng đọc trên TV).
 
 YouTube, Netflix và các app phim có bản quyền chặn chụp màn hình: **/shot** ra ảnh đen, kèm một câu giải thích.
 

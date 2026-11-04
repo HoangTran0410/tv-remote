@@ -54,13 +54,13 @@ test('the same corners as Notify.kt, and chips inside its limits', () => {
 test('the last choice is remembered, and storage that throws is no problem', () => {
   const store = {};
   const a = page(store);
-  assert.deepEqual({ ...a.notifyPrefs() }, { corner: 'top-right', seconds: 5 });
-  a.notifySave({ corner: 'bottom-left', seconds: 30 });
-  assert.deepEqual({ ...page(store).notifyPrefs() }, { corner: 'bottom-left', seconds: 30 });
-  assert.deepEqual({ ...page({ notify: '{"corner":"x","seconds":7}' }).notifyPrefs() }, { corner: 'top-right', seconds: 5 });   // not a chip: the default
-  assert.deepEqual({ ...page({ notify: 'not json' }).notifyPrefs() }, { corner: 'top-right', seconds: 5 });
+  assert.deepEqual({ ...a.notifyPrefs() }, { corner: 'top-right', seconds: 5, speak: false });   // read aloud is off until chosen
+  a.notifySave({ corner: 'bottom-left', seconds: 30, speak: true });
+  assert.deepEqual({ ...page(store).notifyPrefs() }, { corner: 'bottom-left', seconds: 30, speak: true });
+  assert.deepEqual({ ...page({ notify: '{"corner":"x","seconds":7,"speak":"yes"}' }).notifyPrefs() }, { corner: 'top-right', seconds: 5, speak: false });   // not a chip: the default
+  assert.deepEqual({ ...page({ notify: 'not json' }).notifyPrefs() }, { corner: 'top-right', seconds: 5, speak: false });
   const blocked = page('throws');
-  assert.deepEqual({ ...blocked.notifyPrefs() }, { corner: 'top-right', seconds: 5 });
+  assert.deepEqual({ ...blocked.notifyPrefs() }, { corner: 'top-right', seconds: 5, speak: false });
   assert.doesNotThrow(() => blocked.notifySave({ corner: 'top-left', seconds: 3 }));
 });
 

@@ -3928,7 +3928,7 @@
  "core.need_telegram": "Telegram control of the TV",
  "telegram.plain": "Send /help for the commands.",
  "telegram.paired": "✅ Paired. This chat's scope: {scope}.",
- "telegram.help": "📺 TV control (scope: {scope})\n/status – is the TV on, volume, app\n/now – what is playing (+ screenshot)\n/off – turn the TV off · /on – turn it back on\n/vol 30 – volume 0-100 (or up, down, mute)\n/key HOME – press a key (UP, DOWN, OK, BACK, MENU…)\n/type hello – type into the field on the TV\n/open Netflix – open an app · /apps – your most used apps as buttons\n/channel VTV3 – open a channel in TV Channels\n/scene Movie – run a scene · /scenes – all as buttons\n/timer 30 – turn off in 30 minutes (/timer 0 cancels)\n/usage – screen time today\n/bedtime · /limits · /schedule – the rules (the owner can change them)\n/alerts – choose what the TV tells you by itself\n/say Dinner – show a message on the TV\n/shot – screenshot of the TV\n/remote – a remote keypad",
+ "telegram.help": "📺 TV control (scope: {scope})\n/status – is the TV on, volume, app\n/now – what is playing (+ screenshot)\n/off – turn the TV off · /on – turn it back on\n/vol 30 – volume 0-100 (or up, down, mute)\n/key HOME – press a key (UP, DOWN, OK, BACK, MENU…)\n/type hello – type into the field on the TV\n/open Netflix – open an app · /apps – your most used apps as buttons\n/channel VTV3 – open a channel in TV Channels\n/scene Movie – run a scene · /scenes – all as buttons\n/timer 30 – turn off in 30 minutes (/timer 0 cancels)\n/usage – screen time today\n/bedtime · /limits · /schedule – the rules (the owner can change them)\n/alerts – choose what the TV tells you by itself\n/say Dinner – show a message on the TV\n/speak Dinner – show a message and read it aloud\n/shot – screenshot of the TV\n/remote – a remote keypad",
  "telegram.off_done": "✅ TV turned off. /on turns it back on.",
  "telegram.on_done": "✅ TV turned on.",
  "telegram.usage_vol": "Use: /vol 30 (0-100), /vol up, /vol down or /vol mute",
@@ -4525,5 +4525,18 @@
  "core.fr_video_cam": "Could not open the camera.",
  "core.fr_video_link": "Lost the link to the TV, so the camera stopped.",
  "core.fr_video_copy": "Could not copy the video for TV Setup.",
- "vbox.paused": "Paused on the TV"
+ "vbox.paused": "Paused on the TV",
+ "notify.read_aloud": "Read it aloud",
+ "notify.speak_no": "No",
+ "notify.speak_yes": "Yes",
+ "notify.speak_noengine": "Shown on the TV, not read: it has no text-to-speech engine. Install Google Speech Services on it.",
+ "notify.speak_nolang": "Shown on the TV, not read: it has no \"{lang}\" voice. Install Google Speech Services and download it.",
+ "auto.step_notify_speak": "🔊 Read aloud: {text}",
+ "core.need_speak": "reading a message aloud on the TV",
+ "core.need_homebar": "the Home bar over an app",
+ "telegram.usage_speak": "Use: /speak your message",
+ "telegram.speak_done": "✅ Shown on the TV and read aloud.",
+ "telegram.speak_noengine": "⚠️ Shown on the TV, not read: it has no text-to-speech engine. Install Google Speech Services on it.",
+ "telegram.speak_nolang": "⚠️ Shown on the TV, not read: it has no \"{lang}\" voice. Install Google Speech Services and download it.",
+ "telegram.cmd_speak": "Show a message on the TV and read it aloud"
 }

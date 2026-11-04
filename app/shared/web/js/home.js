@@ -442,7 +442,7 @@ async function homeOpen() {
   const watchAtHead = el('h3', { textContent: T('home.watch_at') }), watchAt = el('div', { className: 'fchips' });   // where the Play Next items go (HomeConfig "watchAt"); only a TV Home that reports it
   const anim = el('input', { type: 'checkbox', onchange: () => send({ anim: anim.checked }) });
   const infold = el('input', { type: 'checkbox', onchange: () => send({ infold: infold.checked }) });   // HomeConfig "infold", default off
-  const homebar = el('input', { type: 'checkbox', onchange: () => send({ homebar: homebar.checked }) });   // HomeConfig "homebar", default off
+  const homebar = el('input', { type: 'checkbox', onchange: async () => { if (homebar.checked && !await setupFor('homebar')) { homebar.checked = false; return; } send({ homebar: homebar.checked }); } });   // HomeConfig "homebar", default off; an older TV Setup would ignore it: asked to update first
   const shift = el('input', { type: 'checkbox', onchange: () => send({ shift: shift.checked }) });   // HomeConfig "shift", default off
   const dream = el('input', { type: 'checkbox', onchange: () => send({ dream: dream.checked }) });
   const dfaceHead = el('h3', { textContent: T('home.dface') }), dface = el('div', { className: 'fchips' });   // the screensaver's look (HomeConfig "dface"); only a TV Home that reports it

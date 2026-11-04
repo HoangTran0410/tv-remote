@@ -672,7 +672,7 @@ Kids mode: tap to turn on; when on, a tap (asks the PIN) picks the apps or turns
 
 Round buttons: Clear RAM, TV settings, Turn off the TV (Screensaver, Screen off, Restart, Power off).
 
-Power off on a TV with no ADB: when TV Setup Keys is on (Settings → Accessibility), the TV opens the system's own power menu for you to pick from; it never powers off by itself. When it is off, the TV says how to turn it on.
+Power off with no ADB: turn on TV Setup Keys (Accessibility) and the TV opens the system's power menu for you to pick from.
 
 **Brightness** (sun icon): OK to change it, Left / Right in steps of 10 %, Back when done; 100 % = no tint.
 
@@ -696,15 +696,15 @@ Holding OK on an app opens its own menu, in groups. Back on the remote returns t
 ### Tips
 
 - Assigning a key: the page is drawn like the remote, each key showing the app on it. Press a number or color key on the remote to assign it at once.
-- Own picture: give look-alike apps (SmartTube, TizenTube) a picture you know at a glance. Pick it on the phone or computer (Manage from phone → Pictures of apps); on the TV, the Own picture row shows how and has Use the app's own picture to go back.
-- Rename: tell two apps with the same name apart (like two YouTubes). The name shows when the tile is focused.
+- Own picture: pick it on the phone or computer (Pictures of apps); Use the app's own picture goes back.
+- Rename: tell two apps with the same name apart (like two YouTubes).
 - Only TV Home installed (no TV Setup): the lock still works, TV Home keeps the PIN and the locked apps itself. Daily limits need TV Setup to count time.
 - TV Home's lock blocks opening an app from TV Home (grid, dock, assigned keys). The remote's own app button, the Assistant or Recents are NOT blocked: that needs TV Setup.
 - Install TV Setup later: the first time you open Lock & limits with the right PIN, the locks move to TV Setup.
 - Forgot the PIN: with only TV Home, go to Settings → Apps → TV Home → Clear data (this also clears TV Home's settings).
 - With TV Setup: change the PIN from the phone or computer app, no old code needed.
 - 5 wrong codes in a row wait 1, 5, 15, then 60 minutes.
-- A real kids' lock: lock the Settings app too (kids mode), otherwise a child can uninstall TV Setup from Settings. TV Setup asks the PIN when it or its Manage screen is opened.
+- A real kids' lock: lock the Settings app too (kids mode), otherwise a child can uninstall TV Setup from Settings.
 
 ## TV Home Quick keys
 
@@ -916,9 +916,11 @@ Once the TV is off it can fall into deep sleep and stop answering. This option k
 1. More keys → **Tools** → **Notify** (🔔 Notify the TV).
 2. Type a **title** (optional) and the **message**.
 3. Pick a corner ↖ ↗ ↙ ↘ and the seconds: 3, 5, 10 or 30.
-4. Tap **Send**. A small card shows on the TV, then goes away.
+4. Tap **Send**. A small card shows on the TV, then goes away. To have the TV read it aloud, set **Read it aloud → Yes** before sending.
 
 > 💡 Needs a recent TV Setup. If it is missing the app asks with one Update button.
+
+Reading aloud needs Google Speech Services (or another engine) with that language on the TV. Without it the card still shows and the app says what to install.
 
 ## Draw on the TV
 
@@ -1088,10 +1090,10 @@ Commands:
 ```
 /status  /off  /on  /vol 30  /key HOME
 /open netflix  /scene Xem phim  /timer 30 (0 = huỷ/cancel)
-/say Ăn cơm nhé  /shot  /remote  /help
+/say Ăn cơm nhé  /speak Ăn cơm nhé  /shot  /remote  /help
 ```
 
-A new chat gets **Remote only** rights; the owner can raise it to **Full access** in the chat list.
+A new chat gets **Remote only** rights; the owner can raise it to **Full access** in the chat list. **/speak** is /say, and the TV also reads the message aloud (it needs a voice engine on the TV).
 
 YouTube, Netflix and other apps with protected video block screenshots: **/shot** sends a black picture, with a line saying why.
 

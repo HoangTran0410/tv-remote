@@ -102,7 +102,10 @@ class Hook(
         val named = ACTIONS.filter { p.optString(it).isNotEmpty() }
         if (named.size != 1) throw IllegalArgumentException(if (named.isEmpty()) "say what to do: key, scene, app, text, notify, volume, power or minutes" else "one thing per call: " + named.joinToString(", "))
         val out = perform(named[0], p.optString(named[0]), p, run)
-        return if (out.status in 200..299) HttpServer.Response.json(JSONObject().put("ok", true)) else out
+        if (out.status !in 200..299) return out
+        // a message the TV showed but could not read aloud says why (no engine / no language), so the shortcut can show it
+        val why = try { JSONObject(String(out.body)).takeIf { it.has("speak") } } catch (e: Exception) { null }
+        return HttpServer.Response.json(why ?: JSONObject().put("ok", true))
     }
 
     /**
@@ -134,6 +137,7 @@ class Hook(
                 val m = JSONObject().put("text", v)
                 extra?.optString("title")?.takeIf { it.isNotBlank() }?.let { m.put("title", it) }
                 extra?.optString("seconds")?.takeIf { it.isNotBlank() }?.let { m.put("seconds", it) }
+                extra?.optString("speak")?.takeIf { it.isNotBlank() }?.let { m.put("speak", it) }     // 1 = read it aloud too
                 send(via, "/api/notify", m)
             }
             "volume" -> volume(via, v)
@@ -203,7 +207,7 @@ class Hook(
 
     companion object {
         private val ACTIONS = listOf("key", "scene", "app", "text", "notify", "volume", "power", "minutes")
-        private val EXTRA = listOf("title", "seconds", "for")         // options of notify and minutes, not actions of their own
+        private val EXTRA = listOf("title", "seconds", "speak", "for")         // options of notify and minutes, not actions of their own
         const val MAX_MINUTES = 240                                   // one call; a parent's own "+30" has no cap
         private val PKG = Regex("[A-Za-z0-9_.]{1,200}")
         private const val MAX_FAILS = 5                               // wrong tokens from one address in a minute: then a minute of 429

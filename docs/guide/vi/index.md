@@ -54,7 +54,7 @@
 - [Quản lý ngay trên TV](ontv.md): Không có điện thoại hay máy tính ở gần? Làm ngay trên TV bằng điều khiển của TV. _(quan ly tren tv khong co dien thoai may tinh remote cua tv back tv setup man hinh tv)_
 - [TV Setup tự sửa DNS và ADB](tvguard.md): TV Setup canh hai chuyện hay làm TV mất kết nối, và tự sửa. _(dns loc dns keepadb adb tu bat lai tat loc dns cat mang youtube khong ket noi dns filter)_
 - [Giữ kết nối khi tắt TV](awake.md): Tắt TV xong, TV có thể ngủ sâu và không trả lời nữa. Tùy chọn này giữ chip thức để bạn vẫn nối được. _(giu ket noi khi tat tv awake keepawake chip ngu sau tcl standby tailscale)_
-- [Gửi thông báo lên TV](notify.md): Thêm phím → Tiện ích → Thông báo (🔔 Gửi thông báo lên TV). _(thong bao notification the nhan goc man hinh message card)_
+- [Gửi thông báo lên TV](notify.md): Đọc to cần TV có Google Speech Services (hoặc bộ đọc khác) và giọng của ngôn ngữ đó. Thiếu thì thẻ vẫn hiện và app báo cần cài gì. _(thong bao notification the nhan goc man hinh message card)_
 - [Vẽ lên TV](draw.md): Bấm ✏️ cạnh hình TV (hoặc Thêm phím → Vẽ lên TV). _(ve len tv but pen anh chu text hinh draw)_
 - [Đưa ảnh lên TV](photo.md): Có hai cách: đặt một ảnh phủ lên màn hình TV (trên mọi app), hoặc phát ảnh hay video từ máy. _(dua anh len tv hinh anh phu len man hinh pic phat anh video)_
 - [Chụp màn hình TV](screenshot.md): Bấm Thêm phím trên tab Remote. _(chup man hinh screenshot anh png)_

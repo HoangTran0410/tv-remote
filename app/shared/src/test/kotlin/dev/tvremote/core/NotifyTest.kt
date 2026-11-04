@@ -86,6 +86,46 @@ class NotifyTest {
         try { Notify.send({ "data=\"$refused\"" }, JSONObject("""{"text":"x"}""")); fail() } catch (e: java.io.IOException) { assertEquals("notify:nooverlay", e.message) }
     }
 
+    @Test fun speakIsOffUnlessAskedAndAnyYesWordCounts() {
+        for (v in listOf(true, "true", " ON ", "1", 1, "yes")) assertTrue("$v", Notify.speak(v))
+        for (v in listOf(null, false, "", "false", "0", 0, 2, "maybe", JSONObject.NULL)) assertFalse("$v", Notify.speak(v))
+        assertFalse(clean("""{"text":"x"}""").has("speak"))                  // today's message is unchanged, an old TV Setup sees nothing new
+        assertFalse(clean("""{"text":"x","speak":false}""").has("speak"))
+        assertTrue(clean("""{"text":"x","speak":"1"}""").getBoolean("speak"))
+    }
+
+    @Test fun theLanguageIsVietnameseOnlyWithVietnameseLettersElseTheTvs() {
+        assertEquals("vi", Notify.speechLang("Cơm xong rồi nhé", "en"))
+        assertEquals("vi", Notify.speechLang("Đi ăn", "fr"))
+        assertEquals("vi", Notify.speechLang("tới giờ ngủ", "ru"))
+        assertEquals("fr", Notify.speechLang("Le dîner est prêt à côté", "fr"))      // â ê ô are French too
+        assertEquals("en", Notify.speechLang("Dinner is ready", " EN "))
+        assertEquals("ru", Notify.speechLang("Ужин готов", "ru"))
+        assertEquals("en", Notify.speechLang("Dinner", ""))
+    }
+
+    @Test fun whatIsReadIsTheTitleThenTheText() {
+        assertEquals("Dinner. Come down!", Notify.spoken("Dinner", "Come down!"))
+        assertEquals("Come down.", Notify.spoken("", "Come down"))
+        assertEquals("Dinner.", Notify.spoken(" Dinner ", ""))
+        assertEquals("", Notify.spoken("", " "))
+    }
+
+    @Test fun readingAloudNeedsTheNewerTvSetupBeforeAnythingIsSent() {
+        val sent = ArrayList<String>()
+        val e = try { Notify.send({ sent.add(it); if ("versionName" in it) "versionName=0.42.2" else "" }, JSONObject("""{"text":"x","speak":true}""")); null } catch (e: SetupNeed.Missing) { e }
+        assertEquals("setup:old:speak:0.42.3:0.42.2", e!!.message)
+        assertEquals(1, sent.size)                                      // only the version was asked: no card on a TV that cannot read it
+        assertEquals("Đọc thông báo to trên TV", SetupNeed.name("speak", "vi"))
+    }
+
+    @Test fun theSendersGetTvSetupsReasonWhyItWasNotRead() {
+        val tv = { json: String -> { cmd: String -> if ("versionName" in cmd) "versionName=0.42.3" else "data=\"" + B64.encode(json.toByteArray()) + "\"" } }
+        val r = Notify.send(tv("""{"ok":true,"speak":"nolang","lang":"vi"}"""), JSONObject("""{"text":"x","speak":true}"""))
+        assertEquals("nolang", r.getString("speak")); assertEquals("vi", r.getString("lang"))
+        assertFalse(Notify.send(tv("""{"ok":true}"""), JSONObject("""{"text":"x"}""")).has("speak"))
+    }
+
     @Test fun theFeatureNeedsTheNextTvSetup() {
         assertFalse(SetupNeed.ok("0.4.1", "notify"))
         assertTrue(SetupNeed.ok("0.4.2", "notify"))
