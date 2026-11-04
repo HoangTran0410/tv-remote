@@ -899,6 +899,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "47a5c9da4073a9a70ad6b63e|0.38.2": {
+  "at": "2026-11-04T08:19:11+07:00",
+  "n": 1,
+  "note": "ADB refused / error: ADB off on the user's TV (known)"
+ },
  "47baed67085a7343b6f1e186|0.30.0": {
   "at": "2026-10-28T14:05:36+07:00",
   "n": 1,
@@ -1783,6 +1788,11 @@
   "at": "2026-10-29T17:20:08+07:00",
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+ },
+ "8b0447a852bcaa8a65d99111|0.42.0": {
+  "at": "2026-11-04T08:19:12+07:00",
+  "n": 1,
+  "note": "ADB refused / error: ADB off on the user's TV (known)"
  },
  "8baf906db5be83b7065a065b|0.35.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -2925,24 +2935,29 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "ee57e878f33619a603accc6d|0.25.0": {
-  "at": "2026-10-30T09:08:29+07:00",
+  "at": "2026-11-04T08:19:13+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB refused / error: ADB off on the user's TV (known)"
  },
  "ee57e878f33619a603accc6d|0.32.1": {
-  "at": "2026-10-30T09:08:29+07:00",
+  "at": "2026-11-04T08:19:13+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB refused / error: ADB off on the user's TV (known)"
  },
  "ee57e878f33619a603accc6d|0.34.1": {
-  "at": "2026-10-30T09:08:29+07:00",
+  "at": "2026-11-04T08:19:13+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB refused / error: ADB off on the user's TV (known)"
  },
  "ee57e878f33619a603accc6d|0.35.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-04T08:19:13+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB refused / error: ADB off on the user's TV (known)"
+ },
+ "ee57e878f33619a603accc6d|0.42.0": {
+  "at": "2026-11-04T08:19:13+07:00",
+  "n": 1,
+  "note": "ADB refused / error: ADB off on the user's TV (known)"
  },
  "efa52b83207b258b74e55757|0.34.1": {
   "at": "2026-10-30T09:08:30+07:00",
@@ -2953,6 +2968,11 @@
   "at": "2026-10-28T14:05:53+07:00",
   "n": 1,
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
+ },
+ "f0cc569c0f598d5286f24762|0.42.0": {
+  "at": "2026-11-04T08:19:12+07:00",
+  "n": 1,
+  "note": "ADB refused / error: ADB off on the user's TV (known)"
  },
  "f1370f86bd227f97ab3e4d7e|0.38.0": {
   "at": "2026-11-02T22:17:48+07:00",
