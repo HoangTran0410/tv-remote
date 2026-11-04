@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.44.1 - 2026-11-04
+
+Web 0.44.1 · Phone app 0.41.1 · TV app 0.42.1 · TV Home 0.26.1 · TV Channels 0.18.3 · TV Games 0.19.1 · TV Apps 0.4.1
 - The web page tries the remote's key list a second time when a busy TV drops the first answer, instead of showing no keys and an error box.
 - When the TV's picture service cannot start, the error now says the TV's own reason, so the log and crash report show why.
 
