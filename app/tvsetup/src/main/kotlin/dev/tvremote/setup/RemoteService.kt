@@ -752,7 +752,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
                 if (t == null || !t.ready()) return HttpServer.Response.error(503, "adb:$adbState")
                 val action = when (d.optString("dir")) { "START_LONG" -> "down"; "END_LONG" -> "up"; else -> "press" }   // the words of the computer's server
                 if (action == "press" && keyCode in dev.tvremote.core.ontv.RulesClient.SETUP_KEYS && KeysBridge.press(this, keyCode)) return ok()   // as a real press would
-                if (action == "press" && keyCode == HomeKey.CODE && HomeKey.pkg(this) != null && KeysBridge.press(this, keyCode)) return ok()   // Home to the launcher picked (a Chromecast)
+                if (action == "press" && keyCode == HomeKey.CODE && (KeysBridge.homeBarOn() || HomeKey.pkg(this) != null) && KeysBridge.press(this, keyCode)) return ok()   // Home to the launcher picked (a Chromecast)
                 if (action == "press" && keyCode in Tv.OPENERS)   // keys that should open something
                     return HttpServer.Response.json(JSONObject().put("ok", true).put("noop", !t.pressSeen(keyCode)))
                 if (keyCode == 26) {                                  // sleep or wake by what the TV is doing now, so a tap never does the opposite

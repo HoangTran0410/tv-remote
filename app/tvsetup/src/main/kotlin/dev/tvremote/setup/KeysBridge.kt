@@ -118,6 +118,8 @@ class KeysBridge : Service() {
         fun poke() { running?.refresh() }
         /** The add-on's service is bound: the key filter is working (the key tester says so). */
         fun bound(): Boolean = running != null
+        /** The Home bar is on and the filter is up: a client's Home must come through [press] (no disk read, one flag). */
+        fun homeBarOn(): Boolean = running?.bar == true
 
         @Volatile private var captureUntil = 0L
         /** TV Home's assign-a-key page is open ([on]): for 3 minutes (a page that never says it closed lets go by itself) a mapped key passes to the screen under. */
@@ -128,6 +130,12 @@ class KeysBridge : Service() {
          * decision is made here, on request: TV Home's map first, then the dead-key rule. False: nothing to do, press it plainly.
          */
         fun press(c: Context, code: Int): Boolean {
+            val b = running
+            if (code == HomeKey.CODE && b != null && b.bar) {   // Home from a client meets the bar like the remote's Home does
+                val r = try { KeyFix.decide(KeyFix.current(c), code) } catch (e: Exception) { null } ?: KeyFix.Rule(KeyFix.HOME, emptyList())
+                b.homeBar(r)
+                return true
+            }
             val rule = try { KeyFix.decide(KeyFix.current(c), code) } catch (e: Exception) { null } ?: return false
             val s = running
             if (s != null) s.ui.post { s.act(rule, code) } else KeyFix.run(c, rule)   // the bridge is up whenever a key is in the plan; its context may start an activity from the background

@@ -482,6 +482,9 @@ class Server(private val repo: File, private val keys: File, private val pass: P
         }
         if (!s.available && dir != "END_LONG" && adb) {
             // the remote protocol is down (e.g. Google's remote service crashed while the sound was captured): keys over ADB
+            if (code == RulesClient.HOME && dir == "SHORT") {   // injected keys skip TV Setup's filter: Home may need its bar or launcher (only here, so the normal Home press pays no round trip)
+                try { if (RulesClient.key({ sh(s, it) }, code)) return Response.ok() } catch (e: IOException) { }
+            }
             sh(s, (if (dir == "START_LONG") "input keyevent --longpress " else "input keyevent ") + code)
             return Response.json(JSONObject().put("ok", true).put("via", "adb"))
         }
