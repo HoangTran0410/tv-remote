@@ -126,7 +126,7 @@ object Customize {
         val box = LinearLayout(a).apply {
             orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL; isFocusable = true; isFocusableInTouchMode = true
             setPadding(dp(28), dp(18), dp(28), dp(18))
-            background = GradientDrawable().apply { cornerRadius = dp(22).toFloat(); setColor(STEP_FILL); setStroke(dp(1), ACCENT) }
+            background = GradientDrawable().apply { cornerRadius = dp(22).toFloat(); setColor(STEP_FILL or 0xFF000000.toInt())   /* opaque: it sits over the panel's rows, whose words showed through */; setStroke(dp(1), ACCENT) }
             addView(Font.on(TextView(a)).apply { text = title; textSize = 15f; setTextColor(DIM); gravity = Gravity.CENTER })
             addView(num, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(4) })
             addView(Font.on(TextView(a)).apply { text = a.getString(R.string.c_time_keys); textSize = 13f; setTextColor(DIM); gravity = Gravity.CENTER }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(4) })
