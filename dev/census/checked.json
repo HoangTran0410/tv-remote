@@ -2610,9 +2610,14 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "cdd3314554f5edfde8ff4338|0.26.3": {
-  "at": "2026-10-26T21:47:44+07:00",
+  "at": "2026-11-05T06:06:35+07:00",
   "n": 1,
-  "note": "Safari with stale HTML + new JS (auto.js stopped at #supgo); 1 install, left"
+  "note": "guarded in bdf3c3a3; why the node was missing in Safari not found"
+ },
+ "cdd3314554f5edfde8ff4338|0.43.0": {
+  "at": "2026-11-05T06:06:35+07:00",
+  "n": 1,
+  "note": "guarded in bdf3c3a3; why the node was missing in Safari not found"
  },
  "ce7844be7c0993855de522da|0.26.2": {
   "at": "2026-10-27T09:37:21+07:00",
