@@ -15,6 +15,24 @@ class HomeConfigTest {
     private fun dock(c: JSONObject) = c.getJSONArray("dock").let { a -> List(a.length()) { a.getString(it) } }
     private fun hidden(c: JSONObject) = c.getJSONArray("hidden").let { a -> List(a.length()) { a.getString(it) } }
 
+    @Test fun darkHoursWrapMidnightAndDefaultOff() {
+        assertEquals("", HomeConfig.clean(JSONObject()).getString("ddark"))
+        assertEquals("", HomeConfig.clean(JSONObject().put("ddark", "5-9")).getString("ddark"))
+        assertEquals("23-6", HomeConfig.clean(JSONObject().put("ddark", "23-6")).getString("ddark"))
+        assertEquals(false, HomeConfig.darkAt("", 3))
+        assertEquals(false, HomeConfig.darkAt("junk", 3))
+        assertEquals(true, HomeConfig.darkAt("22-6", 22)); assertEquals(true, HomeConfig.darkAt("22-6", 23))
+        assertEquals(true, HomeConfig.darkAt("22-6", 0)); assertEquals(true, HomeConfig.darkAt("22-6", 5))
+        assertEquals(false, HomeConfig.darkAt("22-6", 6)); assertEquals(false, HomeConfig.darkAt("22-6", 21))
+        assertEquals(true, HomeConfig.darkAt("0-6", 0)); assertEquals(false, HomeConfig.darkAt("0-6", 23))
+    }
+
+    @Test fun centerDefaultsOffAndIsALook() {
+        assertEquals(false, HomeConfig.clean(JSONObject()).getBoolean("center"))
+        assertEquals(true, HomeConfig.clean(JSONObject().put("center", true)).getBoolean("center"))
+        assertEquals(true, "center" in HomeConfig.THEME_KEYS)
+    }
+
     @Test fun colsDefaultToFiveAndStayInRange() {
         assertEquals(5, HomeConfig.clean(JSONObject()).getInt("cols"))
         assertEquals(4, HomeConfig.clean(JSONObject().put("cols", 2)).getInt("cols"))

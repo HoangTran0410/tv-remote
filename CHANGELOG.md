@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: the screensaver can go fully black during night hours (Customize → Screensaver, or the page: 22:00–6:00, 23:00–6:00, 0:00–6:00, 1:00–6:00), for OLED screens; off by default.
+- TV Home: a "Center the app grid" switch puts short rows of app tiles in the middle instead of at the left; off by default, part of themes.
 - TV Games: web games played only with phones no longer let the TV sleep or start its screensaver mid-game; retro games no longer keep the screen on forever when nobody plays. Both stay on until 10 minutes after the last press.
 - TV Games: Suggestions come in rows: the web games made for TV Games first, then one row per retro genre.
 

@@ -626,7 +626,7 @@ Dán link web, YouTube hoặc deeplink của app (`app://…`): xem TV mở bằ
 
 ## Chủ đề TV Home
 
-Một chủ đề đổi cả màn hình chính trong một lần bấm: hình nền, widget, kiểu widget, số cột và hàng, live widget.
+Một chủ đề đổi cả màn hình chính trong một lần bấm: hình nền, widget, kiểu widget, số cột và hàng, căn giữa lưới, live widget.
 
 1. Trên TV: ⚙ → **Cài đặt nhanh** → **Tùy chỉnh** → **Chủ đề**. Điện thoại, máy tính: tab **TV** → **Tùy chỉnh TV Home** → **Chủ đề**.
 2. Mỗi ô là màn hình chính thu nhỏ: nền thật, chỗ widget, lưới app. Chọn một ô là TV đổi ngay.
@@ -656,6 +656,7 @@ Hai tùy chọn cho nền của TV Home, tính trên TV, không cần mạng.
 2. Nơi tính lấy từ widget Thời tiết, không có thì theo múi giờ. Tính ngay trên TV, không cần mạng, vài phút vẽ lại một lần.
 3. Màn OLED: chọn nền **Đen**, rồi bật **Nhích nhẹ màn hình mỗi phút** (Tùy chỉnh → Giao diện). Mặc định tắt.
 4. Cả màn hình chính dịch 1 dp mỗi phút trong ô vuông 6 dp, không thấy giật; hình nền đứng yên.
+5. Màn chờ tối đen ban đêm: **Màn chờ: tối đen** (Tùy chỉnh → Hệ thống), chọn khung giờ như 22:00–6:00. Trong giờ đó màn chờ chỉ còn màn đen, không đồng hồ. Mặc định tắt.
 
 ## Cài đặt nhanh (TV Home)
 
