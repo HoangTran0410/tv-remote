@@ -1045,7 +1045,7 @@ class HomeActivity : Activity() {
         val hidden = conf.optJSONArray("hidden").let { a -> if (a == null) emptySet() else List(a.length()) { a.optString(it) }.toSet() }
         val shownPins = pins.filter { it.pkg !in byPkg && it.pkg !in dockPkgs }   // a shortcut put on the grid by the picker shows as that tile, not twice
         val inFolder = if (conf.optJSONObject("folders")?.length() ?: 0 == 0) emptySet() else Folders.members(conf)   // none: no work at all
-        val key = (dockPkgs + shownPins.map { it.pkg }).joinToString(",") + "|" + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden && it.pkg !in inFolder }.joinToString(",") { it.pkg } + "|" + apps.filter { it.folder }.joinToString(",") { it.pkg + it.members } + "|" + apps.count { it.pkg in hidden } + "|" + conf.optInt("cols") + "|" + conf.optJSONArray("order") + "|" + conf.optJSONObject("names") + "|" + suggestSetup() + "|" + conf.optBoolean("showAdd", true)
+        val key = (dockPkgs + shownPins.map { it.pkg }).joinToString(",") + "|" + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden && it.pkg !in inFolder }.joinToString(",") { it.pkg } + "|" + apps.filter { it.folder }.joinToString(",") { it.pkg + it.members } + "|" + apps.count { it.pkg in hidden } + "|" + conf.optInt("cols") + "|" + conf.optBoolean("center", false) + "|" + conf.optJSONArray("order") + "|" + conf.optJSONObject("names") + "|" + suggestSetup() + "|" + conf.optBoolean("showAdd", true)
         val all = key + "|" + watchAt() + "|" + watch.joinToString(",") { it.first.key + it.first.title + (it.second != null) }
         if (all == shownKey) { badgeTiles(); return }                 // nothing that decides the tiles changed: not one view is rebuilt (the power mark may have)
         shownKey = all
@@ -1101,7 +1101,7 @@ class HomeActivity : Activity() {
                     row = Strip(this, px, py)
                     grid.addView(row, LinearLayout.LayoutParams(-1, -2).apply { setMargins(-px, (if (i > 0) gap else 0) - py, -px, -py) })
                 } else {
-                    row = Flat(this).apply { orientation = LinearLayout.HORIZONTAL; clipChildren = false; clipToPadding = false }
+                    row = Flat(this).apply { orientation = LinearLayout.HORIZONTAL; clipChildren = false; clipToPadding = false; if (conf.optBoolean("center", false)) gravity = Gravity.CENTER_HORIZONTAL }   // "center": a short row sits in the middle (off = left, as always)
                     grid.addView(row, LinearLayout.LayoutParams(-1, -2).apply { if (i > 0) topMargin = gap })   // as far apart as the tiles are side by side
                 }
                 n = 0

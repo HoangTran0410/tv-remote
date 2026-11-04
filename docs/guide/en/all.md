@@ -626,7 +626,7 @@ Paste a web or YouTube link, or an app's deep link (`app://…`): see which app 
 
 ## TV Home themes
 
-A theme changes the whole home screen in one press: background, widgets, widget style, columns and rows, live widgets.
+A theme changes the whole home screen in one press: background, widgets, widget style, columns and rows, a centered grid, live widgets.
 
 1. On the TV: ⚙ → **Quick settings** → **Customize** → **Themes**. Phone, computer: **TV** tab → **Customize TV Home** → **Themes**.
 2. Each tile is the home screen in miniature: the real background, where the widgets go, the app grid. Pick one and the TV changes at once.
@@ -656,6 +656,7 @@ Two options for TV Home's look, worked out on the TV with no network.
 2. The place is the Weather widget's, else the time zone. Worked out on the TV, no network, repainted every few minutes.
 3. OLED screen: pick the **Black** background, then turn on **Move the screen a little every minute** (Customize → Look). Off by default.
 4. The whole home screen moves 1 dp a minute inside a 6 dp square, with no visible jump; the wallpaper stays.
+5. Black screensaver at night: **Screensaver: black at night** (Customize → System), pick hours such as 22:00–6:00. Inside them the screensaver is a plain black screen, no clock. Off by default.
 
 ## Quick settings (TV Home)
 

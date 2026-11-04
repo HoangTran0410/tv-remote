@@ -108,6 +108,10 @@ import org.json.JSONObject
  *           ADB) and puts the previous screensaver back when this is switched off
  *   dface   the screensaver's look ([DFACES]): "big" (the big clock and the day, as before), "modern" (StandBy: the Modern clock
  *           face beside the day, the clock widget's own drawing), "digital" (the Digital face, filling the screen)
+ *   ddark   dark hours of the screensaver ([DDARKS]): "" = off (default), else "22-6" (from hour to hour, wraps midnight): the screen
+ *           is fully black then (OLED care, a TV left on at night). Checked by the screensaver's once-a-minute tick; not a theme key
+ *   center  the app grid's tiles sit in the middle of their row (a row with fewer tiles than [cols] too), default false = left-aligned.
+ *           A look, so a theme key
  *   note    a line from the family, pinned on the home screen until it is emptied ([NOTE_MAX] characters, one line)
  *   names   the person's own names for apps and shortcuts: {"<package or pin:...>": "name"}, at most [NAMES_MAX], each [NAME_MAX] characters;
  *           shown wherever TV Home shows the app's name, and always on a banner tile (two YouTubes look the same). Not a theme key
@@ -409,6 +413,13 @@ object HomeConfig {
     const val GNAME_MAX = 24
     const val GTEXT_MAX = 60
     val DFACES = listOf("big", "modern", "digital")
+    val DDARKS = listOf("", "22-6", "23-6", "0-6", "1-6")
+    /** True when [hour] (0..23) is inside the dark hours [v] ("22-6": from 22:00 to 6:00, wraps midnight); "" or a bad value = never. */
+    fun darkAt(v: String, hour: Int): Boolean {
+        if (v !in DDARKS || v.isEmpty()) return false
+        val (a, b) = v.split("-").map { it.toInt() }
+        return if (a <= b) hour in a until b else hour >= a || hour < b
+    }
     val GSTYLES = listOf("time", "name", "date", "lunar", "own")
     /** What "own" text may ask for, written {date}: the clients offer them as chips; an unknown {word} stays as typed. */
     val TOKENS = listOf("greet", "date", "weekday", "day", "month", "year", "lunar", "canchi")
@@ -473,7 +484,7 @@ object HomeConfig {
     const val THEME_NAME_MAX = 24
     /** The settings a theme holds and an apply switches . */
     val THEME_KEYS = listOf("wall", "walls", "wurl", "wcol", "wdir", "wmode", "wsnap", "wkeep", "wevery", "shade", "wfit", "wfade",
-        "widgets", "wsize", "wopt", "cols", "rows", "focus", "motion", "anim", "clock24", "greet")
+        "widgets", "wsize", "wopt", "cols", "center", "rows", "focus", "motion", "anim", "clock24", "greet")
     private val THEME_ID = Regex("t[0-9]{1,4}")
     /** What the first screen draws that the person can take off (not in a theme: a look does not hide the way to the settings). */
     /** Where the Play Next items sit on the grid, first the default (the user, 2026-10-26: a row wedged inside their own apps annoys). */
@@ -695,6 +706,8 @@ object HomeConfig {
             .put("rows", rows(o.optDouble("rows", 0.0)))
             .put("dream", o.optBoolean("dream", false))
             .put("dface", o.optString("dface").takeIf { it in DFACES } ?: "big")
+            .put("ddark", o.optString("ddark").takeIf { it in DDARKS } ?: "")
+            .put("center", o.optBoolean("center", false))
             .put("note", o.optString("note").replace(Regex("\\s+"), " ").trim().take(NOTE_MAX))
             .put("place", o.optString("place").replace(Regex("\\s+"), " ").trim().take(PLACE_MAX))
             .put("feeds", JSONArray(feeds(o.optJSONArray("feeds"))))

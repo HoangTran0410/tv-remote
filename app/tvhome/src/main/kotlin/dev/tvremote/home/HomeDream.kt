@@ -79,7 +79,9 @@ class DreamBody(private val c: Context) {
     private var motion = true
     private var shown: Bitmap? = null
     private var web: android.webkit.WebView? = null
-    private val minute = object : Runnable { override fun run() { refresh(); moveClock(); ui.postDelayed(this, untilNextMinute()) } }
+    private val minute = object : Runnable { override fun run() { refresh(); if (!dark()) moveClock(); ui.postDelayed(this, untilNextMinute()) } }
+    private var darkSpan = ""                                      // "ddark": the night hours the screen is black ("" = off: no view, no check)
+    private var blackout: View? = null
 
     fun build(): View {
         Font.load(c)
@@ -136,9 +138,26 @@ class DreamBody(private val c: Context) {
             }
         }
         root.addView(block, FrameLayout.LayoutParams(-2, -2, Gravity.CENTER))
+        darkSpan = conf.optString("ddark")
+        if (darkSpan.isNotEmpty()) {
+            blackout = View(c).apply { setBackgroundColor(Color.BLACK); visibility = View.GONE }
+            root.addView(blackout, FrameLayout.LayoutParams(-1, -1))   // on top of everything: a pure black pixel is an unlit pixel on an OLED
+            dark()
+        }
         refresh()
         ui.postDelayed(minute, untilNextMinute())
         return root
+    }
+
+    /** Inside the dark hours: the black view on, the clock hidden, the wall's drift paused; outside, all back. Returns whether it is dark. */
+    private fun dark(): Boolean {
+        val b = blackout ?: return false
+        val on = HomeConfig.darkAt(darkSpan, Calendar.getInstance().get(Calendar.HOUR_OF_DAY))
+        if ((b.visibility == View.VISIBLE) == on) return on
+        b.visibility = if (on) View.VISIBLE else View.GONE
+        block.visibility = if (on) View.INVISIBLE else View.VISIBLE
+        drift?.let { if (on) it.pause() else it.resume() }
+        return on
     }
 
     fun stop() {
@@ -193,6 +212,7 @@ class DreamBody(private val c: Context) {
         a.duration = 90_000; a.repeatMode = ObjectAnimator.REVERSE; a.repeatCount = ObjectAnimator.INFINITE
         a.interpolator = LinearInterpolator() as TimeInterpolator
         a.start(); drift = a
+        if (blackout?.visibility == View.VISIBLE) a.pause()
     }
 
     private fun untilNextMinute() = 60_000L - System.currentTimeMillis() % 60_000L + 50
