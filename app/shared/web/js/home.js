@@ -1284,7 +1284,7 @@ async function homePhoto(f, done) {
 async function homeAppPic(f, pkg, done) {
   try {
     const img = await photoOpen(f);
-    const view = await homeCropAsk(img, 480, 270, null);
+    const view = await homeCropAsk(img, 480, 270, null, true);
     if (!view) return false;                                          // cancelled: nothing sent, nothing said
     toast(T('home.pic_sending'));
     done(await homeLink.appPic(pkg, await photoBlob(img, 480, 270, view, 0.8)));
@@ -1323,7 +1323,7 @@ function homeSendProgress(path, blob, onPct) {
 
 // The photo in the TV's shape, to move and widen before it is sent; resolves with the crop's view, or null when cancelled. [whole]
 // (a TV Home with "fitOk"; null: none) starts on "whole photo" instead of the crop: the two are chips over the frame.
-function homeCropAsk(img, W, H, whole) {
+function homeCropAsk(img, W, H, whole, tile) {
   return new Promise((ok) => {
     let view = null;
     const cv = el('canvas', { className: 'photocrop', width: 640, height: Math.round(640 * H / W) });
@@ -1335,14 +1335,14 @@ function homeCropAsk(img, W, H, whole) {
       el('h2', { textContent: T('home.crop_title') }), modes, cv, hint,
       el('div', { className: 'actions' },
         el('button', { type: 'button', textContent: T('common.cancel'), onclick: () => d.close() }),
-        el('button', { type: 'button', className: 'primary', textContent: '🖼️ ' + T('home.crop_send'), onclick: () => { view = pv; d.close(); } }))));
+        el('button', { type: 'button', className: 'primary', textContent: '🖼️ ' + T(tile ? 'home.pic_crop_send' : 'home.crop_send'), onclick: () => { view = pv; d.close(); } }))));
     d.addEventListener('close', () => { d.remove(); ok(view); });
     document.body.append(d); d.showModal();
     const pv = photoCrop(cv, img);
     const pick = (w) => {
       pv.whole = !!w; pv.redraw();
       for (const [b, on] of [[bCover, !w], [bWhole, !!w]]) { b.className = on ? 'on' : ''; b.setAttribute('aria-pressed', String(on)); }
-      hint.textContent = T(w ? 'home.fit_note' : 'home.crop_hint');
+      hint.textContent = T(w ? 'home.fit_note' : tile ? 'home.pic_crop_hint' : 'home.crop_hint');
     };
     pick(whole);
     if (whole != null) (whole ? bWhole : bCover).focus();             // the dialog's own first focus would ring the other chip

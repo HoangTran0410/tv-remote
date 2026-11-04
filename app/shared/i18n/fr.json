@@ -3083,6 +3083,8 @@
   "home.pic_none": "Chaque application montre sa propre image. Ajoutez-en une pour distinguer des applications qui se ressemblent.",
   "home.pic_sending": "Envoi de l'image…",
   "home.pic_done": "Image changée",
+  "home.pic_crop_send": "Utiliser cette image",
+  "home.pic_crop_hint": "Faites glisser pour déplacer l’image, pincez ou utilisez la molette pour zoomer. Ce cadre est la vignette de l’app.",
   "home.pick_rename": "Renommer quelle tuile ?",
   "home.rename_q": "Nouveau nom dans TV Home",
   "home.rename_ok": "Renommer",

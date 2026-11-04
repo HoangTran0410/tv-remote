@@ -3074,6 +3074,8 @@
  "home.pic_none": "Every app shows its own picture. Add one to tell look-alike apps apart.",
  "home.pic_sending": "Sending the picture…",
  "home.pic_done": "Picture set",
+ "home.pic_crop_send": "Use this picture",
+ "home.pic_crop_hint": "Drag to move the picture, pinch or use the mouse wheel to zoom. This frame is the app's tile.",
  "home.pick_rename": "Rename which tile?",
  "home.rename_q": "New name on TV Home",
  "home.rename_ok": "Rename",
