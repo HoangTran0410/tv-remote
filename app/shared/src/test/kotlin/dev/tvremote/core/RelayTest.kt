@@ -1,0 +1,126 @@
+package dev.tvremote.core
+
+import dev.tvremote.core.picture.CatchUp
+import dev.tvremote.core.picture.Tv
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
+import java.net.ServerSocket
+import java.net.Socket
+import java.nio.ByteBuffer
+import java.nio.file.Files
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+
+/**
+ * Tv's relay (the picture from TV Setup's /api/video, touches to its /api/touch) against a made-up TV Setup on 127.0.0.1:8765
+ * (a pass with no fingerprint is sent over plain HTTP, as to an old TV Setup), and the way back to ADB when no picture comes.
+ */
+class RelayTest {
+    private val server = ServerSocket().apply {                       // the test before left the port in TIME_WAIT
+        reuseAddress = true
+        bind(java.net.InetSocketAddress("127.0.0.1", 8765), 50)
+    }
+    private val requests = CopyOnWriteArrayList<String>()             // request line, cookie, body
+    private val dir: File = Files.createTempDirectory("relay").toFile()
+
+    @After fun close() { server.close(); dir.deleteRecursively() }
+
+    /** Answers each connection with [answer] (given the request line), on its own thread. */
+    private fun serve(answer: (String, Socket) -> Unit) {
+        Thread {
+            while (!server.isClosed) {
+                val s = try { server.accept() } catch (e: Exception) { break }
+                Thread {
+                    try {
+                        val inp = s.getInputStream().bufferedReader()
+                        val line = inp.readLine() ?: return@Thread
+                        var len = 0; var cookie = ""
+                        while (true) {
+                            val h = inp.readLine() ?: break
+                            if (h.isEmpty()) break
+                            if (h.lowercase().startsWith("content-length:")) len = h.substringAfter(':').trim().toInt()
+                            if (h.lowercase().startsWith("cookie:")) cookie = h.substringAfter(':').trim()
+                        }
+                        val body = CharArray(len).also { var got = 0; while (got < len) { val n = inp.read(it, got, len - got); if (n < 0) break; got += n } }
+                        requests.add("$line|$cookie|${String(body)}")
+                        answer(line, s)
+                    } catch (ignored: Exception) { } finally { try { s.close() } catch (ignored: Exception) { } }
+                }.start()
+            }
+        }.start()
+    }
+
+    private class Seen : Tv.Screen {
+        val calls = CopyOnWriteArrayList<String>()
+        override fun start(w: Int, h: Int) { calls.add("start $w x $h") }
+        override fun feed(config: Boolean, pts: Long, data: ByteArray): Boolean { calls.add(if (config) "config ${data.size}" else "frame ${data.size}"); return true }
+        override fun release() { calls.add("release") }
+    }
+
+    private class Heard : Tv.Listener {
+        val said = CopyOnWriteArrayList<String>()
+        val live = CountDownLatch(1)
+        val over = CountDownLatch(1)
+        override fun onStatus(key: String, detail: String) { said.add(key); if (key == "live") live.countDown(); if (key == "closed" || key == "error") over.countDown() }
+        override fun onVideoSize(w: Int, h: Int) { said.add("size $w x $h") }
+        override fun onNetwork(mac: String, lan: String, tailscale: String) {}
+        override fun wantsNetwork() = false
+    }
+
+    private fun tv(screen: Seen, l: Heard) = Tv(dir, { ByteArray(0) }, "127.0.0.1", screen, 1, 960, false, l, relay = "secretpass")
+
+    private fun ok(s: Socket, vararg packets: ByteArray) {
+        val o = s.getOutputStream()
+        o.write("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nConnection: close\r\n\r\n".toByteArray())
+        for (p in packets) o.write(p)
+        o.flush()
+    }
+
+    @Test fun showsTvSetupsPictureAndSendsTouchesThere() {
+        val hold = CountDownLatch(1)
+        serve { line, s ->
+            if (line.startsWith("GET /api/video")) {
+                ok(s, CatchUp.packet(0, ByteBuffer.allocate(8).putInt(960).putInt(544).array()), CatchUp.packet(1, ByteArray(20)),
+                    CatchUp.packet(2, ByteArray(3000)), CatchUp.packet(4, ByteArray(0)), CatchUp.packet(3, ByteArray(400)))
+                hold.await(5, TimeUnit.SECONDS)                       // the stream stays open while the test touches
+            } else s.getOutputStream().write("HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}".toByteArray())
+        }
+        val screen = Seen(); val l = Heard()
+        val t = tv(screen, l)
+        assertTrue("live", l.live.await(5, TimeUnit.SECONDS))
+        assertTrue(t.ready())
+        t.touch(0, 0.25f, 0.5f); t.touch(2, 0.3f, 0.5f); t.touch(1, 0.3f, 0.5f)
+        val until = System.currentTimeMillis() + 3000
+        while (requests.count { it.startsWith("POST /api/touch") } < 2 && System.currentTimeMillis() < until) Thread.sleep(20)
+        hold.countDown()
+        assertTrue("closed once the stream ends", l.over.await(5, TimeUnit.SECONDS))
+        t.stop()
+
+        val video = requests.first { it.startsWith("GET /api/video") }
+        assertTrue(video, video.startsWith("GET /api/video?q=1 "))
+        assertEquals("tvr=secretpass", video.split('|')[1])           // no fingerprint: the old plain-HTTP cookie
+        assertEquals(listOf("start 960 x 544", "config 20", "frame 3000", "frame 400"), screen.calls.filter { it != "release" }.take(4))
+        assertTrue(l.said.contains("size 960 x 544"))
+        val touches = requests.filter { it.startsWith("POST /api/touch") }.map { org.json.JSONObject(it.split('|')[2]) }
+        assertEquals("down", touches.first().getString("a"))
+        assertEquals(0.25, touches.first().getDouble("x"), 1e-6)
+        assertEquals("up", touches.last().getString("a"))
+        assertEquals("closed", l.said.last())
+    }
+
+    @Test fun refusedGoesOnOverAdb() {
+        serve { _, s -> s.getOutputStream().write("HTTP/1.1 401 Unauthorized\r\nContent-Length: 2\r\n\r\n{}".toByteArray()) }
+        val screen = Seen(); val l = Heard()
+        val t = tv(screen, l)
+        assertTrue(l.over.await(20, TimeUnit.SECONDS))                // nothing listens for ADB on 127.0.0.1:5555 here
+        t.stop()
+        assertEquals(1, requests.size)
+        assertFalse(l.said.contains("live"))
+        assertEquals("error", l.said.last())                          // the ADB session's own error, as without a relay
+    }
+}

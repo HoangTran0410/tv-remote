@@ -60,6 +60,14 @@ class Tv(
     private val hand: Boolean = false,
     /** true: a link nobody asked for (TV Setup's own, after every update or ADB reconnect, often at night) never turns the screen on */
     private val quiet: Boolean = false,
+    /**
+     * This device's TV Setup pass (AdbPrompt.token): the picture is taken from TV Setup's own /api/video and touches go to its
+     * /api/touch, instead of a scrcpy-server driven over ADB from here. Over a far link (Tailscale on mobile data) ADB's one
+     * packet in flight per stream, with 25-50 ms between packet and OKAY, stuttered at every size, while TV Setup on the TV
+     * talks to scrcpy at no distance and sends one plain stream (the user, 2026-11-04). Picture only; on any failure before
+     * the first frame the session goes on over ADB as before. null: ADB.
+     */
+    private val relay: String? = null,
 ) {
     /** One H.264 packet as scrcpy sends it (Annex B). config: SPS/PPS, needed before the first frame; key: a key frame. */
     fun interface Sink { fun video(config: Boolean, key: Boolean, data: ByteArray) }
@@ -273,12 +281,109 @@ class Tv(
     }
 
     private fun run() {
+        if (relay != null && screen != null && sink == null && audio == null) {
+            if (relayed()) return
+            WireLog.all.add("·", "picture $host TV Setup's picture did not come: over ADB")
+        }
         session()
         if (stalled && !stopped) {
             stalled = false
             io = Executors.newSingleThreadExecutor()
             session()
         }
+    }
+
+    // ---- the picture through TV Setup ([relay]) ----
+    @Volatile private var relaying = false                            // TV Setup's stream is showing: touches go there
+    @Volatile private var feedConn: java.net.HttpURLConnection? = null
+    @Volatile private var rejoin = false                              // a key frame wanted: joining again brings one (Feeds.video)
+    private val touchIo = Executors.newSingleThreadExecutor()
+    private val pendingMove = java.util.concurrent.atomic.AtomicReference<org.json.JSONObject?>(null)
+
+    /**
+     * Shows TV Setup's /api/video (Feeds.kt: 1 byte kind, 4 bytes length, the data). False when no frame came (no TV Setup with
+     * the picture, the pass refused, a TV Setup that cannot reach its own ADB): the caller goes on over ADB. True once it showed
+     * frames or was stopped; a stream cut after that is "closed", and the app starts the picture again as for an ADB one.
+     */
+    private fun relayed(): Boolean {
+        val pass = relay ?: return false
+        status("connecting", host)
+        val path = "/api/video?q=$quality" + (if (fps > 0) "&fps=$fps" else "") + (if (bitRate > 0) "&rate=$bitRate" else "") +
+            (if (encoder == "hw" || encoder == "sw") "&enc=$encoder" else "") + (if (hand) "&hand=1" else "")
+        var shown = false
+        var sizeSeen = 0L
+        while (!stopped) {
+            rejoin = false
+            val c = try { dev.tvremote.core.adb.AdbPrompt.openSetup(host, pass, path) } catch (e: Exception) { return shown.also { relayEnd(it, e.toString()) } }
+            c.readTimeout = 20_000                                    // "nothing new" (kind 4) comes every 5 s while the TV is still
+            feedConn = c
+            try {
+                val code = c.responseCode
+                if (code != 200) { WireLog.all.add("·", "picture $host TV Setup answered $code"); return shown.also { relayEnd(it, "http $code") } }
+                val inp = java.io.DataInputStream(java.io.BufferedInputStream(c.inputStream, 65536))
+                var bytes = 0L
+                var since = System.currentTimeMillis()
+                while (!stopped) {
+                    val kind = inp.read()
+                    if (kind < 0) break
+                    val n = inp.readInt()
+                    if (n < 0 || n > (8 shl 20)) throw IOException("bad picture packet")
+                    val data = ByteArray(n)
+                    inp.readFully(data)
+                    bytes += n + 5
+                    val now = System.currentTimeMillis()
+                    if (now - since >= 3000) { listener.onStatus("rate", (bytes * 1000 / (now - since) / 1024).toString()); bytes = 0; since = now }
+                    when (kind) {
+                        0 -> {                                        // the size: again on each join, a new decoder only when it changed
+                            val b = ByteBuffer.wrap(data)
+                            val w = b.int; val h = b.int
+                            val wh = (w.toLong() shl 32) or h.toLong()
+                            if (wh != sizeSeen) { sizeSeen = wh; width = w; height = h; screen?.start(w, h); listener.onVideoSize(w, h) }
+                        }
+                        1 -> screen?.feed(true, 0L, data)
+                        2, 3 -> {                                     // Feeds sends no pts: the time it came, which the decoder only matches out to in
+                            if (screen?.feed(false, System.nanoTime() / 1000, data) == false) return true.also { relayEnd(true, "decoder") }
+                            if (!shown) { shown = true; relaying = true; framed = true; dev.tvremote.core.Census.video(host); status("live", "") }
+                        }
+                        5 -> WireLog.all.add("·", "picture $host fell behind, TV Setup caught up")
+                    }
+                }
+            } catch (e: IOException) {
+                if (!rejoin && !stopped) { WireLog.all.add("·", "picture $host TV Setup's stream: $e"); if (!shown) return false.also { relayEnd(false, "") } }
+            } finally {
+                feedConn = null
+                try { c.disconnect() } catch (ignored: Exception) { }
+            }
+            if (!rejoin) break                                        // the stream ended by itself
+        }
+        relayEnd(shown, "")
+        return shown || stopped
+    }
+
+    /** The relay is over: [shown] the session ends here (the caller does not go on over ADB), else nothing is let go yet. */
+    private fun relayEnd(shown: Boolean, why: String) {
+        relaying = false
+        if (!shown) return
+        screen?.release()
+        if (!stopped) status("closed", why)
+    }
+
+    /** A touch to TV Setup's /api/touch, in order on one thread; moves not yet sent give way to the newest. */
+    private fun relayTouch(d: org.json.JSONObject) {
+        val pass = relay ?: return
+        if (d.optString("a") == "move") { if (pendingMove.getAndSet(d) != null) return } else pendingMove.set(null)
+        try {
+            touchIo.submit {
+                val msg = if (d.optString("a") == "move") pendingMove.getAndSet(null) ?: return@submit else d
+                try {
+                    val c = dev.tvremote.core.adb.AdbPrompt.openSetup(host, pass, "/api/touch")
+                    c.readTimeout = 5000; c.requestMethod = "POST"; c.doOutput = true
+                    c.setRequestProperty("Content-Type", "application/json")
+                    c.outputStream.use { it.write(msg.toString().toByteArray()) }
+                    c.responseCode; c.inputStream.close()             // read to the end: the connection is kept for the next one
+                } catch (ignored: Exception) { }
+            }
+        } catch (shuttingDown: RuntimeException) { }
     }
 
     private fun session() {
@@ -599,6 +704,8 @@ class Tv(
 
     fun stop() {
         stopped = true
+        touchIo.shutdown()
+        feedConn?.let { c -> Thread({ try { c.disconnect() } catch (ignored: Exception) { } }, "tv-relay-stop").apply { isDaemon = true }.start() }   // its read ends
         synchronized(restLock) { restLock.notifyAll() }
         val c = capture
         if (c == null) { letGo(); return }
@@ -609,7 +716,7 @@ class Tv(
         }, "scrcpy-stop").apply { isDaemon = true }.start()
     }
 
-    fun ready(): Boolean = (control != null || resting) && !stopped
+    fun ready(): Boolean = (relaying || control != null || resting) && !stopped
 
     /** Back on screen after a while: asks the TV for an echo, in the background. A link that died quietly while the app was
      *  frozen (Tailscale, Wi-Fi changed) gets no answer and is cut, so the session ends ("closed") and the app dials again at
@@ -621,11 +728,12 @@ class Tv(
     }
 
     /**
-     * [by] (the picture's session, once it is live) takes this session's keys, typing and clipboard from now on: one
+     * [taker] (the picture's session, once it is live) takes this session's keys, typing and clipboard from now on: one
      * scrcpy-server on the TV instead of two. After [REST_MS] in which nothing needed our own, it rests ([rest]). null: the
      * picture is going, so our own server comes back now ([back]), before the next key needs it.
      */
-    fun carry(by: Tv?) {
+    fun carry(taker: Tv?) {
+        val by = taker?.takeIf { !it.relaying }                       // TV Setup's picture has no control socket here to take keys
         carrier = by
         if (by == null) { back(); return }
         if (!restable) return
@@ -707,7 +815,10 @@ class Tv(
     fun press(code: Int) { key(0, code, 0, 0); key(1, code, 0, 0) }
 
     /** scrcpy starts its capture again: a new codec config and a key frame now, instead of at the next i-frame interval. */
-    fun resetVideo() = send(byteArrayOf(17))
+    fun resetVideo() {
+        if (relaying) { rejoin = true; feedConn?.disconnect(); return }   // TV Setup asks its scrcpy for one when a viewer joins
+        send(byteArrayOf(17))
+    }
 
     /** The phone app away for a moment: the picture is kept coming but not drawn, so it is back at once ([Screen.pause]). */
     fun pauseScreen() = screen?.pause()
@@ -715,6 +826,7 @@ class Tv(
 
     /** A finger on the TV screen. action: 0 down, 1 up, 2 move; x, y in 0..1 of the picture. */
     fun touch(action: Int, x: Float, y: Float) {
+        if (relaying) { relayTouch(org.json.JSONObject().put("a", when (action) { 0 -> "down"; 1 -> "up"; else -> "move" }).put("x", x.toDouble()).put("y", y.toDouble())); return }
         val px = Math.round(x.coerceIn(0f, 1f) * (width - 1))
         val py = Math.round(y.coerceIn(0f, 1f) * (height - 1))
         send(ByteBuffer.allocate(32).put(2.toByte()).put(action.toByte()).putLong(-2L).putInt(px).putInt(py)
@@ -723,6 +835,7 @@ class Tv(
 
     /** The mouse wheel at x, y (0..1 of the picture); [dy] as a browser's wheel: 16 is one notch, positive scrolls down. */
     fun scroll(x: Float, y: Float, dy: Float) {
+        if (relaying) { relayTouch(org.json.JSONObject().put("a", "scroll").put("x", x.toDouble()).put("y", y.toDouble()).put("dy", dy.toDouble())); return }
         val px = Math.round(x.coerceIn(0f, 1f) * (width - 1))
         val py = Math.round(y.coerceIn(0f, 1f) * (height - 1))
         val v = Math.round(dy / 16 * 0x7FFF).coerceIn(-0x7FFF, 0x7FFF)

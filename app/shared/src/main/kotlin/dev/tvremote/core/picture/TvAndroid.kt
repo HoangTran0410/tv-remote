@@ -22,7 +22,7 @@ fun Tv(
     ctx: Context, host: String, surface: Surface?, quality: Int, maxSide: Int, wake: Boolean, listener: Tv.Listener,
     sink: Tv.Sink? = null, audio: String? = null, audioSink: Tv.AudioSink? = null, wantControl: Boolean = true,
     audioShare: Boolean = false, audioBitRate: Int = 64000, fps: Int = 0, bitRate: Int = 0, encoder: String = "auto", hand: Boolean = false,
-    quiet: Boolean = false,
+    quiet: Boolean = false, relay: String? = null,
 ): Tv {
     val app = ctx.applicationContext
     val hear = audioSink ?: if (audio == "opus") object : Tv.AudioSink {
@@ -32,7 +32,7 @@ fun Tv(
     } else null
     val screen = surface?.let { SurfaceScreen(it, host) }
     val tv = Tv(app.filesDir, { app.assets.open("scrcpy-server.jar").use { it.readBytes() } }, host, screen,
-        quality, maxSide, wake, listener, sink, audio, hear, wantControl, audioShare, audioBitRate, fps, bitRate, encoder, hand, quiet)
+        quality, maxSide, wake, listener, sink, audio, hear, wantControl, audioShare, audioBitRate, fps, bitRate, encoder, hand, quiet, relay)
     screen?.askKey = { Thread { try { tv.resetVideo() } catch (ignored: Exception) { } }.start() }   // off the reading thread
     return tv
 }
