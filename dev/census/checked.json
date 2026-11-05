@@ -2460,9 +2460,9 @@
   "note": "left: NPE inside system_server, platform"
  },
  "b1ccd0d29d66cdd753d27562|0.27.0": {
-  "at": "2026-11-05T10:40:35+07:00",
-  "n": 3,
-  "note": "watch: phone 0.27.0 on Android 6 (Meizu), one install; not seen on any later build"
+  "at": "2026-11-06T01:01:00+07:00",
+  "n": 5,
+  "note": "phone 0.27.0 on a Meizu Android 6 (released 0.44.0): NoClassDefFoundError of an R8 lambda on old ART, no newer version affected"
  },
  "b2b52cae0dafc491fb1e1cd6|0.34.0": {
   "at": "2026-10-30T09:08:25+07:00",
