@@ -494,6 +494,11 @@
   "n": 2,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "279257163db37d501475990c|0.45.0": {
+  "at": "2026-11-06T06:05:57+07:00",
+  "n": 1,
+  "note": "system_server died (DeadSystemException) on a 'Pixel 10 Pro XL' Android 13 box; the second is Guard's dialog for the first"
+ },
  "28126a90d382b19bee86236d|0.21.1": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
@@ -2143,6 +2148,11 @@
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "98e4a5508c52307f590d62a1|0.45.0": {
+  "at": "2026-11-06T06:05:57+07:00",
+  "n": 1,
+  "note": "system_server died (DeadSystemException) on a 'Pixel 10 Pro XL' Android 13 box; the second is Guard's dialog for the first"
  },
  "99c0fdd3111273770ef39822|0.32.1": {
   "at": "2026-10-29T17:20:10+07:00",
