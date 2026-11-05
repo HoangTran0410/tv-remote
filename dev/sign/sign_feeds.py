@@ -2,7 +2,7 @@
 """dev/sign/sign_feeds.py: checks docs/home/feeds.json and signs it (feeds.json.sig, Ed25519, base64).
 
 The list tells TV Home where its Market and News cards read from: the bank's exchange-rate XML, the gold shops' price lists, a crypto
-ticker, and the default RSS feeds per language. Each "kind" is code in app/tvhome (widgets/Market.kt, News.kt); the addresses are here,
+ticker, the fuel sellers' price pages, and the default RSS feeds per language. Each "kind" is code in app/tvhome (widgets/Market.kt, News.kt); the addresses are here,
 so a source that moves or blocks the app is fixed by editing this file, with no new APK. Only https. It is signed with the launcher
 list's key (LAUNCHERS_KEY, default ~/.tv-remote-release/launchers.key), as providers.json is.
 
@@ -14,7 +14,7 @@ import json, os, re, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LIST = os.path.join(ROOT, "docs", "home", "feeds.json")
 KEY = os.environ.get("LAUNCHERS_KEY", os.path.expanduser("~/.tv-remote-release/launchers.key"))
-KINDS = {"rates": ["vcb"], "gold": ["btmc", "pnj"], "crypto": ["binance"]}   # what Market.kt can read
+KINDS = {"rates": ["vcb"], "gold": ["btmc", "pnj"], "crypto": ["binance"], "fuel": ["saigonpetro", "webgia"]}   # what Market.kt can read
 
 
 def fail(m):

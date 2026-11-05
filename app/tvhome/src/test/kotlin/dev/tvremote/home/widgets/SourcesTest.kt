@@ -12,6 +12,7 @@ class SourcesTest {
     @Test fun theSitesListParses() {
         val a = Sources.parse(site.readText())!!
         assertTrue(a.rates != null && a.gold.size >= 1 && a.crypto != null)
+        assertEquals(listOf("saigonpetro", "webgia"), a.fuel.map { it.kind })           // the official seller first, the copy of Petrolimex's table second
         assertTrue(a.news.any { it.lang == "vi" } && a.news.any { it.lang == "en" })
     }
 

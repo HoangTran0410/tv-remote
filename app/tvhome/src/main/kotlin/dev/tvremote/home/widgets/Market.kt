@@ -6,7 +6,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * The Market widget's data: gold (SJC and ring gold 9999, VND per lượng), the bank's exchange rates (VND) and optionally Bitcoin, each part
+ * The Market widget's data: gold (SJC and ring gold 9999, VND per lượng), the bank's exchange rates (VND), optionally Bitcoin and fuel, each part
  * fetched straight from a public source named in the signed list ([Sources]) on a thread of its own and kept in prefs with its time.
  * A part that fails keeps its last value (the widget shows the time of the last update); nothing here is shown as an error.
  */
@@ -16,13 +16,16 @@ object Market {
     /** VND per lượng (37.5 g): the shops list per chỉ (a tenth of it), so the figures are the ones people say aloud ("141,7 triệu"). */
     class Gold(val src: String, val sjcBuy: Long, val sjcSell: Long, val ringBuy: Long, val ringSell: Long)
     class Btc(val usd: Double, val pct: Double)
-    class Snap(val rates: List<Rate>, val gold: Gold?, val btc: Btc?, val ratesAt: Long, val goldAt: Long, val btcAt: Long) {
+    /** Retail fuel, VND per litre (zone 1, the price set for the whole country); 0 = the source has no figure. [ron95] is E10 RON 95-III. */
+    class Fuel(val src: String, val ron95: Long, val e5: Long, val diesel: Long)
+    class Snap(val rates: List<Rate>, val gold: Gold?, val btc: Btc?, val ratesAt: Long, val goldAt: Long, val btcAt: Long, val fuel: Fuel? = null, val fuelAt: Long = 0) {
         /** When the newest part came, for the "updated 14:05" line. */
-        val at get() = maxOf(ratesAt, goldAt, btcAt)
-        val empty get() = rates.isEmpty() && gold == null && btc == null
+        val at get() = maxOf(ratesAt, goldAt, btcAt, fuelAt)
+        val empty get() = rates.isEmpty() && gold == null && btc == null && fuel == null
     }
 
     const val FRESH_MS = 20 * 60_000L                                  // a part is asked again after this, while the home is shown
+    const val FUEL_MS = 3 * 3600_000L                                   // fuel changes about once a week (Thursdays, 15:00): asked again after this
     const val RETRY_MS = 5 * 60_000L                                   // after a failure (the bank asks for one request in 5 minutes)
     val CODES = listOf("USD", "EUR", "JPY", "KRW", "CNY", "GBP")       // in the order shown
 
@@ -82,10 +85,33 @@ object Market {
         o.optString("lastPrice").toDoubleOrNull()?.takeIf { it > 0 }?.let { Btc(it, o.optString("priceChangePercent").toDoubleOrNull() ?: 0.0) }
     } catch (e: Exception) { null }
 
+    /**
+     * A fuel seller's page (Saigon Petro's price marquee, webgia's Petrolimex table): the text between the tags, each product's name
+     * followed by its zone-1 price ("21.150 đ", "21.150"). E10 RON 95-III ("mức 3"), E5 RON 92 and diesel 0.05S. Null without RON 95.
+     */
+    fun parseFuel(html: String, name: String = ""): Fuel? = try {
+        val t = html.split(Regex("<[^>]*>")).map { it.replace("&nbsp;", " ").trim() }.filter { it.isNotEmpty() }
+        val price = Regex("^(\\d{1,3}(?:\\.\\d{3})+)(?:\\s*(?:đ|₫|VNĐ|vnđ))?$")
+        fun find(match: (String) -> Boolean): Long {
+            for (i in t.indices) {
+                val n = t[i].uppercase().replace(',', '.')
+                if (!match(n)) continue
+                for (j in i + 1..minOf(i + 3, t.size - 1)) {
+                    val v = price.find(t[j])?.groupValues?.get(1)?.replace(".", "")?.toLongOrNull() ?: continue
+                    if (v in 5_000..200_000) return v
+                }
+            }
+            return 0
+        }
+        val ron95 = find { "RON 95" in it && ("MỨC 3" in it || "95-III" in it) }.takeIf { it > 0 } ?: find { "RON 95" in it && "MỨC 5" !in it && "95-V" !in it }
+        if (ron95 <= 0) null else Fuel(name, ron95, find { "E5" in it && "RON 92" in it }, find { "0.05S" in it })
+    } catch (e: Exception) { null }
+
     fun toJson(s: Snap): JSONObject = JSONObject()
         .put("rates", JSONArray(s.rates.map { JSONObject().put("c", it.code).put("b", it.buy).put("s", it.sell) })).put("ratesAt", s.ratesAt)
-        .put("goldAt", s.goldAt).put("btcAt", s.btcAt)
+        .put("goldAt", s.goldAt).put("btcAt", s.btcAt).put("fuelAt", s.fuelAt)
         .also { o ->
+            s.fuel?.let { o.put("fuel", JSONObject().put("src", it.src).put("r95", it.ron95).put("e5", it.e5).put("do", it.diesel)) }
             s.gold?.let { o.put("gold", JSONObject().put("src", it.src).put("sb", it.sjcBuy).put("ss", it.sjcSell).put("rb", it.ringBuy).put("rs", it.ringSell)) }
             s.btc?.let { o.put("btc", JSONObject().put("usd", it.usd).put("pct", it.pct)) }
         }
@@ -93,10 +119,11 @@ object Market {
     fun fromJson(s: String): Snap? = try {
         val o = JSONObject(s)
         val a = o.optJSONArray("rates")
-        val g = o.optJSONObject("gold"); val b = o.optJSONObject("btc")
+        val g = o.optJSONObject("gold"); val b = o.optJSONObject("btc"); val f = o.optJSONObject("fuel")
         Snap((0 until (a?.length() ?: 0)).map { a!!.getJSONObject(it).let { r -> Rate(r.getString("c"), r.optDouble("b"), r.optDouble("s")) } },
             g?.let { Gold(it.optString("src"), it.getLong("sb"), it.getLong("ss"), it.getLong("rb"), it.getLong("rs")) },
-            b?.let { Btc(it.getDouble("usd"), it.optDouble("pct")) }, o.optLong("ratesAt"), o.optLong("goldAt"), o.optLong("btcAt"))
+            b?.let { Btc(it.getDouble("usd"), it.optDouble("pct")) }, o.optLong("ratesAt"), o.optLong("goldAt"), o.optLong("btcAt"),
+            f?.let { Fuel(it.optString("src"), it.getLong("r95"), it.optLong("e5"), it.optLong("do")) }, o.optLong("fuelAt"))
     } catch (e: Exception) { null }
 
     /** The value to compare with: the last one seen on an earlier day than [today] (kept as [ref] until a newer day replaces it). */
@@ -112,27 +139,39 @@ object Market {
         return if (ref != null && ref > 0 && v > 0) (v - ref) / ref * 100 else null
     }
 
+    /** The pair kept for a "since the last change" figure: [cur] the value now, [ref] the one before it. A new value moves [cur] to [ref]. */
+    fun changeStep(cur: Double?, ref: Double?, v: Double): Pair<Double, Double?> = if (cur == null || cur == v) v to ref else v to cur
+
+    /** Percent change of [v] since the price before it (fuel: set by the state about once a week, so "since yesterday" is mostly 0). */
+    fun sinceChange(c: Context, key: String, v: Double): Double? {
+        val p = prefs(c)
+        val cur = p.getString("l_$key", null)?.toDoubleOrNull(); val old = p.getString("p_$key", null)?.toDoubleOrNull()
+        val (n, ref) = changeStep(cur, old, v)
+        if (n != cur || ref != old) p.edit().putString("l_$key", n.toString()).also { e -> if (ref != null) e.putString("p_$key", ref.toString()) else e.remove("p_$key") }.apply()
+        return if (ref != null && ref > 0 && v > 0) (v - ref) / ref * 100 else null
+    }
+
     // ---- the network and the prefs, the thin part ----
 
     private fun prefs(c: Context) = c.getSharedPreferences("market", Context.MODE_PRIVATE)
     fun cached(c: Context): Snap? = prefs(c).getString("snap", null)?.let { fromJson(it) }
 
     /** True when something should be asked again now: nothing yet, or a part older than [FRESH_MS], and not just after a failure. */
-    fun due(c: Context, btc: Boolean, now: Long = System.currentTimeMillis()): Boolean {
+    fun due(c: Context, btc: Boolean, fuel: Boolean, now: Long = System.currentTimeMillis()): Boolean {
         val tried = prefs(c).getLong("tried", 0)
         if (now - tried < RETRY_MS && now >= tried) return false
         val s = cached(c) ?: return true
-        return stale(s, btc, now)
+        return stale(s, btc, fuel, now)
     }
 
     /** The pure part of [due]: a stamp ahead of [now] is stale too (a box that booted with its clock a year ahead saved it). */
-    internal fun stale(s: Snap, btc: Boolean, now: Long) =
-        !Age.fresh(s.ratesAt, FRESH_MS, now) || !Age.fresh(s.goldAt, FRESH_MS, now) || (btc && !Age.fresh(s.btcAt, FRESH_MS, now))
+    internal fun stale(s: Snap, btc: Boolean, fuel: Boolean, now: Long) =
+        !Age.fresh(s.ratesAt, FRESH_MS, now) || !Age.fresh(s.goldAt, FRESH_MS, now) || (btc && !Age.fresh(s.btcAt, FRESH_MS, now)) || (fuel && !Age.fresh(s.fuelAt, FUEL_MS, now))
 
     private var busy = false
 
-    /** Asks the sources (a thread of its own); [done] is called on it when something changed. A part that fails keeps its last value. */
-    fun refresh(c: Context, btc: Boolean, done: () -> Unit) {
+    /** Asks the sources (a thread of its own); [done] is called on it when something changed. A part that fails keeps its last value. Fuel is asked only when shown and [FUEL_MS] old. */
+    fun refresh(c: Context, btc: Boolean, fuel: Boolean, done: () -> Unit) {
         synchronized(this) { if (busy) return; busy = true }
         Thread {
             try {
@@ -143,11 +182,15 @@ object Market {
                 var gold: Gold? = null
                 for (g in src.gold) { gold = Net.text(g.url)?.let { if (g.kind == "btmc") parseBtmc(it, g.name) else parsePnj(it, g.name) }; if (gold != null) break }
                 val coin = if (btc) src.crypto?.let { s -> Net.text(s.url)?.let { parseBinance(it) } } else null
+                val askFuel = fuel && !Age.fresh(old?.fuelAt ?: 0, FUEL_MS, now)
+                var oil: Fuel? = null
+                if (askFuel) for (s in src.fuel) { oil = Net.text(s.url)?.let { parseFuel(it, s.name) }; if (oil != null) break }
                 val snap = Snap(rates ?: old?.rates.orEmpty(), gold ?: old?.gold, coin ?: old?.btc,
-                    if (rates != null) now else old?.ratesAt ?: 0, if (gold != null) now else old?.goldAt ?: 0, if (coin != null) now else old?.btcAt ?: 0)
-                val failed = (src.rates != null && rates == null) || (src.gold.isNotEmpty() && gold == null) || (btc && src.crypto != null && coin == null)
+                    if (rates != null) now else old?.ratesAt ?: 0, if (gold != null) now else old?.goldAt ?: 0, if (coin != null) now else old?.btcAt ?: 0,
+                    oil ?: old?.fuel, if (oil != null) now else old?.fuelAt ?: 0)
+                val failed = (src.rates != null && rates == null) || (src.gold.isNotEmpty() && gold == null) || (btc && src.crypto != null && coin == null) || (askFuel && src.fuel.isNotEmpty() && oil == null)
                 p.edit().putLong("tried", if (failed) now else 0).also { if (!snap.empty) it.putString("snap", toJson(snap).toString()) }.apply()
-                if (rates != null || gold != null || coin != null) done()
+                if (rates != null || gold != null || coin != null || oil != null) done()
             } catch (e: Exception) {
             } finally { synchronized(this) { busy = false } }
         }.start()

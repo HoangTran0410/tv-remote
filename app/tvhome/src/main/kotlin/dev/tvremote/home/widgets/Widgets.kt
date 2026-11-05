@@ -273,8 +273,8 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
         val prayer = "prayer" in want && Weather.placeStale(a, typed)      // the prayer times need the weather's place, nothing else of it
         if (("weather" in want || air || prayer) && Weather.due(a, typed, air = air)) Weather.refresh(a, typed, resources.locale0().language, air) { onWeather?.invoke() }
         val wx = if ("weather" in want) Weather.cached(a) else null
-        val btc = opt("market", "btc") == "on"
-        if ("market" in want && Market.due(a, btc)) Market.refresh(a, btc) { onWeather?.invoke() }
+        val btc = opt("market", "btc") == "on"; val fuel = opt("market", "fuel") == "on"
+        if ("market" in want && Market.due(a, btc, fuel)) Market.refresh(a, btc, fuel) { onWeather?.invoke() }
         val feeds = if ("news" in want) News.urls(opt("news", "src"), resources.locale0().language, Store.get(a).optJSONArray("feeds").let { l -> List(l?.length() ?: 0) { l!!.getString(it) } }) else emptyList()
         if (feeds.isNotEmpty() && News.due(a, feeds)) News.refresh(a, feeds) { onWeather?.invoke() }
         return Facts(mem, disk, ip, eth, rssi, SystemClock.elapsedRealtime(), adb, usage, icons, timer, moon,

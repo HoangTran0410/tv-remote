@@ -108,7 +108,7 @@ import org.json.JSONObject
  *   place   a city for the weather widget, as typed ([PLACE_MAX] characters); empty = automatic
  *   market  (widget) gold (SJC, 9999) and the banks' exchange rates in VND, optionally Bitcoin: public prices fetched by the TV itself,
  *           the addresses in the site's signed list docs/home/feeds.json; options "layout" card / ticker (one scrolling line), "show"
- *           all / gold / rates, "btc". news (widget) headlines with a picture from RSS feeds (the same list, by the TV's language, and
+ *           all / gold / rates, "btc", "fuel" (Vietnam's retail fuel: RON 95, E5, diesel). news (widget) headlines with a picture from RSS feeds (the same list, by the TV's language, and
  *           [feeds]: the person's own links, [FEEDS_MAX]); option "src" auto (the list) / mine / both. OK on a headline opens the
  *           reader; OK on the weather widget opens its map. A TV Home that has these reports "infoOk": true
  *   feeds   the person's own RSS links for the news widget, [FEEDS_MAX] at most ([feeds]); set from the page, like [place]
@@ -302,7 +302,7 @@ object HomeConfig {
         val size = Opt("size", "choice", SIZES, defaultSize(k), "wsize")
         return when {
             k == "clock" -> listOf(size, Opt("face", "choice", listOf("classic", "minimal", "roman", "modern", "digital"), "classic"), Opt("theme", "choice", listOf("dark", "light"), "dark"), Opt("look", "choice", BARE, "glass"))
-            k == "market" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("layout", "choice", listOf("card", "ticker"), "card"), Opt("show", "choice", listOf("all", "gold", "rates"), "all"), Opt("btc", "toggle", emptyList(), "off"))
+            k == "market" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("layout", "choice", listOf("card", "ticker"), "card"), Opt("show", "choice", listOf("all", "gold", "rates"), "all"), Opt("btc", "toggle", emptyList(), "off"), Opt("fuel", "toggle", emptyList(), "off"))
             k == "calendar" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("layout", "choice", listOf("month", "date"), "month"))
             k == "news" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("src", "choice", listOf("auto", "mine", "both"), "auto"))
             k == "prayer" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("method", "choice", listOf("auto") + PRAYER_METHODS, "auto"),

@@ -18,11 +18,14 @@ class FreshStampTest {
     }
 
     @Test fun market() {
-        fun snap(r: Long, g: Long, b: Long) = Market.Snap(emptyList(), null, null, r, g, b)
-        assertFalse(Market.stale(snap(young, young, young), true, now))
-        assertTrue(Market.stale(snap(future, young, young), false, now))
-        assertTrue(Market.stale(snap(young, young, future), true, now))
-        assertFalse(Market.stale(snap(young, young, future), false, now))   // BTC off: its stamp does not count
+        fun snap(r: Long, g: Long, b: Long, f: Long = young) = Market.Snap(emptyList(), null, null, r, g, b, null, f)
+        assertFalse(Market.stale(snap(young, young, young), true, false, now))
+        assertTrue(Market.stale(snap(future, young, young), false, false, now))
+        assertTrue(Market.stale(snap(young, young, future), true, false, now))
+        assertFalse(Market.stale(snap(young, young, future), false, false, now))   // BTC off: its stamp does not count
+        assertTrue(Market.stale(snap(young, young, young, future), false, true, now))
+        assertFalse(Market.stale(snap(young, young, young, future), false, false, now))   // fuel off: never asked, its stamp does not count
+        assertFalse(Market.stale(snap(young, young, young, now - 2 * 3600_000), false, true, now))   // fuel is asked again only after 3 hours
     }
 
     @Test fun news() {

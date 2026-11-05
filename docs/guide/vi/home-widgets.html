@@ -4,7 +4,7 @@ TV Home có thêm hai widget lấy số liệu thẳng từ nguồn, không qua 
 
 | Widget | Hiện gì |
 | --- | --- |
-| Thị trường | Giá vàng SJC và nhẫn 9999, tỷ giá Vietcombank, tùy chọn Bitcoin. Dạng ô hoặc dòng chạy chữ. Làm mới ~20 phút; mất mạng thì giữ số cũ kèm giờ |
+| Thị trường | Giá vàng SJC và nhẫn 9999, tỷ giá Vietcombank, tùy chọn Bitcoin, giá xăng (RON 95, E5, dầu DO). Dạng ô hoặc dòng chạy chữ. Làm mới ~20 phút; mất mạng thì giữ số cũ kèm giờ |
 | Tin tức | Tiêu đề và hình từ RSS của VnExpress, Tuổi Trẻ, Thanh Niên, Dân Trí, VietnamNet (TV tiếng Anh: BBC, NPR, Guardian, Al Jazeera). Thêm tối đa 5 link RSS riêng từ điện thoại. Bấm OK mở bản đọc chữ to |
 | Thời tiết | Bấm OK: bản đồ Windy toàn màn hình tại thành phố của bạn (mưa, gió, nhiệt độ, vệ tinh, PM2.5), mỗi lớp một nút, **Xem diễn biến** chạy dự báo; Back để đóng |
 | Mở gần đây | 4-6 app vừa mở; Trái / Phải chọn, OK mở |

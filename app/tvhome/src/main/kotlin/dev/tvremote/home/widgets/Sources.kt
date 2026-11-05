@@ -13,12 +13,12 @@ import java.io.File
 object Sources {
     class Src(val kind: String, val url: String, val name: String)
     class Feed(val id: String, val name: String, val lang: String, val url: String)
-    class All(val rev: Long, val rates: Src?, val gold: List<Src>, val crypto: Src?, val news: List<Feed>)
+    class All(val rev: Long, val rates: Src?, val gold: List<Src>, val crypto: Src?, val news: List<Feed>, val fuel: List<Src> = emptyList())
 
     private val BASES = listOf("https://tvremote.pages.dev/home/", "https://raw.githubusercontent.com/HoangTran0410/tv-remote/main/docs/home/")
     private const val NAME = "feeds.json"
     private const val DAY = 24 * 3600_000L
-    private val KINDS = mapOf("rates" to setOf("vcb"), "gold" to setOf("btmc", "pnj"), "crypto" to setOf("binance"))   // what Market.kt can read; an unknown kind is skipped
+    private val KINDS = mapOf("rates" to setOf("vcb"), "gold" to setOf("btmc", "pnj"), "crypto" to setOf("binance"), "fuel" to setOf("saigonpetro", "webgia"))   // what Market.kt can read; an unknown kind is skipped
 
     @Volatile var now: All = All(0, null, emptyList(), null, emptyList())
 
@@ -31,13 +31,15 @@ object Sources {
                 ?.let { Src(it.getString("kind"), it.getString("url"), it.optString("src")) }
             val g = o.optJSONArray("gold")
             val news = o.optJSONArray("news")
+            val fuel = o.optJSONArray("fuel")
             All(o.optLong("rev"), src(o.optJSONObject("rates"), "rates"),
                 (0 until (g?.length() ?: 0)).mapNotNull { src(g!!.optJSONObject(it), "gold") },
                 src(o.optJSONObject("crypto"), "crypto"),
                 (0 until (news?.length() ?: 0)).mapNotNull { i ->
                     news!!.optJSONObject(i)?.takeIf { it.optString("url").startsWith("https://") && it.optString("id").isNotEmpty() }
                         ?.let { Feed(it.getString("id"), it.optString("name", it.getString("id")), it.optString("lang"), it.getString("url")) }
-                })
+                },
+                (0 until (fuel?.length() ?: 0)).mapNotNull { src(fuel!!.optJSONObject(it), "fuel") })
         }
     } catch (e: Exception) { null }
 

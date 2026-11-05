@@ -33,7 +33,25 @@ class MarketTest {
         assertEquals(80459.22, b.usd, 0.01); assertEquals(-1.068, b.pct, 0.001)
     }
 
+    @Test fun fuelFromSaigonPetro() {                                  // its home page's price marquee, saved 2026-11-05
+        val f = Market.parseFuel(res("saigonpetro.html"), "Saigon Petro")!!
+        assertEquals(21_150L, f.ron95); assertEquals(20_890L, f.e5); assertEquals(28_690L, f.diesel); assertEquals("Saigon Petro", f.src)
+    }
+
+    @Test fun fuelFromWebgia() {                                       // Petrolimex's table, zone 1 first; RON 95 "mức 5" is not the one shown
+        val f = Market.parseFuel(res("webgia.html"))!!
+        assertEquals(21_150L, f.ron95); assertEquals(20_890L, f.e5); assertEquals(28_690L, f.diesel)
+    }
+
+    @Test fun fuelSinceTheLastChange() {
+        assertEquals(21_150.0 to null, Market.changeStep(null, null, 21_150.0))                 // the first price: nothing to compare with
+        assertEquals(21_150.0 to null, Market.changeStep(21_150.0, null, 21_150.0))             // the same price again
+        assertEquals(20_800.0 to 21_150.0, Market.changeStep(21_150.0, null, 20_800.0))         // a change: the old price is the reference
+        assertEquals(20_800.0 to 21_150.0, Market.changeStep(20_800.0, 21_150.0, 20_800.0))     // and stays until the next change
+    }
+
     @Test fun notTheShapeGivesNull() {
+        assertNull(Market.parseFuel("<html>blocked</html>")); assertNull(Market.parseFuel("<span>Xăng E5 RON 92</span><span>20.890 đ</span>"))
         assertNull(Market.parseBtmc("{}")); assertNull(Market.parsePnj("nope")); assertNull(Market.parseBinance("{\"code\":-1}"))
         assertTrue(Market.parseVcb("<html>blocked</html>").isEmpty())
     }
@@ -42,6 +60,9 @@ class MarketTest {
         val s = Market.Snap(Market.parseVcb(res("vcb.xml")), Market.parseBtmc(res("btmc.json")), Market.parseBinance(res("binance.json")), 1, 2, 3)
         val b = Market.fromJson(Market.toJson(s).toString())!!
         assertEquals(s.rates.size, b.rates.size); assertEquals(s.gold!!.sjcSell, b.gold!!.sjcSell); assertNotNull(b.btc); assertEquals(3L, b.at)
+        val f = Market.fromJson(Market.toJson(Market.Snap(emptyList(), null, null, 1, 2, 3, Market.parseFuel(res("webgia.html"), "W"), 9)).toString())!!
+        assertEquals(28_690L, f.fuel!!.diesel); assertEquals("W", f.fuel!!.src); assertEquals(9L, f.at)
+        assertNull(Market.fromJson(Market.toJson(s).toString())!!.fuel)                              // a snapshot from before fuel
     }
 }
 
