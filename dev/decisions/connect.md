@@ -58,7 +58,10 @@ Why some code looks odd ([the list](../DECISIONS.md)).
   at every size, and TV Setup's page on the same phone was smoother (the user, 2026-11-04, NVIDIA Shield). TV Setup talks to its
   scrcpy at no distance and sends one plain TCP stream with its own CatchUp. Feeds sends no pts: the arrival time stands in (the
   decoder only matches out to in). A key frame is asked for by joining again (Feeds asks scrcpy for one per new viewer). Keys stay
-  on the keys' session (the relay has no control socket to carry them). Any failure before the first frame: ADB, as before.
+  on the keys' session (the relay has no control socket to carry them). TV Setup not reachable, or refusing: ADB, as before.
+  TV Setup answering but sending no frame in 8 s: "error", **not** ADB (a second encoder on a TV whose own is stuck; the first try on
+  the Shield ended with its whole screen black for every app until it was restarted). A join again for a key frame at most once in
+  5 s: each is a key frame there, and with a browser watching at another size a restart of TV Setup's encoder (Feeds.video).
 
 ## Waits
 

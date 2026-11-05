@@ -135,6 +135,7 @@ class Tv(
         /** Each TV's software encoder by name, from list_encoders: asked once, whether chosen by hand or after a stall */
         private val softName = java.util.concurrent.ConcurrentHashMap<String, String>()
         private const val FIRST_FRAME_MS = 8000L
+        private const val REJOIN_GAP_NS = 5_000_000_000L              // at most one join again for a key frame in 5 s (the relay's)
         /** How long a keys' session goes unused while another carries its keys before its own scrcpy-server rests: see [carry] */
         const val REST_MS = 60_000L
 
@@ -297,13 +298,17 @@ class Tv(
     @Volatile private var relaying = false                            // TV Setup's stream is showing: touches go there
     @Volatile private var feedConn: java.net.HttpURLConnection? = null
     @Volatile private var rejoin = false                              // a key frame wanted: joining again brings one (Feeds.video)
+    @Volatile private var rejoinedAt = 0L                             // nanoTime of the last one: see resetVideo
+    @Volatile private var noFrame = false                             // TV Setup answered but sent no picture in FIRST_FRAME_MS
     private val touchIo = Executors.newSingleThreadExecutor()
     private val pendingMove = java.util.concurrent.atomic.AtomicReference<org.json.JSONObject?>(null)
 
     /**
-     * Shows TV Setup's /api/video (Feeds.kt: 1 byte kind, 4 bytes length, the data). False when no frame came (no TV Setup with
-     * the picture, the pass refused, a TV Setup that cannot reach its own ADB): the caller goes on over ADB. True once it showed
-     * frames or was stopped; a stream cut after that is "closed", and the app starts the picture again as for an ADB one.
+     * Shows TV Setup's /api/video (Feeds.kt: 1 byte kind, 4 bytes length, the data). False when TV Setup could not be asked (not
+     * reachable, the pass refused, an error answer): the caller goes on over ADB. True otherwise. A stream that brings no frame
+     * in [FIRST_FRAME_MS] ends with "error", not over ADB: TV Setup's own encoder is then running or stuck, and a second one
+     * started from here on the same TV made it worse (a Shield's whole screen went black for every app until restarted,
+     * 2026-11-04). A stream cut after frames is "closed", and the app starts the picture again as for an ADB one.
      */
     private fun relayed(): Boolean {
         val pass = relay ?: return false
@@ -317,6 +322,10 @@ class Tv(
             val c = try { dev.tvremote.core.adb.AdbPrompt.openSetup(host, pass, path) } catch (e: Exception) { return shown.also { relayEnd(it, e.toString()) } }
             c.readTimeout = 20_000                                    // "nothing new" (kind 4) comes every 5 s while the TV is still
             feedConn = c
+            if (!shown) Thread({                                      // no picture in time: the read ends, see noFrame
+                try { Thread.sleep(FIRST_FRAME_MS) } catch (e: InterruptedException) { return@Thread }
+                if (!framed && feedConn === c && !stopped) { noFrame = true; try { c.disconnect() } catch (ignored: Exception) { } }
+            }, "tv-relay-first-frame").apply { isDaemon = true }.start()
             try {
                 val code = c.responseCode
                 if (code != 200) { WireLog.all.add("·", "picture $host TV Setup answered $code"); return shown.also { relayEnd(it, "http $code") } }
@@ -349,6 +358,12 @@ class Tv(
                     }
                 }
             } catch (e: IOException) {
+                if (noFrame) {
+                    WireLog.all.add("·", "picture $host TV Setup sent no picture in ${FIRST_FRAME_MS / 1000} s")
+                    screen?.release()
+                    if (!stopped) status("error", "TV Setup sent no picture")
+                    return true
+                }
                 if (!rejoin && !stopped) { WireLog.all.add("·", "picture $host TV Setup's stream: $e"); if (!shown) return false.also { relayEnd(false, "") } }
             } finally {
                 feedConn = null
@@ -816,7 +831,13 @@ class Tv(
 
     /** scrcpy starts its capture again: a new codec config and a key frame now, instead of at the next i-frame interval. */
     fun resetVideo() {
-        if (relaying) { rejoin = true; feedConn?.disconnect(); return }   // TV Setup asks its scrcpy for one when a viewer joins
+        if (relaying) {                                               // TV Setup asks its scrcpy for one when a viewer joins
+            val now = System.nanoTime()
+            if (now - rejoinedAt < REJOIN_GAP_NS) return              // each join is a key frame there, and with another viewer
+            rejoinedAt = now                                          // asking another size a restart of its encoder
+            WireLog.all.add("·", "picture $host joining TV Setup's picture again for a key frame")
+            rejoin = true; feedConn?.disconnect(); return
+        }
         send(byteArrayOf(17))
     }
 

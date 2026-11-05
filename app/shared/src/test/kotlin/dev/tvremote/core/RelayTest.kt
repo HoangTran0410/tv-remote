@@ -64,9 +64,10 @@ class RelayTest {
 
     private class Heard : Tv.Listener {
         val said = CopyOnWriteArrayList<String>()
+        val details = CopyOnWriteArrayList<String>()
         val live = CountDownLatch(1)
         val over = CountDownLatch(1)
-        override fun onStatus(key: String, detail: String) { said.add(key); if (key == "live") live.countDown(); if (key == "closed" || key == "error") over.countDown() }
+        override fun onStatus(key: String, detail: String) { said.add(key); details.add("$key $detail"); if (key == "live") live.countDown(); if (key == "closed" || key == "error") over.countDown() }
         override fun onVideoSize(w: Int, h: Int) { said.add("size $w x $h") }
         override fun onNetwork(mac: String, lan: String, tailscale: String) {}
         override fun wantsNetwork() = false
@@ -111,6 +112,42 @@ class RelayTest {
         assertEquals(0.25, touches.first().getDouble("x"), 1e-6)
         assertEquals("up", touches.last().getString("a"))
         assertEquals("closed", l.said.last())
+    }
+
+    @Test fun noFrameEndsWithoutAStartOverAdb() {
+        val hold = CountDownLatch(1)
+        serve { _, s ->                                               // answers, then only "nothing new": its encoder is stuck
+            ok(s, CatchUp.packet(0, ByteBuffer.allocate(8).putInt(960).putInt(544).array()), CatchUp.packet(1, ByteArray(20)))
+            repeat(12) { if (!hold.await(1, TimeUnit.SECONDS)) { s.getOutputStream().write(CatchUp.packet(4, ByteArray(0))); s.getOutputStream().flush() } }
+        }
+        val screen = Seen(); val l = Heard()
+        val from = System.nanoTime()
+        val t = tv(screen, l)
+        assertTrue(l.over.await(15, TimeUnit.SECONDS))
+        val took = (System.nanoTime() - from) / 1_000_000
+        hold.countDown(); t.stop()
+        assertTrue("gave up after about 8 s, took $took ms", took in 7000..12000)
+        assertFalse(l.said.contains("live"))
+        assertEquals("error TV Setup sent no picture", l.details.last())   // TV Setup's error, not the ADB session's
+        assertFalse("no ADB start", l.said.contains("starting"))
+    }
+
+    @Test fun aKeyFrameIsAskedForAtMostOnceIn5s() {
+        val hold = CountDownLatch(1)
+        serve { line, s ->
+            if (!line.startsWith("GET /api/video")) return@serve
+            ok(s, CatchUp.packet(0, ByteBuffer.allocate(8).putInt(960).putInt(544).array()), CatchUp.packet(1, ByteArray(20)), CatchUp.packet(2, ByteArray(300)))
+            hold.await(10, TimeUnit.SECONDS)
+        }
+        val screen = Seen(); val l = Heard()
+        val t = tv(screen, l)
+        assertTrue(l.live.await(5, TimeUnit.SECONDS))
+        repeat(5) { t.resetVideo(); Thread.sleep(100) }               // a decoder that keeps asking
+        Thread.sleep(1500)
+        val joins = requests.count { it.startsWith("GET /api/video") }
+        hold.countDown(); t.stop()
+        assertEquals("the first join and one again", 2, joins)
+        assertEquals("one size, one decoder", 1, screen.calls.count { it.startsWith("start") })
     }
 
     @Test fun refusedGoesOnOverAdb() {
