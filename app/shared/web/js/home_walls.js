@@ -167,6 +167,9 @@ function homeVeil(ctx, w, h, k, user) {
 // The wall under the veil at its real strength, the clock, the widgets as homePack lays them, the grid's columns and rows with
 // the live widgets first and the focus on the first one. Rounded shapes only; `img` (a loaded Image) is the background of a photo / page /
 // video, else the drawn look or the colours.
+/** HomeConfig.ACCENTS (a test keeps them equal) and TSTYLES: the page's twins of the TV's look choices. */
+const HOME_ACCENTS = { blue: '#2F72F0', teal: '#0E9F92', green: '#2E9E55', amber: '#C57400', orange: '#E8590C', red: '#E5383B', pink: '#D6336C', violet: '#7B55EE' };
+const HOME_TSTYLES = ['banner', 'icon', 'glass'];
 const HOME_PREV = { ink: '255,255,255', live: ['#4fc3a1', '#ffc857', '#8ab4f8', '#f28b82'], none: '#2a2f3a' };
 // the wall moves (a video, or a web page that is one video): the picture alone cannot say so (ThemePreview.moving is the twin)
 function homeThemeMoving(conf) {
@@ -226,18 +229,29 @@ function homeThemePaint(cv, conf, tiles, img, look, now) {   // now: a Date, for
   }
   const cols = Math.min(8, Math.max(4, conf.cols || 5)), gap = w * 0.014, tw = (w - 2 * m - (cols - 1) * gap) / cols, th = tw * 0.56;
   const fit = (h - y + gap) / (th + gap), shown = conf.rows >= 1 ? Math.min(conf.rows, Math.max(fit, 1)) : Math.min(fit, 3), ring = conf.focus === 'ring';
+  const tstyle = HOME_TSTYLES.includes(conf.tstyle) ? conf.tstyle : 'banner', accent = HOME_ACCENTS[conf.accent] || '';
   // TV Home keeps the grid at the bottom of the screen: whole rows above a margin, a part of a row cut by the screen's edge
   const whole = Math.abs(shown - Math.round(shown)) < 0.0001;
   y = Math.max(y, (whole ? h * 0.94 : h) - (shown * (th + gap) - (whole ? gap : 0)));
   for (let i = 0; i < Math.ceil(shown - 0.0001) * cols; i++) {
     const rx = m + (i % cols) * (tw + gap), ry = y + Math.floor(i / cols) * (th + gap), row = Math.floor(i / cols);
     const vis = row + 1 <= shown + 0.0001 ? 1 : Math.min(1, Math.max(0.05, shown - row)), live = i < tiles.length;
-    ctx.fillStyle = live ? HOME_PREV.live[i % 4] : `rgba(${HOME_PREV.ink},0.15)`;
-    if (live) ctx.globalAlpha = 0.8;
-    box(rx, ry, tw, th * vis, h * 0.03); ctx.globalAlpha = 1;
+    if (live || tstyle === 'banner') {
+      ctx.fillStyle = live ? HOME_PREV.live[i % 4] : `rgba(${HOME_PREV.ink},0.15)`;
+      if (live) ctx.globalAlpha = 0.8;
+      box(rx, ry, tw, th * vis, h * 0.03); ctx.globalAlpha = 1;
+    } else {                                                        // icon / glass: a rounded square for the icon (a frosted card behind it for glass) and a bar for the name
+      if (tstyle === 'glass') { ctx.fillStyle = `rgba(${HOME_PREV.ink},0.19)`; box(rx, ry, tw, th * vis, h * 0.03); }
+      const s = th * (tstyle === 'icon' ? 0.56 : 0.46), ix = rx + (tw - s) / 2, iy = ry + th * (tstyle === 'icon' ? 0.04 : 0.1), ny = iy + s + th * 0.08;
+      if (iy + s <= ry + th * vis) { ctx.fillStyle = HOME_PREV.live[i % 4]; ctx.globalAlpha = 0.8; box(ix, iy, s, s, s * 0.26); ctx.globalAlpha = 1; }
+      if (ny + th * 0.05 <= ry + th * vis) { ctx.fillStyle = `rgba(${HOME_PREV.ink},0.6)`; box(rx + tw * 0.28, ny, tw * 0.44, th * 0.05, th * 0.025); }
+    }
     if (i === 0) {
-      if (ring) { ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(1.5, h * 0.012); ctx.beginPath(); ctx.roundRect(rx - 1, ry - 1, tw + 2, th * vis + 2, h * 0.03); ctx.stroke(); }
-      else { ctx.fillStyle = `rgba(${HOME_PREV.ink},0.25)`; box(rx - tw * 0.04, ry - th * 0.06, tw * 1.08, th * vis + th * 0.12, h * 0.036); }
+      if (ring) { ctx.strokeStyle = accent || '#fff'; ctx.lineWidth = Math.max(1.5, h * 0.012); ctx.beginPath(); ctx.roundRect(rx - 1, ry - 1, tw + 2, th * vis + 2, h * 0.03); ctx.stroke(); }
+      else {
+        ctx.fillStyle = `rgba(${HOME_PREV.ink},0.25)`; box(rx - tw * 0.04, ry - th * 0.06, tw * 1.08, th * vis + th * 0.12, h * 0.036);
+        if (accent) { ctx.strokeStyle = accent; ctx.lineWidth = Math.max(1.5, h * 0.01); ctx.beginPath(); ctx.roundRect(rx - tw * 0.04, ry - th * 0.06, tw * 1.08, th * vis + th * 0.12, h * 0.036); ctx.stroke(); }
+      }
     }
   }
   if (homeThemeMoving(conf)) {                                    // a dark pill with a play triangle, top right

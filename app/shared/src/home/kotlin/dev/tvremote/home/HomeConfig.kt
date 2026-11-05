@@ -69,6 +69,11 @@ import org.json.JSONObject
  *   motion  how much moves while [anim] is on: "" this TV's choice (calm on one with little memory, 2.25 GB or less, or that Android
  *           calls low on RAM), "calm" (no overshoot, shorter, only the tile grows: fewer frames on a weak chip), "full"
  *   focus   how the focused app shows: "glass" (a pane gliding from tile to tile) or "ring" (a blue ring on the tile)
+ *   tstyle  how an app tile looks: "banner" (default, the TV banner on a card), "icon" (the app's icon large, no card, its name under it)
+ *           or "glass" (a frosted card with the icon and the name). A live widget, a folder, an app with its own picture and a pin with its
+ *           picture stay cards in every style. Absent or unknown = "banner" (TV Home as before; app/DESIGN-TV.md 2.5b)
+ *   accent  one colour for what says "chosen / now": "" (default, today's colours) or a name of [ACCENTS]. It tints the focus ring
+ *           and the glass pane's rim, the clock's date line, the calendar's today and the top bar's rule. Unknown = ""
  *   cols    how many app tiles in a row of the grid, [COLS_MIN]..[COLS_MAX] (default [COLS_DEFAULT]). A TV Home that has this reports
  *           "colsOk": true (the page offers the choice only to one that does)
  *   rows    how many rows of apps the first screen shows under the clock or the widgets, tenths allowed (1.2: row 1 and a fifth of
@@ -523,7 +528,12 @@ object HomeConfig {
     const val THEME_NAME_MAX = 24
     /** The settings a theme holds and an apply switches . */
     val THEME_KEYS = listOf("wall", "walls", "wurl", "wcol", "wdir", "wmode", "wsnap", "wkeep", "wevery", "shade", "wfit", "wfade",
-        "widgets", "wsize", "wopt", "cols", "center", "rows", "focus", "motion", "anim", "clock24", "greet")
+        "widgets", "wsize", "wopt", "cols", "center", "rows", "focus", "tstyle", "accent", "motion", "anim", "clock24", "greet")
+    /** How an app tile looks ("tstyle"), the default first. */
+    val TSTYLES = listOf("banner", "icon", "glass")
+    /** The accent palette ("accent"): name to #RRGGBB, each seen on a dark and a light wall (app/DESIGN-TV.md 2.5b). Twin: HOME_ACCENTS in js/home_walls.js. */
+    val ACCENTS = linkedMapOf("blue" to "#2F72F0", "teal" to "#0E9F92", "green" to "#2E9E55", "amber" to "#C57400",
+        "orange" to "#E8590C", "red" to "#E5383B", "pink" to "#D6336C", "violet" to "#7B55EE")
     private val THEME_ID = Regex("t[0-9]{1,4}")
     /** What the first screen draws that the person can take off (not in a theme: a look does not hide the way to the settings). */
     /** Where the Play Next items sit on the grid, first the default (the user, 2026-10-26: a row wedged inside their own apps annoys). */
@@ -743,6 +753,8 @@ object HomeConfig {
             .put("shift", o.optBoolean("shift", false))               // burn-in care: Home moves a few px every minute (ui/PixelShift)
             .put("motion", o.optString("motion").takeIf { it in MOTIONS } ?: "")
             .put("focus", o.optString("focus").takeIf { it == "ring" } ?: "glass")
+            .put("tstyle", o.optString("tstyle").takeIf { it in TSTYLES } ?: TSTYLES[0])
+            .put("accent", o.optString("accent").takeIf { it in ACCENTS } ?: "")
             .put("cols", o.optInt("cols", COLS_DEFAULT).coerceIn(COLS_MIN, COLS_MAX))
             .put("rows", rows(o.optDouble("rows", 0.0)))
             .put("dream", o.optBoolean("dream", false))

@@ -26,6 +26,7 @@
 .fchips button { flex:none; min-height:var(--chip); min-width:var(--chip); padding:0 12px; border-radius:999px; font-size:13px; font-weight:600; white-space:nowrap; color:var(--muted); }
 /* one colour per kind of app, the same on its chip and on the tags in the list */
 .fchips button, .tag { --c:var(--accent-text); }
+.swatches .sw { display:inline-block; width:20px; height:20px; border-radius:50%; vertical-align:middle; box-shadow:inset 0 0 0 1px rgba(128,128,128,.45); }
 :is(.fchips button, .tag).boot { --c:var(--boot); }
 :is(.fchips button, .tag).keep { --c:var(--ok); }
 :is(.fchips button, .tag).off { --c:var(--muted); }

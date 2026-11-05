@@ -121,6 +121,33 @@ Use the steps already in use: **4 · 6 · 8 · 10 · 12 · 14 · 16 · 20 · 24 
 | **Button / menu entry** | Games: dark `#2A3042` → white fill + 4 dp white edge, words go dark (`menuButton`); Home: white fill, dark words/icons (`ui/Drop.kt:53`, `ui/TopBar.kt:20`), ×1.06 (`Motion.pop` `:1098`) | per app (§7) |
 | **Chip / choice** | rest `0x24FFFFFF`, focused `0x73FFFFFF` + ×1.05, *selected* `0xF2FFFFFF` with dark words | Games `pill()` (`LibraryActivity.kt:349`) |
 
+### 2.5b TV Home looks: tile style and accent (theme keys `tstyle`, `accent`)
+
+Two choices that let a ready-made theme look different from another one, not only its wallpaper. Both are in `THEME_KEYS`; absent or unknown = the default = TV Home as it was, pixel for pixel.
+
+| `tstyle` | An app tile is | Name | Focus |
+|---|---|---|---|
+| `banner` (default) | the TV banner on a 16:9 card, or the icon on a dark card | under the card, while focused (inside the card for an icon) | ring or glass round the card |
+| `icon` | the app's icon large on the wall, **no card** (a phone's home screen) | under the icon, always | the same ring / glass round the icon's cell |
+| `glass` | a frosted card (`0x2EFFFFFF` fill, 1 dp `0x55FFFFFF` edge, a lighter top half) with the icon and the name | inside the card, always | the same ring / glass |
+
+Kinds that are a picture of their own stay a card in every style: a live widget (`tile:`), a folder's picture, an app with the person's own picture (`pics`), a pin with its picture, a Play Next poster. The "+ Add" and "Get TV Setup" tiles take the style (a glyph in the icon / glass form). A weak box pays nothing: no blur (the frost is a fill), no layer other than the card's.
+
+`accent`: `""` (default: today's blue ring, red date and today) or one colour of the palette. One colour for what says "this is chosen / now": it is chosen to be seen on a dark and on a light wall (contrast against `#0E1116` / `#F4F4F6`, both at least 3.3 except blue 4.0 on light and violet 3.9 on dark).
+
+| Name | Value | Dark / light |
+|---|---|---|
+| blue | `#2F72F0` | 4.3 / 4.0 |
+| teal | `#0E9F92` | 5.8 / 3.0 |
+| green | `#2E9E55` | 5.5 / 3.1 |
+| amber | `#C57400` | 5.3 / 3.3 |
+| orange | `#E8590C` | 5.3 / 3.3 |
+| red | `#E5383B` | 4.5 / 3.9 |
+| pink | `#D6336C` | 4.1 / 4.2 |
+| violet | `#7B55EE` | 3.9 / 4.4 |
+
+It tints: the focus ring's outer band (`TvTile.ringDrawable`) and the rim and glow of the gliding glass (`Glass.accent`), the clock widget's date line (modern / digital faces), the calendar's "today" disc, the top bar's rule between the clock and the day. It tints nothing else: tonal widgets keep their own colours, the app's blue (`#8AB4F8`) stays the "chosen item" colour in menus, and the ring of a tile being moved stays the carry ring. The page keeps the same table in `js/home_walls.js` `HOME_ACCENTS` (a test keeps it equal to `HomeConfig.ACCENTS`).
+
 ### 2.6 Motion (ms)
 
 | Move | Duration | Interpolator |

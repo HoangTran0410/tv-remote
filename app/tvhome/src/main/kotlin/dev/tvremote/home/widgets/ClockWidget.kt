@@ -90,7 +90,7 @@ internal class ClockFace(private val dp: (Number) -> Int, c: Context, val style:
     private val dim = if (dark) 0x66FFFFFF else 0x55000000
     private val orange = 0xFFFF9500.toInt()
     private val gold = if (light) GOLD_LIGHT else GOLD      // the roman face's ink: pale gold on dark, deep gold on light
-    private val red = if (light) RED_LIGHT else Widgets.ACCENT       // modern / digital: the date, in the calendar's red
+    private val red = dev.tvremote.home.Look.accent(if (light) RED_LIGHT else Widgets.ACCENT)       // modern / digital: the date, in the calendar's red
     private val locale = c.resources.locale0()
     private val digitsF = SimpleDateFormat(if (Store.get(c).optBoolean("clock24", true)) "HH:mm" else "h:mm", locale)
     private val dateF = SimpleDateFormat(android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEEdMMMM"), locale)

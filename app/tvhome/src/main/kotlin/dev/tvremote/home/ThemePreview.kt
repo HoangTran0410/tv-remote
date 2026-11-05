@@ -156,16 +156,32 @@ object ThemePreview {
         val exact = Math.abs(shown - Math.rint(shown)) < 0.0001
         y = maxOf(y, (if (exact) h * 0.94f else h) - (shown * (th + gap) - (if (exact) gap else 0f)).toFloat())
         val ring = conf.optString("focus", "glass") == "ring"
+        val tstyle = conf.optString("tstyle").takeIf { it in HomeConfig.TSTYLES } ?: "banner"
+        val acc = HomeConfig.ACCENTS[conf.optString("accent")]?.let { Look.argb(it) }
+        val edge = acc ?: INK                                                            // the ring and the glass's rim: the accent, else white
         for (i in 0 until whole * cols) {
             val rx = m + (i % cols) * (tw + gap); val ry = y + (i / cols) * (th + gap)
             val vis = if (i / cols + 1 <= shown + 0.0001) 1f else (shown - (i / cols)).toFloat().coerceIn(0.05f, 1f)
             val bottom = ry + th * vis
             val isLive = i < live.size
-            p.color = if (isLive) (LIVE[i % LIVE.size] and 0xFFFFFF) or (0xCC shl 24) else (FILL_TILE shl 24) or (INK and 0xFFFFFF)
-            cv.drawRoundRect(rx, ry, rx + tw, bottom, h * 0.03f, h * 0.03f, p)
+            val r = h * 0.03f
+            if (isLive || tstyle == "banner") {
+                p.color = if (isLive) (LIVE[i % LIVE.size] and 0xFFFFFF) or (0xCC shl 24) else (FILL_TILE shl 24) or (INK and 0xFFFFFF)
+                cv.drawRoundRect(rx, ry, rx + tw, bottom, r, r, p)
+            } else {                                                                     // icon / glass: a rounded square for the icon (a frosted card behind it for glass), a bar for the name
+                if (tstyle == "glass") { p.color = (0x30 shl 24) or (INK and 0xFFFFFF); cv.drawRoundRect(rx, ry, rx + tw, bottom, r, r, p) }
+                val s = th * (if (tstyle == "icon") 0.56f else 0.46f)
+                val ix = rx + (tw - s) / 2; val iy = ry + th * (if (tstyle == "icon") 0.04f else 0.1f)
+                if (iy + s <= bottom) { p.color = (0xCC shl 24) or (LIVE[i % LIVE.size] and 0xFFFFFF); cv.drawRoundRect(ix, iy, ix + s, iy + s, s * 0.26f, s * 0.26f, p) }
+                val ny = iy + s + th * 0.08f
+                if (ny + th * 0.05f <= bottom) { p.color = (0x99 shl 24) or (INK and 0xFFFFFF); cv.drawRoundRect(rx + tw * 0.28f, ny, rx + tw * 0.72f, ny + th * 0.05f, th * 0.025f, th * 0.025f, p) }
+            }
             if (i == 0) {                                                                // the focus: a ring, or the glass lifting the tile
-                if (ring) { p.style = Paint.Style.STROKE; p.strokeWidth = maxOf(1.5f, h * 0.012f); p.color = INK; cv.drawRoundRect(rx - 1, ry - 1, rx + tw + 1, bottom + 1, h * 0.03f, h * 0.03f, p); p.style = Paint.Style.FILL }
-                else { p.color = (0x40 shl 24) or (INK and 0xFFFFFF); cv.drawRoundRect(rx - tw * 0.04f, ry - th * 0.06f, rx + tw * 1.04f, bottom + th * 0.06f, h * 0.036f, h * 0.036f, p) }
+                if (ring) { p.style = Paint.Style.STROKE; p.strokeWidth = maxOf(1.5f, h * 0.012f); p.color = edge; cv.drawRoundRect(rx - 1, ry - 1, rx + tw + 1, bottom + 1, r, r, p); p.style = Paint.Style.FILL }
+                else {
+                    p.color = (0x40 shl 24) or (INK and 0xFFFFFF); cv.drawRoundRect(rx - tw * 0.04f, ry - th * 0.06f, rx + tw * 1.04f, bottom + th * 0.06f, h * 0.036f, h * 0.036f, p)
+                    if (acc != null) { p.style = Paint.Style.STROKE; p.strokeWidth = maxOf(1.5f, h * 0.01f); p.color = acc; cv.drawRoundRect(rx - tw * 0.04f, ry - th * 0.06f, rx + tw * 1.04f, bottom + th * 0.06f, h * 0.036f, h * 0.036f, p); p.style = Paint.Style.FILL }
+                }
             }
         }
     }

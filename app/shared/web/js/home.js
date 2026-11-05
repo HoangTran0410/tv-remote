@@ -31,13 +31,17 @@ const HOME_KEY_WORDS = { 183: 'home.key_red', 184: 'home.key_green', 185: 'home.
   190: 'home.key_btn3', 191: 'home.key_btn4', 195: 'home.key_btn8', 192: 'home.key_btn5', 284: 'home.key_allapps', 176: 'home.key_settings' };
 const homeKeyName = (code) => HOME_KEY_WORDS[code] ? T(HOME_KEY_WORDS[code]) : String(code - 7);   // KEYCODE_0 is 7
 const homeThemeName = (t) => (t.names || {})[window.LANG] || (t.names || {}).en || t.id;   // a ready-made theme's name in the page's language (the signed list's)
-const HOME_THEME_KEYS = ['wall', 'walls', 'wurl', 'wmode', 'wsnap', 'wkeep', 'wevery', 'shade', 'wfit', 'wfade', 'widgets', 'wsize', 'wopt', 'cols', 'center', 'rows', 'focus', 'motion', 'anim', 'clock24', 'greet'];   // HomeConfig.THEME_KEYS
+const HOME_THEME_KEYS = ['wall', 'walls', 'wurl', 'wmode', 'wsnap', 'wkeep', 'wevery', 'shade', 'wfit', 'wfade', 'widgets', 'wsize', 'wopt', 'cols', 'center', 'rows', 'focus', 'tstyle', 'accent', 'motion', 'anim', 'clock24', 'greet'];   // HomeConfig.THEME_KEYS
 const HOME_THEME_FILE_MAX = 32768;                                 // a theme file is a few KB; more is not one
 const HOME_THEMES_MAX = 12;                                           // HomeConfig.THEMES_MAX
 const HOME_PHOTO_MAX = 10;                                            // HomeConfig.PHOTO_MAX
 let homeShots = { mine: {}, ready: {}, now: null };                  // the theme previews' backgrounds (TV Home's themeshots), by theme id; now: {key, jpg} the wall in use
 const homeFaces = new Map();                                         // a theme's drawn preview, by what it is made of: drawn once, put back on every redraw
 const homeThumbs = {};                                                // a photo's small picture by id + its stamp: asked of the TV once
+const HOME_TSTYLE_WORDS = { banner: 'home.tstyle_banner', icon: 'home.tstyle_icon', glass: 'home.tstyle_glass' };
+const HOME_ACCENT_WORDS = { '': 'home.accent_none', blue: 'home.accent_blue', teal: 'home.accent_teal', green: 'home.accent_green', amber: 'home.accent_amber',
+  orange: 'home.accent_orange', red: 'home.accent_red', pink: 'home.accent_pink', violet: 'home.accent_violet' };
+function swatch(hex) { const s = el('span', { className: 'sw' }); s.style.background = hex; return s; }   // a colour from the palette, not words
 const HOME_WIDGETS = ['system', 'usage', 'calendar', 'lunar', 'timer', 'weather', 'air', 'recent', 'adblock', 'clock', 'market', 'news', 'prayer'];          // HomeConfig.WIDGETS, in the order drawn
 // A TV Home with "wsizes" sizes each widget (big / small) and packs them (homePack); one older than that has only the preset layouts below
 const HOME_BIG_KINDS = ['system', 'usage', 'calendar', 'weather', 'air', 'market', 'news', 'prayer', 'qr1', 'qr2', 'qr3', 'qr4'];     // HomeConfig.defaultSize: these are big until chosen otherwise
@@ -479,6 +483,9 @@ async function homeOpen() {
   const langHead = el('h3', { textContent: T('home.lang') }), langs = el('div', { className: 'fchips' });
   // how the focused app shows (HomeConfig "focus"); absent from a TV Home older than the glass
   const focusHead = el('h3', { textContent: T('home.focus') }), focus = el('div', { className: 'fchips' });
+  // how an app tile looks (HomeConfig "tstyle") and the one accent colour (HomeConfig "accent"); absent from a TV Home older than the two
+  const tstyleHead = el('h3', { textContent: T('home.tstyle') }), tstyle = el('div', { className: 'fchips' });
+  const accentHead = el('h3', { textContent: T('home.accent') }), accent = el('div', { className: 'fchips swatches' });
   // app tiles per row (HomeConfig "cols", 4..8); only a TV Home that reports "colsOk"
   const colsHead = el('h3', { textContent: T('home.cols') }), cols = el('div', { className: 'fchips' });
   // rows of apps on the first screen (HomeConfig "rows", tenths, 0 = by itself), up to "rowsMax" the TV measured; a TV Home that reports "rowsOk"
@@ -630,6 +637,13 @@ async function homeOpen() {
     focusHead.hidden = focus.hidden = c.focus === undefined;
     focus.replaceChildren(...[['glass', 'home.focus_glass'], ['ring', 'home.focus_ring']].map(([k, id]) =>
       el('button', { type: 'button', className: (c.focus || 'glass') === k ? 'on' : '', onclick: () => send({ focus: k }) }, T(id))));
+    tstyleHead.hidden = tstyle.hidden = c.tstyle === undefined;
+    tstyle.replaceChildren(...HOME_TSTYLES.map((k) =>
+      el('button', { type: 'button', className: (c.tstyle || 'banner') === k ? 'on' : '', onclick: () => send({ tstyle: k }) }, T(HOME_TSTYLE_WORDS[k]))));
+    accentHead.hidden = accent.hidden = c.accent === undefined;
+    accent.replaceChildren(...[['', null], ...Object.entries(HOME_ACCENTS)].map(([k, hex]) =>
+      el('button', { type: 'button', className: (c.accent || '') === k ? 'on' : '', title: T(HOME_ACCENT_WORDS[k]), 'aria-label': T(HOME_ACCENT_WORDS[k]), onclick: () => send({ accent: k }) },
+        hex ? swatch(hex) : T(HOME_ACCENT_WORDS['']))));
     colsHead.hidden = cols.hidden = !c.colsOk;
     cols.replaceChildren(...[4, 5, 6, 7, 8].map((n) =>
       el('button', { type: 'button', className: (c.cols || 5) === n ? 'on' : '', 'aria-pressed': String((c.cols || 5) === n), onclick: () => send({ cols: n }) }, String(n))));
@@ -934,6 +948,8 @@ async function homeOpen() {
       [T('home.widgets'), cards.length ? cards.join(', ') : none],
       [T('home.cols'), String(conf.cols || 5)], [T('home.rows'), conf.rows >= 1 ? String(conf.rows) : T('home.rows_auto')],
       [T('home.focus'), T(conf.focus === 'ring' ? 'home.focus_ring' : 'home.focus_glass')],
+      [T('home.tstyle'), T(HOME_TSTYLE_WORDS[HOME_TSTYLES.includes(conf.tstyle) ? conf.tstyle : 'banner'])],
+      [T('home.accent'), T(HOME_ACCENT_WORDS[HOME_ACCENTS[conf.accent] ? conf.accent : ''])],
       [T('home.anim'), on(conf.anim !== false)],
       [T('home.motion'), T(conf.motion === 'calm' ? 'home.motion_calm' : conf.motion === 'full' ? 'home.motion_full' : 'home.motion_auto')],
       [T('home.clock24'), on(conf.clock24 !== false)], [T('home.greet'), on(conf.greet !== false)],
@@ -1057,7 +1073,7 @@ async function homeOpen() {
       sect('home.sec_head', check(clock, 'home.clock24'), check(greet, 'home.greet'), gstyleHead, gstyle, gnameLine, gtextLine, gtokens, gtype, hsplit, dstyleHead, dstyle, dtextLine, dtokens, dtype),
       sect(showHead, check(shows.showClock, 'home.show_clock'), check(shows.showDate, 'home.show_date'), check(shows.showNet, 'home.show_net'), check(showInputs, 'home.show_inputs'), check(shows.showGear, 'home.show_gear'),
         check(shows.showAdd, 'home.show_add'), check(shows.showSuggest, 'home.show_suggest'), check(shows.showWatch, 'home.show_watch'), check(infold, 'home.show_infold'), watchAtHead, watchAt),
-      sect('home.sec_motion', check(anim, 'home.anim'), motionHead, motion, focusHead, focus),
+      sect('home.sec_motion', check(anim, 'home.anim'), motionHead, motion, focusHead, focus, tstyleHead, tstyle, accentHead, accent),
       sect('home.sec_grid', colsHead, cols, check(center, 'home.center'), rowsHead, rowsLine, rowsNote),
       sect('home.sec_edit', orderHead, orderBox, foldHead, foldNote, foldBox),
       sect(null, tilesHead, tilesNote, addHome, tilesList),
