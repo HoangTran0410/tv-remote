@@ -40,7 +40,9 @@ class Adb(private val dir: File) : Closeable {
         @Volatile private var closed = false
         internal val incoming = LinkedBlockingQueue<ByteArray>()
         internal val opened = Semaphore(0)
-        internal val acked = Semaphore(0)
+        internal val acked = Semaphore(0)                            // one-at-a-time TVs: a permit per packet the TV took
+        internal val credit = Semaphore(0)                           // delayed_ack TVs: bytes we may still send (the TV's window)
+        internal val delayed = this@Adb.delayed                      // fixed when the stream opens: both sides must agree for its whole life
         private var cur = EMPTY
         private var pos = 0
         internal var pace: ((Long) -> Unit)? = null                  // set by writeTo: called every PACE_STEP bytes with the count sent
@@ -57,7 +59,7 @@ class Adb(private val dir: File) : Closeable {
                     cur = next
                     pos = 0
                     if (cur === EOF) return -1
-                    if (!closed) send(OKAY, local, remote, EMPTY)      // the TV sends its next packet only after this
+                    if (!closed) ackTo(this, next.size)                // the TV sends its next packet only after this (delayed_ack: within its window)
                 } catch (e: InterruptedException) {
                     throw IOException("interrupted")
                 }
@@ -102,16 +104,11 @@ class Adb(private val dir: File) : Closeable {
             while (left > 0) {
                 if (closed) throw IOException("stream closed")
                 val n = minOf(left, maxData)
+                // delayed_ack: wait for room in the TV's window, then send and go on (the OKAYs hand the room back as the TV
+                // takes the data); otherwise one packet in flight: send, then wait for its OKAY.
+                if (delayed) waitFor { credit.tryAcquire(n, 1, TimeUnit.SECONDS) }
                 send(WRTE, local, remote, data.copyOfRange(at, at + n))
-                try {
-                    var waited = 0
-                    while (!acked.tryAcquire(1, TimeUnit.SECONDS)) {
-                        if (closed) throw IOException("stream closed")
-                        if (++waited >= WRITE_WAIT) { kill(); throw IOException("the TV stopped taking data") }   // never wait for ever
-                    }
-                } catch (e: InterruptedException) {
-                    throw IOException("interrupted")
-                }
+                if (!delayed) waitFor { acked.tryAcquire(1, TimeUnit.SECONDS) }
                 at += n
                 left -= n
                 sent += n
@@ -121,6 +118,18 @@ class Adb(private val dir: File) : Closeable {
 
         @Throws(IOException::class)
         fun write(data: ByteArray) = write(data, 0, data.size)
+
+        private inline fun waitFor(got: () -> Boolean) {
+            try {
+                var waited = 0
+                while (!got()) {
+                    if (closed) throw IOException("stream closed")
+                    if (++waited >= WRITE_WAIT) { kill(); throw IOException("the TV stopped taking data") }   // never wait for ever
+                }
+            } catch (e: InterruptedException) {
+                throw IOException("interrupted")
+            }
+        }
 
         val isClosed: Boolean get() = closed
 
@@ -145,6 +154,8 @@ class Adb(private val dir: File) : Closeable {
     private lateinit var output: OutputStream
     private var nextId = 1
     private var maxData = 4096
+    /** The TV and this client both listed `delayed_ack` (see [connected]): a stream may have a window of bytes in flight. */
+    @Volatile internal var delayed = false
     @Volatile private var dead = false
     @Volatile private var heard = System.nanoTime()                   // the last packet from the TV, whatever its stream
     private val users = java.util.concurrent.atomic.AtomicInteger(1)  // whoever made it, plus each one sharing it (see connectOrShare)
@@ -320,7 +331,7 @@ class Adb(private val dir: File) : Closeable {
     @Throws(Exception::class)
     fun connectTls(host: String, port: Int) {
         dial(host, port)
-        send(CNXN, 0x01000001, 1 shl 18, "host::\u0000".toByteArray())
+        send(CNXN, 0x01000001, 1 shl 18, BANNER)
         var m = read()
         if (m.cmd == STLS) {
             send(STLS, m.arg0, 0, EMPTY)
@@ -328,11 +339,11 @@ class Adb(private val dir: File) : Closeable {
             sock = ssl
             input = DataInputStream(ssl.inputStream)
             output = ssl.outputStream
-            m = try { read() } catch (quiet: SocketTimeoutException) { send(CNXN, 0x01000001, 1 shl 18, "host::\u0000".toByteArray()); read() }
+            m = try { read() } catch (quiet: SocketTimeoutException) { send(CNXN, 0x01000001, 1 shl 18, BANNER); read() }
         }
         if (m.cmd == AUTH) throw IOException("adb tls: this device is not paired")
         if (m.cmd != CNXN) throw IOException("adb tls: unexpected answer")
-        maxData = m.arg1.coerceIn(4096, 1 shl 18)
+        connected(m)
         sock!!.soTimeout = 0
         sock!!.keepAlive = true
         Thread(::pump, "adb-reader").apply { isDaemon = true }.start()
@@ -357,7 +368,7 @@ class Adb(private val dir: File) : Closeable {
                     asking.soTimeout = 3000
                     while (true) {
                         val m = read()
-                        if (m.cmd == CNXN) { maxData = m.arg1.coerceIn(4096, 1 shl 18); return }
+                        if (m.cmd == CNXN) { connected(m); return }
                     }
                 } catch (waiting: SocketTimeoutException) {
                     // still undecided on that connection
@@ -407,12 +418,12 @@ class Adb(private val dir: File) : Closeable {
 
     /** Signs the TV's challenge with our key. Returns null when connected, or the next challenge if the key is not trusted yet. */
     private fun authenticate(): ByteArray? {
-        send(CNXN, 0x01000000, 1 shl 18, "host::\u0000".toByteArray())
+        send(CNXN, 0x01000000, 1 shl 18, BANNER)
         var signed = false
         while (true) {
             val m = read()
             if (m.cmd == CNXN) {
-                maxData = m.arg1.coerceIn(4096, 1 shl 18)
+                connected(m)
                 return null
             }
             if (m.cmd != AUTH || m.arg0 != AUTH_TOKEN) continue
@@ -438,7 +449,11 @@ class Adb(private val dir: File) : Closeable {
                     continue
                 }
                 when (m.cmd) {
-                    OKAY -> if (s.remote == 0) { s.remote = m.arg0; s.opened.release() } else s.acked.release()
+                    OKAY -> if (s.remote == 0) {
+                        s.remote = m.arg0
+                        if (s.delayed) s.credit.release(window(m.data))     // the answer to OPEN carries the room the TV has for us
+                        s.opened.release()
+                    } else if (s.delayed) s.credit.release(window(m.data)) else s.acked.release()
                     WRTE -> s.incoming.add(m.data)                    // acknowledged when read, so a slow reader slows the TV down instead of filling memory
                     CLSE -> s.end()
                 }
@@ -457,7 +472,7 @@ class Adb(private val dir: File) : Closeable {
         if (dead) throw IOException("adb connection lost")
         val s = synchronized(this) { Stream(nextId++) }
         streams[s.local] = s
-        try { send(OPEN, s.local, 0, (service + "\u0000").toByteArray()) } catch (e: IOException) { streams.remove(s.local); throw e }
+        try { send(OPEN, s.local, if (s.delayed) RECV_WINDOW else 0, (service + "\u0000").toByteArray()) } catch (e: IOException) { streams.remove(s.local); throw e }
         try {
             // no answer at all: the connection died quietly (the phone slept, Wi-Fi or VPN changed); drop it so the next call dials
             // again. A TV still sending on other streams is only slow: a weak box writing two APKs at once took over 10 s to open a
@@ -612,6 +627,22 @@ class Adb(private val dir: File) : Closeable {
         output.flush()
     }
 
+    /** The TV's CNXN: the biggest packet it takes, and whether it speaks delayed_ack (adb's `features=` list in its banner). */
+    private fun connected(m: Msg) {
+        maxData = m.arg1.coerceIn(4096, 1 shl 18)
+        val features = String(m.data, Charsets.UTF_8).substringAfter("features=", "").substringBefore(';').trimEnd('\u0000')
+        delayed = BURST && features.split(',').contains("delayed_ack")
+    }
+
+    /** What an OKAY carries with delayed_ack: a little-endian int, the bytes the sender may send (or, for OPEN, its whole window). */
+    private fun window(data: ByteArray): Int =
+        if (data.size == 4) ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).int.coerceAtLeast(0) else 0
+
+    /** Tells the TV we took [bytes]: an empty OKAY, or with delayed_ack one carrying the count (adb's `send_ready`). */
+    private fun ackTo(s: Stream, bytes: Int) {
+        send(OKAY, s.local, s.remote, if (s.delayed) ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(bytes).array() else EMPTY)
+    }
+
     private fun read(): Msg {
         val head = ByteArray(24)
         input.readFully(head)
@@ -678,6 +709,13 @@ class Adb(private val dir: File) : Closeable {
         /** How far a file upload may run ahead of the TV's disk, and how often that is checked (see [writeTo]). */
         private const val AHEAD = 8L shl 20
         private const val PACE_STEP = 2L shl 20
+        /** What we tell the TV about ourselves; adb's own is `host::features=shell_v2,cmd,...,delayed_ack`. TVR_ADB_BURST=0 leaves delayed_ack out. */
+        private val BURST = System.getenv("TVR_ADB_BURST") != "0"
+        // No closing NUL after a feature: adbd takes the payload as it is, and "delayed_ack\0" is no feature (the TV then refuses
+        // every OPEN that asks for it). The old plain banner keeps its NUL.
+        private val BANNER = (if (BURST) "host::features=delayed_ack" else "host::\u0000").toByteArray()
+        /** How many bytes the TV may send a stream before we have read some (adb's own is 32 MiB; ours stay in memory till read). */
+        private const val RECV_WINDOW = 1 shl 20
         private const val CNXN = 0x4e584e43
         private const val AUTH = 0x48545541
         private const val STLS = 0x534c5453

@@ -53,15 +53,28 @@ Why some code looks odd ([the list](../DECISIONS.md)).
   jar is pushed only when its size differs (cold push +0.26 s). Emulator numbers: only the page and server stages transfer.
 
 - **Away (a Tailscale address), the Phone app's picture comes from TV Setup's `/api/video`** (`Tv.relay`, the pass from
-  `AdbPrompt.token`, HTTPS 8766 pinned), not from a scrcpy-server it drives over ADB. Our ADB acks each packet only when it is
-  read (`Adb.kt`, no `delayed_ack`), so a stream has one packet in flight: on 5G with 25-53 ms ping, direct, the picture stuttered
-  at every size, and TV Setup's page on the same phone was smoother (a Shield user, PR #20, 2026-11-04). TV Setup talks to its
+  `AdbPrompt.token`, HTTPS 8766 pinned), not from a scrcpy-server it drives over ADB. Our ADB used to ack each packet only when it was
+  read (no `delayed_ack`), so a stream had one packet in flight: on 5G with 25-53 ms ping, direct, the picture stuttered
+  at every size (`delayed_ack` is in since 2026-11-05, see "ADB delayed_ack" below; this route stays: it also saves the TV's scrcpy a long trip), and TV Setup's page on the same phone was smoother (a Shield user, PR #20, 2026-11-04). TV Setup talks to its
   scrcpy at no distance and sends one plain TCP stream with its own CatchUp. Feeds sends no pts: the arrival time stands in (the
   decoder only matches out to in). A key frame is asked for by joining again (Feeds asks scrcpy for one per new viewer). Keys stay
   on the keys' session (the relay has no control socket to carry them). TV Setup not reachable, or refusing: ADB, as before.
   TV Setup answering but sending no frame in 8 s: "error", **not** ADB (a second encoder on a TV whose own is stuck; the first try on
   the Shield ended with its whole screen black for every app until it was restarted). A join again for a key frame at most once in
   5 s: each is a key frame there, and with a browser watching at another size a restart of TV Setup's encoder (Feeds.video).
+
+## ADB delayed_ack
+
+- **`Adb.kt` speaks adb's `delayed_ack`** (adb/docs/dev/delayed_ack.md, `adb.cpp` A_OPEN / A_OKAY / `send_ready`): our CNXN banner is `host::features=delayed_ack`
+  (**no closing NUL**: adbd takes the payload as it is, `delayed_ack\0` is no feature and the TV then closes every OPEN that asks
+  for it); when the TV's banner lists it too, OPEN carries our receive window in arg1 (1 MiB), the OKAY answering OPEN carries the
+  TV's (32 MiB on current adbd), `write` waits for room in that window, not for an OKAY, and every OKAY carries 4 bytes: the bytes
+  it acks (ours: when `read` takes a packet). Both sides or neither, per connection: adbd drops an OPEN whose arg1 and
+  features disagree. A TV without it (Android 11 and older, most boxes) is the one-packet way as before; `TVR_ADB_BURST=0`
+  forces that. Measured with `dev/test/slowlink.js` (50 ms round trip) on the Android 14 TV emulator, 30 MB read: 9.3 s -> 1.9 s
+  (direct, no delay: 0.4 s either way). Writes on that emulator were not slow before, because its adbd sends several OKAYs per
+  WRTE in the old mode (the extra permits let the sender run ahead), so a push needs a real TV to show the gain.
+  `AdbTls` pairing has its own framing and is untouched; `connectTls` shares the pump and so the feature.
 
 ## Waits
 
