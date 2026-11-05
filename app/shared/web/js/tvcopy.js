@@ -5,7 +5,7 @@
 (function (root) {
   // HomeConfig.THEME_KEYS, kept equal by tests/tvcopy.test.js
   const LOOK = ['wall', 'walls', 'wurl', 'wcol', 'wdir', 'wmode', 'wsnap', 'wkeep', 'wevery', 'shade', 'wfit', 'wfade',
-    'widgets', 'wsize', 'wopt', 'wplace', 'cols', 'center', 'rows', 'focus', 'motion', 'anim', 'clock24', 'greet'];
+    'widgets', 'wsize', 'wopt', 'wplace', 'cols', 'center', 'rows', 'focus', 'tstyle', 'accent', 'motion', 'anim', 'clock24', 'greet'];
   const GRID = ['dock', 'hidden', 'order', 'folders', 'tiles', 'names'];
   const KEYS = ['keyon', 'keyapps', 'autoon', 'autoapp', 'autolast', 'autoall'];
   const isQr = (w) => /^qr[0-9]+$/.test(w);                              // HomeQr.KEYS: a code (a Wi-Fi password) is not copied

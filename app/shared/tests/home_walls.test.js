@@ -84,11 +84,10 @@ test('the preview puts the widgets where "wplace" says (HomeConfig.WPLACES): row
   assert.deepEqual(none.wid, top.wid);                                     // a missing key is today's row
   assert.deepEqual(none.tile, top.tile);
   assert.ok(top.wid.length && top.wid.every((b) => b.y + b.bh <= Math.min(...top.tile.map((t) => t.y)) + 1));
-  const left = draw({ ...base, wplace: 'left' }), right = draw({ ...base, wplace: 'right' }), bottom = draw({ ...base, wplace: 'bottom' });
+  const left = draw({ ...base, wplace: 'left' }), right = draw({ ...base, wplace: 'right' });
   assert.ok(left.wid.length >= 2 && left.wid.every((b) => b.x + b.bw <= Math.min(...left.tile.map((t) => t.x)) + 1), 'column left of the tiles');
   assert.ok(right.wid.every((b) => b.x >= Math.max(...right.tile.map((t) => t.x + t.bw)) - 1), 'column right of the tiles');
   assert.ok(new Set(left.wid.map((b) => b.x)).size === 1, 'one column');
-  assert.ok(bottom.wid.every((b) => b.y >= Math.max(...bottom.tile.map((t) => t.y))), 'row under the grid');
   const p = JSON.parse(JSON.stringify(sb.col(['clock', 'weather', 'calendar'], ['weather', 'calendar'], false, 378)));
   assert.deepEqual(p.cols.map((c) => c.weight), [90, 180]);                // the twin of HomeConfigTest.sideColumnPacking
   assert.deepEqual(p.waiting, ['calendar']);

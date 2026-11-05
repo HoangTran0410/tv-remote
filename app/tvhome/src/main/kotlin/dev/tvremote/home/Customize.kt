@@ -904,11 +904,15 @@ object Customize {
                 listOf("" to a.getString(R.string.c_motion_auto), "calm" to a.getString(R.string.c_motion_calm), "full" to a.getString(R.string.c_motion_full)))
             tile(R.drawable.ic_eye, a.getString(R.string.c_focus), null, "focus",
                 listOf("ring" to a.getString(R.string.c_focus_ring), "glass" to a.getString(R.string.c_focus_glass)))
+            tile(R.drawable.ic_apps, a.getString(R.string.c_tstyle), null, "tstyle",
+                HomeConfig.TSTYLES.map { it to a.getString(when (it) { "icon" -> R.string.c_tstyle_icon; "glass" -> R.string.c_tstyle_glass; else -> R.string.c_tstyle_banner }) })
+            tile(R.drawable.ic_sparkle, a.getString(R.string.c_accent), null, "accent",
+                listOf("" to a.getString(R.string.c_accent_none)) + HomeConfig.ACCENTS.keys.map { it to a.getString(a.resources.getIdentifier("c_accent_$it", "string", a.packageName)) })
             section(a.getString(R.string.g_sec_grid))
             tile(R.drawable.ic_apps, a.getString(R.string.c_cols), null, "cols", (HomeConfig.COLS_MIN..HomeConfig.COLS_MAX).map { "$it" to "$it" })
             tile(R.drawable.ic_updown, a.getString(R.string.c_rows), null, "rows")
             tile(R.drawable.ic_apps, a.getString(R.string.c_center), null, "center")   // a short row in the middle, default off
-            tile(R.drawable.ic_updown, a.getString(R.string.c_wplace), null, "wplace", HomeConfig.WPLACES.map { it to a.getString(when (it) { "left" -> R.string.c_wplace_left; "right" -> R.string.c_wplace_right; "bottom" -> R.string.c_wplace_bottom; else -> R.string.c_wplace_top }) })   // where the widgets sit, default top
+            tile(R.drawable.ic_updown, a.getString(R.string.c_wplace), null, "wplace", HomeConfig.WPLACES.map { it to a.getString(when (it) { "left" -> R.string.c_wplace_left; "right" -> R.string.c_wplace_right; else -> R.string.c_wplace_top }) })   // where the widgets sit, default top
             section(a.getString(R.string.g_sec_edit))
             val doors = launchPage(a, col, ::glass, ::label, gap, quick = false)
             doors.getOrNull(doorAt)?.let { v -> groups[2].start = { v } }; doorAt = -1   // come back from a door: on it
@@ -1609,6 +1613,8 @@ object Customize {
             a.getString(R.string.c_cols) to "${conf.optInt("cols", HomeConfig.COLS_DEFAULT)}",
             a.getString(R.string.c_rows) to rowsWord(a, conf.optDouble("rows", 0.0)),
             a.getString(R.string.c_focus) to a.getString(if (conf.optString("focus") == "ring") R.string.c_focus_ring else R.string.c_focus_glass),
+            a.getString(R.string.c_tstyle) to a.getString(when (conf.optString("tstyle")) { "icon" -> R.string.c_tstyle_icon; "glass" -> R.string.c_tstyle_glass; else -> R.string.c_tstyle_banner }),
+            a.getString(R.string.c_accent) to conf.optString("accent").let { if (it.isEmpty()) a.getString(R.string.c_accent_none) else a.getString(a.resources.getIdentifier("c_accent_$it", "string", a.packageName)) },
             a.getString(R.string.motion) to onOff(conf.optBoolean("anim", true)),
             a.getString(R.string.c_motion) to a.getString(when (conf.optString("motion")) { "calm" -> R.string.c_motion_calm; "full" -> R.string.c_motion_full; else -> R.string.c_motion_auto }),
             a.getString(R.string.clock24) to onOff(conf.optBoolean("clock24", true)),

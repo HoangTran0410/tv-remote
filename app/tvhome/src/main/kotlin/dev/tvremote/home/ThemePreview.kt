@@ -109,63 +109,96 @@ object ThemePreview {
         bar(cv, p, m, h * 0.075f, w * 0.30f, h * 0.07f, 0xCC)
         bar(cv, p, w - m - w * 0.16f, h * 0.085f, w * 0.16f, h * 0.05f, 0x40)
         var y = h * 0.21f
-        // the widgets, in the columns HomeActivity makes of them
+        // the widgets, in the columns HomeActivity makes of them: a row under the head, or a column beside the grid ("wplace" left / right)
         val keys = strs(conf, "widgets")
-        val packed = HomeConfig.pack(keys, HomeConfig.bigs(conf))
-        if (packed.cols.isNotEmpty()) {
+        val place = conf.optString("wplace").takeIf { it in HomeConfig.WPLACES } ?: "top"
+        val packed = if (HomeConfig.side(place)) HomeConfig.packColumn(keys, HomeConfig.bigs(conf), false, 378) else HomeConfig.pack(keys, HomeConfig.bigs(conf))   // 378 dp: a 1080p screen under the top bar
+        val side = HomeConfig.side(place) && packed.cols.isNotEmpty()
+        fun card(k: String, x: Float, cy: Float, cw: Float, ch: Float, n: Int) {
+            val look = HomeConfig.optValue(conf, k, "look")
+            p.color = if (look == "solid") SOLID else (((if (look == "tonal") FILL_TONAL else FILL_GLASS) shl 24) or (INK and 0xFFFFFF))
+            if (look != "none") cv.drawRoundRect(x, cy, x + cw, cy + ch, h * 0.035f, h * 0.035f, p)   // no widget: only what is on it
+            val pad = h * 0.03f
+            if (k == "clock" && (n == 1 || ch > h * 0.12f)) {                    // the analog face
+                val d = minOf(cw, ch) * 0.56f
+                p.style = Paint.Style.STROKE; p.strokeWidth = maxOf(1f, h * 0.008f); p.color = (0xB3 shl 24) or (INK and 0xFFFFFF)
+                cv.drawCircle(x + cw / 2, cy + ch / 2, d / 2, p); p.style = Paint.Style.FILL
+            } else {
+                bar(cv, p, x + pad, cy + pad, cw * 0.42f, h * 0.018f, 0x66)
+                if (ch > h * 0.12f) bar(cv, p, x + pad, cy + ch * 0.45f, cw * 0.62f, h * 0.045f, 0xB3)
+                else bar(cv, p, x + pad, cy + ch * 0.55f, cw * 0.5f, h * 0.03f, 0xB3)
+            }
+        }
+        val sideW = (w - 2 * m) / 3; val sideGap = w * 0.033f
+        if (side) {                                                   // blocks stacked, each as high as its dp says (a 540 dp screen)
+            val x = if (place == "left") m else w - m - sideW; val sc = h / 540f
+            var cy = y
+            for (col in packed.cols) {
+                val n = col.keys.size; val ch = col.weight * sc; val g = HomeConfig.H_GAP * sc * 0.5f
+                val each = (ch - g * (n - 1)) / n
+                col.keys.forEachIndexed { j, k -> card(k, x, cy + j * (each + g), sideW, each, n) }
+                cy += ch + HomeConfig.H_GAP * sc
+            }
+        } else if (packed.cols.isNotEmpty()) {
             val rowH = h * 0.30f
             val gap = w * 0.02f
             val room = w - 2 * m - gap * (packed.cols.size - 1)
             val sum = maxOf(HomeConfig.FLOOR, packed.cols.sumOf { it.weight }).toFloat()
-                        var x = m
+            val used = room * packed.cols.sumOf { it.weight } / sum + gap * (packed.cols.size - 1)
+            var x = if (conf.optBoolean("center", false)) (w - used) / 2 else m   // centered over a centered grid, as TV Home lays it
             for (col in packed.cols) {
                 val cw = room * col.weight / sum
                 val n = col.keys.size
                 val ch = (rowH - (n - 1) * gap * 0.6f) / n
-                col.keys.forEachIndexed { j, k ->
-                    val cy = y + j * (ch + gap * 0.6f)
-                    val look = HomeConfig.optValue(conf, k, "look")
-                    p.color = if (look == "solid") SOLID else (((if (look == "tonal") FILL_TONAL else FILL_GLASS) shl 24) or (INK and 0xFFFFFF))
-                    if (look != "none") cv.drawRoundRect(x, cy, x + cw, cy + ch, h * 0.035f, h * 0.035f, p)   // no widget: only what is on it
-                    val pad = h * 0.03f
-                    if (k == "clock" && (n == 1 || ch > h * 0.12f)) {                    // the analog face
-                        val d = minOf(cw, ch) * 0.56f
-                        p.style = Paint.Style.STROKE; p.strokeWidth = maxOf(1f, h * 0.008f); p.color = (0xB3 shl 24) or (INK and 0xFFFFFF)
-                        cv.drawCircle(x + cw / 2, cy + ch / 2, d / 2, p); p.style = Paint.Style.FILL
-                    } else {
-                        bar(cv, p, x + pad, cy + pad, cw * 0.42f, h * 0.018f, 0x66)
-                        if (ch > h * 0.12f) bar(cv, p, x + pad, cy + ch * 0.45f, cw * 0.62f, h * 0.045f, 0xB3)
-                        else bar(cv, p, x + pad, cy + ch * 0.55f, cw * 0.5f, h * 0.03f, 0xB3)
-                    }
-                }
+                col.keys.forEachIndexed { j, k -> card(k, x, y + j * (ch + gap * 0.6f), cw, ch, n) }
                 x += cw + gap
             }
             y += rowH + h * 0.04f
         }
         // the grid: [cols] to a row, the live widgets first, the first one focused; "rows" as set (a part of a row shows part), else what fits
-        val cols = conf.optInt("cols", HomeConfig.COLS_DEFAULT).coerceIn(HomeConfig.COLS_MIN, HomeConfig.COLS_MAX)
+        val cols0 = conf.optInt("cols", HomeConfig.COLS_DEFAULT).coerceIn(HomeConfig.COLS_MIN, HomeConfig.COLS_MAX)
         val gap = w * 0.014f
-        val tw = (w - 2 * m - (cols - 1) * gap) / cols
+        val base = (w - 2 * m - (cols0 - 1) * gap) / cols0
+        val gx = if (side && place == "left") m + sideW + sideGap else m; val gw = if (side) w - 2 * m - sideW - sideGap else w - 2 * m
+        // beside a column the tiles keep about their size and the row holds fewer (HomeActivity.gridCols)
+        val cols = if (side) minOf(cols0, maxOf(minOf(3, cols0), ((gw + gap) / (base * 0.88f + gap)).toInt())) else cols0
+        val tw = (gw - (cols - 1) * gap) / cols
         val th = tw * 0.56f
         val rows = conf.optDouble("rows", 0.0)
         val room = (h - y).toDouble()
         val fit = (room + gap) / (th + gap)
-        val shown = if (rows >= 1) minOf(rows, fit.coerceAtLeast(1.0)) else minOf(fit, 3.0)
+        val shown = if (rows >= 1 && !side) minOf(rows, fit.coerceAtLeast(1.0)) else minOf(fit, 3.0)
         val whole = Math.ceil(shown - 0.0001).toInt().coerceAtLeast(1)
         // TV Home keeps the grid at the bottom of the screen: whole rows above a margin, a part of a row cut by the screen's edge
         val exact = Math.abs(shown - Math.rint(shown)) < 0.0001
-        y = maxOf(y, (if (exact) h * 0.94f else h) - (shown * (th + gap) - (if (exact) gap else 0f)).toFloat())
+        if (!side) y = maxOf(y, (if (exact) h * 0.94f else h) - (shown * (th + gap) - (if (exact) gap else 0f)).toFloat())
         val ring = conf.optString("focus", "glass") == "ring"
+        val tstyle = conf.optString("tstyle").takeIf { it in HomeConfig.TSTYLES } ?: "banner"
+        val acc = HomeConfig.ACCENTS[conf.optString("accent")]?.let { Look.argb(it) }
+        val edge = acc ?: INK                                                            // the ring and the glass's rim: the accent, else white
         for (i in 0 until whole * cols) {
-            val rx = m + (i % cols) * (tw + gap); val ry = y + (i / cols) * (th + gap)
+            val rx = gx + (i % cols) * (tw + gap); val ry = y + (i / cols) * (th + gap)
             val vis = if (i / cols + 1 <= shown + 0.0001) 1f else (shown - (i / cols)).toFloat().coerceIn(0.05f, 1f)
             val bottom = ry + th * vis
             val isLive = i < live.size
-            p.color = if (isLive) (LIVE[i % LIVE.size] and 0xFFFFFF) or (0xCC shl 24) else (FILL_TILE shl 24) or (INK and 0xFFFFFF)
-            cv.drawRoundRect(rx, ry, rx + tw, bottom, h * 0.03f, h * 0.03f, p)
+            val r = h * 0.03f
+            if (isLive || tstyle == "banner") {
+                p.color = if (isLive) (LIVE[i % LIVE.size] and 0xFFFFFF) or (0xCC shl 24) else (FILL_TILE shl 24) or (INK and 0xFFFFFF)
+                cv.drawRoundRect(rx, ry, rx + tw, bottom, r, r, p)
+            } else {                                                                     // icon / glass: a rounded square for the icon (a frosted card behind it for glass), a bar for the name
+                if (tstyle == "glass") { p.color = (0x30 shl 24) or (INK and 0xFFFFFF); cv.drawRoundRect(rx, ry, rx + tw, bottom, r, r, p) }
+                val s = th * (if (tstyle == "icon") 0.56f else 0.46f)
+                val ix = rx + (tw - s) / 2; val iy = ry + th * (if (tstyle == "icon") 0.04f else 0.1f)
+                if (iy + s <= bottom) { p.color = (0xCC shl 24) or (LIVE[i % LIVE.size] and 0xFFFFFF); cv.drawRoundRect(ix, iy, ix + s, iy + s, s * 0.26f, s * 0.26f, p) }
+                val ny = iy + s + th * 0.08f
+                if (ny + th * 0.05f <= bottom) { p.color = (0x99 shl 24) or (INK and 0xFFFFFF); cv.drawRoundRect(rx + tw * 0.28f, ny, rx + tw * 0.72f, ny + th * 0.05f, th * 0.025f, th * 0.025f, p) }
+            }
             if (i == 0) {                                                                // the focus: a ring, or the glass lifting the tile
-                if (ring) { p.style = Paint.Style.STROKE; p.strokeWidth = maxOf(1.5f, h * 0.012f); p.color = INK; cv.drawRoundRect(rx - 1, ry - 1, rx + tw + 1, bottom + 1, h * 0.03f, h * 0.03f, p); p.style = Paint.Style.FILL }
-                else { p.color = (0x40 shl 24) or (INK and 0xFFFFFF); cv.drawRoundRect(rx - tw * 0.04f, ry - th * 0.06f, rx + tw * 1.04f, bottom + th * 0.06f, h * 0.036f, h * 0.036f, p) }
+                if (ring) { p.style = Paint.Style.STROKE; p.strokeWidth = maxOf(1.5f, h * 0.012f); p.color = edge; cv.drawRoundRect(rx - 1, ry - 1, rx + tw + 1, bottom + 1, r, r, p); p.style = Paint.Style.FILL }
+                else {
+                    p.color = (0x40 shl 24) or (INK and 0xFFFFFF); cv.drawRoundRect(rx - tw * 0.04f, ry - th * 0.06f, rx + tw * 1.04f, bottom + th * 0.06f, h * 0.036f, h * 0.036f, p)
+                    if (acc != null) { p.style = Paint.Style.STROKE; p.strokeWidth = maxOf(1.5f, h * 0.01f); p.color = acc; cv.drawRoundRect(rx - tw * 0.04f, ry - th * 0.06f, rx + tw * 1.04f, bottom + th * 0.06f, h * 0.036f, h * 0.036f, p); p.style = Paint.Style.FILL }
+                }
             }
         }
     }

@@ -38,7 +38,7 @@ class HomeConfigTest {
         assertEquals(true, HomeConfig.clean(JSONObject().put("center", true)).getBoolean("center"))
         assertEquals(true, "center" in HomeConfig.THEME_KEYS)
         assertEquals("top", HomeConfig.clean(JSONObject()).getString("wplace"))                       // missing = today's row
-        for (p in listOf("top", "left", "right", "bottom")) assertEquals(p, HomeConfig.clean(JSONObject().put("wplace", p)).getString("wplace"))
+        for (p in listOf("top", "left", "right")) assertEquals(p, HomeConfig.clean(JSONObject().put("wplace", p)).getString("wplace"))
         assertEquals("top", HomeConfig.clean(JSONObject().put("wplace", "middle")).getString("wplace"))
         assertEquals(true, "wplace" in HomeConfig.THEME_KEYS)
     }
@@ -53,6 +53,19 @@ class HomeConfigTest {
         assertEquals(1, HomeConfig.packColumn(listOf("weather", "calendar"), big, false, 100).cols.size)   // a short screen still shows the first
         assertEquals(emptyList<String>(), HomeConfig.packColumn(keys, big, false, 2000).waiting)
         assertEquals("note", HomeConfig.packColumn(keys, big, true, 380).cols.last().keys.last())        // the pinned note keeps its place
+    }
+
+    @Test fun tileStyleAndAccentDefaultToTodayAndRejectUnknown() {
+        val d = HomeConfig.clean(JSONObject())
+        assertEquals("banner", d.getString("tstyle")); assertEquals("", d.getString("accent"))
+        for (s in HomeConfig.TSTYLES) assertEquals(s, HomeConfig.clean(JSONObject().put("tstyle", s)).getString("tstyle"))
+        for ((n, hex) in HomeConfig.ACCENTS) { assertEquals(n, HomeConfig.clean(JSONObject().put("accent", n)).getString("accent")); assertTrue(Regex("#[0-9A-F]{6}").matches(hex)) }
+        val bad = HomeConfig.clean(JSONObject().put("tstyle", "neon").put("accent", "#ff0000"))
+        assertEquals("banner", bad.getString("tstyle")); assertEquals("", bad.getString("accent"))
+        assertEquals("banner", HomeConfig.TSTYLES[0])
+        assertTrue("tstyle" in HomeConfig.THEME_KEYS && "accent" in HomeConfig.THEME_KEYS)
+        val t = HomeConfig.pickTheme(HomeConfig.clean(JSONObject().put("tstyle", "glass").put("accent", "teal")))
+        assertEquals("glass", t.getString("tstyle")); assertEquals("teal", t.getString("accent"))
     }
 
     @Test fun colsDefaultToFiveAndStayInRange() {

@@ -165,7 +165,7 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
      * Two small widgets stacked in one column: the top one from above, the bottom one from the grid ([fromBelow]).
      */
     fun hotAt(x: Int, fromBelow: Boolean = false): View? {
-        if (place == "bottom" || (side && fromBelow)) return null      // under the grid, or beside it: nothing straight above or below the grid's first row
+        if (side && fromBelow) return null                            // beside it: nothing straight above or below the grid's first row
         val at = IntArray(2)
         val col = hot.filter { h -> h.isShown && run { h.getLocationOnScreen(at); x in at[0]..at[0] + h.width } }
         return (if (fromBelow) col.maxByOrNull { h -> h.getLocationOnScreen(at); at[1] } else col.minByOrNull { h -> h.getLocationOnScreen(at); at[1] })

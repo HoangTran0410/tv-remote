@@ -27,7 +27,8 @@ import android.widget.FrameLayout
  */
 class Glass(c: Context, private val dp: (Number) -> Int) : View(c) {
     // the pane is white light only; what changes is how much of it shows
-    private fun white(a: Int) = (a shl 24) or 0xFFFFFF
+    private var tint = 0xFFFFFF                                      // white, or the accent ([accent]): the pane is one colour of light
+    private fun white(a: Int) = (a shl 24) or tint
     private fun whites(vararg a: Int) = IntArray(a.size) { white(a[it]) }
     private val pad = dp(14)                                         // room for the glow round the pane
     private val rim = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = dp(2).toFloat() }
@@ -53,8 +54,20 @@ class Glass(c: Context, private val dp: (Number) -> Int) : View(c) {
         setLayerType(LAYER_TYPE_HARDWARE, null)
     }
 
+    /** The pane's light in the accent [rgb] (0: white again). The size's cached glow is made again in the new colour. */
+    fun accent(rgb: Int) {
+        val t = if (rgb == 0) 0xFFFFFF else rgb and 0xFFFFFF
+        if (t == tint) return
+        twin?.accent(rgb); tint = t; glow.color = white(0x38); halo = null; halos.clear()
+        if (width > 0) { shade(width, height); invalidate() }
+    }
+
     override fun onSizeChanged(w: Int, h: Int, ow: Int, oh: Int) {
         super.onSizeChanged(w, h, ow, oh)
+        shade(w, h)
+    }
+
+    private fun shade(w: Int, h: Int) {
         // the rim lit from the top left as iOS's glass is: bright where the light meets the corners (top left, bottom right),
         // dim along the sides; the hairline inside it, the other way round, is the far edge of the glass seen through it
         val cx = w / 2f; val cy = h / 2f
@@ -107,7 +120,7 @@ class Glass(c: Context, private val dp: (Number) -> Int) : View(c) {
         }
         val a = cur
         if (!glide || !a.shown || a.fits(face, r)) { (if (a === this) twin else this)?.drop(); a.go(content, face, grow, r, glide); return }
-        val b = (if (a === this) twin ?: Glass(context, dp).also { twin = it; content.addView(it, content.indexOfChild(this) + 1, FrameLayout.LayoutParams(0, 0)) } else this)
+        val b = (if (a === this) twin ?: Glass(context, dp).also { twin = it; it.tint = tint; it.glow.color = white(0x38); content.addView(it, content.indexOfChild(this) + 1, FrameLayout.LayoutParams(0, 0)) } else this)
         val fx = a.translationX + a.pad * a.scaleX; val fy = a.translationY + a.pad * a.scaleY   // where a's face is now, mid-glide or not
         val fw = a.baseW * a.scaleX; val fh = a.baseH * a.scaleY
         b.shape(face, r)

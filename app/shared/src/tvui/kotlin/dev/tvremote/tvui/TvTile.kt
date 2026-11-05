@@ -36,6 +36,8 @@ open class TvTile(c: Context, w: Int, dp: (Number) -> Int, hPct: Int = 56) : Lin
     /** False: focus is the ring and the name only, the card stays its size (a full-screen page of tiles, where the growth cost most). */
     open val grows get() = true
     private val across = w.toFloat()
+    private val dpOf = dp
+    private var plain = false
     val pane: View get() = face                                     // where the glass goes
     val corner = dp(TvUi.R_TILE).toFloat()
     var nudged: ((Float, Float) -> Unit)? = null                   // the glass leans with the card
@@ -58,7 +60,7 @@ open class TvTile(c: Context, w: Int, dp: (Number) -> Int, hPct: Int = 56) : Lin
         card.addView(ring, FrameLayout.LayoutParams(-1, -1))
         card.clipChildren = false
         card.outlineProvider = object : android.view.ViewOutlineProvider() {   // the shadow under the face only
-            override fun getOutline(v: View, out: android.graphics.Outline) { out.setRoundRect(o, o, o + w, o + h, corner) }
+            override fun getOutline(v: View, out: android.graphics.Outline) { if (plain) out.setEmpty() else out.setRoundRect(o, o, o + w, o + h, corner) }
         }
         addView(card, LayoutParams(w + 2 * o, h + 2 * o).apply { setMargins(-o, -o, -o, -o) })
         // a card at rest is a texture: a page scroll then pastes it, not the picture through its rounded clip again. On the FPT
@@ -75,6 +77,12 @@ open class TvTile(c: Context, w: Int, dp: (Number) -> Int, hPct: Int = 56) : Lin
         addView(name, LayoutParams(w, dp(18)).apply { topMargin = below; bottomMargin = -(below + dp(18)) })   // fixed height: the row stays the picture's
         background = ColorDrawable(Color.TRANSPARENT)
     }
+
+    /** The ring in another colour (TV Home's accent); [RING_ACCENT] when never called. */
+    fun accent(color: Int) { ring.background = ringDrawable(corner, dpOf, color) }
+
+    /** A tile with no card of its own (TV Home's "icon" style): no shadow under it and no shine on it, only the ring / glass and the name. */
+    fun flat() { plain = true; shine.visibility = GONE; card.invalidateOutline() }
 
     /** The picture of the tile, under the shine; it is what grows a touch more than the card on focus. */
     fun fill(v: View) { content = v; face.addView(v, 0, FrameLayout.LayoutParams(-1, -1)) }
@@ -104,7 +112,7 @@ open class TvTile(c: Context, w: Int, dp: (Number) -> Int, hPct: Int = 56) : Lin
         if (!Motion.on) {                                             // the end state at once, grown too: at 1x the glass (sized for GROW) stood round a small tile and nothing told which was chosen
             val s = if (on) GROW else 1f
             card.translationX = 0f; card.translationY = 0f
-            card.scaleX = s; card.scaleY = s; card.translationZ = if (on) lift else 0f; content.scaleX = if (on) 1.05f else 1f; content.scaleY = content.scaleX
+            card.scaleX = s; card.scaleY = s; card.translationZ = if (on && !plain) lift else 0f; content.scaleX = if (on) 1.05f else 1f; content.scaleY = content.scaleX
             ring.alpha = if (on && !glassy) 1f else 0f; name.alpha = if (on) 1f else nameRest; name.translationY = 0f; shine.alpha = 0f
             return
         }
@@ -124,7 +132,7 @@ open class TvTile(c: Context, w: Int, dp: (Number) -> Int, hPct: Int = 56) : Lin
         }
         // the shadow at once, only the size glides: animating translationZ re-made the shadow every frame, on a BRAVIA (MT5891,
         // Android 9) 41% of the frames over 16.7 ms while focus moved sideways, 12% this way (no shadow at all: the same 12%)
-        card.translationZ = if (on) lift else 0f
+        card.translationZ = if (on && !plain) lift else 0f
         card.animate().scaleX(s).scaleY(s).setDuration(t).setInterpolator(ip).withLayer().start()
         content.animate().scaleX(if (on) 1.05f else 1f).scaleY(if (on) 1.05f else 1f).setDuration(t).setInterpolator(ip).start()
         ring.animate().alpha(if (on && !glassy) 1f else 0f).setDuration(if (on) 200L else 160L).setInterpolator(Motion.glide).start()
@@ -156,10 +164,10 @@ open class TvTile(c: Context, w: Int, dp: (Number) -> Int, hPct: Int = 56) : Lin
          * over it, covering the face's soft edge, then a thin white line for a banner that is blue itself. No dark edge: on a TV it
          * read as a black border round the blue.
          */
-        fun ringDrawable(r: Float, dp: (Number) -> Int): Drawable {
+        fun ringDrawable(r: Float, dp: (Number) -> Int, accent: Int = TvUi.RING_ACCENT): Drawable {
             val o = dp(TvUi.RING_DP)
             fun band(w: Int, color: Int, radius: Float) = GradientDrawable().apply { cornerRadius = maxOf(0f, radius); setStroke(w, color); setColor(Color.TRANSPARENT) }
-            return LayerDrawable(arrayOf(band(o + dp(1), TvUi.RING_ACCENT, r + o), band(dp(1), Color.WHITE, r - dp(1)))).apply {
+            return LayerDrawable(arrayOf(band(o + dp(1), accent, r + o), band(dp(1), Color.WHITE, r - dp(1)))).apply {
                 setLayerInset(1, o + dp(1), o + dp(1), o + dp(1), o + dp(1))
             }
         }

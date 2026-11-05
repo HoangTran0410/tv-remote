@@ -57,7 +57,7 @@ internal fun Widgets.calendarDate(widget: LinearLayout, f: Facts) {
     val d = c.moon
     val month = a.resources.getStringArray(R.array.lunar_month)[d.month - 1] + if (d.leap) a.getString(R.string.lunar_leap) else ""
     val head = LinearLayout(a).apply { orientation = HORIZONTAL; gravity = Gravity.BOTTOM }
-    head.addView(text(SimpleDateFormat("EEEE", loc).format(now).replaceFirstChar { it.uppercase() }, 17f, ACCENT).apply { typeface = BOLD; maxLines = 1 })
+    head.addView(text(SimpleDateFormat("EEEE", loc).format(now).replaceFirstChar { it.uppercase() }, 17f, dev.tvremote.home.Look.accent(ACCENT)).apply { typeface = BOLD; maxLines = 1 })
     head.addView(text("  " + a.resources.getStringArray(R.array.cal_month)[c.grid.month - 1], 17f, DIM).apply { typeface = MEDIUM; maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END })
     widget.addView(head)
     widget.addView(text(SimpleDateFormat("d", loc).format(now), 84f, Color.WHITE).apply {
@@ -75,7 +75,7 @@ internal fun Widgets.calendar(widget: LinearLayout, f: Facts, width: Int, maxH: 
     val lunar = a.getString(R.string.cal_lunar, month, year)
     val inner = width - dp(40)
     val title = LinearLayout(a).apply { orientation = HORIZONTAL; gravity = Gravity.BOTTOM }
-    title.addView(text(r.getStringArray(R.array.cal_month)[c.grid.month - 1], 16f, ACCENT).apply { typeface = BOLD })
+    title.addView(text(r.getStringArray(R.array.cal_month)[c.grid.month - 1], 16f, dev.tvremote.home.Look.accent(ACCENT)).apply { typeface = BOLD })
     title.addView(text(" " + c.grid.year, 16f, 0x80FFFFFF.toInt()).apply { typeface = MEDIUM })
     if (inner >= dp(320)) title.addView(text(lunar, 12f, 0x99FFFFFF.toInt()).apply { gravity = Gravity.END }, LayoutParams(0, -2, 1f))
     val view = Month(this@calendar, a, c, Calendar.getInstance(resources.locale0()).firstDayOfWeek, inner / 7f, maxH - dp(8))
@@ -104,7 +104,7 @@ internal class Month(private val host: Widgets, c: Context, val cal: Cal, first:
     val wanted = headH + rowH * cal.grid.rows
     private val big = Paint(Paint.ANTI_ALIAS_FLAG).apply { typeface = Font.regular; textSize = (if (tiny) 13f else 14f) * sp }       // left-aligned: each number is placed by its own ink
     private val head = Paint(Paint.ANTI_ALIAS_FLAG).apply { textAlign = Paint.Align.CENTER; textSize = (if (tiny) 11f else 12f) * sp; color = 0x8CFFFFFF.toInt(); typeface = MEDIUM }
-    private val back = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ACCENT }
+    private val back = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = dev.tvremote.home.Look.accent(ACCENT) }
     private val dows = IntArray(7) { (first - 1 + it) % 7 }                // 0 = Sunday
     private val names = a.resources.getStringArray(R.array.cal_dow_short)
     private val n = cal.grid.rows * 7

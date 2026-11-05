@@ -8,7 +8,7 @@ export const MAX_QUEUE_BYTES = 350_000_000, MAX_AGE_DAYS = 60;   // D1 free = 50
 export const ALLOWED_HOST = "tvremote.pages.dev";
 // HomeConfig.THEME_KEYS (app/shared/src/home/kotlin/.../HomeConfig.kt) + "wstyle", which it still reads once; ../test fails when they differ
 export const THEME_KEYS = ["wall", "walls", "wurl", "wcol", "wdir", "wmode", "wsnap", "wkeep", "wevery", "shade", "wfit", "wfade",
-  "widgets", "wsize", "wopt", "wplace", "cols", "center", "rows", "focus", "motion", "anim", "clock24", "greet", "wstyle"];
+  "widgets", "wsize", "wopt", "wplace", "cols", "center", "rows", "focus", "tstyle", "accent", "motion", "anim", "clock24", "greet", "wstyle"];
 
 // one line, no control characters, trimmed, cut to [max] (the whole value is refused when empty)
 export function clean(s, max = 24) {
