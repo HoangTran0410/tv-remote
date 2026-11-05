@@ -160,6 +160,7 @@ internal class Popup private constructor(c: Context) : Dialog(c) {
             root.isClickable = true                                    // a tap on the box is not a tap beside it
             frame.setOnClickListener { if (cancelable) d.cancel() }
             d.setContentView(frame)
+            d.window?.decorView?.layoutDirection = if (dev.tvremote.core.Words.rtl) View.LAYOUT_DIRECTION_RTL else View.LAYOUT_DIRECTION_LTR   // Arabic dialogs read right to left
             d.window?.let { w ->
                 w.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 w.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)

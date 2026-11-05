@@ -22,4 +22,14 @@ class WordsTest {
         assertEquals("en", Words.pick("de"))
         assertEquals("en", Words.pick(""))
     }
+
+    // the Phone app turns its Settings, About and dialogs right to left for Arabic, told by the language's own name in langs.json
+    @Test fun rightToLeftByTheLanguagesName() {
+        val was = Words.lang
+        try {
+            Words.lang = "ar"; assertEquals(true, Words.rtl)
+            Words.lang = "en"; assertEquals(false, Words.rtl)
+            Words.lang = "vi"; assertEquals(false, Words.rtl)
+        } finally { Words.lang = was }
+    }
 }

@@ -358,6 +358,10 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
         root.addView(settings, FrameLayout.LayoutParams(-1, -1))
         about = buildAbout()
         root.addView(about, FrameLayout.LayoutParams(-1, -1))
+        // right to left only where words are read (Settings, About, dialogs); the remote, its keys and the app tiles keep their
+        // sides whatever the language or the phone's own setting (◀ is the TV's left), as the user asked (2026-11-05)
+        window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
+        if (dev.tvremote.core.Words.rtl) { settings.layoutDirection = View.LAYOUT_DIRECTION_RTL; about.layoutDirection = View.LAYOUT_DIRECTION_RTL }
         irHost = buildIr()
         root.addView(irHost, FrameLayout.LayoutParams(-1, -1))
         managing = Managing(this, root)

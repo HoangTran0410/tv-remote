@@ -21,9 +21,13 @@ import java.util.concurrent.TimeUnit
  * (a pass with no fingerprint is sent over plain HTTP, as to an old TV Setup), and the way back to ADB when no picture comes.
  */
 class RelayTest {
-    private val server = ServerSocket().apply {                       // the test before left the port in TIME_WAIT
-        reuseAddress = true
-        bind(java.net.InetSocketAddress("127.0.0.1", 8765), 50)
+    private val server: ServerSocket = run {                         // the test before may still be letting the port go: a few tries
+        var last: Exception? = null
+        repeat(50) {
+            try { return@run ServerSocket().apply { reuseAddress = true; bind(java.net.InetSocketAddress("127.0.0.1", 8765), 50) } }
+            catch (e: java.net.BindException) { last = e; Thread.sleep(100) }
+        }
+        throw last!!
     }
     private val requests = CopyOnWriteArrayList<String>()             // request line, cookie, body
     private val dir: File = Files.createTempDirectory("relay").toFile()

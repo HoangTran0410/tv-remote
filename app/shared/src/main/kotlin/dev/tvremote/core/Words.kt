@@ -22,6 +22,10 @@ object Words {
     /** The language the app's own screens speak (the phone's Settings choice, the TV's language). */
     @Volatile var lang: String = pick(java.util.Locale.getDefault().language)
 
+    /** The app's language is written right to left (Arabic): the Phone app turns its Settings, About and dialogs (not the remote). */
+    val rtl: Boolean get() = Character.getDirectionality((dev.tvremote.i18n.Langs.NAMES[lang] ?: "").firstOrNull { Character.isLetter(it) } ?: 'a').let {
+        it == Character.DIRECTIONALITY_RIGHT_TO_LEFT || it == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC }
+
     private fun book(l: String): Map<String, Any> = books.getOrPut(l) {
         try {
             val j = open("i18n/$l.json")?.use { JSONObject(it.readBytes().toString(Charsets.UTF_8)) } ?: return@getOrPut emptyMap()

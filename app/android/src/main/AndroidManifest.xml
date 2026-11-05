@@ -27,7 +27,7 @@
         <intent><action android:name="androidx.activity.result.contract.action.PICK_IMAGES" /></intent>
     </queries>
     <application android:name=".PhoneApp" android:label="TV Remote" android:icon="@drawable/icon"
-        android:theme="@style/AppDark" android:allowBackup="false" android:usesCleartextTraffic="true">   <!-- the in-app page is served from 127.0.0.1 -->
+        android:theme="@style/AppDark" android:allowBackup="false" android:usesCleartextTraffic="true" android:supportsRtl="true">   <!-- the in-app page is served from 127.0.0.1 -->
         <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTop" android:supportsPictureInPicture="true" android:resizeableActivity="true" android:windowSoftInputMode="adjustResize|stateHidden"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout|smallestScreenSize">
             <intent-filter>
