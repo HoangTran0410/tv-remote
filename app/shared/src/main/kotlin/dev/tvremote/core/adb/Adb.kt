@@ -171,13 +171,15 @@ class Adb(private val dir: File) : Closeable {
                     val priv = File(dir, "adbkey.pk8")
                     val pub = File(dir, "adbkey.x509")
                     val kf = KeyFactory.getInstance("RSA")
-                    if (priv.exists() && pub.exists()) {
+                    // a file cut short (power lost mid-write, a full disk) made every start throw "Error parsing public key" for
+                    // good (census aa5953e5, a Fire TV, 2026-11-06): a key that cannot be read is no key, so a new one is made
+                    // (the TV asks "Allow USB debugging?" once more) and written whole or not at all
+                    val kept = if (priv.exists() && pub.exists()) try {
                         KeyPair(kf.generatePublic(X509EncodedKeySpec(pub.readBytes())), kf.generatePrivate(PKCS8EncodedKeySpec(priv.readBytes())))
-                    } else {
-                        val k = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair()
-                        priv.writeBytes(k.private.encoded)
-                        pub.writeBytes(k.public.encoded)
-                        k
+                    } catch (e: java.security.GeneralSecurityException) { null } else null
+                    kept ?: KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair().also { k ->
+                        whole(priv, k.private.encoded)
+                        whole(pub, k.public.encoded)
                     }
                 }
             }
@@ -687,6 +689,13 @@ class Adb(private val dir: File) : Closeable {
         private val ONE = HashSet<String>()                           // TVs that take one client at a time (connectOrShare), in ONE_FILE
         private const val ONE_FILE = "adb-one-client.txt"
         private val KEY_LOCK = Any()                                  // a file lock is per process: this keeps threads apart
+
+        /** Writes [f] through a file beside it and a rename: a reader sees the old file or the whole new one, never half. */
+        private fun whole(f: File, bytes: ByteArray) {
+            val tmp = File(f.parentFile, f.name + ".new")
+            java.io.FileOutputStream(tmp).use { it.write(bytes); it.fd.sync() }
+            if (!tmp.renameTo(f)) { f.delete(); if (!tmp.renameTo(f)) throw java.io.IOException("cannot write ${f.name}") }
+        }
         @Volatile private var holdMs = 0L
         @Volatile private var holdSet = false
         @Volatile private var holding = false
