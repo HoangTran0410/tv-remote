@@ -121,12 +121,14 @@ private fun MainActivity.soundStatus(key: String, detail: String) {
         "audio" -> if (detail == "tvloud") { listenTvLoud = true; Toast.makeText(this, T("listen.tv_still_loud"), Toast.LENGTH_LONG).show(); layoutRemote() }
             else if (detail == "tvsilent") listenTvLoud = false
             else if (detail == "noshare") { listenShare = false; Toast.makeText(this, T("listen.private_only"), Toast.LENGTH_LONG).show() }
+            else if (detail.startsWith("refused")) stopListen(T("listen.refused", "sdk" to detail.substringAfter(":", "?")))   // Android 11+ that refused the capture: not "needs Android 11"
             else stopListen(T("listen.this_tv_cannot_send"))
         "closed", "error" -> {                                        // the network dropped (4G, a tunnel): dialled again, a few times
             sound = null
             if (!listen) return
             if (detail.contains("cannot send its sound")) { stopListen(T("listen.this_tv_cannot_send")); return }
             if (soundTries++ < 6) ui.postDelayed({ startSound() }, 1000L * soundTries)   // and once more each time the app is opened
+            else stopListen(T("listen.gave_up"))                      // not "Listening" on for ever with nothing to hear
         }
     }
 }

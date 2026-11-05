@@ -19,6 +19,14 @@ class SoundQueue(private val base: Int, private val max: Int, start: Int = base)
     private var started = 0L                                          // when it first played
     private var cutting = false                                       // dropping back to [target]
     private var lastAt = 0L; private var lastBehind = 0L              // when the last packet came, and what the track then had
+    /** Underruns since [takeGaps] last asked: how many times the track ran silent, their total and longest length in ms. */
+    private var gaps = 0; private var gapMs = 0L; private var gapMax = 0L
+
+    /** "3 gaps, 4200 ms in all, longest 2100 ms" for the log (and zeroes the count), null when there was none. */
+    fun takeGaps(): String? {
+        if (gaps == 0) return null
+        return "$gaps gaps, $gapMs ms in all, longest $gapMax ms".also { gaps = 0; gapMs = 0; gapMax = 0 }
+    }
 
     /** The track's buffer for this [target], two packets more. Android starts a track again (after a long stall) only once
      *  that is full: so [target] plus what arrives meanwhile fills it. Written while it is not full yet, even if the packet
@@ -32,6 +40,7 @@ class SoundQueue(private val base: Int, private val max: Int, start: Int = base)
         if (heldFrames == 0 && behind <= 0) {                         // ran dry (or not started yet)
             // twice as much, or enough for a wait as long as this one; not in its first 3 s, while the decoder and the
             // connection warm up (it went up to 1 s there at once, on an emulator)
+            if (played) { val g = maxOf(0L, wait); gaps++; gapMs += g; gapMax = maxOf(gapMax, g) }
             if (played && now - started > 3000) target = minOf(max, maxOf(target * 2, base + (wait * RATE / 1000).toInt()))
             calm = now
         } else if (heldFrames == 0) {

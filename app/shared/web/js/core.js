@@ -301,6 +301,10 @@ const FRIENDLY = [
   [/home:photo/, T('core.fr_home_photo')],
   [/launcher list not signed/i, T('core.fr_launcher_list')],
   [/launcher file does not match/i, T('core.fr_launcher_file')],
+  [/Failed to initialize audio|audio\/opus/i, T('core.fr_sound_encoder')],   // scrcpy-server died on a TV with no encoder for the codec asked (Tv.soundCodec falls back first)
+  [/^encoders:/, T('core.fr_encoders')],                         // list_encoders did not answer (Tv.watchFirstFrame)
+  [/^decoder$/, T('core.fr_picture_decoder')],                   // the phone's H.264 decoder could not be made again (TvAndroid)
+  [/scrcpy-server did not start/i, T('core.fr_scrcpy_start')],
   [/^net: /, T('core.fr_net_failed')],                            // last: a download or the site failed (Errors.fromInternet), none of the above
 ];
 const LAUNCH_KEPT = ['wifi', 'wifi_unknown', 'cast', 'zte', 'users', 'board', 'boot', 'keys'];   // refused before anything changed (LauncherSwap.REFUSED)

@@ -103,7 +103,8 @@ class AudioOut(far: Boolean = false, private val host: String = "") {
                 }
                 val now = System.currentTimeMillis()
                 if (now - told > 30000) {                             // About → Send the log: how the sound held up
-                    if (drops > 0 || dry > 0) WireLog.all.add("·", "sound: $drops packets dropped, ran dry $dry times, keeping ${q.target * 1000 / RATE} ms")
+                    val gaps = q.takeGaps()
+                    if (drops > 0 || dry > 0 || gaps != null) WireLog.all.add("·", "sound: $drops packets dropped, ran dry $dry times, keeping ${q.target * 1000 / RATE} ms" + (gaps?.let { ", $it" } ?: ""))
                     told = now; drops = 0; dry = 0
                 }
                 if (q.target != was) {

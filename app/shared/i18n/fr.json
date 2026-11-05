@@ -4619,5 +4619,13 @@
   "telegram.speak_done": "✅ Affiché sur la TV et lu à voix haute.",
   "telegram.speak_noengine": "⚠️ Affiché sur la TV, non lu : aucun moteur vocal. Installez Google Speech Services sur la TV.",
   "telegram.speak_nolang": "⚠️ Affiché sur la TV, non lu : pas de voix « {lang} ». Installez Google Speech Services et téléchargez-la.",
-  "telegram.cmd_speak": "Afficher un message sur la TV et le lire à voix haute"
+  "telegram.cmd_speak": "Afficher un message sur la TV et le lire à voix haute",
+  "listen.refused": "La TV refuse de partager son son (Android {sdk}). Certaines TV et applis le bloquent.",
+  "listen.decoder_failed": "Ce navigateur n’a pas pu décoder le son de la TV, l’écoute s’est arrêtée.",
+  "listen.audio_blocked": "Le navigateur a coupé le son (appel ou onglet en arrière-plan). Touchez 🎧 pour réécouter.",
+  "listen.gave_up": "Impossible de garder le son de la TV connecté, l’écoute s’est arrêtée.",
+  "core.fr_sound_encoder": "Cette TV n’a pas d’encodeur audio pour envoyer son son.",
+  "core.fr_encoders": "La TV n’a pas indiqué ses encodeurs vidéo, donc pas d’image. Réessayez ou choisissez Logiciel.",
+  "core.fr_picture_decoder": "Cet appareil n’a pas pu décoder l’image de la TV. Essayez une qualité plus basse.",
+  "core.fr_scrcpy_start": "La TV n’a pas pu démarrer l’envoi. Réessayez ; sinon, redémarrez la TV."
 }

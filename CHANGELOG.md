@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Picture and sound no longer fail in silence: the page and phone stop listening with a reason when the sound decoder fails (it is first made again) or the connection cannot be kept; a browser that mutes the sound (a call, a background tab) is resumed or told so; a refused sound capture on Android 11 or newer says so instead of "needs Android 11"; a TV with no Opus encoder now sends PCM to the web page; why the picture ended (a failed encoder list, a decoder that cannot restart) reaches the page; sound gaps (count and length) go to the log and to `?stats=1`.
 - TV Games: a real keyboard on the TV plays as two pads, each half its own player with its own slot (A: W A S D, J K U I, Q E, Enter, Tab; B: arrows and the number pad, or , . / ; [ ] on a laptop); the Back card lists the keys when a keyboard is plugged in. The TV remote, Map remote keys and menus are untouched.
 - TV Games: Game Boy, Game Boy Color, Mega Drive / Genesis, Master System, Game Gear and PC Engine (cores downloaded when first needed: Gambatte, clownmdemu, SMS Plus, Beetle PCE Fast; all free licences, no non-commercial core). Phone pad layouts: Mega Drive A B C X Y Z, PC Engine I II Run, Master System 1 2. Free homebrew: Tobu Tobu Girl Deluxe (Game Boy).
 - TV Games: SNES, Game Boy Advance and PlayStation cores are now on the download server and switched on (they were listed but off).
