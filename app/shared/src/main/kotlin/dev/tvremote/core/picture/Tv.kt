@@ -620,11 +620,19 @@ class Tv(
         return soft
     }
 
-    /** scrcpy's list_encoders for this TV, asked once (a second app_process, ~1 s); null when it did not answer. */
+    /**
+     * scrcpy's list_encoders for this TV (a second app_process, ~1 s and ~50 MB on the TV): asked once per TV and kept beside the
+     * ADB key, so the first 🎧 after each app start does not wait for it again; null when it did not answer.
+     */
     private fun encoders(a: Adb): String? {
         encoderList[host]?.let { return it }
+        val kept = File(dir, "encoders-" + host.replace(Regex("[^A-Za-z0-9.-]"), "_") + ".txt")
+        try { if (kept.isFile) return kept.readText().also { encoderList[host] = it } } catch (ignored: IOException) { }
         val list = try { a.shell("CLASSPATH=$REMOTE app_process / com.genymobile.scrcpy.Server $VER cleanup=false list_encoders=true 2>&1", 15000) } catch (e: IOException) { return null }   // cleanup=false: or scrcpy deletes its jar
-        if (list.contains("--video-codec=") || list.contains("--audio-codec=")) encoderList[host] = list
+        if (list.contains("--video-codec=") || list.contains("--audio-codec=")) {
+            encoderList[host] = list
+            try { kept.writeText(list) } catch (ignored: IOException) { }
+        }
         return list
     }
 

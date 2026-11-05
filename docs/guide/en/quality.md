@@ -11,4 +11,4 @@ Choppy or blurry? Open **🖥️ Picture quality** from the quality button next 
 | TV under 1.5 GB RAM | Holds at 720p, 20 fps to stay smooth. Pick another level and it follows you. |
 | Frame pace | **Fastest** (default) shows at once. **Even** adds about 33 ms for smoother motion. Only shown in browsers with WebCodecs. |
 
-> 💡 Choppy picture far from home (over Tailscale) is normal: lower the size and bitrate.
+> 💡 Away from home (over Tailscale) the phone app takes the picture from TV Setup on the TV, which is smoother; still choppy: lower the size and bitrate.
