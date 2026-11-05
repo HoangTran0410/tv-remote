@@ -36,6 +36,22 @@ object AdbReport {
         }, "adb-report").apply { isDaemon = true }.start()
     }
 
+    /** A feature that cannot work ([Issues]): told once per version and kind, with the same facts. Nothing when the stats switch is off. */
+    fun once(c: Context, kind: String, detail: String) {
+        if (!Census.enabled) return
+        val version = try { c.packageManager.getPackageInfo(c.packageName, 0).versionName ?: "0" } catch (e: Exception) { "0" }
+        val key = "$version issue $kind"
+        val p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        if (p.getBoolean(key, false)) return
+        Thread({
+            try {
+                Census.crash("kotlin", "TV Setup $kind " + Build.MODEL, "$kind: " + detail.take(150), facts(c, kind, detail)) { sent ->
+                    if (sent) p.edit().putBoolean(key, true).apply()
+                }
+            } catch (e: Exception) { }
+        }, "issue-report").apply { isDaemon = true }.start()
+    }
+
     /** What the TV says about its ADB, read without ADB: Build, the adb properties, the Settings switches, and whether 5555 answers. */
     fun facts(c: Context, state: String, detail: String): String {
         val r = c.contentResolver

@@ -4620,5 +4620,8 @@
   "telegram.speak_done": "✅ Affiché sur la TV et lu à voix haute.",
   "telegram.speak_noengine": "⚠️ Affiché sur la TV, non lu : aucun moteur vocal. Installez Google Speech Services sur la TV.",
   "telegram.speak_nolang": "⚠️ Affiché sur la TV, non lu : pas de voix « {lang} ». Installez Google Speech Services et téléchargez-la.",
-  "telegram.cmd_speak": "Afficher un message sur la TV et le lire à voix haute"
+  "telegram.cmd_speak": "Afficher un message sur la TV et le lire à voix haute",
+  "tv_main.turn_back_on_cannot": "Pas encore actif : connectez ADB une fois pour que TV Setup obtienne l’autorisation de le réactiver",
+  "guard.no_adb_standby": "Impossible d’éteindre la TV : le débogage ADB est désactivé sur cette TV",
+  "guard.no_adb_close": "Impossible de fermer {name} : le débogage ADB est désactivé sur cette TV"
 }

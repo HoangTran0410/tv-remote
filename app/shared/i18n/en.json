@@ -4587,5 +4587,8 @@
  "telegram.speak_done": "✅ Shown on the TV and read aloud.",
  "telegram.speak_noengine": "⚠️ Shown on the TV, not read: it has no text-to-speech engine. Install Google Speech Services on it.",
  "telegram.speak_nolang": "⚠️ Shown on the TV, not read: it has no \"{lang}\" voice. Install Google Speech Services and download it.",
- "telegram.cmd_speak": "Show a message on the TV and read it aloud"
+ "telegram.cmd_speak": "Show a message on the TV and read it aloud",
+ "tv_main.turn_back_on_cannot": "Not working yet: connect ADB once so TV Setup gets the permission to turn it back on",
+ "guard.no_adb_standby": "Could not turn the TV off: ADB debugging is off on this TV",
+ "guard.no_adb_close": "Could not close {name}: ADB debugging is off on this TV"
 }
