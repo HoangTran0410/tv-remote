@@ -882,8 +882,9 @@ class MainActivity : Activity() {
     private var openedWireless = false
     private var retryOnResume = false                                // one more try when the person comes back from the screen we sent them to
 
-    private fun keepText() = if (KeepAdb.on(this)) T("tv_main.turn_back_on_when")
-        else T("tv_main.turn_back_on_when_2")
+    private fun keepText() = if (!KeepAdb.on(this)) T("tv_main.turn_back_on_when_2")
+        else if (!KeepAdb.can(this)) T("tv_main.turn_back_on_cannot")      // wanted, but the permission is not there: not shown as working
+        else T("tv_main.turn_back_on_when")
 
     /** The tiles' menus: icons and a second line, a switch's state at the end (TvUi.menu, the TV apps' one list dialog). */
     private fun menu(title: String, items: List<TvUi.Item>) { TvUi.menu(this, R.style.TvSheet, title, items, R.drawable.ic_check, ACCENT) }
@@ -894,7 +895,7 @@ class MainActivity : Activity() {
         menu(T("tv_main.connection"), listOf(
             TvUi.Item(R.drawable.ic_refresh, T("tv_main.reconnect"), T("tv_main.the_tv_s_adb")) { connect() },
             TvUi.Item(R.drawable.ic_code, T("tv_main.open_developer_options")) { devOptions() },
-            TvUi.Item(R.drawable.ic_power, T("tv_main.turn_back_on"), on = { KeepAdb.on(this) }) { KeepAdb.set(this, !KeepAdb.on(this)); log(keepText()) },
+            TvUi.Item(R.drawable.ic_power, T("tv_main.turn_back_on"), on = { KeepAdb.on(this) && KeepAdb.can(this) }) { KeepAdb.set(this, !KeepAdb.on(this)); log(keepText()) },
             TvUi.Item(R.drawable.ic_globe, "Tailscale", tsStatus) { if (adb == null) log(T("tv_main.needs_adb_turn_on")) else tailscale() },
             TvUi.Item(R.drawable.ic_unlink, T("tv_main.forget_adb_keys")) { forgetAdbKeys() },
             TvUi.Item(R.drawable.ic_send, T("support.send"), T("support.send_sub")) { supportSend() },

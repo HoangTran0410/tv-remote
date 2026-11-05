@@ -4445,5 +4445,8 @@
  "telegram.speak_done": "✅ Đã hiện lên TV và đọc to.",
  "telegram.speak_noengine": "⚠️ Đã hiện lên TV nhưng chưa đọc được: TV chưa có bộ đọc giọng nói. Cài Google Speech Services trên TV.",
  "telegram.speak_nolang": "⚠️ Đã hiện lên TV nhưng chưa đọc được: TV thiếu giọng \"{lang}\". Cài Google Speech Services và tải giọng này.",
- "telegram.cmd_speak": "Hiện lời nhắn trên TV và đọc to"
+ "telegram.cmd_speak": "Hiện lời nhắn trên TV và đọc to",
+ "tv_main.turn_back_on_cannot": "Chưa bật được: kết nối ADB một lần để TV Setup có quyền tự bật lại",
+ "guard.no_adb_standby": "Không tắt được TV: ADB đang tắt. Bật Gỡ lỗi ADB trên TV",
+ "guard.no_adb_close": "Không đóng được {name}: ADB đang tắt trên TV"
 }

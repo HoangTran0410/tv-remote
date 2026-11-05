@@ -4572,5 +4572,8 @@
  "telegram.speak_done": "✅ Показано на ТВ и прочитано вслух.",
  "telegram.speak_noengine": "⚠️ Показано на ТВ, но не прочитано: нет движка речи. Установите на ТВ Google Speech Services.",
  "telegram.speak_nolang": "⚠️ Показано на ТВ, но не прочитано: нет голоса «{lang}». Установите Google Speech Services и скачайте его.",
- "telegram.cmd_speak": "Показать сообщение на ТВ и прочитать вслух"
+ "telegram.cmd_speak": "Показать сообщение на ТВ и прочитать вслух",
+ "tv_main.turn_back_on_cannot": "Пока не работает: подключите ADB один раз, чтобы TV Setup получил право включать его снова",
+ "guard.no_adb_standby": "Не удалось выключить ТВ: отладка ADB на этом ТВ выключена",
+ "guard.no_adb_close": "Не удалось закрыть {name}: отладка ADB на ТВ выключена"
 }

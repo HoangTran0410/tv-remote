@@ -234,6 +234,9 @@ object KeyFix {
 
     @Volatile var prepared = false
 
+    /** `appops get <pkg> SYSTEM_ALERT_WINDOW` says "SYSTEM_ALERT_WINDOW: allow"; anything else (default, ignore, an error) leaves [prepared] false so it is tried again. */
+    internal fun overlayAllowed(out: String): Boolean = Regex("SYSTEM_ALERT_WINDOW:\\s*allow").containsMatchIn(out)
+
     /**
      * Android 13+ keeps an app that was not put there by a store from switching an accessibility service on (a firmware logs it as
      * "disallowed by device admin policy", as on the FPT box): the shell lifts that for this app, once, while there is ADB.
@@ -243,7 +246,10 @@ object KeyFix {
         // named it; an op the TV does not know is an error that changes nothing. SYSTEM_ALERT_WINDOW: Android 14 blocks an app in
         // the background from starting an activity ("Background activity launch blocked"), and every key that opens an app or the
         // launcher starts one from here; the overlay permission is what exempts it (measured on the emulator: Home did nothing without)
-        try { adb.shell("appops set ${c.packageName} ACCESS_RESTRICTED_SETTINGS allow 2>&1; appops set ${c.packageName} APP_AUTO_START allow 2>&1; appops set ${c.packageName} SYSTEM_ALERT_WINDOW allow 2>&1"); prepared = true } catch (e: Exception) { }
+        try { adb.shell("appops set ${c.packageName} ACCESS_RESTRICTED_SETTINGS allow 2>&1; appops set ${c.packageName} APP_AUTO_START allow 2>&1; appops set ${c.packageName} SYSTEM_ALERT_WINDOW allow 2>&1")
+            // read back, not assumed: the other two may be unknown to this Android (an error that is fine), the overlay one is what the launches need
+            prepared = overlayAllowed(adb.shell("appops get ${c.packageName} SYSTEM_ALERT_WINDOW 2>&1"))
+        } catch (e: Exception) { }
         KeysAddon.prepare(adb)                                        // the service is the add-on's: the same for its package, once it is installed
     }
 

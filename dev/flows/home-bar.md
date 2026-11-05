@@ -19,7 +19,7 @@ Home again (or the Home item) goes to the home screen. Off (default): Home is ex
 
 The system sends Home to the launcher before any app sees it, and an app in the background cannot draw over another without the
 overlay permission. TV Setup's key filter (the add-on TV Setup Keys, `KeysBridge`) is the one piece that sees Home first, and TV Setup
-is exempt from Android 14's background-start block (the appop SYSTEM_ALERT_WINDOW, `KeyFix.prepare`). So the filter eats Home, looks at
+is exempt from Android 14's background-start block (the appop SYSTEM_ALERT_WINDOW, `KeyFix.prepare`, which reads it back and tries again on the next ADB link when it is not "allow"). So the filter eats Home, looks at
 what is in front (`Usage.front`), and starts TV Home's see-through activity `DockBarActivity` (theme Ghost, like the Control Center):
 the app beneath stays visible and running. No service, receiver or timer of our own; the setting rides TV Home's "keys" push to TV Setup
 (`homebar` is kept in `HomeKeys`), and with it off the filter is not asked about Home for the bar.

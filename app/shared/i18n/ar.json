@@ -4809,5 +4809,8 @@
  "telegram.speak_done": "✅ ظهرت على التلفزيون وقُرئت بصوت عالٍ.",
  "telegram.speak_noengine": "⚠️ ظهرت على التلفزيون ولم تُقرأ: لا يوجد عليه محرك تحويل النص إلى كلام. ثبّت عليه Google Speech Services.",
  "telegram.speak_nolang": "⚠️ ظهرت على التلفزيون ولم تُقرأ: لا يوجد عليه صوت \"{lang}\". ثبّت Google Speech Services ونزّله.",
- "telegram.cmd_speak": "اعرض رسالة على التلفزيون واقرأها بصوت عالٍ"
+ "telegram.cmd_speak": "اعرض رسالة على التلفزيون واقرأها بصوت عالٍ",
+ "tv_main.turn_back_on_cannot": "لا يعمل بعد: اتصل بـ ADB مرة واحدة ليحصل TV Setup على إذن إعادة تشغيله",
+ "guard.no_adb_standby": "تعذّر إطفاء التلفزيون: تصحيح ADB متوقف على هذا التلفزيون",
+ "guard.no_adb_close": "تعذّر إغلاق {name}: تصحيح ADB متوقف على التلفزيون"
 }

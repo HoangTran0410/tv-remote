@@ -16,6 +16,7 @@ import dev.tvremote.setup.MainActivity
 import dev.tvremote.setup.ManageActivity
 import dev.tvremote.setup.PinActivity
 import dev.tvremote.setup.RemoteService
+import dev.tvremote.setup.health.AdbReport
 import dev.tvremote.setup.health.Stats
 
 /** The marks that decide a warning, as Guard keeps them between looks. */
@@ -177,8 +178,10 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
         if (at > 0) {
             val left = at - now
             if (left <= 0) {
-                Rules.clearSleep(c, at)
-                if (on) { standby(); RemoteService.alert("sleep") }
+                if (!on) Rules.clearSleep(c, at)                      // already off
+                else if (standby()) { Rules.clearSleep(c, at); RemoteService.alert("sleep") }
+                else if (-left > 10 * 60_000L) Rules.clearSleep(c, at)   // no ADB for ten minutes: not at some later hour, when someone turns the TV on
+                else next = minOf(next, 15_000)                       // the timer stays until the TV is really off; no "slept" word before that
             } else {
                 if (left <= 61_000 && on && warnedSleep != at) { warnedSleep = at; warn("sleep", at, "") }
                 next = minOf(next, if (left > 61_000) left - 60_000 else left)
@@ -188,7 +191,7 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
         // ---- bedtime: a minute after the TV is turned on in the window, standby again
         if (on && Rules.inBedtime(o, now) && now >= o.optLong("snooze_until") && Rules.unlockUntil(o, now) == 0L) {   // a parent's code ("unlock") opens bedtime, limits and the total alike
             if (bedWarnedAt == 0L) { bedWarnedAt = now; warn("bed", now + 60_000, ""); RemoteService.alert("bed", "range" to (Rules.bedNow(o, now)?.let { it.optString("from") + "–" + it.optString("to") } ?: "")) }
-            else if (now - bedWarnedAt >= 60_000) { bedWarnedAt = 0; standby() }
+            else if (now - bedWarnedAt >= 60_000) { if (standby()) bedWarnedAt = 0 else next = minOf(next, 15_000) }
             next = minOf(next, 5_000)
         } else bedWarnedAt = 0
 
@@ -218,7 +221,7 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
             val warnMin = o.optJSONObject("total")?.optInt("warn", 5) ?: 5
             if (left <= 0) {
                 if (totalWarnedAt == 0L) { totalWarnedAt = now; warn("total", now + 60_000, ""); RemoteService.alert("limit", "app" to T("kids.total_name"), "why" to "limit") }
-                else if (now - totalWarnedAt >= 60_000) { totalWarnedAt = 0; standby() }
+                else if (now - totalWarnedAt >= 60_000) { if (standby()) totalWarnedAt = 0 }
                 next = minOf(next, 5_000)
             } else {
                 totalWarnedAt = 0
@@ -320,9 +323,29 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
         c.packageManager.getApplicationLabel(c.packageManager.getApplicationInfo(pkg, 0)).toString()
     } catch (e: Exception) { pkg }
 
-    private fun sh(cmd: String): String? = try { adb()?.shell(cmd) } catch (e: Exception) { null }
+    /** Null when there is no ADB right now (down, or the command failed): the caller must not act as if it worked. */
+    private fun sh(cmd: String): String? {
+        val out = try { adb()?.shell(cmd) } catch (e: Exception) { null }
+        if (out != null) noAdbSaid = false
+        return out
+    }
 
-    private fun standby() { sh("input keyevent 223") }
+    /** The TV goes to standby; false when ADB could not be reached (the rule then keeps trying and says nothing of success). */
+    private fun standby(): Boolean {
+        if (sh("input keyevent 223") != null) return true
+        noAdb(T("guard.no_adb_standby"))
+        return false
+    }
+
+    private var noAdbSaid = false
+
+    /** A rule could not act for want of ADB: one word on screen per failure episode (until ADB answers again), and the census hears it once per version. */
+    private fun noAdb(text: String) {
+        AdbReport.once(c, "rules_no_adb", text)
+        if (noAdbSaid) return
+        noAdbSaid = true
+        say(text)
+    }
 
     /** The same as the pages' "Free up RAM" (Manage.free): what waits in the background goes, what is on screen stays. */
     private fun free(): Long? {
@@ -334,7 +357,7 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
 
     /** The app's minutes are used up: back to the home screen, the app closed, and a word on screen saying why. */
     private fun close(pkg: String, kind: String = "limit") {
-        sh("input keyevent 3; am force-stop " + q(pkg))
+        if (sh("input keyevent 3; am force-stop " + q(pkg)) == null) { noAdb(T("guard.no_adb_close", "name" to label(pkg))); return }   // tried again at the next look
         warn(kind, 0, pkg)
         RemoteService.alert("limit", "app" to label(pkg), "why" to (if (kind == "sched") "sched" else "limit"))
     }
