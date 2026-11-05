@@ -89,6 +89,11 @@
   "n": 1,
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
+ "0cc42fae2aa5fd9fed3c6839|0.31.0": {
+  "at": "2026-11-05T17:16:53+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+ },
  "0d9f97b24e188d539096d5f4|0.29.0": {
   "at": "2026-10-28T14:05:30+07:00",
   "n": 1,
@@ -123,6 +128,11 @@
   "at": "2026-10-30T09:08:04+07:00",
   "n": 1,
   "note": "web: home_pin.js lookbehind on old Safari; rewritten + scrub.test checks every page script (2026-10-30)"
+ },
+ "0f95a375919818dbbccd484e|0.44.0": {
+  "at": "2026-11-05T17:16:54+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "10008337d9a0f8f648c7fce1|0.32.1": {
   "at": "2026-11-05T10:40:10+07:00",
@@ -325,42 +335,42 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "1b64c0fdb7081f015b2765c2|0.22.1": {
-  "at": "2026-11-05T13:17:38+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 1,
   "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.23.0": {
-  "at": "2026-11-05T13:17:38+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 2,
   "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.24.0": {
-  "at": "2026-11-05T13:17:38+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 5,
   "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.24.1": {
-  "at": "2026-11-05T13:17:38+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 2,
   "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.25.0": {
-  "at": "2026-11-05T13:17:38+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 5,
   "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.26.0": {
-  "at": "2026-11-05T13:17:38+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 1,
   "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.26.1": {
-  "at": "2026-11-05T13:17:38+07:00",
-  "n": 7,
+  "at": "2026-11-05T17:16:58+07:00",
+  "n": 8,
   "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.26.3": {
-  "at": "2026-11-05T13:17:38+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 8,
   "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
@@ -1275,19 +1285,24 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "5df1b3d619bed9fd987a0aad|0.26.3": {
-  "at": "2026-11-03T10:07:27+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "5df1b3d619bed9fd987a0aad|0.31.0": {
-  "at": "2026-11-03T10:07:27+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "5df1b3d619bed9fd987a0aad|0.40.0": {
-  "at": "2026-11-03T10:07:27+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+ },
+ "5df1b3d619bed9fd987a0aad|0.42.2": {
+  "at": "2026-11-05T17:16:55+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "5e37967511de4c97ab10ff0c|0.43.0": {
   "at": "2026-11-05T10:40:35+07:00",
@@ -1835,79 +1850,84 @@
   "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
  },
  "86e0f0317c01d63472f141c3|0.30.0": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.31.0": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.32.1": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 2,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.34.0": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.34.1": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.34.2": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.35.0": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.37.0": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.38.0": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.38.2": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.38.4": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.40.0": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.42.0": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.42.2": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.43.0": {
-  "at": "2026-11-05T10:40:24+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+ },
+ "86e0f0317c01d63472f141c3|0.44.0": {
+  "at": "2026-11-05T17:16:55+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "897eccbc3b0589286bfafdf9|0.34.1": {
   "at": "2026-10-30T09:08:18+07:00",
@@ -1983,6 +2003,11 @@
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "8df727a91b09f361587ab76b|0.44.0": {
+  "at": "2026-11-05T17:16:56+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "8f22ae153e0767895dc5fd31|0.13.0": {
   "at": "2026-10-29T17:20:09+07:00",
@@ -3195,14 +3220,19 @@
   "note": "ADB refused / error: ADB off on the user's TV (known)"
  },
  "ee5e9be7f57e6b14ec6a79d4|0.38.4": {
-  "at": "2026-11-05T10:40:32+07:00",
+  "at": "2026-11-05T17:16:56+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "ee5e9be7f57e6b14ec6a79d4|0.43.0": {
-  "at": "2026-11-05T10:40:32+07:00",
+  "at": "2026-11-05T17:16:56+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+ },
+ "ee5e9be7f57e6b14ec6a79d4|0.44.0": {
+  "at": "2026-11-05T17:16:56+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "efa52b83207b258b74e55757|0.34.1": {
   "at": "2026-10-30T09:08:30+07:00",
@@ -3360,24 +3390,29 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "fa5d02d9f13f6121886b7727|0.37.0": {
-  "at": "2026-11-04T18:44:12+07:00",
+  "at": "2026-11-05T17:16:57+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "fa5d02d9f13f6121886b7727|0.38.2": {
-  "at": "2026-11-04T18:44:12+07:00",
+  "at": "2026-11-05T17:16:57+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "fa5d02d9f13f6121886b7727|0.38.4": {
-  "at": "2026-11-04T18:44:12+07:00",
+  "at": "2026-11-05T17:16:57+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "fa5d02d9f13f6121886b7727|0.42.2": {
-  "at": "2026-11-04T18:44:12+07:00",
+  "at": "2026-11-05T17:16:57+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+ },
+ "fa5d02d9f13f6121886b7727|0.43.0": {
+  "at": "2026-11-05T17:16:57+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "fad2a14ed1bb2056883cbfb5|0.28.0": {
   "at": "2026-10-27T09:37:25+07:00",
