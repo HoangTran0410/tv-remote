@@ -23,3 +23,10 @@ for id in "${IDS[@]}"; do
   fi
   echo "$id -> $OUT/$id.png"
 done
+if [ -n "$WEBP" ]; then                                             # browsers keep a picture a day by its URL: new pictures, a new ?v= everywhere they are named
+  V=$(date +%m%d%H%M)
+  sed -i '' -E "s#(img/themes/[a-z0-9]+(-big)?\.webp)(\?v=[0-9]+)?\"#\1?v=$V\"#g" "$ROOT/docs/index.html"
+  sed -i '' -E "s#(\\.webp)(\?v=[0-9]+)?\"; \}#\1?v=$V\"; }#g" "$ROOT/docs/js/themes.js"
+  sed -i '' -E "s#js/themes\.js(\?v=[0-9]+)?\"#js/themes.js?v=$V\"#" "$ROOT/docs/themes.html" "$ROOT/docs/index.html"
+  echo "previews named ?v=$V in docs/index.html, docs/js/themes.js, docs/themes.html"
+fi

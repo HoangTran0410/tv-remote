@@ -54,3 +54,14 @@ test('the painter draws every scene without error on a recording context', () =>
   const ctx = new Proxy({}, { get: (_, n) => (n.startsWith('create') ? () => grad : (...a) => calls.push(n)), set: () => true });
   for (const k of Object.keys(art)) { calls.length = 0; sandbox.paint(ctx, 128, 72, k); assert.ok(calls.includes('fillRect') || calls.includes('fill'), k); }
 });
+
+test('the preview draws one clock, as TV Home does (HomeConfig.barClock / barDate, HomeBarConfigTest.oneClockOnTheScreen)', () => {
+  const sb = {}; vm.createContext(sb); vm.runInContext(js + '\nthis.bar = homeBar;', sb);
+  const b = (o) => JSON.parse(JSON.stringify(sb.bar(o)));
+  assert.deepEqual(b({ widgets: ['weather'] }), { clock: true, date: true });
+  assert.deepEqual(b({ widgets: ['clock'] }), { clock: false, date: false });
+  assert.deepEqual(b({ widgets: ['calendar'] }), { clock: true, date: false });
+  assert.equal(b({ widgets: ['clock'], dstyle: 'own' }).date, true);
+  assert.equal(b({ showClock: false }).clock, false);
+  assert.equal(b({ widgets: ['lunar'] }).clock, true);
+});

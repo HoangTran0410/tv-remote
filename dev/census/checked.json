@@ -325,44 +325,44 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "1b64c0fdb7081f015b2765c2|0.22.1": {
-  "at": "2026-11-01T14:22:24+07:00",
+  "at": "2026-11-05T13:17:38+07:00",
   "n": 1,
-  "note": "fixed in v0.28.0 (5d4096ec): tvstatMount guarded; reports are from pc 0.26.3"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.23.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-05T13:17:38+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.24.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-05T13:17:38+07:00",
   "n": 5,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.24.1": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-05T13:17:38+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.25.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-05T13:17:38+07:00",
   "n": 5,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.26.0": {
-  "at": "2026-11-01T14:22:24+07:00",
+  "at": "2026-11-05T13:17:38+07:00",
   "n": 1,
-  "note": "fixed in v0.28.0 (5d4096ec): tvstatMount guarded; reports are from pc 0.26.3"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.26.1": {
-  "at": "2026-11-02T22:17:48+07:00",
-  "n": 6,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "at": "2026-11-05T13:17:38+07:00",
+  "n": 7,
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.26.3": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-05T13:17:38+07:00",
   "n": 8,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1bb957ff3a488ee2d9b284a4|0.42.0": {
   "at": "2026-11-04T06:24:38+07:00",
@@ -3348,6 +3348,11 @@
   "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "f7cda9e6cf22482c891e3214|0.44.0": {
+  "at": "2026-11-05T13:17:39+07:00",
+  "n": 1,
+  "note": "ADB setup report on the FPT test box (the user's own), not a crash"
  },
  "f88af3fa3bb194b7d0cf5ed3|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",

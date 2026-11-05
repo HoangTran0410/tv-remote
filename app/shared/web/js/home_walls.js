@@ -175,6 +175,13 @@ function homeThemeMoving(conf) {
   const u = String(conf.wurl || '').toLowerCase();
   return u.includes('/home/loop.html?v=') || /\.(mp4|webm|m3u8|mkv|mov)(\?|#|$)/.test(u);
 }
+/** HomeConfig.barClock / barDate: which of the top bar's time and date TV Home draws (a clock widget is the clock then; with a calendar widget the date too, while that line says the date). */
+function homeBar(conf) {
+  const ws = conf.widgets || [], clock = ws.includes('clock');
+  return { clock: conf.showClock !== false && !clock,
+    date: conf.showDate !== false && !((conf.dstyle || 'date') === 'date' && (clock || ws.includes('calendar'))) };
+}
+
 function homeThemePaint(cv, conf, tiles, img, look, now) {   // now: a Date, for the live preview of the config being edited (its real time)
   const ctx = cv.getContext('2d'), w = cv.width, h = cv.height, wall = conf.wall, user = (conf.shade ?? 50) / 50;
   const bar = (x, y, bw, bh, a) => { ctx.fillStyle = `rgba(${HOME_PREV.ink},${a})`; ctx.beginPath(); ctx.roundRect(x, y, bw, bh, bh / 2); ctx.fill(); };
@@ -186,13 +193,17 @@ function homeThemePaint(cv, conf, tiles, img, look, now) {   // now: a Date, for
     else { const c = (HOME_WALLS[wall] || HOME_PREV.none).split(','), g = ctx.createLinearGradient(0, 0, w, h); g.addColorStop(0, c[0]); g.addColorStop(1, c[c.length - 1]); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h); }
     homeVeil(ctx, w, h, 1, user);
   }
-  const m = w * 0.06;
-  if (now) {                                                            // the clock as the TV writes it, the greeting and date a bar beside it
-    const hh = conf.clock24 === false ? (now.getHours() % 12 || 12) : String(now.getHours()).padStart(2, '0'), t = hh + ':' + String(now.getMinutes()).padStart(2, '0');
-    ctx.font = `300 ${Math.round(h * 0.11)}px system-ui, sans-serif`; ctx.textBaseline = 'middle'; ctx.fillStyle = `rgba(${HOME_PREV.ink},0.95)`;
-    ctx.fillText(t, m, h * 0.11); const tw = ctx.measureText(t).width;
-    bar(m + tw + w * 0.025, h * 0.08, w * 0.16, h * 0.026, 0.45); bar(m + tw + w * 0.025, h * 0.122, w * 0.22, h * 0.034, 0.75);
-  } else bar(m, h * 0.075, w * 0.30, h * 0.07, 0.8);                    // the time, greeting and date: one row on TV Home, one bar here
+  const m = w * 0.06, head = homeBar(conf);                             // a clock widget takes the bar's time (and date): one clock on the screen, as on the TV
+  let hx = m;
+  if (head.clock) {
+    if (now) {                                                          // the clock as the TV writes it
+      const hh = conf.clock24 === false ? (now.getHours() % 12 || 12) : String(now.getHours()).padStart(2, '0'), t = hh + ':' + String(now.getMinutes()).padStart(2, '0');
+      ctx.font = `300 ${Math.round(h * 0.11)}px system-ui, sans-serif`; ctx.textBaseline = 'middle'; ctx.fillStyle = `rgba(${HOME_PREV.ink},0.95)`;
+      ctx.fillText(t, m, h * 0.11); hx = m + ctx.measureText(t).width + w * 0.025;
+    } else { bar(m, h * 0.075, w * 0.12, h * 0.07, 0.8); hx = m + w * 0.145; }
+  }
+  if (conf.greet !== false) bar(hx, h * 0.08, w * 0.16, h * 0.026, 0.45);
+  if (head.date) bar(hx, h * 0.122, w * 0.22, h * 0.034, 0.75);
   bar(w - m - w * 0.16, h * 0.085, w * 0.16, h * 0.05, 0.25);           // the buttons as one bar: where things are, not each one
   let y = h * 0.21;
   const big = HOME_WIDGETS.concat(['qr1', 'qr2', 'qr3', 'qr4']).filter((k) => homeSize(conf, k) === 'big'), packed = homePack((conf.widgets || []).filter((k) => HOME_WIDGETS.includes(k)), big);
