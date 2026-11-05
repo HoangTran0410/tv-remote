@@ -23,41 +23,36 @@ import java.util.Calendar
 import java.util.Date
 
 /**
- * The clock widget, [mode] 0: a pill in a stack (the face, the time and the date), 1: standing alone, the face filling the widget,
- * 2: big, the face with the time and the date beside it. The digital face is its own time and date: it fills the widget in every mode. The face (classic, minimal, roman) and its theme (dark, light) are HomeConfig "wopt", independent of each other (see [ClockFace]).
+ * The clock widget, [mode] 0: a pill in a stack (the face, the weekday and the date), 1: standing alone, the face filling the widget,
+ * 2: big, the face with the weekday and the date beside it. The face is the time: no digits beside it, and no date in its dial when
+ * the date is written beside (the user, 2026-11-05: the time shown twice, the dial's small red date hard to read). The digital face is its own time and date: it fills the widget in every mode. The face (classic, minimal, roman) and its theme (dark, light) are HomeConfig "wopt", independent of each other (see [ClockFace]).
  */
 internal fun Widgets.clock(mode: Int): View {
     val face0 = opt("clock", "face"); val light0 = opt("clock", "theme") == "light"
     val locale = resources.locale0()
-    val h24 = Store.get(a).optBoolean("clock24", true)
-    val timeF = SimpleDateFormat(if (h24) "HH:mm" else "h:mm", locale)
-    // the small form is one short line, never broken inside the date: "T4, 21/10", "Wed 21 Oct"
-    val dateF = SimpleDateFormat(if (mode != 0) android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEEdMMM")
-        else if (locale.language == "vi") "d/M" else "EEE d MMM", locale)
-    val time = text("", if (mode == 2) 34f else 22f, Color.WHITE).apply { typeface = Font.medium }
-    // big beside the face in a narrow widget (five in a row) "11:44" came out as "11:…": the digits shrink to the column first
+    val dayF = SimpleDateFormat("EEEE", locale)
+    val time = text("", if (mode == 2) 30f else 20f, Color.WHITE).apply { typeface = Font.medium; maxLines = 1 }   // the weekday, as big as the time was
+    // big beside the face in a narrow widget (five in a row) "Chủ Nhật" came out cut: it shrinks to the column first
     fun fitTime() {
         val room = ((time.parent as? View)?.width ?: 0) - time.paddingLeft - time.paddingRight
         if (mode != 2 || room <= 0) return
-        var size = 34f; time.textSize = size
-        while (size > 20f && time.paint.measureText(time.text.toString()) > room) { size -= 1f; time.textSize = size }
+        var size = 30f; time.textSize = size
+        while (size > 18f && time.paint.measureText(time.text.toString()) > room) { size -= 1f; time.textSize = size }
     }
-    val date = text("", if (mode == 2) 15f else 12f, DIM).apply { maxLines = if (mode == 1) 2 else 1; ellipsize = TextUtils.TruncateAt.END }
-    // big beside two other big widgets: "Chủ Nhật, 25 thg 10" broke in two; it falls to the short form ("CN, 25/10") when it does not fit
-    val shortF = SimpleDateFormat(if (locale.language == "vi") "d/M" else "EEE d MMM", locale)
-    val tinyF = SimpleDateFormat(if (locale.language == "vi") "d" else "EEE d", locale)
+    val date = text("", if (mode == 2) 17f else 13f, DIM).apply { maxLines = 1; ellipsize = TextUtils.TruncateAt.END }
+    // "4 tháng 11" / "November 4", else "4/11" / "4 Nov" when it does not fit beside two other big widgets
+    val fullF = SimpleDateFormat(android.text.format.DateFormat.getBestDateTimePattern(locale, "dMMMM"), locale)
+    val shortF = SimpleDateFormat(if (locale.language == "vi") "d/M" else "d MMM", locale)
     var shown = Date()
     fun put(now: Date) {
         shown = now
-        val full = dateF.format(now).replaceFirstChar { it.uppercase() }
+        time.text = dayF.format(now).replaceFirstChar { it.uppercase() }
+        val full = fullF.format(now)
         val room = date.width - date.paddingLeft - date.paddingRight
-        fun fits(t: String) = mode == 1 || (mode == 2 && (date.width == 0 || date.paint.measureText(t) <= room))
-        val short = (if (locale.language == "vi") viDay(now) + ", " else "") + shortF.format(now)
-        // five widgets in a row: even "Mon 26 Oct" was cut to "Mon 26 …"; the weekday and the day are what a glance wants
-        date.text = if (fits(full)) full else if (fits(short)) short else (if (locale.language == "vi") viDay(now) + ", " else "") + tinyF.format(now)
+        date.text = if (mode == 2 && (date.width == 0 || date.paint.measureText(full) <= room)) full else shortF.format(now)
     }
     if (mode == 2) date.addOnLayoutChangeListener { _, l, _, r, _, ol, _, or, _ -> if (r - l != or - ol) date.post { put(shown); fitTime() } }
-    val face = ClockFace(dp, a, face0, light0) { now -> time.text = timeF.format(now); fitTime(); put(now) }
+    val face = ClockFace(dp, a, face0, light0, dial = mode == 1) { now -> put(now); fitTime() }
     return LinearLayout(a).apply {
         Frost.on(this, dp(if (mode == 0) 18 else 22).toFloat(), dp(1))
         orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
@@ -85,7 +80,7 @@ internal fun viDay(d: Date) = Calendar.getInstance().apply { time = d }.get(Cale
  * [onMinute] gets the time each time the minute changes (the digits beside it).
  */
 /** One clock face, drawn once a minute; [dp] from its host, so the screensaver (no Widgets there) draws the same faces. */
-internal class ClockFace(private val dp: (Number) -> Int, c: Context, val style: String, light: Boolean, val onMinute: (Date) -> Unit) : View(c) {
+internal class ClockFace(private val dp: (Number) -> Int, c: Context, val style: String, light: Boolean, private val dial: Boolean = true, val onMinute: (Date) -> Unit) : View(c) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val cal = Calendar.getInstance()
     private var minute = -1
@@ -192,8 +187,7 @@ internal class ClockFace(private val dp: (Number) -> Int, c: Context, val style:
                 val a = Math.toRadians(n * 30.0 - 90)
                 cv.drawText(n.toString(), cx + (ring * Math.cos(a)).toFloat(), cy + (ring * Math.sin(a)).toFloat() - (fm.ascent + fm.descent) / 2, paint)
             }
-            paint.color = red; paint.textSize = r * 0.13f
-            cv.drawText(dayLine, cx, cy + r * 0.4f, paint)
+            if (dial) { paint.color = red; paint.textSize = r * 0.13f; cv.drawText(dayLine, cx, cy + r * 0.4f, paint) }   // [dial]: no date written beside
         }
         paint.style = Paint.Style.STROKE; paint.strokeCap = Paint.Cap.ROUND; paint.color = ink
         paint.strokeWidth = r * 0.06f; line(cv, cx, cy, hr * 30f, 0f, r * 0.5f, paint)

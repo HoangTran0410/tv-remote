@@ -4,6 +4,10 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- TV Home: one clock on the screen. A clock widget takes over the top bar's time (and, with a calendar widget, its date); the clock beside the analog face says the weekday and date in words instead of repeating the time, and the face no longer draws a small date in its dial.
+
 ## 0.46.0 - 2026-11-05
 
 Web 0.46.0 · Phone app 0.43.0 · TV app 0.44.0 · TV Home 0.28.0 · TV Channels 0.19.0 · TV Games 0.21.0 · TV Apps 0.5.0

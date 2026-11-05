@@ -466,6 +466,15 @@ object HomeConfig {
      * One header line, [which] "g" (the greeting, first) or "d" (the date, second), from [t]: the [TOKENS]' values now, plus
      * "lunarLine" (the lunar date as a phrase). A style with nothing to show falls back to the line's own default.
      */
+    /**
+     * One clock on the screen (the user, 2026-11-05: themes drew the time in the top bar, in a clock widget and on its face): a clock
+     * widget takes the top bar's time, and with a calendar widget their date, while that line says the date (its default). The switches
+     * stay as the person set them; taking the widget off brings the bar's back.
+     */
+    fun barClock(o: JSONObject) = o.optBoolean("showClock", true) && "clock" !in strs(o.optJSONArray("widgets"))
+    fun barDate(o: JSONObject) = o.optBoolean("showDate", true) &&
+        !(o.optString("dstyle").ifEmpty { "date" } == "date" && strs(o.optJSONArray("widgets")).any { it == "clock" || it == "calendar" })
+
     fun headLine(o: JSONObject, which: String, t: Map<String, String>): String {
         val base = if (which == "g") t["greet"].orEmpty() else t["date"].orEmpty()
         return when (o.optString(which + "style").ifEmpty { if (which == "g") "time" else "date" }) {

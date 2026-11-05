@@ -2007,8 +2007,8 @@ class HomeActivity : Activity() {
         greetLine.text = HomeConfig.headLine(conf, "g", t)
         headType(greetLine, "g", Font.regular); headType(dateLine, "d", Font.medium)
         greetLine.visibility = if (conf.optBoolean("greet", true)) View.VISIBLE else View.GONE
-        clock.visibility = if (conf.optBoolean("showClock", true)) View.VISIBLE else View.GONE
-        dateLine.visibility = if (conf.optBoolean("showDate", true)) View.VISIBLE else View.GONE
+        clock.visibility = if (HomeConfig.barClock(conf)) View.VISIBLE else View.GONE           // a clock widget is the clock then
+        dateLine.visibility = if (HomeConfig.barDate(conf)) View.VISIBLE else View.GONE
         rule.visibility = if (clock.isShown && (dateLine.isShown || greetLine.isShown)) View.VISIBLE else View.GONE   // the line between them only while there are two sides
         netPill.visibility = if (conf.optBoolean("showNet", true)) View.VISIBLE else View.GONE
         inputsPill.visibility = if (conf.optBoolean("showInputs", false)) View.VISIBLE else View.GONE
