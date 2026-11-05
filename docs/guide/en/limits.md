@@ -11,3 +11,5 @@
 | 🧹 Full memory notice | Warns at 80 to 95% memory. **Free memory by itself** closes background apps over that level, like the Free RAM button (never the app on screen, TV Home or "Must keep" apps), once per 10 min. Off by default. |
 
 > 💡 All of it lives on the TV and needs TV Setup. It holds even with your device off.
+
+> 💡 The app could not be closed (ADB is off)? It says so once and tries again; the “app closed” alert is not sent by mistake.

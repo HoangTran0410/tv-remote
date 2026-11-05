@@ -6,3 +6,5 @@
 4. Hủy bằng **Hủy hẹn giờ**. Cần thêm giờ: **15 phút nữa**.
 
 > 💡 Hẹn giờ nằm trên TV, nên vẫn chạy khi điện thoại đã tắt.
+
+> 💡 TV chưa tắt được (ADB đang tắt)? Hẹn giờ không tự xóa: nó báo một lần và thử lại.

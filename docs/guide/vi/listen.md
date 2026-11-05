@@ -8,3 +8,5 @@ Nghe TV bằng tai nghe của bạn để không làm phiền người khác. C�
 4. Tiếng bị giật: bấm **Đều**. Trễ khoảng nửa giây nhưng không giật.
 
 > 💡 Trên app điện thoại, 🎧 vẫn nghe khi tắt màn hình.
+
+> 💡 Tiếng dừng thì app nói lý do. TV không có Opus (NVIDIA Shield) vẫn nghe được. Chỗ tiếng ngắt có trong nhật ký.

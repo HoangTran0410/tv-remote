@@ -5,3 +5,5 @@
 3. Lưu. Trong khoảng đó, nếu ai bật TV, TV báo trước rồi tự tắt sau 1 phút.
 
 > 💡 Cần TV Setup trên TV. Việc tắt do chính TV làm.
+
+> 💡 TV chưa tắt được (ADB đang tắt)? App báo một lần và thử lại, Telegram không báo “đã tắt” sai.

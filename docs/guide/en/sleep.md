@@ -6,3 +6,5 @@
 4. Cancel with **Cancel the timer**. Want more time: **15 more minutes**.
 
 > 💡 The timer lives on the TV, so it runs even when your phone is off.
+
+> 💡 The TV could not be turned off (ADB is off)? The timer does not clear itself: it says so once and keeps trying.

@@ -347,6 +347,8 @@ Hear the TV in your own headphones without bothering anyone. Needs Android 11 or
 
 > 💡 In the phone app 🎧 keeps playing with the screen off.
 
+> 💡 When the sound stops, the app says why. A TV with no Opus encoder (NVIDIA Shield) still plays. Sound gaps are in the log.
+
 ## Picture quality and “Frame pace”
 
 Choppy or blurry? Open **🖥️ Picture quality** from the quality button next to ▶ Watch. The defaults suit most TVs.
@@ -994,6 +996,8 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 
 > 💡 The timer lives on the TV, so it runs even when your phone is off.
 
+> 💡 The TV could not be turned off (ADB is off)? The timer does not clear itself: it says so once and keeps trying.
+
 ## Bedtime
 
 1. Tab **⏰ Automation → 🌙 Bedtime**.
@@ -1001,6 +1005,8 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 3. Save. In that window, if anyone turns the TV on, it warns first and goes off a minute later.
 
 > 💡 Needs TV Setup on the TV. The TV does the turning off itself.
+
+> 💡 The TV could not be turned off (ADB is off)? It says so once and tries again; Telegram does not report “off” by mistake.
 
 ## Welcome screen
 
@@ -1023,6 +1029,8 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 | 🧹 Full memory notice | Warns at 80 to 95% memory. **Free memory by itself** closes background apps over that level, like the Free RAM button (never the app on screen, TV Home or "Must keep" apps), once per 10 min. Off by default. |
 
 > 💡 All of it lives on the TV and needs TV Setup. It holds even with your device off.
+
+> 💡 The app could not be closed (ADB is off)? It says so once and tries again; the “app closed” alert is not sent by mistake.
 
 ## Kids mode: quick setup
 
@@ -1291,7 +1299,7 @@ Menu paths from [cleanyour.tv](https://cleanyour.tv/not-android).
 ## App settings
 
 1. Tap **🛠️** in the top corner to open **Settings**.
-2. **Theme**: system, light or dark. **Language**: Tiếng Việt, English, Русский or Français.
+2. **Theme**: system, light or dark. **Language**: Tiếng Việt, English, Русский, Français or العربية (the page reads right to left).
 3. **When pressing a key** (phone): vibrate or not. **The TV’s keyboard**: whether the [typing box opens by itself](#typing) when the TV selects a text field.
 4. **App on this computer**: **🔄 Check for a new version** and **Quit** (stops the program; the TV is not affected).
 5. Long parts fold (tap a title to open). Further down: [Home Assistant · Shortcuts](#hook), and About has [Send the log](#log).
@@ -1350,6 +1358,8 @@ The phone app's Manage screen uses Android's own browser (WebView). If it is too
 > 💡 **Let support look for 30 min** only reads the state, never presses or changes anything; stop it any time.
 
 > 💡 For the TV from a phone or computer: **Setup** tab, TV card, **👁️ Let support see this TV**. For the phone or computer app itself: **About**.
+
+> 💡 The log also has sound gaps (count and length) and why the picture ended.
 
 ## Common problems
 

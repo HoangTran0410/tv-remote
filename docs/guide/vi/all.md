@@ -347,6 +347,8 @@ Nghe TV bằng tai nghe của bạn để không làm phiền người khác. C�
 
 > 💡 Trên app điện thoại, 🎧 vẫn nghe khi tắt màn hình.
 
+> 💡 Tiếng dừng thì app nói lý do. TV không có Opus (NVIDIA Shield) vẫn nghe được. Chỗ tiếng ngắt có trong nhật ký.
+
 ## Chất lượng hình và “Nhịp hình”
 
 Hình giật hoặc mờ? Mở **🖥️ Chất lượng hình** từ nút chất lượng cạnh ▶ Xem. Mọi thứ đặt sẵn đã ổn cho đa số TV.
@@ -994,6 +996,8 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 
 > 💡 Hẹn giờ nằm trên TV, nên vẫn chạy khi điện thoại đã tắt.
 
+> 💡 TV chưa tắt được (ADB đang tắt)? Hẹn giờ không tự xóa: nó báo một lần và thử lại.
+
 ## Giờ đi ngủ
 
 1. Tab **⏰ Tự động → 🌙 Giờ đi ngủ**.
@@ -1001,6 +1005,8 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 3. Lưu. Trong khoảng đó, nếu ai bật TV, TV báo trước rồi tự tắt sau 1 phút.
 
 > 💡 Cần TV Setup trên TV. Việc tắt do chính TV làm.
+
+> 💡 TV chưa tắt được (ADB đang tắt)? App báo một lần và thử lại, Telegram không báo “đã tắt” sai.
 
 ## Màn hình chào
 
@@ -1023,6 +1029,8 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 | 🧹 Báo khi RAM đầy | Báo khi RAM đạt 80 đến 95%. **Tự dọn RAM**: RAM quá mức thì TV đóng app nền như nút Dọn RAM (trừ app đang xem, TV Home, app "Giữ lại"), 10 phút một lần. Mặc định tắt. |
 
 > 💡 Tất cả nằm trên TV và cần TV Setup. TV ngủ hay máy bạn tắt vẫn có hiệu lực.
+
+> 💡 Chưa đóng được app (ADB đang tắt)? App báo một lần và thử lại, thông báo “đã đóng app” không gửi sai.
 
 ## Chế độ trẻ em: thiết lập nhanh
 
@@ -1291,7 +1299,7 @@ Trong app điện thoại hay máy tính: **Thêm** › **Tiện ích** › **T�
 ## Cài đặt của app
 
 1. Bấm **🛠️** ở góc trên để mở **Cài đặt**.
-2. **Giao diện**: theo máy, sáng hoặc tối. **Ngôn ngữ**: Tiếng Việt, English, Русский hoặc Français.
+2. **Giao diện**: theo máy, sáng hoặc tối. **Ngôn ngữ**: Tiếng Việt, English, Русский, Français hoặc العربية (trang đọc từ phải sang trái).
 3. **Khi bấm nút** (điện thoại): rung hoặc không rung. **Bàn phím của TV**: có [tự mở ô gõ](#typing) khi TV chọn ô chữ hay không.
 4. **App trên máy tính**: **🔄 Kiểm tra bản mới** và **Tắt** (dừng chương trình, TV không bị ảnh hưởng).
 5. Các phần dài tự gập (chạm tiêu đề để mở). Cuối trang: [Home Assistant · Phím tắt](#hook), và mục Giới thiệu có [Gửi nhật ký](#log).
@@ -1350,6 +1358,8 @@ Màn hình Quản lý trong app điện thoại dùng trình duyệt của Andro
 > 💡 **Cho hỗ trợ xem 30 phút** chỉ cho đọc trạng thái, không bấm hay đổi gì; dừng được bất cứ lúc nào.
 
 > 💡 Mở cho TV từ điện thoại hay máy tính: tab **Thiết lập**, thẻ TV, **👁️ Cho hỗ trợ xem TV này**. Cho xem chính app điện thoại hay máy tính: **Giới thiệu**.
+
+> 💡 Nhật ký có cả chỗ tiếng bị ngắt (số lần, độ dài) và lý do hình dừng.
 
 ## Lỗi thường gặp
 

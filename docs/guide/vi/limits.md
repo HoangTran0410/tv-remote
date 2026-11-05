@@ -11,3 +11,5 @@
 | 🧹 Báo khi RAM đầy | Báo khi RAM đạt 80 đến 95%. **Tự dọn RAM**: RAM quá mức thì TV đóng app nền như nút Dọn RAM (trừ app đang xem, TV Home, app "Giữ lại"), 10 phút một lần. Mặc định tắt. |
 
 > 💡 Tất cả nằm trên TV và cần TV Setup. TV ngủ hay máy bạn tắt vẫn có hiệu lực.
+
+> 💡 Chưa đóng được app (ADB đang tắt)? App báo một lần và thử lại, thông báo “đã đóng app” không gửi sai.

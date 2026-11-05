@@ -8,3 +8,5 @@ Hear the TV in your own headphones without bothering anyone. Needs Android 11 or
 4. Sound stutters: tap **Even**. About half a second late, but steady.
 
 > 💡 In the phone app 🎧 keeps playing with the screen off.
+
+> 💡 When the sound stops, the app says why. A TV with no Opus encoder (NVIDIA Shield) still plays. Sound gaps are in the log.
