@@ -37,6 +37,22 @@ class HomeConfigTest {
         assertEquals(false, HomeConfig.clean(JSONObject()).getBoolean("center"))
         assertEquals(true, HomeConfig.clean(JSONObject().put("center", true)).getBoolean("center"))
         assertEquals(true, "center" in HomeConfig.THEME_KEYS)
+        assertEquals("top", HomeConfig.clean(JSONObject()).getString("wplace"))                       // missing = today's row
+        for (p in listOf("top", "left", "right", "bottom")) assertEquals(p, HomeConfig.clean(JSONObject().put("wplace", p)).getString("wplace"))
+        assertEquals("top", HomeConfig.clean(JSONObject().put("wplace", "middle")).getString("wplace"))
+        assertEquals(true, "wplace" in HomeConfig.THEME_KEYS)
+    }
+
+    @Test fun sideColumnPacking() {
+        val big = setOf("weather", "calendar")
+        val keys = listOf("clock", "weather", "calendar", "system", "lunar")
+        val p = HomeConfig.packColumn(keys, big, false, 380)                                          // 1080p: two blocks of 180 under the top bar
+        assertEquals(listOf(listOf("clock"), listOf("weather")), p.cols.map { it.keys }.take(2))
+        assertEquals(HomeConfig.H_HALF, p.cols[0].weight)
+        assertEquals(true, p.waiting.isNotEmpty())
+        assertEquals(1, HomeConfig.packColumn(listOf("weather", "calendar"), big, false, 100).cols.size)   // a short screen still shows the first
+        assertEquals(emptyList<String>(), HomeConfig.packColumn(keys, big, false, 2000).waiting)
+        assertEquals("note", HomeConfig.packColumn(keys, big, true, 380).cols.last().keys.last())        // the pinned note keeps its place
     }
 
     @Test fun colsDefaultToFiveAndStayInRange() {

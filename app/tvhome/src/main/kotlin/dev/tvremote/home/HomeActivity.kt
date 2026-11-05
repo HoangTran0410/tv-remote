@@ -174,6 +174,8 @@ class HomeActivity : Activity() {
     }
     private var open: android.app.Dialog? = null                    // the panel or menu on top, closed by a Home press
     private lateinit var widgets: Widgets
+    private lateinit var body: LinearLayout                         // the widgets and the grid, arranged by "wplace" ([arrange])
+    private var arranged = ""
     private val ui = android.os.Handler(android.os.Looper.getMainLooper())
     private val widgetTick = object : Runnable { override fun run() { widgetsRead(); ui.postDelayed(this, 60_000) } }
     private var ticked = 0L                                           // elapsedRealtime of the last TIME_TICK (the wall clock jumps on these boxes)
@@ -291,16 +293,18 @@ class HomeActivity : Activity() {
         col.addView(head)
         widgets = Widgets(this, ::dp).apply { visibility = View.GONE; onWeather = { runOnUiThread { if (!isDestroyed) widgetsRead() } } }
         widgets.onMenu = ::widgetMenu
-        widgets.onFocus = { v, f -> if (f) glassTo(v) else glassOff() }
+        widgets.onFocus = { v, f -> if (f) { glassTo(v); if (place() == "bottom") revealAt(v) else if (HomeConfig.side(place())) scrollToY(0) } else glassOff() }   // under the grid: the page goes down to it; a side column is in the first screen
         widgets.onMark = { glassTo(it, r = dp(12).toFloat()) }
         widgets.onOpen = { k -> if (editing || k !in OPENS) widgets.hot.firstOrNull { it.tag == k }?.let { widgetMenu(k, it) } else startActivity(Intent(this, when (k) { "news" -> dev.tvremote.home.widgets.NewsActivity::class.java; "market" -> dev.tvremote.home.widgets.MarketActivity::class.java; else -> dev.tvremote.home.widgets.WeatherMapActivity::class.java }).putExtra("i", widgets.newsShown)) }
-        widgets.onUp = { v -> (bar.buttons.filter { it.isShown } + listOfNotNull(headLeft.takeIf { it.isShown && it.isFocusable })).minByOrNull { p -> val q = IntArray(2); val r = IntArray(2); p.getLocationOnScreen(q); v.getLocationOnScreen(r); Math.abs(q[0] + p.width / 2 - r[0] - v.width / 2) }?.requestFocus() }
-        widgets.onDown = { v -> below(v)?.let { go(it) } }
-        col.addView(widgets, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(28) })
+        widgets.onUp = { v -> if (place() == "bottom") lastRowAt(v)?.let { go(it) } else (bar.buttons.filter { it.isShown } + listOfNotNull(headLeft.takeIf { it.isShown && it.isFocusable })).minByOrNull { p -> val q = IntArray(2); val r = IntArray(2); p.getLocationOnScreen(q); v.getLocationOnScreen(r); Math.abs(q[0] + p.width / 2 - r[0] - v.width / 2) }?.requestFocus() }
+        widgets.onDown = { v -> if (place() == "top") below(v)?.let { go(it) } }   // under the grid or beside it, nothing is below
+        widgets.onSide = { v, dx -> if ((place() == "left" && dx > 0) || (place() == "right" && dx < 0)) gridBeside(v)?.let { go(it) } }
+        body = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false }
+        col.addView(body, LinearLayout.LayoutParams(-1, -2))
 
         // ONE grid: the favourites are its first tiles, then every other app; no panel, the wallpaper stays whole
         grid = Flat(this).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false }
-        col.addView(grid, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(40) })
+        arrange()
         // no widgets: the grid starts low, so the first row is whole and the second is cut by the screen's edge; the wallpaper above
         grid.viewTreeObserver.addOnGlobalLayoutListener { peek(); if (tipOn) (grid.getChildAt(0) as? ViewGroup)?.let { tipPlace(it) } }  // after every layout: rows came or went, a widget opened
         scroll.viewTreeObserver.addOnGlobalFocusChangeListener { _, _ -> touchScrolled = false; veil(); tip() }   // the remote again: its rule again
@@ -447,7 +451,7 @@ class HomeActivity : Activity() {
     /** Where the Play Next items go ([HomeConfig.WATCH_AT]): the old config without the key reads as the default. */
     private fun watchAt() = conf.optString("watchAt").takeIf { it in HomeConfig.WATCH_AT } ?: HomeConfig.WATCH_AT[0]
     /** How many items are read: a row of their own scrolls sideways, so it holds more; among the tiles they are one grid row's worth, or the grid would grow without end. */
-    private fun watchCap() = if (watchAt() == "tiles") conf.optInt("cols", HomeConfig.COLS_DEFAULT) else WATCH_ROW
+    private fun watchCap() = if (watchAt() == "tiles") gridCols() else WATCH_ROW
     private fun watchAtName(k: String) = getString(when (k) { "top" -> R.string.watch_at_top; "under1" -> R.string.watch_at_under1; "tiles" -> R.string.watch_at_tiles; else -> R.string.watch_at_bottom })
 
     private fun watchMenu(it: Watch.Item) {
@@ -649,7 +653,7 @@ class HomeActivity : Activity() {
         Customize.forget()
     }
 
-    private fun firstRows() = tiles().take(2 * conf.optInt("cols", HomeConfig.COLS_DEFAULT)).mapNotNull { it.app }.toSet()
+    private fun firstRows() = tiles().take(2 * gridCols()).mapNotNull { it.app }.toSet()
 
     private fun untrim() {
         trimmed = false
@@ -657,7 +661,7 @@ class HomeActivity : Activity() {
         val kept = wallKept && !wallStale                              // the sharp photo never left: nothing to read again, no gradient in between
         wallKept = false
         if (!kept && (Walls.isPicture(conf.optString("wall")) || conf.optString("wall") == HomeConfig.WEB)) loadWall(conf.optString("wall"))
-        for (t in tiles().take(2 * conf.optInt("cols", HomeConfig.COLS_DEFAULT))) { t.app?.let { if (it.banner == null && it.icon == null) it.load(this) }; t.restore() }   // the favourites at once (kept by [trim] unless the list moved), the rest from the side
+        for (t in tiles().take(2 * gridCols())) { t.app?.let { if (it.banner == null && it.icon == null) it.load(this) }; t.restore() }   // the favourites at once (kept by [trim] unless the list moved), the rest from the side
         bg.execute {
             for (a in apps) if (a.banner == null && a.icon == null) a.load(this)
             runOnUiThread { if (!isDestroyed && !trimmed) for (t in tileCache.values) t.restore() }
@@ -675,13 +679,66 @@ class HomeActivity : Activity() {
      * clock or the widgets. By itself: without widgets 1.2 (a clean screen that still says there is more), with them right under them.
      * From the real screen and tile heights.
      */
+    /** Where the widgets sit ([HomeConfig] "wplace"): top (the row under the top bar), left / right (a column beside the grid), bottom (the row under the grid). */
+    private fun place() = conf.optString("wplace").takeIf { it in HomeConfig.WPLACES } ?: HomeConfig.WPLACES[0]
+    /** The widgets stand in a column beside the grid now (and there are some). */
+    private fun sideNow() = HomeConfig.side(place()) && !noWidgets
+
+    /** Puts the widgets and the grid in [body] as "wplace" says; nothing is rebuilt when the place is the same. */
+    private fun arrange() {
+        val p = place()
+        if (p == arranged) return
+        arranged = p
+        widgets.place = p
+        val side = HomeConfig.side(p)
+        body.removeAllViews()
+        body.orientation = if (side) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
+        val wl = if (side) LinearLayout.LayoutParams(Widgets.sideW(resources.displayMetrics), -2).apply { topMargin = dp(28); if (p == "left") rightMargin = dp(SIDE_GAP) else leftMargin = dp(SIDE_GAP) }
+            else LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(if (p == "top") 28 else 32) }
+        val gl = if (side) LinearLayout.LayoutParams(0, -2, 1f).apply { topMargin = dp(28) } else LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(40) }
+        if (p == "top" || p == "left") { body.addView(widgets, wl); body.addView(grid, gl) } else { body.addView(grid, gl); body.addView(widgets, wl) }
+        shownKey = ""
+        body.requestLayout()
+    }
+
+    /** The grid's tile nearest [v] in height, on the side next to the widgets: where Left / Right from a side column lands. */
+    private fun gridBeside(v: View): View? {
+        val vy = IntArray(2).also { v.getLocationOnScreen(it) }.let { it[1] + v.height / 2 }
+        val rows = (0 until grid.childCount).map { grid.getChildAt(it) as ViewGroup }.filter { it.childCount > 0 && it.height > 0 }
+        val row = rows.minByOrNull { r -> val o = IntArray(2); r.getLocationOnScreen(o); Math.abs(o[1] + r.height / 2 - vy) } ?: return null
+        return if (place() == "left") row.getChildAt(0) else row.getChildAt(row.childCount - 1)
+    }
+
+    /** The last grid row's tile nearest [v] across: Up from the widgets under the grid. */
+    private fun lastRowAt(v: View): View? {
+        val row = grid.getChildAt(grid.childCount - 1) as? ViewGroup ?: return null
+        return row.getChildAt(Nav.nearest(centres(row), centre(v)).takeIf { it >= 0 } ?: return null)
+    }
+
+    /** The widget a grid tile at [v] reaches going to the widgets: beside it (left / right: nearest in height) or under the grid (nearest across). */
+    private fun widgetFrom(v: View): View? {
+        val shown = widgets.hot.filter { it.isShown }
+        if (HomeConfig.side(place())) { val vy = IntArray(2).also { v.getLocationOnScreen(it) }.let { it[1] + v.height / 2 }
+            return shown.minByOrNull { w -> val o = IntArray(2); w.getLocationOnScreen(o); Math.abs(o[1] + w.height / 2 - vy) } }
+        return shown.minByOrNull { Math.abs(centre(it) - centre(v)) }
+    }
+
+    /** How many app tiles a grid row holds: "cols", fewer beside a side column (tiles keep about their size: readable at 1080p, not squeezed to fit). */
+    private fun gridCols(): Int {
+        val c = conf.optInt("cols", HomeConfig.COLS_DEFAULT)
+        if (!sideNow()) return c
+        val gap = dp(GRID_GAP); val base = (resources.displayMetrics.widthPixels - dp(96) - (c - 1) * gap) / c
+        return ((gridRoom() + gap) / (base * 0.88f + gap)).toInt().coerceIn(minOf(3, c), c)
+    }
+    private fun gridRoom() = resources.displayMetrics.widthPixels - dp(96) - (if (sideNow()) Widgets.sideW(resources.displayMetrics) + dp(SIDE_GAP) else 0)
+
     private fun peek() {
         val lp = grid.layoutParams as LinearLayout.LayoutParams
         val rows = grid.childCount
         val rowH = if (rows > 0) grid.getChildAt(0).height else 0
         val want = conf.optDouble("rows", 0.0).let { if (it >= 1) it else if (noWidgets) 1.2 else 0.0 }
         if (want > 0 && rows > 0 && rowH == 0) return                   // new rows, not laid out yet: the next layout asks again
-        val above = if (noWidgets) head.bottom else widgets.bottom
+        val above = if (noWidgets || sideNow() || place() == "bottom") head.bottom else (widgets.parent as View).top + widgets.bottom
         val least = dp(if (noWidgets) 48 else 36); val gap = dp(GRID_GAP)
         if (rowH > 0 && scroll.height > 0) {
             val room = scroll.height - above - least
@@ -689,7 +746,7 @@ class HomeActivity : Activity() {
             rowsFit = maxOf(1.0, if (f >= 1) n + 1.0 else n + Math.floor(f * 10) / 10)
         }
         // one row sits where row 1 of many would (more columns put few apps in one row: it rose to the clock)
-        val m = if (want == 0.0 || rows == 0 || rowH == 0 || scroll.height == 0) least else {
+        val m = if (sideNow()) dp(28) else if (want == 0.0 || rows == 0 || rowH == 0 || scroll.height == 0) least else {
             val n = Math.floor(want + 1e-6).toInt(); val f = want - n
             // whole rows keep half a row clear under them (the rows below, hidden there until the focus goes down: [veil])
             val tall = if (f < 0.05) n * (rowH + gap) + rowH / 2 else n * (rowH + gap) + (f * rowH).toInt()
@@ -732,6 +789,7 @@ class HomeActivity : Activity() {
         val conf = Store.get(this); val note = conf.optString("note"); val sizes = conf.optJSONObject("wsize") ?: JSONObject()
         val none = want.isEmpty() && note.isEmpty()
         noWidgets = none
+        widgets.roomPx = (if (scroll.height > 0) scroll.height else resources.displayMetrics.heightPixels) - (if (head.bottom > 0) head.bottom else dp(118)) - dp(28) - dp(20)
         peek()                                                        // the grid's margin is peek()'s alone: set here too, every minute's read made it jump
         if (none) { widgets.visibility = View.GONE; return }
         val sig = want.joinToString(",") + "|" + note.isNotEmpty()
@@ -745,7 +803,7 @@ class HomeActivity : Activity() {
                 // chosen but with nothing to show (the timer with no timer set, a lunar date off): no row, so the grid sits as with none
                 // (FPT, the user 2026-11-03: the timer alone left the grid up under an empty row)
                 val shown = widgets.visibility == View.VISIBLE
-                if (noWidgets == shown) { noWidgets = !shown; peek() }
+                if (noWidgets == shown) { noWidgets = !shown; peek(); if (HomeConfig.side(place())) { shownKey = ""; show() } }   // beside the grid they change its columns
                 (if (shown) sig else "-$sig").let { if (widgetsLast != it) widgetsLast = it }
                 if (held && shown && Motion.on) { widgets.alpha = 0f; widgets.animate().alpha(1f).setDuration(Motion.ms(240)).withLayer().start() }   // into the place kept
                 focusWidget?.let { k -> ui.post { widgetView(k)?.let { focusWidget = null; go(it) } } }
@@ -896,12 +954,12 @@ class HomeActivity : Activity() {
     private var tipBelow = true                                       // under the row's names when the screen has room (first row seen from the top of the page), else just above the row
 
     private fun tipPlace(row: ViewGroup) {
-        var y = 0; var p: View? = row
-        while (p != null && p !== content) { y += p.top; p = p.parent as? View }
+        var y = 0; var x0 = 0; var p: View? = row
+        while (p != null && p !== content) { y += p.top; x0 += p.left; p = p.parent as? View }
         val h = dp(48)
         tipBelow = y + row.height + dp(40) + h <= scroll.height - dp(8)
         var at = if (tipBelow) y + row.height + dp(40) else y - h - dp(24)   // clear of the focused tile, which grows when focused
-        var x = dp(48)
+        var x = x0                                                    // the grid's left edge (a column of widgets may stand at the left)
         if (!tipBelow) {                                              // above the row it lay over the widgets' lower half (8 of 16 themes, 2026-11-05): beside the gear when the bar has room
             fun at(v: View): IntArray { val o = IntArray(2); var q: View? = v; while (q != null && q !== content) { o[0] += q.left; o[1] += q.top; q = q.parent as? View }; return o }
             tipView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
@@ -1048,6 +1106,7 @@ class HomeActivity : Activity() {
     }
 
     private fun show() {
+        arrange()
         moving?.let { it.carry(false); hint(false); for (o in tiles()) { o.animate().cancel(); o.alpha = 1f } }; moving = null                           // anything that rebuilds the tiles ends a move that was not confirmed: the saved order wins
         val keep = focusNext ?: (currentFocus as? Tile)?.app?.pkg
         focusNext = null
@@ -1065,7 +1124,7 @@ class HomeActivity : Activity() {
         val hidden = conf.optJSONArray("hidden").let { a -> if (a == null) emptySet() else List(a.length()) { a.optString(it) }.toSet() }
         val shownPins = pins.filter { it.pkg !in byPkg && it.pkg !in dockPkgs }   // a shortcut put on the grid by the picker shows as that tile, not twice
         val inFolder = if (conf.optJSONObject("folders")?.length() ?: 0 == 0) emptySet() else Folders.members(conf)   // none: no work at all
-        val key = (dockPkgs + shownPins.map { it.pkg }).joinToString(",") + "|" + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden && it.pkg !in inFolder }.joinToString(",") { it.pkg } + "|" + apps.filter { it.folder }.joinToString(",") { it.pkg + it.members } + "|" + apps.count { it.pkg in hidden } + "|" + conf.optInt("cols") + "|" + conf.optBoolean("center", false) + "|" + conf.optJSONArray("order") + "|" + conf.optJSONObject("names") + "|" + conf.optJSONObject("pics") + "|" + suggestSetup() + "|" + conf.optBoolean("showAdd", true)
+        val key = (dockPkgs + shownPins.map { it.pkg }).joinToString(",") + "|" + apps.filter { it.pkg !in dockPkgs && it.pkg !in hidden && it.pkg !in inFolder }.joinToString(",") { it.pkg } + "|" + apps.filter { it.folder }.joinToString(",") { it.pkg + it.members } + "|" + apps.count { it.pkg in hidden } + "|" + gridCols() + "|" + tileW() + "|" + conf.optBoolean("center", false) + "|" + conf.optJSONArray("order") + "|" + conf.optJSONObject("names") + "|" + conf.optJSONObject("pics") + "|" + suggestSetup() + "|" + conf.optBoolean("showAdd", true)
         val all = key + "|" + watchAt() + "|" + watch.joinToString(",") { it.first.key + it.first.title + (it.second != null) }
         if (all == shownKey) { badgeTiles(); return }                 // nothing that decides the tiles changed: not one view is rebuilt (the power mark may have)
         shownKey = all
@@ -1076,7 +1135,7 @@ class HomeActivity : Activity() {
         grid.removeAllViews()
         val rest = Tiles.grid(conf, apps.map { it.pkg }, pins.map { it.pkg }) { k -> byKey[k].let { it != null && it.pin != null && !it.grid } }   // the one order (Tiles.kt, TilesTest walks it)
             .drop(dockPkgs.size).map { byKey.getValue(it) }
-        val cols = conf.optInt("cols", HomeConfig.COLS_DEFAULT)
+        val cols = gridCols()
         val gap = dp(GRID_GAP)
         val w = tileW()                                               // one size for every tile: the favourites are only the first ones
         val cells: MutableList<View> = (favs + rest).distinct().map { tile(it, w, made) }.toMutableList()   // one App, one tile: a second addView of it is a crash, not a twin
@@ -1108,7 +1167,7 @@ class HomeActivity : Activity() {
         bg.execute { now.forEach { it.load(this) }; runOnUiThread { if (!isDestroyed) { shownKey = ""; show() } } }
     }
 
-    private fun tileW(): Int { val cols = conf.optInt("cols", HomeConfig.COLS_DEFAULT); return (resources.displayMetrics.widthPixels - dp(96) - (cols - 1) * dp(GRID_GAP)) / cols }
+    private fun tileW(): Int { val cols = gridCols(); return (gridRoom() - (cols - 1) * dp(GRID_GAP)) / cols }
 
     /** [breaks]: where a row starts early (the Play Next row stands alone); [strip]: the cells that are one sideways-scrolling [Strip] whatever their number. */
     private fun fill(cells: List<View>, cols: Int, gap: Int, breaks: Set<Int> = emptySet(), strip: IntRange = IntRange.EMPTY) {
@@ -1209,7 +1268,7 @@ class HomeActivity : Activity() {
             KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER -> { endMove(true); return true }
             KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_ESCAPE -> { endMove(false); return true }
         }
-        val cols = conf.optInt("cols", HomeConfig.COLS_DEFAULT)
+        val cols = gridCols()
         val d = when (code) {
             KeyEvent.KEYCODE_DPAD_LEFT -> -1; KeyEvent.KEYCODE_DPAD_RIGHT -> 1
             KeyEvent.KEYCODE_DPAD_UP -> -cols; KeyEvent.KEYCODE_DPAD_DOWN -> cols
@@ -1313,12 +1372,16 @@ class HomeActivity : Activity() {
         if (row == 0 && tipOn && !tipPast && dir == (if (tipBelow) Nav.Dir.DOWN else Nav.Dir.UP)) { go(tipClose); return true }   // the tip's ✕ is the next stop away from row 1 (below or above it); the key again goes on
         val here = grid.getChildAt(row) as? Strip
         val sideways = dir == Nav.Dir.LEFT || dir == Nav.Dir.RIGHT
+        if (sideways && ((dir == Nav.Dir.LEFT && place() == "left" && col == 0) || (dir == Nav.Dir.RIGHT && place() == "right" && col == rows[row] - 1)) && sideNow()) {
+            widgetFrom(v)?.let { go(it); return true }                // the row's end on the widgets' side: the column, not the row above or below
+        }
         var to = Nav.grid(rows, row, col, wantCol, dir)
         if (to != null && sideways && (here != null && to.row != row || grid.getChildAt(to.row) is Strip && to.row != row)) to = null   // a sideways row ends at its ends: the next row is Up / Down
         val vert = to != null && !sideways && (here != null || grid.getChildAt(to.row) is Strip)
         if (vert && to != null) to = Nav.At(to.row, maxOf(0, Nav.nearest(centres(grid.getChildAt(to.row) as ViewGroup), centre(v))))   // to or from a scrolled row: the nearest tile by position, not by column number
         if (to == null) {
             if (dir == Nav.Dir.UP) { val hot = widgets.hotAt(centre(v), fromBelow = true); topAt = v; topVia = hot; (hot ?: run { up(v); null })?.requestFocus() }               // Android 9 (a BRAVIA) found nothing above the first row by itself
+            else if (dir == Nav.Dir.DOWN && place() == "bottom" && !noWidgets && widgetFrom(v)?.also { go(it) } != null) { }   // the grid's last row: the widgets under it
             else v.nudge(if (dir == Nav.Dir.RIGHT) 1 else if (dir == Nav.Dir.LEFT) -1 else 0, if (dir == Nav.Dir.DOWN) 1 else 0)
             return true
         }
@@ -1615,6 +1678,11 @@ class HomeActivity : Activity() {
      */
     private fun reveal(v: View) {
         if (grid.indexOfChild(v.parent as? View) <= 0) { scrollToY(0); return }
+        revealAt(v)
+    }
+
+    /** The page scrolls only as far as [v] needs to be whole on screen. */
+    private fun revealAt(v: View) {
         var y = 0; var p: View? = v
         while (p != null && p !== scroll) { y += p.top; p = p.parent as? View }
         val margin = dp(40)
@@ -2838,6 +2906,7 @@ const val DIM = 0.6f                                                  // the til
 const val STRIP_PAD = 28                                              // dp a Play Next row's bounds reach past the grid each side
 const val STRIP_PAD_V = 16
 const val WATCH_ROW = 20                                             // Play Next items a row of their own holds (it scrolls sideways)
+const val SIDE_GAP = 32                                            // dp between a side column of widgets and the grid
 const val GRID_GAP = 32                                               // dp between tiles, across and down: room under a focused tile for its name
 private val OPENS = setOf("weather", "news", "market")             // the widgets that open a screen on OK; the others open their menu
 private const val EDIT_EDGE = 0x80FFFFFF.toInt()                       // an element's outline in edit mode

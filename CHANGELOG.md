@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: where the widgets go (Customize > Grid, and the page: "Widgets position"): above the apps (as before), left or right of the apps as a column of full-size widgets (the grid keeps its tile size and shows fewer columns), or under the apps. The D-pad moves between the column and the grid, and the theme previews draw it.
 - TV Home: one clock on the screen. A clock widget takes over the top bar's time (and, with a calendar widget, its date); the clock beside the analog face says the weekday and date in words instead of repeating the time, and the face no longer draws a small date in its dial.
 - TV Home: the one-time "Hold OK" tip no longer covers the widgets: when the first row sits low it shows beside the gear. Match day and Tết themes lose their second date widget.
 - TV Home: a widget alone in its column shows its full form (the weather's forecast, not a tall card with one number), and with a centered grid the widget row is centered over it too.

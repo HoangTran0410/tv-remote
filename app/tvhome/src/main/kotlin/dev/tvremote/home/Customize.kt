@@ -908,6 +908,7 @@ object Customize {
             tile(R.drawable.ic_apps, a.getString(R.string.c_cols), null, "cols", (HomeConfig.COLS_MIN..HomeConfig.COLS_MAX).map { "$it" to "$it" })
             tile(R.drawable.ic_updown, a.getString(R.string.c_rows), null, "rows")
             tile(R.drawable.ic_apps, a.getString(R.string.c_center), null, "center")   // a short row in the middle, default off
+            tile(R.drawable.ic_updown, a.getString(R.string.c_wplace), null, "wplace", HomeConfig.WPLACES.map { it to a.getString(when (it) { "left" -> R.string.c_wplace_left; "right" -> R.string.c_wplace_right; "bottom" -> R.string.c_wplace_bottom; else -> R.string.c_wplace_top }) })   // where the widgets sit, default top
             section(a.getString(R.string.g_sec_edit))
             val doors = launchPage(a, col, ::glass, ::label, gap, quick = false)
             doors.getOrNull(doorAt)?.let { v -> groups[2].start = { v } }; doorAt = -1   // come back from a door: on it

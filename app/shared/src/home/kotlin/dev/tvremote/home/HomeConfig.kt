@@ -117,6 +117,9 @@ import org.json.JSONObject
  *           Checked by the screensaver's once-a-minute tick; not a theme key
  *   center  the app grid's tiles sit in the middle of their row (a row with fewer tiles than [cols] too), default false = left-aligned.
  *           A look, so a theme key
+ *   wplace  where the widgets sit ([WPLACES]): "top" (default, also a missing key) = one row under the top bar; "left" / "right" = a
+ *           column of full-form widgets beside the grid (the grid keeps its tile size and takes fewer columns); "bottom" = the row
+ *           under the grid. A look, so a theme key
  *   note    a line from the family, pinned on the home screen until it is emptied ([NOTE_MAX] characters, one line)
  *   names   the person's own names for apps and shortcuts: {"<package or pin:...>": "name"}, at most [NAMES_MAX], each [NAME_MAX] characters;
  *           shown wherever TV Home shows the app's name, and always on a banner tile (two YouTubes look the same). Not a theme key
@@ -370,7 +373,10 @@ object HomeConfig {
      */
     const val W_BIG = 100; const val W_CAL = 120; const val W_SMALL = 90; const val BUDGET = 415; const val FLOOR = 190
     fun weight(k: String, big: Boolean) = if (!big) W_SMALL else if (k == "calendar") W_CAL else W_BIG
-    /** The widgets of one column, top to bottom, and its weight. */
+    /** Where the widgets sit: the row under the top bar (default), a column beside the grid, or the row under the grid. */
+    val WPLACES = listOf("top", "left", "right", "bottom")
+    fun side(place: String?) = place == "left" || place == "right"
+    /** The widgets of one column, top to bottom, and its weight (in a side column: its height in dp). */
     class Col(val keys: List<String>, val weight: Int)
     /** The columns that fit, left to right, and the widgets that wait (the pinned note, "note", never does). */
     class Packed(val cols: List<Col>, val waiting: List<String>)
@@ -380,15 +386,26 @@ object HomeConfig {
      * column of its own; stop at the first column that would pass [BUDGET], the rest wait. The pinned note ([note]) is the last
      * small widget and keeps its place: the widgets before it give way, from the end.
      */
-    fun pack(keys: List<String>, big: Set<String>, note: Boolean = false): Packed {
+    fun pack(keys: List<String>, big: Set<String>, note: Boolean = false): Packed = packWith(keys, big, note, BUDGET, 0) { k, isBig, _ -> weight(k, isBig) }
+
+    /** Heights in a side column (dp): a big widget or a stacked pair of small ones [H_FULL], a small one alone [H_HALF], [H_GAP] between. */
+    const val H_FULL = 180; const val H_HALF = 90; const val H_GAP = 12
+    /**
+     * The side column ("left" / "right"): the same walk as [pack], but the budget is the screen's height ([roomDp]) and a block's weight its
+     * height; what does not fit waits. The first block always shows (a short screen still has a widget).
+     */
+    fun packColumn(keys: List<String>, big: Set<String>, note: Boolean, roomDp: Int): Packed =
+        packWith(keys, big, note, roomDp + H_GAP, H_GAP) { _, isBig, group -> (if (isBig || group.size == 2) H_FULL else H_HALF) + H_GAP }
+
+    private fun packWith(keys: List<String>, big: Set<String>, note: Boolean, budget: Int, pad: Int, size: (String, Boolean, List<String>) -> Int): Packed {
         fun run(ks: List<String>): Packed {
             val cols = ArrayList<Col>(); var sum = 0; var i = 0
             while (i < ks.size) {
                 val k = ks[i]; val isBig = k in big
                 val group = if (!isBig && ks.getOrNull(i + 1)?.let { it !in big } == true) listOf(k, ks[i + 1]) else listOf(k)
-                val w = weight(k, isBig)
-                if (sum + w > BUDGET) break
-                cols += Col(group, w); sum += w; i += group.size
+                val w = size(k, isBig, group)
+                if (cols.isNotEmpty() && sum + w > budget) break
+                cols += Col(group, w - pad); sum += w; i += group.size
             }
             return Packed(cols, ks.drop(i))
         }
@@ -523,7 +540,7 @@ object HomeConfig {
     const val THEME_NAME_MAX = 24
     /** The settings a theme holds and an apply switches . */
     val THEME_KEYS = listOf("wall", "walls", "wurl", "wcol", "wdir", "wmode", "wsnap", "wkeep", "wevery", "shade", "wfit", "wfade",
-        "widgets", "wsize", "wopt", "cols", "center", "rows", "focus", "motion", "anim", "clock24", "greet")
+        "widgets", "wsize", "wopt", "wplace", "cols", "center", "rows", "focus", "motion", "anim", "clock24", "greet")
     private val THEME_ID = Regex("t[0-9]{1,4}")
     /** What the first screen draws that the person can take off (not in a theme: a look does not hide the way to the settings). */
     /** Where the Play Next items sit on the grid, first the default (the user, 2026-10-26: a row wedged inside their own apps annoys). */
@@ -749,6 +766,7 @@ object HomeConfig {
             .put("dface", o.optString("dface").takeIf { it in DFACES } ?: "big")
             .put("ddark", dark(o.optString("ddark")))
             .put("center", o.optBoolean("center", false))
+            .put("wplace", o.optString("wplace").takeIf { it in WPLACES } ?: WPLACES[0])
             .put("note", o.optString("note").replace(Regex("\\s+"), " ").trim().take(NOTE_MAX))
             .put("place", o.optString("place").replace(Regex("\\s+"), " ").trim().take(PLACE_MAX))
             .put("feeds", JSONArray(feeds(o.optJSONArray("feeds"))))

@@ -65,3 +65,31 @@ test('the preview draws one clock, as TV Home does (HomeConfig.barClock / barDat
   assert.equal(b({ showClock: false }).clock, false);
   assert.equal(b({ widgets: ['lunar'] }).clock, true);
 });
+
+test('the preview puts the widgets where "wplace" says (HomeConfig.WPLACES): row above, column left / right, row under the grid', () => {
+  const hj = fs.readFileSync(path.join(web, 'js/home.js'), 'utf8');
+  const part = hj.slice(hj.indexOf('const HOME_WIDGETS'), hj.indexOf('const HOME_LAYOUTS')).replace(/^(let|const) /gm, 'var ');
+  const sb = {}; vm.createContext(sb);
+  vm.runInContext(hj.match(/^const HOME_WALLS = [\s\S]*?\};/m)[0].replace('const ', 'var ') + '\n' + part + '\n' + js + '\nthis.paint = homeThemePaint; this.col = homePackColumn;', sb);
+  const draw = (conf) => {
+    const boxes = []; const grad = { addColorStop() {} };
+    const ctx = new Proxy({ roundRect: (x, y, bw, bh, r) => boxes.push({ x, y, bw, bh, r }) }, {
+      get: (t, n) => (n in t ? t[n] : n.startsWith('create') ? () => grad : () => {}), set: () => true });
+    sb.paint({ getContext: () => ctx, width: 960, height: 540 }, { wall: 'x', cols: 5, ...conf }, [], null, '', null);
+    const wid = boxes.filter((b) => Math.abs(b.r - 540 * 0.035) < 0.01), tile = boxes.filter((b) => Math.abs(b.r - 540 * 0.03) < 0.01);
+    return { wid, tile };
+  };
+  const base = { widgets: ['clock', 'weather', 'calendar'] };
+  const top = draw({ ...base, wplace: 'top' }), none = draw(base);
+  assert.deepEqual(none.wid, top.wid);                                     // a missing key is today's row
+  assert.deepEqual(none.tile, top.tile);
+  assert.ok(top.wid.length && top.wid.every((b) => b.y + b.bh <= Math.min(...top.tile.map((t) => t.y)) + 1));
+  const left = draw({ ...base, wplace: 'left' }), right = draw({ ...base, wplace: 'right' }), bottom = draw({ ...base, wplace: 'bottom' });
+  assert.ok(left.wid.length >= 2 && left.wid.every((b) => b.x + b.bw <= Math.min(...left.tile.map((t) => t.x)) + 1), 'column left of the tiles');
+  assert.ok(right.wid.every((b) => b.x >= Math.max(...right.tile.map((t) => t.x + t.bw)) - 1), 'column right of the tiles');
+  assert.ok(new Set(left.wid.map((b) => b.x)).size === 1, 'one column');
+  assert.ok(bottom.wid.every((b) => b.y >= Math.max(...bottom.tile.map((t) => t.y))), 'row under the grid');
+  const p = JSON.parse(JSON.stringify(sb.col(['clock', 'weather', 'calendar'], ['weather', 'calendar'], false, 378)));
+  assert.deepEqual(p.cols.map((c) => c.weight), [90, 180]);                // the twin of HomeConfigTest.sideColumnPacking
+  assert.deepEqual(p.waiting, ['calendar']);
+});

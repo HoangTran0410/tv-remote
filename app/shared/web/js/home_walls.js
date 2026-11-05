@@ -205,32 +205,50 @@ function homeThemePaint(cv, conf, tiles, img, look, now) {   // now: a Date, for
   if (conf.greet !== false) bar(hx, h * 0.08, w * 0.16, h * 0.026, 0.45);
   if (head.date) bar(hx, h * 0.122, w * 0.22, h * 0.034, 0.75);
   bar(w - m - w * 0.16, h * 0.085, w * 0.16, h * 0.05, 0.25);           // the buttons as one bar: where things are, not each one
+  // where the widgets sit (HomeConfig "wplace"): the row under the top bar (top, today), a column beside the grid (left / right), the row under the grid (bottom)
+  const place = HOME_PLACES.includes(conf.wplace) ? conf.wplace : 'top', side0 = place === 'left' || place === 'right';
   let y = h * 0.21;
-  const big = HOME_WIDGETS.concat(['qr1', 'qr2', 'qr3', 'qr4']).filter((k) => homeSize(conf, k) === 'big'), packed = homePack((conf.widgets || []).filter((k) => HOME_WIDGETS.includes(k)), big);
-  if (packed.cols.length) {
-    const rowH = h * 0.30, gap = w * 0.02, room = w - 2 * m - gap * (packed.cols.length - 1), sum = Math.max(HOME_W.floor, packed.cols.reduce((n, c) => n + c.weight, 0));
-    const used = room * packed.cols.reduce((n, c) => n + c.weight, 0) / sum + gap * (packed.cols.length - 1);
+  const big = HOME_WIDGETS.concat(['qr1', 'qr2', 'qr3', 'qr4']).filter((k) => homeSize(conf, k) === 'big'), keys = (conf.widgets || []).filter((k) => HOME_WIDGETS.includes(k));
+  const packed = side0 ? homePackColumn(keys, big, false, 378) : homePack(keys, big);   // 378 dp: what is left of a 1080p screen under the top bar
+  const side = side0 && packed.cols.length > 0;
+  const card = (k, x, cy, cw, ch, n) => {
+    const look = ((conf.wopt || {})[k] || {}).look || (conf.wstyle || {})[k], pad = h * 0.03;
+    ctx.fillStyle = look === 'solid' ? 'rgba(24,27,34,0.94)' : `rgba(${HOME_PREV.ink},${look === 'tonal' ? 0.29 : 0.18})`;   // Frost's solid card; none: no card
+    if (look !== 'none') box(x, cy, cw, ch, h * 0.035);
+    if (k === 'clock' && (n === 1 || ch > h * 0.12)) { ctx.strokeStyle = `rgba(${HOME_PREV.ink},0.7)`; ctx.lineWidth = Math.max(1, h * 0.008); ctx.beginPath(); ctx.arc(x + cw / 2, cy + ch / 2, Math.min(cw, ch) * 0.28, 0, 2 * Math.PI); ctx.stroke(); }
+    else { bar(x + pad, cy + pad, cw * 0.42, h * 0.018, 0.4); if (ch > h * 0.12) bar(x + pad, cy + ch * 0.45, cw * 0.62, h * 0.045, 0.7); else bar(x + pad, cy + ch * 0.55, cw * 0.5, h * 0.03, 0.7); }
+  };
+  const rowH = h * 0.30, wgap = w * 0.02, sideW = (w - 2 * m) / 3, sideGap = w * 0.033;
+  const drawRow = (ry) => {
+    const room = w - 2 * m - wgap * (packed.cols.length - 1), sum = Math.max(HOME_W.floor, packed.cols.reduce((n, c) => n + c.weight, 0));
+    const used = room * packed.cols.reduce((n, c) => n + c.weight, 0) / sum + wgap * (packed.cols.length - 1);
     let x = conf.center ? (w - used) / 2 : m;                           // centered over a centered grid, as TV Home lays it
     for (const col of packed.cols) {
-      const cw = room * col.weight / sum, n = col.keys.length, ch = (rowH - (n - 1) * gap * 0.6) / n;
-      col.keys.forEach((k, j) => {
-        const cy = y + j * (ch + gap * 0.6), look = ((conf.wopt || {})[k] || {}).look || (conf.wstyle || {})[k], pad = h * 0.03;
-        ctx.fillStyle = look === 'solid' ? 'rgba(24,27,34,0.94)' : `rgba(${HOME_PREV.ink},${look === 'tonal' ? 0.29 : 0.18})`;   // Frost's solid card; none: no card
-        if (look !== 'none') box(x, cy, cw, ch, h * 0.035);
-        if (k === 'clock' && (n === 1 || ch > h * 0.12)) { ctx.strokeStyle = `rgba(${HOME_PREV.ink},0.7)`; ctx.lineWidth = Math.max(1, h * 0.008); ctx.beginPath(); ctx.arc(x + cw / 2, cy + ch / 2, Math.min(cw, ch) * 0.28, 0, 2 * Math.PI); ctx.stroke(); }
-        else { bar(x + pad, cy + pad, cw * 0.42, h * 0.018, 0.4); if (ch > h * 0.12) bar(x + pad, cy + ch * 0.45, cw * 0.62, h * 0.045, 0.7); else bar(x + pad, cy + ch * 0.55, cw * 0.5, h * 0.03, 0.7); }
-      });
-      x += cw + gap;
+      const cw = room * col.weight / sum, n = col.keys.length, ch = (rowH - (n - 1) * wgap * 0.6) / n;
+      col.keys.forEach((k, j) => card(k, x, ry + j * (ch + wgap * 0.6), cw, ch, n));
+      x += cw + wgap;
     }
-    y += rowH + h * 0.04;
-  }
-  const cols = Math.min(8, Math.max(4, conf.cols || 5)), gap = w * 0.014, tw = (w - 2 * m - (cols - 1) * gap) / cols, th = tw * 0.56;
-  const fit = (h - y + gap) / (th + gap), shown = conf.rows >= 1 ? Math.min(conf.rows, Math.max(fit, 1)) : Math.min(fit, 3), ring = conf.focus === 'ring';
+  };
+  if (side) {                                                           // full-width blocks stacked, a block as high as its dp says (540 dp screen)
+    const x = place === 'left' ? m : w - m - sideW, sc = h / 540;
+    let cy = y;
+    for (const col of packed.cols) {
+      const n = col.keys.length, ch = col.weight * sc, g = HOME_H.gap * sc * 0.5;
+      col.keys.forEach((k, j) => card(k, x, cy + j * ((ch - g * (n - 1)) / n + g), sideW, (ch - g * (n - 1)) / n, n));
+      cy += ch + HOME_H.gap * sc;
+    }
+  } else if (packed.cols.length && place === 'top') { drawRow(y); y += rowH + h * 0.04; }
+  const cols0 = Math.min(8, Math.max(4, conf.cols || 5)), gap = w * 0.014, base = (w - 2 * m - (cols0 - 1) * gap) / cols0;
+  const gx = side && place === 'left' ? m + sideW + sideGap : m, gw = side ? w - 2 * m - sideW - sideGap : w - 2 * m;
+  // beside a column the tiles keep about their size and the row holds fewer (HomeActivity.gridCols)
+  const cols = side ? Math.min(cols0, Math.max(Math.min(3, cols0), Math.floor((gw + gap) / (base * 0.88 + gap)))) : cols0;
+  const tw = (gw - (cols - 1) * gap) / cols, th = tw * 0.56;
+  const fit = (h - y + gap) / (th + gap), shown = conf.rows >= 1 && !side && place !== 'bottom' ? Math.min(conf.rows, Math.max(fit, 1)) : Math.min(fit, 3), ring = conf.focus === 'ring';
   // TV Home keeps the grid at the bottom of the screen: whole rows above a margin, a part of a row cut by the screen's edge
   const whole = Math.abs(shown - Math.round(shown)) < 0.0001;
-  y = Math.max(y, (whole ? h * 0.94 : h) - (shown * (th + gap) - (whole ? gap : 0)));
+  if (!side && place !== 'bottom') y = Math.max(y, (whole ? h * 0.94 : h) - (shown * (th + gap) - (whole ? gap : 0)));
   for (let i = 0; i < Math.ceil(shown - 0.0001) * cols; i++) {
-    const rx = m + (i % cols) * (tw + gap), ry = y + Math.floor(i / cols) * (th + gap), row = Math.floor(i / cols);
+    const rx = gx + (i % cols) * (tw + gap), ry = y + Math.floor(i / cols) * (th + gap), row = Math.floor(i / cols);
     const vis = row + 1 <= shown + 0.0001 ? 1 : Math.min(1, Math.max(0.05, shown - row)), live = i < tiles.length;
     ctx.fillStyle = live ? HOME_PREV.live[i % 4] : `rgba(${HOME_PREV.ink},0.15)`;
     if (live) ctx.globalAlpha = 0.8;
@@ -240,6 +258,7 @@ function homeThemePaint(cv, conf, tiles, img, look, now) {   // now: a Date, for
       else { ctx.fillStyle = `rgba(${HOME_PREV.ink},0.25)`; box(rx - tw * 0.04, ry - th * 0.06, tw * 1.08, th * vis + th * 0.12, h * 0.036); }
     }
   }
+  if (place === 'bottom' && packed.cols.length) drawRow(y + Math.ceil(shown - 0.0001) * (th + gap) + h * 0.02);   // the row under the grid's rows: the screen's edge may cut it, as on the TV
   if (homeThemeMoving(conf)) {                                    // a dark pill with a play triangle, top right
     const bh = h * 0.17, bw = bh * 1.6, x = w - w * 0.04 - bw, y = h * 0.05, t = bh * 0.42, cx = x + bw / 2 + t * 0.12, cy = y + bh / 2;
     ctx.fillStyle = 'rgba(0,0,0,0.7)'; box(x, y, bw, bh, bh / 2);

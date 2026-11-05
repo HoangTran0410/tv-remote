@@ -65,6 +65,29 @@ function homePack(keys, big, note) {
   }
   return { cols: [], waiting: keys };
 }
+// HomeConfig.packColumn, the side column ("wplace" left / right): the same walk with the screen's height (dp) as the budget; a block's weight is its height
+const HOME_H = { full: 180, half: 90, gap: 12 };   // HomeConfig.H_FULL / H_HALF / H_GAP
+const HOME_PLACES = ['top', 'left', 'right', 'bottom'];   // HomeConfig.WPLACES
+const HOME_PLACE_WORDS = { top: 'home.wplace_top', left: 'home.wplace_left', right: 'home.wplace_right', bottom: 'home.wplace_bottom' };
+function homePackColumn(keys, big, note, room) {
+  const run = (ks) => {
+    const cols = []; let sum = 0, i = 0;
+    while (i < ks.length) {
+      const k = ks[i], isBig = big.includes(k);
+      const group = !isBig && i + 1 < ks.length && !big.includes(ks[i + 1]) ? [k, ks[i + 1]] : [k];
+      const h = (isBig || group.length === 2 ? HOME_H.full : HOME_H.half) + HOME_H.gap;
+      if (cols.length && sum + h > room + HOME_H.gap) break;
+      cols.push({ keys: group, weight: h - HOME_H.gap }); sum += h; i += group.length;
+    }
+    return { cols, waiting: ks.slice(i) };
+  };
+  if (!note) return run(keys);
+  for (let n = keys.length; n >= 0; n--) {
+    const p = run([...keys.slice(0, n), 'note']);
+    if (!p.waiting.length) return { cols: p.cols, waiting: keys.slice(n) };
+  }
+  return { cols: [], waiting: keys };
+}
 const HOME_LAYOUTS = { row: 'home.layout_row', big: 'home.layout_big', big2: 'home.layout_big2', flip: 'home.layout_flip', quad: 'home.layout_quad' };   // HomeConfig.LAYOUTS
 // HomeConfig.COLS: [share of the width %, widgets stacked] per column; "row" is drawn as it looks (it has no fixed places)
 const HOME_COLS = { row: [[33, 1], [33, 1], [34, 2]], big: [[58, 1], [42, 2]], big2: [[36, 1], [36, 1], [28, 1]], flip: [[42, 2], [58, 1]], quad: [[50, 2], [50, 2]] };
@@ -454,6 +477,7 @@ async function homeOpen() {
   const ddarkFrom = el('input', { type: 'time', step: 1800, onchange: ddarkSend }), ddarkTo = el('input', { type: 'time', step: 1800, onchange: ddarkSend });
   const ddarkTimes = el('div', { className: 'ddark' }, el('label', {}, el('span', { textContent: T('home.ddark_from') }), ddarkFrom), el('label', {}, el('span', { textContent: T('home.ddark_to') }), ddarkTo));
   const center = el('input', { type: 'checkbox', onchange: () => send({ center: center.checked }) });   // the app grid's tiles in the middle of their row (HomeConfig "center", default off)
+  const wplaceHead = el('h3', { textContent: T('home.wplace') }), wplace = el('div', { className: 'fchips' });   // where the widgets sit (HomeConfig "wplace", default top); only a TV Home that reports it
   // remote keys that open an app, and the app that opens each time the TV turns on (HomeConfig keyon / keyapps / autoon / autoapp).
   // Both default off. TV Home answers a key on its own screen; TV Setup does it everywhere and the power-on app: said under each
   const keyOn = el('input', { type: 'checkbox', onchange: () => send({ keyon: keyOn.checked }) });
@@ -694,6 +718,8 @@ async function homeOpen() {
     ddarkOn.checked = !!dk; ddarkTimes.hidden = c.ddark === undefined || !dk;
     if (dk) { ddarkFrom.value = dk[1]; ddarkTo.value = dk[2]; }
     center.checked = !!c.center;
+    wplaceHead.hidden = wplace.hidden = c.wplace === undefined;      // a TV Home older than it
+    wplace.replaceChildren(...HOME_PLACES.map((k) => el('button', { type: 'button', className: (c.wplace || 'top') === k ? 'on' : '', 'aria-pressed': String((c.wplace || 'top') === k), onclick: () => send({ wplace: k }) }, T(HOME_PLACE_WORDS[k]))));
     center.closest('label').hidden = c.center === undefined;          // a TV Home older than it
     const ka = c.keyapps || {}, kOk = !!c.keysOk;                     // an older TV Home has neither: shown, with its update
     keyOn.checked = !!c.keyon;
@@ -1058,7 +1084,7 @@ async function homeOpen() {
       sect(showHead, check(shows.showClock, 'home.show_clock'), check(shows.showDate, 'home.show_date'), check(shows.showNet, 'home.show_net'), check(showInputs, 'home.show_inputs'), check(shows.showGear, 'home.show_gear'),
         check(shows.showAdd, 'home.show_add'), check(shows.showSuggest, 'home.show_suggest'), check(shows.showWatch, 'home.show_watch'), check(infold, 'home.show_infold'), watchAtHead, watchAt),
       sect('home.sec_motion', check(anim, 'home.anim'), motionHead, motion, focusHead, focus),
-      sect('home.sec_grid', colsHead, cols, check(center, 'home.center'), rowsHead, rowsLine, rowsNote),
+      sect('home.sec_grid', colsHead, cols, check(center, 'home.center'), wplaceHead, wplace, rowsHead, rowsLine, rowsNote),
       sect('home.sec_edit', orderHead, orderBox, foldHead, foldNote, foldBox),
       sect(null, tilesHead, tilesNote, addHome, tilesList),
       sect(null, el('div', { className: 'card-head' }, el('h3', { textContent: T('home.hidden') }), addHidden), hidden),
