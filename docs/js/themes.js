@@ -40,7 +40,7 @@
   }
 
   // ---- the cards
-  function shot(it){ return "img/themes/" + it.id + ".webp?v=11051324"; }
+  function shot(it){ return "img/themes/" + it.id + ".webp?v=11051404"; }
   function fallbacks(it){ return [shot(it), it.t.thumb ? local(String(it.t.thumb)) : ""].filter(Boolean); }
   function setImg(img, srcs){
     var i = 0; img.onerror = function(){ i++; if (i < srcs.length) img.src = srcs[i]; else { img.onerror = null; img.classList.add("none"); } };
@@ -126,7 +126,7 @@
 
   // ---- the dialog
   var stage = document.getElementById("d-stage"), cap = document.getElementById("d-cap"), stopShow = null;
-  function bigSrc(it){ return "img/themes/" + it.id + "-big.webp?v=11051324"; }
+  function bigSrc(it){ return "img/themes/" + it.id + "-big.webp?v=11051404"; }
   function pictureSrcs(it){
     var s = [bigSrc(it)], i = param(it.t, "i"); if (i) s.push(local(i));
     if (it.t.thumb) s.push(local(String(it.t.thumb)));

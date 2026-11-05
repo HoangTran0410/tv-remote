@@ -627,7 +627,7 @@ Paste a web or YouTube link, or an app's deep link (`app://…`): see which app 
 
 ## TV Home themes
 
-A theme changes the whole home screen in one press: background, widgets, widget style, columns and rows, a centered grid, live widgets.
+A theme changes the whole home screen in one press: background, widgets and where they sit (top, left or right column), app tile style (banner, icon, frosted glass), accent colour, columns and rows, live widgets.
 
 1. On the TV: ⚙ → **Quick settings** → **Customize** → **Themes**. Phone, computer: **TV** tab → **Customize TV Home** → **Themes**.
 2. Each tile is the home screen in miniature: the real background, where the widgets go, the app grid. Pick one and the TV changes at once.

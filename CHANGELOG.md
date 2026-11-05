@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: the 16 ready-made themes redone with the new choices, each its own layout (widgets above, in a left or right column), tile style and accent colour; previews re-shot. Beside a column every app row shows (a theme's row count no longer left one lone row), and the column fits three widgets under the clock.
 - TV Home: where the widgets go (Customize > Grid, and the page: "Widgets position"): above the apps (as before), left or right of the apps as a column of full-size widgets (the grid keeps its tile size and shows fewer columns). The D-pad moves between the column and the grid, and the theme previews draw it.
 - TV Home: two new look choices a theme can hold, so themes can differ by more than the wallpaper: App tiles (Banner as before, Icon = the app's icon large with its name and no card, Frosted glass = a translucent card with icon and name) and an Accent colour (8 colours; tints the focus ring or glass rim, the clock's date, the calendar's today and the top bar's rule). Off by default: nothing changes until chosen. In the TV's Customize > Look and on the page; the theme previews draw them. The focus choice "Blue ring" is now just "Ring".
 - TV Home: one clock on the screen. A clock widget takes over the top bar's time (and, with a calendar widget, its date); the clock beside the analog face says the weekday and date in words instead of repeating the time, and the face no longer draws a small date in its dial.

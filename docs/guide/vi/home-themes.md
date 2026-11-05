@@ -1,6 +1,6 @@
 # Chủ đề TV Home
 
-Một chủ đề đổi cả màn hình chính trong một lần bấm: hình nền, widget, kiểu widget, số cột và hàng, căn giữa lưới, live widget.
+Một chủ đề đổi cả màn hình chính trong một lần bấm: hình nền, widget và chỗ đặt (trên, cột trái, cột phải), kiểu ô app (thẻ, biểu tượng, kính mờ), màu nhấn, số cột và hàng, live widget.
 
 1. Trên TV: ⚙ → **Cài đặt nhanh** → **Tùy chỉnh** → **Chủ đề**. Điện thoại, máy tính: tab **TV** → **Tùy chỉnh TV Home** → **Chủ đề**.
 2. Mỗi ô là màn hình chính thu nhỏ: nền thật, chỗ widget, lưới app. Chọn một ô là TV đổi ngay.

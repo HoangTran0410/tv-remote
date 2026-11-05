@@ -32,7 +32,8 @@
     "cols": 5,
     "focus": "glass",
     "motion": "calm",
-    "greet": true
+    "greet": true,
+    "accent": "red"
    },
    "look": "ocean",
    "src": "Unsplash License, 12 photos: photographers and pages in docs/home/vn.json, shown under each picture",
@@ -80,7 +81,8 @@
     "rows": 1,
     "center": true,
     "anim": false,
-    "clock24": true
+    "clock24": true,
+    "accent": "amber"
    }
   },
   {
@@ -99,7 +101,7 @@
     "nature"
    ],
    "conf": {
-    "shade": 10,
+    "shade": 25,
     "widgets": [
      "clock"
     ],
@@ -120,7 +122,10 @@
      }
     },
     "rows": 0,
-    "center": true
+    "center": true,
+    "wplace": "left",
+    "tstyle": "icon",
+    "accent": "pink"
    },
    "look": "candy",
    "src": "Wikimedia Commons, CC BY 2.0 (rboed*): Tulip field in Holland2.jpg",
@@ -150,7 +155,8 @@
     "wall": "web",
     "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Ftheatre-red.jpg",
     "rows": 1.2,
-    "center": true
+    "center": true,
+    "accent": "red"
    },
    "look": "canyon",
    "src": "Wikimedia Commons, CC BY-SA 4.0 (Bretonjulie123): Theatre Lionel Groulx.jpg",
@@ -191,7 +197,10 @@
     },
     "rows": 1,
     "anim": false,
-    "clock24": true
+    "clock24": true,
+    "wplace": "right",
+    "tstyle": "icon",
+    "accent": "teal"
    }
   },
   {
@@ -212,8 +221,7 @@
     "widgets": [
      "news",
      "weather",
-     "air",
-     "market"
+     "air"
     ],
     "cols": 6,
     "focus": "glass",
@@ -222,9 +230,8 @@
     "wall": "peach",
     "wsize": {
      "news": "big",
-     "weather": "big",
-     "air": "small",
-     "market": "small"
+     "weather": "small",
+     "air": "small"
     },
     "wopt": {
      "news": {
@@ -235,15 +242,13 @@
      },
      "air": {
       "look": "tonal"
-     },
-     "market": {
-      "look": "tonal",
-      "layout": "ticker",
-      "show": "gold"
      }
     },
     "rows": 1,
-    "clock24": true
+    "clock24": true,
+    "wplace": "left",
+    "tstyle": "glass",
+    "accent": "orange"
    }
   },
   {
@@ -271,7 +276,8 @@
     "wurl": "https://tvremote.pages.dev/home/loop.html?s=art",
     "rows": 1,
     "center": true,
-    "clock24": true
+    "clock24": true,
+    "tstyle": "icon"
    },
    "look": "dusk",
    "src": "Public domain, Wikimedia Commons (Google Art Project): titles and sources in docs/home/art.json, shown under each picture",
@@ -373,7 +379,10 @@
      }
     },
     "rows": 1,
-    "center": true
+    "center": true,
+    "wplace": "right",
+    "tstyle": "glass",
+    "accent": "amber"
    },
    "look": "ember",
    "src": "Pexels License: pexels.com/video/855381",
@@ -396,6 +405,7 @@
    "conf": {
     "shade": 25,
     "widgets": [
+     "clock",
      "recent"
     ],
     "cols": 7,
@@ -406,15 +416,19 @@
     "wcol": "2a0845,061a3a",
     "wdir": "tr_bl",
     "wsize": {
+     "clock": "small",
      "recent": "big"
     },
     "wopt": {
      "recent": {
-      "look": "tonal"
+      "look": "solid"
      }
     },
     "rows": 0,
-    "clock24": true
+    "clock24": true,
+    "wplace": "left",
+    "tstyle": "glass",
+    "accent": "violet"
    },
    "tiles": [
     "tile:dev.tvremote.setup/ram"
@@ -460,7 +474,8 @@
       "look": "solid"
      }
     },
-    "clock24": true
+    "clock24": true,
+    "accent": "green"
    },
    "tiles": [
     "tile:dev.tvremote.channels/next"
@@ -508,7 +523,8 @@
       "theme": "light"
      }
     },
-    "center": true
+    "center": true,
+    "accent": "amber"
    },
    "look": "ember",
    "src": "Wikimedia Commons, CC BY-SA 4.0 (Tony Ng): Chinese Lanterns at Night in Chinatown (2).jpg",
@@ -549,13 +565,16 @@
       "look": "tonal"
      },
      "clock": {
-      "theme": "light"
+      "face": "minimal",
+      "theme": "dark"
      }
     },
     "rows": 1,
     "center": true,
     "anim": false,
-    "clock24": true
+    "clock24": true,
+    "tstyle": "icon",
+    "accent": "violet"
    },
    "tiles": [
     "tile:dev.tvremote.setup/sleep"
@@ -581,7 +600,6 @@
     "shade": 40,
     "widgets": [
      "system",
-     "usage",
      "adblock",
      "clock"
     ],
@@ -594,15 +612,11 @@
     "wdir": "radial",
     "wsize": {
      "system": "big",
-     "usage": "big",
      "adblock": "small",
      "clock": "small"
     },
     "wopt": {
      "system": {
-      "look": "solid"
-     },
-     "usage": {
       "look": "solid"
      },
      "adblock": {
@@ -612,7 +626,10 @@
       "face": "minimal"
      }
     },
-    "clock24": true
+    "clock24": true,
+    "wplace": "right",
+    "tstyle": "icon",
+    "accent": "green"
    }
   },
   {
@@ -649,7 +666,9 @@
      }
     },
     "rows": 1,
-    "center": true
+    "center": true,
+    "tstyle": "glass",
+    "accent": "teal"
    }
   },
   {
@@ -668,7 +687,6 @@
    "conf": {
     "shade": 20,
     "widgets": [
-     "clock",
      "calendar",
      "weather",
      "air"
@@ -679,7 +697,6 @@
     "greet": false,
     "wall": "dawn",
     "wsize": {
-     "clock": "big",
      "calendar": "big",
      "weather": "small",
      "air": "small"
@@ -699,9 +716,11 @@
       "look": "solid"
      }
     },
-    "clock24": true
+    "clock24": true,
+    "wplace": "left",
+    "accent": "blue"
    }
   }
  ],
- "rev": 1793858971
+ "rev": 1793862089
 }

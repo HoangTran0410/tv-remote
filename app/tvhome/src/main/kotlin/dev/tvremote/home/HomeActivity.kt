@@ -693,9 +693,9 @@ class HomeActivity : Activity() {
         val side = HomeConfig.side(p)
         body.removeAllViews()
         body.orientation = if (side) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
-        val wl = if (side) LinearLayout.LayoutParams(Widgets.sideW(resources.displayMetrics), -2).apply { topMargin = dp(28); if (p == "left") rightMargin = dp(SIDE_GAP) else leftMargin = dp(SIDE_GAP) }
+        val wl = if (side) LinearLayout.LayoutParams(Widgets.sideW(resources.displayMetrics), -2).apply { topMargin = dp(SIDE_TOP); if (p == "left") rightMargin = dp(SIDE_GAP) else leftMargin = dp(SIDE_GAP) }
             else LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(if (p == "top") 28 else 32) }
-        val gl = if (side) LinearLayout.LayoutParams(0, -2, 1f).apply { topMargin = dp(28) } else LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(40) }
+        val gl = if (side) LinearLayout.LayoutParams(0, -2, 1f).apply { topMargin = dp(SIDE_TOP) } else LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(40) }
         if (p == "top" || p == "left") { body.addView(widgets, wl); body.addView(grid, gl) } else { body.addView(grid, gl); body.addView(widgets, wl) }
         shownKey = ""
         body.requestLayout()
@@ -767,7 +767,7 @@ class HomeActivity : Activity() {
             return
         }
         val r = conf.optDouble("rows", 0.0)
-        val n = if (r >= 1 && r - Math.floor(r) < 0.05) Math.floor(r).toInt() else Int.MAX_VALUE
+        val n = if (r >= 1 && r - Math.floor(r) < 0.05 && !sideNow()) Math.floor(r).toInt() else Int.MAX_VALUE   // beside a column every row shows: hidden ones left it a lone row and blank
         var v: View? = currentFocus
         while (v != null && v.parent !== grid) v = v.parent as? View
         val down = v != null && grid.indexOfChild(v) >= n || touchScrolled   // a finger (scrcpy's touch, a mouse) scrolled to them: no focus came down to show them
@@ -783,7 +783,7 @@ class HomeActivity : Activity() {
         val conf = Store.get(this); val note = conf.optString("note"); val sizes = conf.optJSONObject("wsize") ?: JSONObject()
         val none = want.isEmpty() && note.isEmpty()
         noWidgets = none
-        widgets.roomPx = (if (scroll.height > 0) scroll.height else resources.displayMetrics.heightPixels) - (if (head.bottom > 0) head.bottom else dp(118)) - dp(28) - dp(20)
+        widgets.roomPx = (if (scroll.height > 0) scroll.height else resources.displayMetrics.heightPixels) - (if (head.bottom > 0) head.bottom else dp(118)) - dp(SIDE_TOP) - dp(16)   // two full blocks (2 x 180 + 12) under a head with the time (126 dp): 20 dp less above them than the row has, they fit
         peek()                                                        // the grid's margin is peek()'s alone: set here too, every minute's read made it jump
         if (none) { widgets.visibility = View.GONE; return }
         val sig = want.joinToString(",") + "|" + note.isNotEmpty()
@@ -2926,6 +2926,7 @@ private const val PILL_BG = 0xE6101420.toInt()                          // the d
 private const val PILL_EDGE = 0x33FFFFFF                                // its 1 dp edge
 private const val SUB_INK = 0xB3FFFFFF.toInt()                          // a second, softer line on a tile: whose it is
 private const val PILL_INK = 0xFF111318.toInt()                         // a dark glyph on a white (focused) circle
+private const val SIDE_TOP = 20                                 // dp: a side column and the grid beside it, under the head
 private const val FROST_TOP = 0x47FFFFFF                             // the "glass" tile style: a lighter top,
 private const val FROST_BOTTOM = 0x24FFFFFF
 private const val FROST_EDGE = 0x59FFFFFF                            // its hairline edge
