@@ -593,6 +593,13 @@ class HomeConfigTest {
         c = HomeConfig.merge(c, op("apply" to "before")); assertEquals("easy", HomeConfig.themeNow(c))                        // nothing there: nothing happens
     }
 
+    @Test fun clockWidgetWaitingKeepsBarClock() {                   // a clock pushed out of a full column must not take the bar's clock with it
+        val big = JSONObject().put("news", "big").put("system", "big").put("calendar", "big").put("clock", "big")
+        val c = JSONObject().put("wplace", "left").put("wsize", big).put("widgets", org.json.JSONArray(listOf("news", "system", "calendar", "clock")))
+        assertTrue("clock" !in HomeConfig.placed(c)); assertTrue(HomeConfig.barClock(c))
+        assertFalse(HomeConfig.barClock(JSONObject().put("widgets", org.json.JSONArray(listOf("clock")))))
+    }
+
     @Test fun oldSavedThemeStillMatches() {                         // saved before wplace / tstyle / accent existed: clean() fills them, the theme must still read as "on"
         val old = JSONObject().put("wall", "teal").put("cols", 7)
         val c = HomeConfig.merge(JSONObject(), JSONObject().put("wall", "teal").put("cols", 7))

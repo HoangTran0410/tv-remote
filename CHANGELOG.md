@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: beside a widget column, widgets with nothing to show (a timer not set) no longer rebuild the screen without end; a clock widget with no room leaves the top bar's clock on; icon / glass tiles load their icons at start off the main thread; 9 ready-made themes tuned after a design review (focus ring where the accent met the wallpaper, darker shade on busy photos, fewer columns where icons were too small).
 - TV Home: a theme file imported on the page keeps where the widgets sit and the custom colours; a theme saved before the newer choices still shows as the one in use; icon / glass tiles load their icons off the main thread; the theme's details list where the widgets sit; App rows is hidden beside a widget column (it did nothing there).
 - TV Home: the 16 ready-made themes redone with the new choices, each its own layout (widgets above, in a left or right column), tile style and accent colour; previews re-shot. Beside a column every app row shows (a theme's row count no longer left one lone row), and the column fits three widgets under the clock.
 - TV Home: where the widgets go (Customize > Grid, and the page: "Widgets position"): above the apps (as before), left or right of the apps as a column of full-size widgets (the grid keeps its tile size and shows fewer columns). The D-pad moves between the column and the grid, and the theme previews draw it.

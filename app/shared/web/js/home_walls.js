@@ -180,9 +180,18 @@ function homeThemeMoving(conf) {
 }
 /** HomeConfig.barClock / barDate: which of the top bar's time and date TV Home draws (a clock widget is the clock then; with a calendar widget the date too, while that line says the date). */
 function homeBar(conf) {
-  const ws = conf.widgets || [], clock = ws.includes('clock');
+  const ws = homePlaced(conf), clock = ws.includes('clock');
   return { clock: conf.showClock !== false && !clock,
     date: conf.showDate !== false && !((conf.dstyle || 'date') === 'date' && (clock || ws.includes('calendar'))) };
+}
+
+/** HomeConfig.placed: the chosen widgets that get a place (a clock widget waiting for room leaves the bar's clock on). */
+function homePlaced(conf) {
+  const keys = conf.widgets || [];
+  if (!keys.length || typeof homePack !== 'function') return keys;
+  const big = keys.filter((k) => homeSize(conf, k) === 'big');
+  const p = conf.wplace === 'left' || conf.wplace === 'right' ? homePackColumn(keys, big, false, 378) : homePack(keys, big);
+  return keys.filter((k) => !(p.waiting || []).includes(k));
 }
 
 function homeThemePaint(cv, conf, tiles, img, look, now) {   // now: a Date, for the live preview of the config being edited (its real time)

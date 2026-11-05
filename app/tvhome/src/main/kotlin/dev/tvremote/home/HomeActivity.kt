@@ -330,6 +330,7 @@ class HomeActivity : Activity() {
             addAction(Intent.ACTION_DREAMING_STARTED); addAction(Intent.ACTION_DREAMING_STOPPED)
         })
         if (Store.suggestOff(this)) { Store.suggestOff(this, false); conf = Store.change(this, JSONObject().put("showSuggest", false)) }   // the old "hide" flag is now the setting everyone sees
+        Look.read(Store.get(this))                                    // before the apps load: App.load makes the icon of icon / glass tiles off the main thread
         loadApps()
         if (Motion.on) enter()
         if (reopen) { reopen = false; ui.post { customize("lang") } }
@@ -782,7 +783,7 @@ class HomeActivity : Activity() {
         val want = Store.list(this, "widgets")
         val conf = Store.get(this); val note = conf.optString("note"); val sizes = conf.optJSONObject("wsize") ?: JSONObject()
         val none = want.isEmpty() && note.isEmpty()
-        noWidgets = none
+        if (none) noWidgets = true                                    // else kept until the read says: reset to false here, chosen widgets with nothing to show rebuilt the grid without end
         widgets.roomPx = (if (scroll.height > 0) scroll.height else resources.displayMetrics.heightPixels) - (if (head.bottom > 0) head.bottom else dp(118)) - dp(SIDE_TOP) - dp(16)   // two full blocks (2 x 180 + 12) under a head with the time (126 dp): 20 dp less above them than the row has, they fit
         peek()                                                        // the grid's margin is peek()'s alone: set here too, every minute's read made it jump
         if (none) { widgets.visibility = View.GONE; return }

@@ -493,9 +493,15 @@ object HomeConfig {
      * widget takes the top bar's time, and with a calendar widget their date, while that line says the date (its default). The switches
      * stay as the person set them; taking the widget off brings the bar's back.
      */
-    fun barClock(o: JSONObject) = o.optBoolean("showClock", true) && "clock" !in strs(o.optJSONArray("widgets"))
+    fun barClock(o: JSONObject) = o.optBoolean("showClock", true) && "clock" !in placed(o)
     fun barDate(o: JSONObject) = o.optBoolean("showDate", true) &&
-        !(o.optString("dstyle").ifEmpty { "date" } == "date" && strs(o.optJSONArray("widgets")).any { it == "clock" || it == "calendar" })
+        !(o.optString("dstyle").ifEmpty { "date" } == "date" && placed(o).any { it == "clock" || it == "calendar" })
+    /** The chosen widgets that get a place (not waiting for room): a clock widget pushed out must not take the bar's clock with it. 378 dp: a 1080p screen under the top bar. Twin: homePlaced in js/home_walls.js. */
+    fun placed(o: JSONObject): List<String> {
+        val keys = strs(o.optJSONArray("widgets")); if (keys.isEmpty()) return keys
+        val p = if (side(o.optString("wplace"))) packColumn(keys, bigs(o), false, 378) else pack(keys, bigs(o))
+        return keys - p.waiting.toSet()
+    }
 
     fun headLine(o: JSONObject, which: String, t: Map<String, String>): String {
         val base = if (which == "g") t["greet"].orEmpty() else t["date"].orEmpty()

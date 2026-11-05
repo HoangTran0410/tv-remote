@@ -101,12 +101,12 @@
     "nature"
    ],
    "conf": {
-    "shade": 25,
+    "shade": 45,
     "widgets": [
      "clock"
     ],
     "cols": 4,
-    "focus": "glass",
+    "focus": "ring",
     "motion": "full",
     "greet": true,
     "wall": "web",
@@ -124,7 +124,7 @@
     "rows": 0,
     "center": true,
     "wplace": "left",
-    "tstyle": "icon",
+    "tstyle": "glass",
     "accent": "pink"
    },
    "look": "candy",
@@ -154,7 +154,7 @@
     "greet": false,
     "wall": "web",
     "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Ftheatre-red.jpg",
-    "rows": 1.2,
+    "rows": 1,
     "center": true,
     "accent": "red"
    },
@@ -181,7 +181,7 @@
     "widgets": [
      "weather"
     ],
-    "cols": 7,
+    "cols": 6,
     "focus": "glass",
     "motion": "calm",
     "greet": false,
@@ -268,7 +268,7 @@
    "conf": {
     "shade": 30,
     "widgets": [],
-    "cols": 8,
+    "cols": 6,
     "focus": "glass",
     "motion": "calm",
     "greet": false,
@@ -298,7 +298,7 @@
     "nature"
    ],
    "conf": {
-    "shade": 40,
+    "shade": 55,
     "widgets": [
      "clock",
      "weather",
@@ -359,7 +359,7 @@
      "calendar"
     ],
     "cols": 5,
-    "focus": "glass",
+    "focus": "ring",
     "motion": "calm",
     "greet": true,
     "wall": "web",
@@ -378,8 +378,6 @@
       "layout": "date"
      }
     },
-    "rows": 1,
-    "center": true,
     "wplace": "right",
     "tstyle": "glass",
     "accent": "amber"
@@ -468,7 +466,7 @@
     "wopt": {
      "clock": {
       "face": "digital",
-      "look": "none"
+      "look": "solid"
      },
      "weather": {
       "look": "solid"
@@ -505,7 +503,7 @@
      "clock"
     ],
     "cols": 5,
-    "focus": "glass",
+    "focus": "ring",
     "motion": "full",
     "greet": true,
     "wall": "web",
@@ -603,7 +601,7 @@
      "adblock",
      "clock"
     ],
-    "cols": 8,
+    "cols": 6,
     "focus": "ring",
     "motion": "calm",
     "greet": false,
@@ -722,5 +720,5 @@
    }
   }
  ],
- "rev": 1793862089
+ "rev": 1793867725
 }
