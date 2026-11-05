@@ -379,25 +379,30 @@
   "n": 1,
   "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
- "1bfd183ebabe1f558e4b349e|0.33.1": {
-  "at": "2026-10-30T09:07:56+07:00",
+ "1bfd183ebabe1f558e4b349e|0.26.2": {
+  "at": "2026-11-05T21:24:08+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+ },
+ "1bfd183ebabe1f558e4b349e|0.33.1": {
+  "at": "2026-11-05T21:24:08+07:00",
+  "n": 1,
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "1bfd183ebabe1f558e4b349e|0.34.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-05T21:24:08+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "1bfd183ebabe1f558e4b349e|0.34.1": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-05T21:24:08+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "1bfd183ebabe1f558e4b349e|0.34.2": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-05T21:24:08+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "1c570f260459c0b84513dc9d|0.34.0": {
   "at": "2026-11-05T10:40:12+07:00",
@@ -575,54 +580,59 @@
   "note": "Safari with stale HTML + new JS (auto.js stopped at #supgo); 1 install, left"
  },
  "312bbcd02ded9c242b05435d|0.32.1": {
-  "at": "2026-11-05T10:40:13+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 3,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "312bbcd02ded9c242b05435d|0.34.1": {
-  "at": "2026-11-05T10:40:13+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "312bbcd02ded9c242b05435d|0.34.2": {
-  "at": "2026-11-05T10:40:13+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "312bbcd02ded9c242b05435d|0.35.0": {
-  "at": "2026-11-05T10:40:13+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "312bbcd02ded9c242b05435d|0.38.2": {
-  "at": "2026-11-05T10:40:13+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "312bbcd02ded9c242b05435d|0.38.3": {
-  "at": "2026-11-05T10:40:13+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "312bbcd02ded9c242b05435d|0.38.4": {
-  "at": "2026-11-05T10:40:13+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "312bbcd02ded9c242b05435d|0.41.0": {
-  "at": "2026-11-05T10:40:13+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "312bbcd02ded9c242b05435d|0.42.0": {
-  "at": "2026-11-05T10:40:13+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "312bbcd02ded9c242b05435d|0.43.0": {
-  "at": "2026-11-05T10:40:13+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
+  "n": 2,
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+ },
+ "312bbcd02ded9c242b05435d|0.45.0": {
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3165ca140d8765602735689f|0.23.0": {
   "at": "2026-10-26T21:47:37+07:00",
@@ -850,54 +860,59 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "3f685f9c7cdca8d898486836|0.26.2": {
-  "at": "2026-11-03T03:42:49+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.26.3": {
-  "at": "2026-11-03T03:42:49+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.28.0": {
-  "at": "2026-11-03T03:42:49+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.29.0": {
-  "at": "2026-11-03T03:42:49+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.30.0": {
-  "at": "2026-11-03T03:42:49+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 4,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.31.0": {
-  "at": "2026-11-03T03:42:49+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.34.1": {
-  "at": "2026-11-03T03:42:49+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 3,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.35.0": {
-  "at": "2026-11-03T03:42:49+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 3,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.38.2": {
-  "at": "2026-11-03T03:42:49+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.38.4": {
-  "at": "2026-11-03T03:42:49+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+ },
+ "3f685f9c7cdca8d898486836|0.44.0": {
+  "at": "2026-11-05T21:24:09+07:00",
+  "n": 1,
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "41dd31f77cb49ce98c2242e0|0.28.0": {
   "at": "2026-10-27T09:37:26+07:00",
@@ -1109,15 +1124,20 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
- "51dc038179c56548b3f420d0|0.35.0": {
-  "at": "2026-11-05T10:40:18+07:00",
+ "51dc038179c56548b3f420d0|0.26.2": {
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+ },
+ "51dc038179c56548b3f420d0|0.35.0": {
+  "at": "2026-11-05T21:24:09+07:00",
+  "n": 1,
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "51dc038179c56548b3f420d0|0.42.2": {
-  "at": "2026-11-05T10:40:18+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "5255e1fda001cda94f5657bc|0.30.0": {
   "at": "2026-10-29T17:19:32+07:00",
@@ -1855,84 +1875,89 @@
   "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
  },
  "86e0f0317c01d63472f141c3|0.30.0": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.31.0": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.32.1": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.34.0": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.34.1": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.34.2": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.35.0": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.37.0": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.38.0": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.38.2": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.38.4": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.40.0": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.42.0": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.42.2": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.43.0": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.44.0": {
-  "at": "2026-11-05T17:16:55+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+ },
+ "86e0f0317c01d63472f141c3|0.45.0": {
+  "at": "2026-11-05T21:24:10+07:00",
+  "n": 1,
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "897eccbc3b0589286bfafdf9|0.34.1": {
   "at": "2026-10-30T09:08:18+07:00",
@@ -2829,20 +2854,30 @@
   "n": 1,
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
- "cedafe90cec01d6382f4d473|0.33.1": {
-  "at": "2026-10-30T09:08:00+07:00",
+ "cedafe90cec01d6382f4d473|0.26.2": {
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+ },
+ "cedafe90cec01d6382f4d473|0.33.1": {
+  "at": "2026-11-05T21:24:10+07:00",
+  "n": 1,
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "cedafe90cec01d6382f4d473|0.34.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "cedafe90cec01d6382f4d473|0.34.1": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+ },
+ "cedafe90cec01d6382f4d473|0.34.2": {
+  "at": "2026-11-05T21:24:10+07:00",
+  "n": 1,
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "cf638452843273d51ba6f9f8|0.32.1": {
   "at": "2026-11-03T06:59:48+07:00",
@@ -3355,19 +3390,29 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "f577d1fc6dd6c2b3c4b8c4fe|0.26.2": {
-  "at": "2026-10-30T09:08:30+07:00",
+  "at": "2026-11-05T21:24:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "f577d1fc6dd6c2b3c4b8c4fe|0.26.3": {
-  "at": "2026-10-30T09:08:30+07:00",
+  "at": "2026-11-05T21:24:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "f577d1fc6dd6c2b3c4b8c4fe|0.34.1": {
-  "at": "2026-10-30T09:08:30+07:00",
+  "at": "2026-11-05T21:24:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+ },
+ "f577d1fc6dd6c2b3c4b8c4fe|0.35.0": {
+  "at": "2026-11-05T21:24:11+07:00",
+  "n": 1,
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+ },
+ "f577d1fc6dd6c2b3c4b8c4fe|0.45.0": {
+  "at": "2026-11-05T21:24:11+07:00",
+  "n": 1,
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "f5b6a36b3b74666633f80133|0.34.1": {
   "at": "2026-10-30T09:08:31+07:00",
