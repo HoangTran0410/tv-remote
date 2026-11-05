@@ -209,7 +209,8 @@ function homeThemePaint(cv, conf, tiles, img, look, now) {   // now: a Date, for
   const big = HOME_WIDGETS.concat(['qr1', 'qr2', 'qr3', 'qr4']).filter((k) => homeSize(conf, k) === 'big'), packed = homePack((conf.widgets || []).filter((k) => HOME_WIDGETS.includes(k)), big);
   if (packed.cols.length) {
     const rowH = h * 0.30, gap = w * 0.02, room = w - 2 * m - gap * (packed.cols.length - 1), sum = Math.max(HOME_W.floor, packed.cols.reduce((n, c) => n + c.weight, 0));
-    let x = m;
+    const used = room * packed.cols.reduce((n, c) => n + c.weight, 0) / sum + gap * (packed.cols.length - 1);
+    let x = conf.center ? (w - used) / 2 : m;                           // centered over a centered grid, as TV Home lays it
     for (const col of packed.cols) {
       const cw = room * col.weight / sum, n = col.keys.length, ch = (rowH - (n - 1) * gap * 0.6) / n;
       col.keys.forEach((k, j) => {

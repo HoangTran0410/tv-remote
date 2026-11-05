@@ -316,7 +316,7 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
             val box = LinearLayout(a).apply { orientation = VERTICAL }
             col.keys.forEachIndexed { j, k ->
                 val alone = col.keys.size == 1                         // a lone widget has the column's whole height
-                val full = alone && k in big && w >= dp(FULL_MIN)
+                val full = alone && w >= dp(FULL_MIN)                  // alone it has the whole height: the full form, small or big (a small one alone was a tall card with half its words, 2026-11-05)
                 val v: View = if (tonal(k)) tonalWidget(!full).also { c -> tonalFill(k, c, f, w, !full, label, qrs) }     // one path for every widget: a figure, a caption, a badge
                 else if (k in BIG) widget().also { c ->
                     if (full) when (k) {
@@ -352,6 +352,7 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
             }
             addView(box, LayoutParams(w, -1).apply { if (i > 0) leftMargin = gap })
         }
+        gravity = if (Store.get(a).optBoolean("center", false)) Gravity.CENTER_HORIZONTAL else Gravity.START   // a row that does not fill the width sits over the grid as the grid does: centered with it
         visibility = View.VISIBLE
         if (keep != null) hot.firstOrNull { it.tag == keep }?.let { it.requestFocus(); if (keep == "news") newsFocused = true }
     }

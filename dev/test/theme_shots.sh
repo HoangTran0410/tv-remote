@@ -1,5 +1,5 @@
 #!/bin/bash
-# dev/test/theme_shots.sh <serial> [out dir] [id ...]: applies each ready-made TV Home theme (docs/home/themes.json, the TV's own copy)
+# dev/test/theme_shots.sh <serial> [out dir] [id ...]: applies each ready-made TV Home theme of the repo's docs/home/themes.json (signed)
 # through HomeReceiver, waits for the wall, and takes a 1920x1080 screenshot per theme: <out>/<id>.png. No id = every theme in the list.
 # The page's previews (docs/img/themes/<id>.webp 480x270, <id>-big.webp 1280x720) come from these: WEBP=1 writes them too.
 # TV Home is started by name: on the Google TV emulator the HOME key reaches Google's launcher even with TV Home as the home role.
@@ -11,10 +11,12 @@ IDS=("$@"); [ ${#IDS[@]} -eq 0 ] && IDS=($(python3 -c "import json;print(' '.joi
 mkdir -p "$OUT"
 set_home() { adb -s "$S" shell am broadcast -n dev.tvremote.home/.HomeReceiver --es set "$(printf '%s' "$1" | base64 | tr -d '\n')" >/dev/null; }
 # the one-time "Hold OK" tip would be in every shot: marked seen (debug builds only: run-as)
+# and the repo's signed list is put in as TV Home's kept copy, so an edit is seen before it is pushed, applied as a person applies it
+# (setting a theme's fields by hand merged its widget options into the last theme's: Easy's clock came out light)
+for f in themes.json themes.json.sig; do adb -s "$S" push "$ROOT/docs/home/$f" /data/local/tmp/$f >/dev/null; adb -s "$S" shell "run-as dev.tvremote.home sh -c 'cp /data/local/tmp/$f files/$f; rm -f files/themes.json.ok'"; done
 adb -s "$S" shell "run-as dev.tvremote.home sh -c 'grep -q tip_menu_done shared_prefs/home.xml || sed -i \"s#</map>#<boolean name=\\\"tip_menu_done\\\" value=\\\"true\\\" />\\n</map>#\" shared_prefs/home.xml'" 2>/dev/null && adb -s "$S" shell am force-stop dev.tvremote.home
 for id in "${IDS[@]}"; do
-  # the repo's look (docs/home/themes.json), not the TV's copy of the list, so an edit is seen before it is pushed
-  set_home "$(python3 -c "import json,sys;print(json.dumps([t for t in json.load(open('$ROOT/docs/home/themes.json'))['themes'] if t['id']==sys.argv[1]][0]['conf']))" "$id")"
+  set_home "{\"theme\":{\"apply\":\"$id\"}}"
   adb -s "$S" shell am start -W -n dev.tvremote.home/.HomeActivity >/dev/null; sleep "${WAIT:-8}"          # web walls fetch their picture; a video wall its first frames
   adb -s "$S" exec-out screencap -p > "$OUT/$id.png"
   if [ -n "$WEBP" ]; then
