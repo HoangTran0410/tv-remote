@@ -21,4 +21,21 @@ class SoftEncoderTest {
 
     // a marked list names its software one only by the mark: a vendor's (hw) stays hardware whatever its name
     @Test fun markWins() = assertNull(Tv.softIn("--video-codec=h264 --video-encoder=OMX.google.h264.encoder (hw)"))
+
+    // an NVIDIA Shield (Android 11), as scrcpy 5.0.1 listed it there on 2026-11-05
+    private val shield = """
+        --video-codec=h264 --video-encoder=OMX.Nvidia.h264.encoder        (hw) [vendor]
+        --video-codec=h264 --video-encoder=OMX.google.h264.encoder        (hybrid)
+        --audio-codec=aac --audio-encoder=OMX.google.aac.encoder          (hybrid)
+        --audio-codec=flac --audio-encoder=OMX.google.flac.encoder        (hybrid)"""
+
+    @Test fun shieldsHybridIsTheSoftwareOne() = assertEquals("OMX.google.h264.encoder", Tv.softIn(shield))
+
+    @Test fun noOpusSoundGoesAac() {
+        assertEquals("aac", Tv.soundCodec("opus", shield, aacOk = true))
+        assertEquals("opus", Tv.soundCodec("opus", shield, aacOk = false))   // a sink that plays only Opus: as before
+        assertEquals("opus", Tv.soundCodec("opus", shield + "\n--audio-codec=opus --audio-encoder=c2.android.opus.encoder (sw)", aacOk = true))
+        assertEquals("opus", Tv.soundCodec("opus", null, aacOk = true))      // no list: as asked
+        assertEquals("raw", Tv.soundCodec("raw", shield, aacOk = true))
+    }
 }

@@ -77,6 +77,10 @@ class Tv(
         fun audio(config: Boolean, data: ByteArray)
         /** the sound has stopped for good */
         fun end() {}
+        /** true: plays AAC too, so a TV with no Opus encoder sends AAC ([soundCodec]) */
+        val aac: Boolean get() = false
+        /** the codec scrcpy was asked for ("opus", "aac", "raw"), before its config packet */
+        fun codec(name: String) {}
     }
 
     /** Shows the picture: [start] at each new size (the decoder is made again), then one H.264 packet at a time. */
@@ -114,12 +118,24 @@ class Tv(
         /**
          * The software H.264 encoder in scrcpy's list_encoders. scrcpy marks "(sw)" only from Android 10 (MediaCodecInfo.isSoftwareOnly
          * is API 29); before, Google's own encoders are the software ones by name (OMX.google.*, c2.android.*): issue #10, Android 9,
-         * "Use Software" found none and the hardware encoder ran again.
+         * "Use Software" found none and the hardware encoder ran again. An NVIDIA Shield (Android 11) marks Google's one "(hybrid)":
+         * read as unmarked, or Software found nothing there either.
          */
         fun softIn(list: String): String? {
             val all = Regex("--video-codec=h264 --video-encoder=(\\S+)(?:\\s+\\((\\w+)\\))?").findAll(list).map { it.groupValues[1] to it.groupValues[2] }.toList()
             return all.firstOrNull { it.second == "sw" }?.first
-                ?: all.firstOrNull { it.second.isEmpty() && (it.first.startsWith("OMX.google.") || it.first.startsWith("c2.android.")) }?.first
+                ?: all.firstOrNull { (it.second.isEmpty() || it.second == "hybrid") && (it.first.startsWith("OMX.google.") || it.first.startsWith("c2.android.")) }?.first
+        }
+
+        /**
+         * The sound codec to ask scrcpy for: [asked], unless it is "opus" and the TV has no Opus encoder while the sink also plays
+         * AAC ([aacOk]). An NVIDIA Shield (Android 11) lists only AAC and FLAC: asked for Opus, scrcpy-server died at once
+         * ("Failed to initialize audio/opus") and the phone's 🎧 stayed silent (2026-11-05).
+         */
+        fun soundCodec(asked: String?, list: String?, aacOk: Boolean): String? {
+            if (asked != "opus" || !aacOk || list == null || !list.contains("--audio-codec=")) return asked   // no list: as asked
+            if (list.contains("--audio-codec=opus")) return asked
+            return if (list.contains("--audio-codec=aac")) "aac" else asked
         }
 
         private const val MOUSE_ID: Short = 1
@@ -134,6 +150,8 @@ class Tv(
         private val softEncoder = java.util.concurrent.ConcurrentHashMap<String, String>()
         /** Each TV's software encoder by name, from list_encoders: asked once, whether chosen by hand or after a stall */
         private val softName = java.util.concurrent.ConcurrentHashMap<String, String>()
+        /** Each TV's list_encoders, for [softFor] and the sound's codec ([soundCodec]) */
+        private val encoderList = java.util.concurrent.ConcurrentHashMap<String, String>()
         private const val FIRST_FRAME_MS = 8000L
         private const val REJOIN_GAP_NS = 5_000_000_000L              // at most one join again for a key frame in 5 s (the relay's)
         /** How long a keys' session goes unused while another carries its keys before its own scrcpy-server rests: see [carry] */
@@ -432,6 +450,11 @@ class Tv(
                 hearing = null
                 if (!wantVideo && !wantControl) throw IOException("this TV cannot send its sound (Android 11 or newer is needed)")
             }
+            if (hearing == "opus" && audioSink?.aac == true) {
+                hearing = soundCodec(hearing, encoders(a), true)
+                if (hearing != "opus") WireLog.all.add("·", "picture $host no Opus encoder on the TV: sound as $hearing")
+            }
+            hearing?.let { audioSink?.codec(it) }
             val soft = if (!wantVideo) null else when (encoder) { "hw" -> null; "sw" -> softFor(a); else -> softEncoder[host] }
             soft?.let { WireLog.all.add("·", "picture $host encoder $it") }   // which one ran: the log a person sends says it (issue #10)
             /** Starts scrcpy-server and opens its sockets in the order it takes them; again after [rest]. */
@@ -559,10 +582,18 @@ class Tv(
     /** The TV's software H.264 encoder, from scrcpy's list_encoders (asked once per TV); null if it has none or did not say. */
     private fun softFor(a: Adb): String? {
         softName[host]?.let { return it }
-        val list = try { a.shell("CLASSPATH=$REMOTE app_process / com.genymobile.scrcpy.Server $VER cleanup=false list_encoders=true 2>&1", 15000) } catch (e: IOException) { return null }   // cleanup=false: or scrcpy deletes its jar
+        val list = encoders(a) ?: return null
         val soft = softIn(list) ?: return null.also { WireLog.all.add("·", "picture $host no software encoder") }   // Auto's hardware one then: said, not silent
         softName[host] = soft                                         // not [softEncoder]: "Software" picked once is not Auto's choice
         return soft
+    }
+
+    /** scrcpy's list_encoders for this TV, asked once (a second app_process, ~1 s); null when it did not answer. */
+    private fun encoders(a: Adb): String? {
+        encoderList[host]?.let { return it }
+        val list = try { a.shell("CLASSPATH=$REMOTE app_process / com.genymobile.scrcpy.Server $VER cleanup=false list_encoders=true 2>&1", 15000) } catch (e: IOException) { return null }   // cleanup=false: or scrcpy deletes its jar
+        if (list.contains("--video-codec=") || list.contains("--audio-codec=")) encoderList[host] = list
+        return list
     }
 
     /**
@@ -838,6 +869,9 @@ class Tv(
             WireLog.all.add("·", "picture $host joining TV Setup's picture again for a key frame")
             rejoin = true; feedConn?.disconnect(); return
         }
+        // never before the first frame: scrcpy 5 has no capture to reset then, and its control thread died on it
+        // (NullPointerException at CaptureControl.reset, a Shield stuck after many restarts, 2026-11-05); it sends a key frame first anyway
+        if (!framed) return
         send(byteArrayOf(17))
     }
 

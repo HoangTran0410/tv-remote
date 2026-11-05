@@ -29,6 +29,8 @@ fun Tv(
         private val out = AudioOut(far = Tailscale.isAddress(host), host = host)
         override fun audio(config: Boolean, data: ByteArray) = out.feed(config, data)
         override fun end() = out.release()
+        override val aac: Boolean get() = true
+        override fun codec(name: String) = out.codec(name)
     } else null
     val screen = surface?.let { SurfaceScreen(it, host) }
     val tv = Tv(app.filesDir, { app.assets.open("scrcpy-server.jar").use { it.readBytes() } }, host, screen,

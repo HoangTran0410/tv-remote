@@ -26,6 +26,9 @@ Web 0.46.0 · Phone app 0.43.0 · TV app 0.44.0 · TV Home 0.28.0 · TV Channels
 - Voice commands: pick which installed app "search …" opens and searches in (SmartTube, YouTube; TizenTube is only opened, it takes no search words) and which app the word "YouTube" means; both default to today's behaviour. A scene can have its own voice phrases ("Voice phrases" in the scene editor, up to 5): saying one runs the scene, and TV Setup's offline voice hears them too.
 - TV Setup: says when the remote's mic button cannot reach it (on a Bluetooth voice remote with the Google app on, a warning "if the mic button still opens Google" until a real mic press reaches TV Setup; or another app is the default for voice search) on the page's mic card, in its log and in its Optimize menu; one button turns the Google app off over ADB (Optimize TV's Undo turns it back on), or opens that app's settings without ADB. Nothing is checked while the mic option is off.
 - Phone app away from home (Tailscale): the TV's picture comes from TV Setup on the TV instead of over ADB from the phone, so it stops stuttering on mobile data at every size; touches go the same way. Without TV Setup, or if its picture does not come, it works over ADB as before.
+- Phone app 🎧 on TVs with no Opus encoder (NVIDIA Shield): the sound is sent as AAC instead; it used to stay silent while scrcpy-server died at once.
+- "Software" encoder found on TVs that mark Google's encoder "hybrid" (NVIDIA Shield); it found none there.
+- The picture never asks the TV for a key frame before the first frame came: scrcpy-server died on it on a stuck TV, and every client then started it again and again.
 
 ## 0.45.0 - 2026-11-05
 

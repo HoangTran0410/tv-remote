@@ -9,7 +9,7 @@ import java.nio.ByteOrder
 import dev.tvremote.core.WireLog
 
 /**
- * Plays the TV's sound on this device: Opus packets from scrcpy, decoded by Android's own decoder, out through an AudioTrack.
+ * Plays the TV's sound on this device: Opus (or AAC, on a TV with no Opus encoder: [codec]) packets from scrcpy, decoded by Android's own decoder, out through an AudioTrack.
  * How much is kept queued, and what waits or is dropped, is [SoundQueue]'s.
  */
 /** 🔊 ×0.5 … ×10: the TV's sound louder (or softer) here than it is sent (a TV turned down sends it quiet). Read by every [AudioOut] as it plays. */
@@ -60,7 +60,12 @@ class AudioOut(far: Boolean = false, private val host: String = "") {
         return minOf(written, maxOf(head, now))
     }
 
-    /** [config] is scrcpy's first packet, the OpusHead; then one Opus packet at a time. */
+    @Volatile private var mime = "audio/opus"
+
+    /** What scrcpy was asked for, before its first packet: "aac" (an NVIDIA Shield has no Opus encoder), else Opus. */
+    fun codec(name: String) { mime = if (name == "aac") "audio/mp4a-latm" else "audio/opus" }
+
+    /** [config] is scrcpy's first packet, the OpusHead (AAC: its AudioSpecificConfig); then one packet at a time. */
     fun feed(config: Boolean, data: ByteArray) {
         if (config) { start(data); return }
         val c = codec ?: return
@@ -114,12 +119,15 @@ class AudioOut(far: Boolean = false, private val host: String = "") {
     @Suppress("DEPRECATION")
     private fun start(head: ByteArray) {
         release()
-        val f = MediaFormat.createAudioFormat("audio/opus", RATE, 2)
+        val m = mime
+        val f = MediaFormat.createAudioFormat(m, RATE, 2)
         f.setByteBuffer("csd-0", ByteBuffer.wrap(head))
-        val preSkip = if (head.size >= 12) (head[10].toInt() and 0xff) or ((head[11].toInt() and 0xff) shl 8) else 312
-        f.setByteBuffer("csd-1", le64(preSkip * 1_000_000_000L / RATE))   // in nanoseconds, as MediaCodec wants it
-        f.setByteBuffer("csd-2", le64(80_000_000L))                   // the seek pre-roll Opus asks for
-        val c = MediaCodec.createDecoderByType("audio/opus")
+        if (m == "audio/opus") {
+            val preSkip = if (head.size >= 12) (head[10].toInt() and 0xff) or ((head[11].toInt() and 0xff) shl 8) else 312
+            f.setByteBuffer("csd-1", le64(preSkip * 1_000_000_000L / RATE))   // in nanoseconds, as MediaCodec wants it
+            f.setByteBuffer("csd-2", le64(80_000_000L))               // the seek pre-roll Opus asks for
+        }
+        val c = MediaCodec.createDecoderByType(m)
         c.configure(f, null, null, 0)
         c.start()
         codec = c
