@@ -2474,10 +2474,15 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
- "b4de9bca4cad8c69bdd93b02|0.42.0": {
-  "at": "2026-11-05T03:45:24+07:00",
+ "b4de9bca4cad8c69bdd93b02|0.41.2": {
+  "at": "2026-11-05T19:34:27+07:00",
   "n": 1,
-  "note": "fixed in d863b9c0"
+  "note": "old phone 0.41.2; fixed already (Adb.kt:610 not connected -> IOException), released"
+ },
+ "b4de9bca4cad8c69bdd93b02|0.42.0": {
+  "at": "2026-11-05T19:34:27+07:00",
+  "n": 1,
+  "note": "old phone 0.41.2; fixed already (Adb.kt:610 not connected -> IOException), released"
  },
  "b5217008041ee98e6efd9bc7|0.28.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -2688,6 +2693,11 @@
   "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "c72b1cc15e0a7d87e1b728a1|0.24.1": {
+  "at": "2026-11-05T19:34:28+07:00",
+  "n": 1,
+  "note": "DeadSystemException on TV Setup 0.24.1 (very old): Android's system_server died, not ours"
  },
  "c76047145558da719bf26343|0.27.0": {
   "at": "2026-10-28T14:05:51+07:00",
