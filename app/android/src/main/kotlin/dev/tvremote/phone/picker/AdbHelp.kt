@@ -51,8 +51,12 @@ internal fun MainActivity.tvJob(work: () -> Unit) {
     Thread { try { work() } catch (ignored: Exception) { } finally { tvBusy.set(false) } }.start()
 }
 
+/** False for LG, Samsung, Roku, VIDAA: they have no ADB, so no "turn on ADB" help may start for them (one gate for all of it). */
+internal fun MainActivity.adbApplies(): Boolean = (basic?.kind ?: dev.tvremote.core.remote.Remote.Kind.ANDROID) == dev.tvremote.core.remote.Remote.Kind.ANDROID
+
 /** Everything the keys-only mode can do towards turning ADB on, in the order one needs it. */
 internal fun MainActivity.adbHelp() {
+    if (!adbApplies()) return
     menu(T("setup.turn_on_adb"), 0, listOf(
         Triple("@zap|" + T("adb_help.automatic_install_tv_setup"), T("adb_help.just_confirm_on_the")) { installSetup() },
         Triple("@gear|" + T("adb_help.by_hand_open_tv"), "") { findSettings() },
@@ -372,6 +376,7 @@ internal fun MainActivity.isSettings(pkg: String) = pkg.contains("settings", tru
 /** Tries the Settings key, then the links that open Settings on other TVs, watching which app the TV says is in front. */
 internal fun MainActivity.findSettings() {
     val a = basic ?: return
+    if (!adbApplies()) return
     if (!tvFree()) return
     Toast.makeText(this, T("setup.trying_settings"), Toast.LENGTH_SHORT).show()
     Thread {
@@ -450,6 +455,7 @@ internal fun MainActivity.otherHome() {
 // page cannot ask the TV what it is: the maker and model it gave over the remote protocol pick its maker's way. Once the
 // switch is on, watchAdb() moves to the full connection by itself.
 internal fun MainActivity.adbSteps() {
+    if (!adbApplies()) return
     val words = listOfNotNull(basic?.vendor, basic?.model).joinToString(" ")
     managing.open(host ?: return, then = "fromRemote(() => showAdbGuide(" + org.json.JSONObject.quote(words) + "))")
 }
