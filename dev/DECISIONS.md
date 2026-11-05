@@ -7,6 +7,7 @@ under the file of its part (one `## ` heading each), and a line here. Code point
 ## [Connecting to TVs, the network, the web page](decisions/connect.md)
 
 - Picture
+- ADB delayed_ack
 - Waits
 - Network
 - Browsers
