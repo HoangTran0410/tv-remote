@@ -378,7 +378,7 @@ object HomeConfig {
      */
     const val W_BIG = 100; const val W_CAL = 120; const val W_SMALL = 90; const val BUDGET = 415; const val FLOOR = 190
     fun weight(k: String, big: Boolean) = if (!big) W_SMALL else if (k == "calendar") W_CAL else W_BIG
-    /** Where the widgets sit: the row under the top bar (default), a column beside the grid, or the row under the grid. */
+    /** Where the widgets sit: the row under the top bar (default), or a column beside the grid. */
     val WPLACES = listOf("top", "left", "right")
     fun side(place: String?) = place == "left" || place == "right"
     /** The widgets of one column, top to bottom, and its weight (in a side column: its height in dp). */
@@ -657,8 +657,9 @@ object HomeConfig {
     /** The id of the theme whose look is on now (the person's first), or "". */
     fun themeNow(c: JSONObject): String {
         val now = canon(pickTheme(clean(c)))
-        return customThemes(c).firstOrNull { canon(it.optJSONObject("conf")) == now }?.optString("id")
-            ?: before(c)?.takeIf { canon(it) == now }?.let { BEFORE }
+        val same = { t: JSONObject? -> t != null && canon(pickTheme(clean(t))) == now }   // a theme saved before a key existed lacks it: filled the same way, it still matches
+        return customThemes(c).firstOrNull { same(it.optJSONObject("conf")) }?.optString("id")
+            ?: before(c)?.takeIf { same(it) }?.let { BEFORE }
             ?: BUILTIN.firstOrNull { canon(it.second) == now }?.first ?: ""
     }
 

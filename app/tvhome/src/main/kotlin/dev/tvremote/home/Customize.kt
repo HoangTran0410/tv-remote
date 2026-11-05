@@ -440,7 +440,7 @@ object Customize {
         fun markEvery() { val e = Store.get(a).optString("wevery"); for ((k, v) in chips) v.isSelected = k == e }
         // switches as tiles, one to a row (two side by side were ~200 dp each: a name on two lines left its neighbour short): an icon, a name, a line under it; on = a blue tint with a blue edge, as everywhere in the app
         // with [choices] (value to its words) the tile steps through them on each press instead of switching on / off; on = not the first
-        fun tile(res: Int, text: String, sub: String?, key: String, choices: List<Pair<String, String>>? = null, then: () -> Unit = {}, read: () -> String = { conf.optString(key) }, write: ((String) -> Unit)? = null) {
+        fun tile(res: Int, text: String, sub: String?, key: String, choices: List<Pair<String, String>>? = null, then: () -> Unit = {}, read: () -> String = { conf.optString(key) }, write: ((String) -> Unit)? = null): View {
             var pick = choices?.indexOfFirst { it.first == read() }?.coerceAtLeast(0) ?: 0
             var on = if (choices != null || key == "rows" || key == "shade") pick > 0 || key == "cols" || key == "ddark_from" || key == "ddark_to" || key == "watchAt" || key == "rows" || key == "shade" else conf.optBoolean(key, true)
             val ic = ImageView(a).apply { setImageResource(res) }
@@ -488,6 +488,7 @@ object Customize {
                 paint()
             }
             col.addView(t, LinearLayout.LayoutParams(-1, -2).apply { if (col.childCount > 0) topMargin = gap })   // below anything: the veil after the photo row too
+            return t
         }
 
         // each page is filled when it is first opened, or once the panel has slid in: all seven built before it showed took
@@ -910,9 +911,10 @@ object Customize {
                 listOf("" to a.getString(R.string.c_accent_none)) + HomeConfig.ACCENTS.keys.map { it to a.getString(a.resources.getIdentifier("c_accent_$it", "string", a.packageName)) })
             section(a.getString(R.string.g_sec_grid))
             tile(R.drawable.ic_apps, a.getString(R.string.c_cols), null, "cols", (HomeConfig.COLS_MIN..HomeConfig.COLS_MAX).map { "$it" to "$it" })
-            tile(R.drawable.ic_updown, a.getString(R.string.c_rows), null, "rows")
+            val side = { Store.get(a).optString("wplace") in listOf("left", "right") }
+            val rowsTile = tile(R.drawable.ic_updown, a.getString(R.string.c_rows), null, "rows").apply { visibility = if (side()) View.GONE else View.VISIBLE }   // beside a widget column every row shows: the setting would do nothing
             tile(R.drawable.ic_apps, a.getString(R.string.c_center), null, "center")   // a short row in the middle, default off
-            tile(R.drawable.ic_updown, a.getString(R.string.c_wplace), null, "wplace", HomeConfig.WPLACES.map { it to a.getString(when (it) { "left" -> R.string.c_wplace_left; "right" -> R.string.c_wplace_right; else -> R.string.c_wplace_top }) })   // where the widgets sit, default top
+            tile(R.drawable.ic_updown, a.getString(R.string.c_wplace), null, "wplace", HomeConfig.WPLACES.map { it to a.getString(when (it) { "left" -> R.string.c_wplace_left; "right" -> R.string.c_wplace_right; else -> R.string.c_wplace_top }) }, then = { rowsTile.visibility = if (side()) View.GONE else View.VISIBLE })   // where the widgets sit, default top
             section(a.getString(R.string.g_sec_edit))
             val doors = launchPage(a, col, ::glass, ::label, gap, quick = false)
             doors.getOrNull(doorAt)?.let { v -> groups[2].start = { v } }; doorAt = -1   // come back from a door: on it
@@ -1610,6 +1612,7 @@ object Customize {
             a.getString(R.string.bg) to wall,
             a.getString(R.string.c_shade) to "${conf.optInt("shade", HomeConfig.SHADE_DEFAULT)}%",
             a.getString(R.string.w_widgets) to (if (widgets.isEmpty()) a.getString(R.string.th_none) else widgets.joinToString(", ")),
+            a.getString(R.string.c_wplace) to a.getString(when (conf.optString("wplace")) { "left" -> R.string.c_wplace_left; "right" -> R.string.c_wplace_right; else -> R.string.c_wplace_top }),
             a.getString(R.string.c_cols) to "${conf.optInt("cols", HomeConfig.COLS_DEFAULT)}",
             a.getString(R.string.c_rows) to rowsWord(a, conf.optDouble("rows", 0.0)),
             a.getString(R.string.c_focus) to a.getString(if (conf.optString("focus") == "ring") R.string.c_focus_ring else R.string.c_focus_glass),

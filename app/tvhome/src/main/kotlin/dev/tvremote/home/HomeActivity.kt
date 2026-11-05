@@ -679,7 +679,7 @@ class HomeActivity : Activity() {
      * clock or the widgets. By itself: without widgets 1.2 (a clean screen that still says there is more), with them right under them.
      * From the real screen and tile heights.
      */
-    /** Where the widgets sit ([HomeConfig] "wplace"): top (the row under the top bar), left / right (a column beside the grid), bottom (the row under the grid). */
+    /** Where the widgets sit ([HomeConfig] "wplace"): top (the row under the top bar), left / right (a column beside the grid). */
     private fun place() = conf.optString("wplace").takeIf { it in HomeConfig.WPLACES } ?: HomeConfig.WPLACES[0]
     /** The widgets stand in a column beside the grid now (and there are some). */
     private fun sideNow() = HomeConfig.side(place()) && !noWidgets
@@ -2822,7 +2822,8 @@ open class Tile(c: Context, val app: App?, w: Int, label: String, dp: (Number) -
     private var shownMark: Badges.Mark? = null
     private val keyBadge = BadgeView(c, dp, k)
     private var shownKeys: List<Int> = emptyList()
-    private var styledIcon: Drawable? = null                        // the icon of an "icon" / "glass" tile ([Look.tstyle]); null: the tile is a card with the banner
+    private var iconTile = false                                      // an "icon" / "glass" tile ([Look.tstyle]) drawing the app's icon; false: a card with the banner
+    private val styledIcon: Drawable? get() = if (iconTile) app?.icon else null   // held by the App only: its release() lets it go with the banner
     private val styled get() = styledIcon != null || (app == null && art == null && Look.tstyle != "banner")
 
     init {
@@ -2832,7 +2833,10 @@ open class Tile(c: Context, val app: App?, w: Int, label: String, dp: (Number) -
         val banner = app?.banner ?: art                                // art: a tile that is not an app (TV Setup suggested)
         val look = Look.tstyle
         if (look != "banner" && app != null && !app.live && !app.folder && app.pin == null && Pics.ids[app.pkg] == null)   // a picture of its own stays a card
-            styledIcon = app.icon ?: app.info?.let { try { dev.tvremote.home.apps.shrink(c, it.loadIcon(c.packageManager), 512) } catch (e: Exception) { null } }
+        {
+            if (app.icon == null) app.icon = app.info?.let { try { dev.tvremote.home.apps.shrink(c, it.loadIcon(c.packageManager), 512) } catch (e: Exception) { null } }   // only right after a switch to this style: App.load makes it off the main thread from then on
+            iconTile = app.icon != null
+        }
         val liveFace = if (app?.live == true) LiveFace(c, w, h, label, say).also { it.set(LiveWidgets.cached(app.pkg), animate = false) } else null
         val styledNow = styled && liveFace == null
         if (styledNow && look == "icon") { faceColor(Color.TRANSPARENT); flat() }

@@ -34,7 +34,7 @@ class App(val pkg: String, val orig: String, val info: ActivityInfo?, val pin: A
         val pm = c.packageManager
         banner = shrink(c, sharp(c, info) ?: try { info.loadBanner(pm) ?: info.applicationInfo.loadBanner(pm) } catch (e: Exception) { null }, BANNER_MAX)
         banner?.let { if (!wide(it.intrinsicWidth, it.intrinsicHeight)) banner = null }   // a square "banner" (Rockchip's Media Center, 64x64) cropped to 16:9 is a blur: the icon and name instead
-        if (banner == null) icon = shrink(c, try { info.loadIcon(pm) } catch (e: Exception) { null }, ICON_MAX)
+        if (banner == null || dev.tvremote.home.Look.tstyle != "banner") icon = shrink(c, try { info.loadIcon(pm) } catch (e: Exception) { null }, ICON_MAX)   // icon / glass tiles draw the icon even when a banner exists: made here, off the main thread, let go with the rest
     }
 }
 

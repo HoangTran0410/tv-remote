@@ -31,7 +31,7 @@ const HOME_KEY_WORDS = { 183: 'home.key_red', 184: 'home.key_green', 185: 'home.
   190: 'home.key_btn3', 191: 'home.key_btn4', 195: 'home.key_btn8', 192: 'home.key_btn5', 284: 'home.key_allapps', 176: 'home.key_settings' };
 const homeKeyName = (code) => HOME_KEY_WORDS[code] ? T(HOME_KEY_WORDS[code]) : String(code - 7);   // KEYCODE_0 is 7
 const homeThemeName = (t) => (t.names || {})[window.LANG] || (t.names || {}).en || t.id;   // a ready-made theme's name in the page's language (the signed list's)
-const HOME_THEME_KEYS = ['wall', 'walls', 'wurl', 'wmode', 'wsnap', 'wkeep', 'wevery', 'shade', 'wfit', 'wfade', 'widgets', 'wsize', 'wopt', 'cols', 'center', 'rows', 'focus', 'tstyle', 'accent', 'motion', 'anim', 'clock24', 'greet'];   // HomeConfig.THEME_KEYS
+const HOME_THEME_KEYS = ['wall', 'walls', 'wurl', 'wcol', 'wdir', 'wmode', 'wsnap', 'wkeep', 'wevery', 'shade', 'wfit', 'wfade', 'widgets', 'wsize', 'wopt', 'wplace', 'cols', 'center', 'rows', 'focus', 'tstyle', 'accent', 'motion', 'anim', 'clock24', 'greet'];   // HomeConfig.THEME_KEYS (tvcopy.test.js keeps them equal)
 const HOME_THEME_FILE_MAX = 32768;                                 // a theme file is a few KB; more is not one
 const HOME_THEMES_MAX = 12;                                           // HomeConfig.THEMES_MAX
 const HOME_PHOTO_MAX = 10;                                            // HomeConfig.PHOTO_MAX
@@ -671,7 +671,7 @@ async function homeOpen() {
     colsHead.hidden = cols.hidden = !c.colsOk;
     cols.replaceChildren(...[4, 5, 6, 7, 8].map((n) =>
       el('button', { type: 'button', className: (c.cols || 5) === n ? 'on' : '', 'aria-pressed': String((c.cols || 5) === n), onclick: () => send({ cols: n }) }, String(n))));
-    rowsHead.hidden = rowsLine.hidden = rowsNote.hidden = !c.rowsOk;
+    rowsHead.hidden = rowsLine.hidden = rowsNote.hidden = !c.rowsOk || c.wplace === 'left' || c.wplace === 'right';   // beside a widget column every row shows: the setting would do nothing
     if (document.activeElement !== rowsIn) rowsIn.value = c.rows >= 1 ? String(c.rows) : '';
     rowsIn.placeholder = T('home.rows_auto'); if (c.rowsMax >= 1) rowsIn.max = String(c.rowsMax);
     rowsNote.textContent = c.rowsMax >= 1 ? T('home.rows_note', { n: c.rowsMax }) : T('home.rows_note0');
@@ -972,6 +972,7 @@ async function homeOpen() {
       [T('home.wall'), themeWall(conf.wall) + (set.length > 1 ? ' · ' + T('home.td_set', { n: set.length, every: T(HOME_EVERY[conf.wevery] || HOME_EVERY.off).toLowerCase() }) : '')],
       [T('home.shade'), (conf.shade ?? 50) + '%'],
       [T('home.widgets'), cards.length ? cards.join(', ') : none],
+      [T('home.wplace'), T(HOME_PLACE_WORDS[HOME_PLACES.includes(conf.wplace) ? conf.wplace : 'top'])],
       [T('home.cols'), String(conf.cols || 5)], [T('home.rows'), conf.rows >= 1 ? String(conf.rows) : T('home.rows_auto')],
       [T('home.focus'), T(conf.focus === 'ring' ? 'home.focus_ring' : 'home.focus_glass')],
       [T('home.tstyle'), T(HOME_TSTYLE_WORDS[HOME_TSTYLES.includes(conf.tstyle) ? conf.tstyle : 'banner'])],

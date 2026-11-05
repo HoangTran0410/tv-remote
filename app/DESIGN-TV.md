@@ -133,6 +133,8 @@ Two choices that let a ready-made theme look different from another one, not onl
 
 Kinds that are a picture of their own stay a card in every style: a live widget (`tile:`), a folder's picture, an app with the person's own picture (`pics`), a pin with its picture, a Play Next poster. The "+ Add" and "Get TV Setup" tiles take the style (a glyph in the icon / glass form). A weak box pays nothing: no blur (the frost is a fill), no layer other than the card's.
 
+`wplace` (where the widgets sit): `top` (default: one row under the top bar) or `left` / `right` (a column beside the grid, 20 dp under the top bar like the grid; blocks packed into the screen's height, `HomeConfig.packColumn`). Beside a column every row of apps shows, so the Rows setting is hidden there.
+
 `accent`: `""` (default: today's blue ring, red date and today) or one colour of the palette. One colour for what says "this is chosen / now": it is chosen to be seen on a dark and on a light wall (contrast against `#0E1116` / `#F4F4F6`, both at least 3.3 except blue 4.0 on light and violet 3.9 on dark).
 
 | Name | Value | Dark / light |

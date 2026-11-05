@@ -23,6 +23,12 @@ test('the look keys are HomeConfig.THEME_KEYS', () => {
   assert.deepEqual([...m[1].matchAll(/"([a-z0-9]+)"/g)].map((x) => x[1]), TVCOPY_LOOK);
 });
 
+test('theme files on the page take every HomeConfig.THEME_KEYS key (an import dropped wplace)', () => {
+  const js = fs.readFileSync(path.join(__dirname, '../web/js/home.js'), 'utf8');
+  const m = /const HOME_THEME_KEYS = \[([^\]]*)\]/.exec(js);
+  assert.deepEqual([...m[1].matchAll(/'([a-z0-9]+)'/g)].map((x) => x[1]), TVCOPY_LOOK);
+});
+
 test('only the ticked groups are taken, and what is not a setting is left out', () => {
   const b = tvCopyTake(['limits', 'keys'], homeA, rulesA, 'A');
   assert.deepEqual(b.groups.sort(), ['keys', 'limits']);

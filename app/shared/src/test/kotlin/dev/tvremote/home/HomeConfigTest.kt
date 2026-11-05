@@ -593,6 +593,13 @@ class HomeConfigTest {
         c = HomeConfig.merge(c, op("apply" to "before")); assertEquals("easy", HomeConfig.themeNow(c))                        // nothing there: nothing happens
     }
 
+    @Test fun oldSavedThemeStillMatches() {                         // saved before wplace / tstyle / accent existed: clean() fills them, the theme must still read as "on"
+        val old = JSONObject().put("wall", "teal").put("cols", 7)
+        val c = HomeConfig.merge(JSONObject(), JSONObject().put("wall", "teal").put("cols", 7))
+            .put("themes", org.json.JSONArray().put(JSONObject().put("id", "t1").put("name", "Old").put("conf", old)))
+        assertEquals("t1", HomeConfig.themeNow(c))
+    }
+
     @Test fun saveApplyDeleteMine() {
         var c = HomeConfig.merge(JSONObject(), JSONObject().put("wall", "teal").put("cols", 7).put("shade", 70))
         c = HomeConfig.merge(c, op("save" to "  Evening  "))
