@@ -205,9 +205,14 @@ class GameActivity : ComponentActivity() {
         if (keys.key(ev) || cards.key(ev)) return true
         if (cards.paused) return super.dispatchKeyEvent(ev)          // the card's buttons take the D-pad and OK
         if (ev.repeatCount > 0) return true
+        if (KeyPads.isKeyboard(ev.device)) KeyPads.lookup(ev.keyCode)?.let { h ->   // a real keyboard: two pads, a seat each
+            val port = server.padPort(KeyPads.seat(ev.deviceId, h.half))
+            if (port >= 0) retro.sendKeyEvent(ev.action, PadMap.sys(sys.pad, h.code), port)
+            return true
+        }
         if (GameServer.isPad(ev)) {                                   // a physical pad: its own slot
             val port = server.padPort(ev.deviceId)
-            if (port >= 0) retro.sendKeyEvent(ev.action, ev.keyCode, port)
+            if (port >= 0) retro.sendKeyEvent(ev.action, PadMap.sys(sys.pad, ev.keyCode), port)
             return true
         }
         val code = when (ev.keyCode) {                                // the TV remote is player 1
@@ -215,7 +220,7 @@ class GameActivity : ComponentActivity() {
             KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER -> KeyEvent.KEYCODE_BUTTON_START
             else -> keys.button(ev.keyCode) ?: ev.keyCode
         }
-        press(ev.action, code)
+        press(ev.action, PadMap.sys(sys.pad, code))
         return true
     }
 

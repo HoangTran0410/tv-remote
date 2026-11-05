@@ -156,5 +156,8 @@
     "few": "Нужно ещё %1$d игрока",
     "many": "Нужно ещё %1$d игроков",
     "other": "Нужно ещё %1$d игроков"
-  }
+  },
+  "keys_title": "Клавиатура: два игрока",
+  "keys_p1": "Игрок A: W A S D — ходьба · J K U I = A B X Y · Q E = L R · Enter = Start · Tab = Select",
+  "keys_p2": "Игрок B: стрелки — ходьба · Num 1 2 4 5 = A B X Y · Num 7 8 = L R · Num Enter = Start · Num 0 = Select"
 }

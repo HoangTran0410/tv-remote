@@ -44,6 +44,7 @@ body.away #pad,body.away #nav{filter:grayscale(1);opacity:.35}
 .pill{width:84px;height:44px;border-radius:99px;border:0;background:var(--key);color:#c9cfdd;font:600 13px system-ui;text-transform:uppercase;letter-spacing:.05em}
 .fb{position:absolute;aspect-ratio:1;border-radius:50%;border:0;background:var(--bc,var(--key));color:#fff;font:700 28px system-ui;padding:0}
 .pair .fb{width:48%}.pair .fb[data-b=A]{right:0;top:20%}.pair .fb[data-b=B]{left:0;top:44%}
+.tri .fb{width:32%}.tri .fb[data-b=A]{left:0;top:44%}.tri .fb[data-b=B]{left:34%;top:34%}.tri .fb[data-b=C]{right:0;top:24%}
 .diamond .fb{width:38%}.diamond .fb[data-b=X]{left:31%;top:0}.diamond .fb[data-b=A]{right:0;top:31%}.diamond .fb[data-b=B]{left:31%;bottom:0}.diamond .fb[data-b=Y]{left:0;top:31%}
 .sh{position:absolute;top:max(8px,env(safe-area-inset-top));display:flex;gap:8px;width:24vw;z-index:1}
 #shl{left:max(16px,env(safe-area-inset-left))}#shr{right:max(16px,env(safe-area-inset-right))}

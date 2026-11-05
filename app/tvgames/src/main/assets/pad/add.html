@@ -22,7 +22,7 @@ a{color:#7aa7ff;display:inline-block;margin-top:20px}
 </head>
 <body>
 <h1 id="h"></h1><p id="p"></p>
-<label class="pick" id="pick"></label><input id="file" type="file" multiple accept=".nes,.sfc,.smc,.gba,.cue,.chd,.pbp,.zip">
+<label class="pick" id="pick"></label><input id="file" type="file" multiple accept=".nes,.sfc,.smc,.gba,.gb,.gbc,.dmg,.md,.gen,.smd,.sms,.gg,.pce,.cue,.chd,.pbp,.zip">
 <div id="list"></div>
 <h1 id="h2" style="margin-top:34px"></h1><p id="p2"></p>
 <form id="wf"><input id="wn" maxlength="40" autocomplete="off"><input id="wu" type="url" inputmode="url" autocapitalize="off" autocomplete="off" placeholder="https://"><button class="pick" id="wb" type="submit" style="border:0;width:100%"></button></form>
@@ -42,7 +42,7 @@ wf.onsubmit = (e) => {
   x.onerror = () => { wmsg.textContent = W.aBad; wmsg.style.color = '#ef4444'; };
   x.send();
 };
-const OK = /\.(nes|sfc|smc|gba|cue|chd|pbp)$/i;
+const OK = /\.(nes|sfc|smc|gba|gb|gbc|dmg|md|gen|smd|sms|gg|pce|cue|chd|pbp)$/i;
 file.onchange = () => { [...file.files].forEach(up); file.value = ''; };
 function up(f) {
   const row = document.createElement('div'); row.className = 'f';

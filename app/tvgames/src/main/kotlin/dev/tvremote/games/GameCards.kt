@@ -51,6 +51,11 @@ class GameCards(
     private lateinit var pauseCard: View
     private lateinit var resumeBtn: View
 
+    /** The keyboard's two pads, in the pause card, only while a real keyboard is plugged in (KeyPads). */
+    private val keysNote by lazy {
+        act.label(s(R.string.keys_title) + "\n" + s(R.string.keys_p1) + "\n" + s(R.string.keys_p2), 13f, act.tvColor(R.color.tv_dim)).apply {
+            setPadding(0, act.dp(14), 0, 0); maxWidth = act.dp(250); visibility = View.GONE }
+    }
     private fun card() = act.panelBg()
     private fun s(id: Int) = act.getString(id)
 
@@ -89,6 +94,7 @@ class GameCards(
             orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL; setPadding(0, 0, act.dp(36), 0)
             addView(act.qrView(server.url(), 200))
             addView(act.label(s(R.string.scan_play), 18f, act.tvColor(R.color.tv_dim)).apply { setPadding(0, act.dp(10), 0, 0) })
+            addView(keysNote)
         }
         pauseCard = act.scrim(LinearLayout(act).apply {
             gravity = Gravity.CENTER_VERTICAL; setPadding(act.dp(36), act.dp(26), act.dp(36), act.dp(26)); background = card()
@@ -187,7 +193,7 @@ class GameCards(
         chip.animate().alpha(0f).setStartDelay(5000).setDuration(600).withEndAction { chip.visibility = View.GONE }.start()
     }
 
-    fun pause() { paused = true; pauseNote.text = ""; onPause(true); refresh(); resumeBtn.requestFocus() }
+    fun pause() { paused = true; keysNote.visibility = if (KeyPads.present()) View.VISIBLE else View.GONE; pauseNote.text = ""; onPause(true); refresh(); resumeBtn.requestFocus() }
     fun resume() { paused = false; onPause(false); refresh() }
 
     /** BACK / MENU toggle the pause card; OK on the start card means "play alone". True = used up. */

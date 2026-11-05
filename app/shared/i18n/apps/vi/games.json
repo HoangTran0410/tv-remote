@@ -151,5 +151,10 @@
   "sc_lib_short": "Trò chơi",
   "sc_lib_long": "Thư viện trò chơi",
   "sc_pad_short": "Tay cầm",
-  "need_more": {"other":"Cần thêm %1$d người"}
+  "need_more": {
+    "other": "Cần thêm %1$d người"
+  },
+  "keys_title": "Bàn phím: hai người chơi",
+  "keys_p1": "Người A: W A S D đi · J K U I = A B X Y · Q E = L R · Enter = Start · Tab = Select",
+  "keys_p2": "Người B: phím mũi tên đi · Num 1 2 4 5 = A B X Y · Num 7 8 = L R · Num Enter = Start · Num 0 = Select"
 }

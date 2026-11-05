@@ -68,7 +68,7 @@ function setMode(m) {
   releaseAll(); relayout(); lockLandscape();
 }
 
-// What the TV is running decides the pad: nes / snes / gba / ps (a system's `pad` in Systems.kt) or web (the look of ps).
+// What the TV is running decides the pad: nes / snes / gba / pce / sms / md / ps (a system's `pad` in Systems.kt) or web (the look of ps).
 // A web game may then change it (tvpad.layout): {choices:[..]} four big answer buttons, {text:true} a field + Send,
 // {buttons:[..]} only these, {dpad:false} no D-pad / stick, {cards:{..}} a hand of cards (renderCards), {pointer:true} the touchpad
 // (+ side). null = the usual one.
@@ -78,14 +78,17 @@ const SYS = {
   gba:  { stick: false, face: 'pair',    sh: [['L'], ['R']],              mid: ['SELECT', 'START'] },
   arcade: { stick: false, face: 'diamond', sh: [['L'], ['R']], mid: ['SELECT', 'START'] },
   ps:   { stick: true,  face: 'diamond', sh: [['L2', 'L'], ['R', 'R2']],  mid: ['SELECT', 'START'] },
+  pce:  { stick: false, face: 'pair',    sh: [[], []],                    mid: ['SELECT', 'START'] },   // II I, Select, Run
+  sms:  { stick: false, face: 'pair',    sh: [[], []],                    mid: ['START'] },             // 1 2 (Game Gear: Start)
+  md:   { stick: false, face: 'tri',     sh: [[], ['X', 'Y', 'Z']],       mid: ['SELECT', 'START'] },   // A B C, X Y Z above, Mode
 };
 SYS.web = SYS.ps;
-const FACE = { pair: ['B', 'A'], diamond: ['X', 'A', 'B', 'Y'] };
+const FACE = { pair: ['B', 'A'], diamond: ['X', 'A', 'B', 'Y'], tri: ['A', 'B', 'C'] };
 const SKIN = {                                                // face colours, per look
   snes: { X: '#3b6fe0', Y: '#2fa05a', A: '#e5484d', B: '#e0a100' },
   ps: { X: '#2fa05a', Y: '#d65aa8', A: '#e5484d', B: '#3b6fe0' },
 };
-const GLYPH = { arcade: { SELECT: 'Coin' }, ps: { X: '△', Y: '□', A: '○', B: '✕', L: 'L1', R: 'R1' } };
+const GLYPH = { arcade: { SELECT: 'Coin' }, pce: { B: 'II', A: 'I', START: 'Run' }, sms: { B: '1', A: '2' }, md: { SELECT: 'Mode' }, ps: { X: '△', Y: '□', A: '○', B: '✕', L: 'L1', R: 'R1' } };
 const look = () => (sysName === 'web' ? 'ps' : SYS[sysName] ? sysName : 'ps');
 let stickOn = false;
 const stickKey = () => 'tvg-stick-' + look();

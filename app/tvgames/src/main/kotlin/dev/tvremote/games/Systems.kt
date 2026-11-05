@@ -13,7 +13,11 @@ object Systems {
     // each system's colour (its tiles and chips): the console's own brand hue
     private val C_NES = 0xFFE11D48.toInt(); private val C_SNES = 0xFF7C3AED.toInt(); private val C_GBA = 0xFF2563EB.toInt()
     private val C_PS1 = 0xFF64748B.toInt(); private val C_ARCADE = 0xFFF59E0B.toInt()
+    private val C_GB = 0xFF65A30D.toInt(); private val C_GBC = 0xFF9333EA.toInt(); private val C_MD = 0xFF0EA5E9.toInt()
+    private val C_SMS = 0xFFEA580C.toInt(); private val C_GG = 0xFF0D9488.toInt(); private val C_PCE = 0xFFDB2777.toInt()
     private val PAD = listOf("A", "B", "START", "SELECT")
+    private val LAYOUT_MD = listOf("A", "B", "C", "X", "Y", "Z", "START", "SELECT")   // 3 + 3 buttons and Mode
+    private val LAYOUT_SMS = listOf("A", "B", "START")                              // buttons 1 and 2 (Pause = Start); Game Gear: Start
     val ALL = listOf(
         Sys("nes", "NES", C_NES, "libfceumm_libretro_android.so", listOf("nes"), PAD, repo = "Nintendo_-_Nintendo_Entertainment_System"),
         Sys("snes", "SNES", C_SNES, null, listOf("sfc", "smc"), PAD + listOf("X", "Y", "L", "R"), repo = "Nintendo_-_Super_Nintendo_Entertainment_System"),
@@ -21,9 +25,16 @@ object Systems {
         Sys("psx", "PS1", C_PS1, null, listOf("cue", "chd", "pbp"), PAD + listOf("X", "Y", "L", "R", "L2", "R2"), pad = "ps", analog = true, repo = "Sony_-_PlayStation"),
         // FinalBurn Neo: a game is a MAME-style zip named after its romset (sfa3.zip), so the file is never renamed; SELECT = Coin
         Sys("arcade", "Arcade", C_ARCADE, null, listOf("zip"), PAD + listOf("X", "Y", "L", "R"), pad = "arcade", repo = "FBNeo_-_Arcade_Games"),
+        // Gambatte, ClownMDEmu, SMS Plus GX, Beetle PCE Fast (dev/release/cores.sh); .bin is no extension here (too many things use it)
+        Sys("gb", "Game Boy", C_GB, null, listOf("gb", "dmg"), PAD, pad = "nes", repo = "Nintendo_-_Game_Boy"),
+        Sys("gbc", "GB Color", C_GBC, null, listOf("gbc"), PAD, pad = "nes", repo = "Nintendo_-_Game_Boy_Color"),
+        Sys("md", "Mega Drive", C_MD, null, listOf("md", "gen", "smd"), LAYOUT_MD, pad = "md", repo = "Sega_-_Mega_Drive_-_Genesis"),
+        Sys("sms", "Master System", C_SMS, null, listOf("sms"), LAYOUT_SMS, pad = "sms", repo = "Sega_-_Master_System_-_Mark_III"),
+        Sys("gg", "Game Gear", C_GG, null, listOf("gg"), LAYOUT_SMS, pad = "sms", repo = "Sega_-_Game_Gear"),
+        Sys("pce", "PC Engine", C_PCE, null, listOf("pce"), PAD, pad = "pce", repo = "NEC_-_PC_Engine_-_TurboGrafx_16"),
     )
 
-    private val LAYOUT_BUTTONS = mapOf("nes" to PAD, "snes" to PAD + listOf("X", "Y", "L", "R"), "gba" to PAD + listOf("L", "R"),
+    private val LAYOUT_BUTTONS = mapOf("nes" to PAD, "pce" to PAD, "sms" to LAYOUT_SMS, "md" to LAYOUT_MD, "snes" to PAD + listOf("X", "Y", "L", "R"), "gba" to PAD + listOf("L", "R"),
         "arcade" to PAD + listOf("X", "Y", "L", "R"), "ps" to PAD + listOf("X", "Y", "L", "R", "L2", "R2"))
 
     /** The systems this device can play: the ones with a core packed in the APK, and those the catalog has a core for (this ABI, "on"). */
@@ -40,7 +51,7 @@ object Systems {
     }
 
     /** The most players a system's games take (the core's controller ports): imported ROMs have no catalog entry to say more. */
-    fun maxPlayers(id: String) = when (id) { "gba" -> 1; else -> 2 }
+    fun maxPlayers(id: String) = when (id) { "gba", "gb", "gbc", "gg" -> 1; else -> 2 }
 
     fun byExt(ctx: Context, ext: String): Sys? = list(ctx).firstOrNull { ext.lowercase() in it.exts }
     fun uploadExts(ctx: Context): Set<String> = list(ctx).flatMap { it.exts }.toSet()

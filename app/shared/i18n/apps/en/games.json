@@ -151,5 +151,11 @@
   "sc_lib_short": "Games",
   "sc_lib_long": "Game library",
   "sc_pad_short": "Pad test",
-  "need_more": {"one":"Needs %1$d more player","other":"Needs %1$d more players"}
+  "need_more": {
+    "one": "Needs %1$d more player",
+    "other": "Needs %1$d more players"
+  },
+  "keys_title": "Keyboard: two players",
+  "keys_p1": "Player A: W A S D move · J K U I = A B X Y · Q E = L R · Enter = Start · Tab = Select",
+  "keys_p2": "Player B: arrows move · Num 1 2 4 5 = A B X Y · Num 7 8 = L R · Num Enter = Start · Num 0 = Select"
 }
