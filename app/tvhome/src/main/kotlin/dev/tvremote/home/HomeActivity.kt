@@ -779,8 +779,10 @@ class HomeActivity : Activity() {
     }
 
     private var placedNow: List<String>? = null
+    private var placedFor = ""                                         // the settings placedNow was read for: after a change the guess holds until the read returns
+    private fun placedKey(o: JSONObject) = listOf(o.optJSONArray("widgets"), o.optString("note"), o.optString("wplace"), o.optJSONObject("wsize"), o.optJSONObject("qrs")?.names()).toString()
     /** The top bar's clock and date follow the widgets really placed (a clock widget with no room, or a timer with nothing to show, changes them). */
-    private fun placedSet(p: List<String>) { if (p != placedNow) { placedNow = p; clockAndDay() } }
+    private fun placedSet(p: List<String>) { val k = placedKey(conf); if (p != placedNow || k != placedFor) { placedNow = p; placedFor = k; clockAndDay() } }
 
     /** The widgets' numbers, read off the main thread; none at all while they are off. */
     private fun widgetsRead() {
@@ -2086,7 +2088,7 @@ class HomeActivity : Activity() {
         greetLine.text = HomeConfig.headLine(conf, "g", t)
         headType(greetLine, "g", Font.regular); headType(dateLine, "d", Font.medium)
         greetLine.visibility = if (conf.optBoolean("greet", true)) View.VISIBLE else View.GONE
-        val placed = placedNow ?: HomeConfig.placed(conf)             // what the widgets really placed once read; a guess before
+        val placed = placedNow?.takeIf { placedFor == placedKey(conf) } ?: HomeConfig.placed(conf)   // what the widgets really placed once read; a guess before, and right after a change
         clock.visibility = if (HomeConfig.barClock(conf, placed)) View.VISIBLE else View.GONE   // a clock widget is the clock then
         dateLine.visibility = if (HomeConfig.barDate(conf, placed)) View.VISIBLE else View.GONE
         rule.visibility = if (clock.isShown && (dateLine.isShown || greetLine.isShown)) View.VISIBLE else View.GONE   // the line between them only while there are two sides

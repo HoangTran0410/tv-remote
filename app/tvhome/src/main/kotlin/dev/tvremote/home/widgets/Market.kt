@@ -27,6 +27,7 @@ object Market {
     const val FRESH_MS = 20 * 60_000L                                  // a part is asked again after this, while the home is shown
     const val FUEL_MS = 3 * 3600_000L                                   // fuel changes about once a week (Thursdays, 15:00): asked again after this
     const val RETRY_MS = 5 * 60_000L                                   // after a failure (the bank asks for one request in 5 minutes)
+    const val FUEL_RETRY_MS = 60 * 60_000L                             // after the fuel pages failed: only fuel waits, the other parts keep their pace
     val CODES = listOf("USD", "EUR", "JPY", "KRW", "CNY", "GBP")       // in the order shown
 
     private fun num(s: String?): Double = s?.trim()?.replace(",", "")?.toDoubleOrNull() ?: 0.0
@@ -97,6 +98,7 @@ object Market {
                 val n = t[i].uppercase().replace(',', '.')
                 if (!match(n)) continue
                 for (j in i + 1..minOf(i + 3, t.size - 1)) {
+                    if (t[j].any { ch -> ch.isLetter() } && !t[j].trim().matches(Regex("^[\\d.,\\s]*(?:đ|₫|VNĐ|vnđ)$"))) break   // the next product's name: this row had no price ("-")
                     val v = price.find(t[j])?.groupValues?.get(1)?.replace(".", "")?.toLongOrNull() ?: continue
                     if (v in 5_000..200_000) return v
                 }
@@ -161,7 +163,14 @@ object Market {
         val tried = prefs(c).getLong("tried", 0)
         if (now - tried < RETRY_MS && now >= tried) return false
         val s = cached(c) ?: return true
-        return stale(s, btc, fuel, now)
+        return stale(s, btc, askFuel(c, fuel, now), now)
+    }
+
+    /** Fuel is worth asking for: shown, the list has a fuel source (an older list has none) and no fuel failure in the last [FUEL_RETRY_MS]. */
+    private fun askFuel(c: Context, fuel: Boolean, now: Long): Boolean {
+        if (!fuel || Sources.now.fuel.isEmpty()) return false
+        val t = prefs(c).getLong("fuelTried", 0)
+        return now - t >= FUEL_RETRY_MS || now < t                     // a stamp ahead of the clock (a box booted a year ahead) does not hold fuel back
     }
 
     /** The pure part of [due]: a stamp ahead of [now] is stale too (a box that booted with its clock a year ahead saved it). */
@@ -182,14 +191,14 @@ object Market {
                 var gold: Gold? = null
                 for (g in src.gold) { gold = Net.text(g.url)?.let { if (g.kind == "btmc") parseBtmc(it, g.name) else parsePnj(it, g.name) }; if (gold != null) break }
                 val coin = if (btc) src.crypto?.let { s -> Net.text(s.url)?.let { parseBinance(it) } } else null
-                val askFuel = fuel && !Age.fresh(old?.fuelAt ?: 0, FUEL_MS, now)
+                val askFuel = askFuel(ctx, fuel, now) && !Age.fresh(old?.fuelAt ?: 0, FUEL_MS, now)
                 var oil: Fuel? = null
                 if (askFuel) for (s in src.fuel) { oil = Net.text(s.url)?.let { parseFuel(it, s.name) }; if (oil != null) break }
                 val snap = Snap(rates ?: old?.rates.orEmpty(), gold ?: old?.gold, coin ?: old?.btc,
                     if (rates != null) now else old?.ratesAt ?: 0, if (gold != null) now else old?.goldAt ?: 0, if (coin != null) now else old?.btcAt ?: 0,
                     oil ?: old?.fuel, if (oil != null) now else old?.fuelAt ?: 0)
-                val failed = (src.rates != null && rates == null) || (src.gold.isNotEmpty() && gold == null) || (btc && src.crypto != null && coin == null) || (askFuel && src.fuel.isNotEmpty() && oil == null)
-                p.edit().putLong("tried", if (failed) now else 0).also { if (!snap.empty) it.putString("snap", toJson(snap).toString()) }.apply()
+                val failed = (src.rates != null && rates == null) || (src.gold.isNotEmpty() && gold == null) || (btc && src.crypto != null && coin == null) 
+                p.edit().putLong("tried", if (failed) now else 0).also { if (askFuel) it.putLong("fuelTried", if (oil == null) now else 0) }.also { if (!snap.empty) it.putString("snap", toJson(snap).toString()) }.apply()
                 if (rates != null || gold != null || coin != null || oil != null) done()
             } catch (e: Exception) {
             } finally { synchronized(this) { busy = false } }

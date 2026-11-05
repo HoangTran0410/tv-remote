@@ -72,4 +72,11 @@ class MarketTrendTest {
         org.junit.Assert.assertEquals(90.0, Market.refStep("20261025", 100.0, 90.0, "20261025")!!, 0.0)    // same day: keep the one from before
         org.junit.Assert.assertNull(Market.refStep("", null, null, "20261025"))                           // the first day: nothing to compare with
     }
+
+    @org.junit.Test fun fuelRowWithoutPriceBorrowsNothing() {
+        val f = Market.parseFuel("<tr><td>Xăng RON 95-III</td><td>21.150</td></tr><tr><td>Xăng E5 RON 92-II</td><td>-</td></tr><tr><td>Dầu DO 0,05S-II</td><td>19.000 đ</td></tr>")!!
+        org.junit.Assert.assertEquals(21150L, f.ron95)
+        org.junit.Assert.assertEquals(0L, f.e5)                              // was the diesel price
+        org.junit.Assert.assertEquals(19000L, f.diesel)
+    }
 }
