@@ -1,7 +1,9 @@
 {
  "page.update": "⬆️ Обновить",
+ "page.tab_remote": "Пульт",
  "page.look_offline": "Не удалось проверить обновления · Повторить",
  "common.later": "Позже",
+ "common.ask_what": "{what}?",
  "page.the_part_running_on": "🔄 Обновилась часть программы на этом компьютере",
  "page.in_settings_press_quit": "В 🛠️ Настройках нажмите «Выйти», затем снова откройте TV Remote — тогда подтянется новая версия. До этого часть кнопок не сработает.",
  "page.connecting": "подключение…",

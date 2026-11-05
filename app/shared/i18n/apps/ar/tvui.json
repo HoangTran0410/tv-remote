@@ -1,0 +1,8 @@
+{
+  "wv_fixing": "جارٍ إعادة تشغيل WebView في التلفزيون…",
+  "wv_none": "لا يوجد WebView في هذا التلفزيون. ثبّت أو شغّل “Android System WebView” من Play Store.",
+  "wv_none_setup": "لا يوجد WebView في هذا التلفزيون. ثبّت “Android System WebView” من Play Store، أو ثبّت TV Setup: سيعيد تشغيله تلقائيًا.",
+  "wv_store": "افتح Play Store",
+  "wv_retry": "أعد المحاولة",
+  "wv_back": "رجوع"
+}

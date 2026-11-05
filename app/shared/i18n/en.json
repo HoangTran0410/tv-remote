@@ -1,7 +1,9 @@
 {
  "page.update": "⬆️ Update",
+ "page.tab_remote": "Remote",
  "page.look_offline": "Could not check for updates · Retry",
  "common.later": "Later",
+ "common.ask_what": "{what}?",
  "page.the_part_running_on": "🔄 The app on this computer was just updated",
  "page.in_settings_press_quit": "In 🛠️ Settings press Quit, then open TV Remote again to use the new version. Until then some buttons will fail.",
  "page.connecting": "connecting...",

@@ -29,6 +29,7 @@ Web 0.46.0 · Phone app 0.43.0 · TV app 0.44.0 · TV Home 0.28.0 · TV Channels
 - Phone app 🎧 on TVs with no Opus encoder (NVIDIA Shield): the sound is sent as AAC instead; it used to stay silent while scrcpy-server died at once.
 - "Software" encoder found on TVs that mark Google's encoder "hybrid" (NVIDIA Shield); it found none there.
 - The picture never asks the TV for a key frame before the first frame came: scrcpy-server died on it on a stuck TV, and every client then started it again and again.
+- Arabic (العربية): the phone app, the web page (TV web page, computer app, the phone's Manage screen) and the TV apps' words; the web page turns right to left, while the remote's arrows, number keys, media keys and the TV's picture keep their sides.
 
 ## 0.45.0 - 2026-11-05
 

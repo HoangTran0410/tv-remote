@@ -1,7 +1,9 @@
 {
   "page.update": "⬆️ Mettre à jour",
+  "page.tab_remote": "Télécommande",
   "page.look_offline": "Impossible de chercher les mises à jour · Réessayer",
   "common.later": "Plus tard",
+  "common.ask_what": "{what} ?",
   "page.the_part_running_on": "🔄 L’application de cet ordinateur vient d’être mise à jour",
   "page.in_settings_press_quit": "Dans 🛠️ Paramètres, appuyez sur Quitter, puis rouvrez TV Remote pour utiliser la nouvelle version. D’ici là, certains boutons échoueront.",
   "page.connecting": "connexion...",

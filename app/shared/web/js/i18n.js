@@ -36,6 +36,9 @@ const LANGS = (() => {
     location.reload();
   };
   document.documentElement.lang = LANG;
+  // right to left for a language written so (Arabic): told by its own name in langs.json, so a new one needs no list here.
+  // css/rtl.css turns the page; the remote's keys and the TV's picture keep their sides (◀ is the TV's left in every language)
+  document.documentElement.dir = /[֐-ࣿיִ-﷿ﹰ-ﻼ]/.test(LANGS[LANG] || '') ? 'rtl' : 'ltr';
   try { document.cookie = 'tvr-lang=' + LANG + '; path=/; max-age=31536000; SameSite=Strict'; } catch {}   // the server's words come in it (Words.kt)
 
   // read at once, as remote.json is: the page is drawn in its words from the first frame. ?v= of this script: an update brings new words

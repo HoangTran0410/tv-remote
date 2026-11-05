@@ -102,7 +102,8 @@ document.addEventListener('click', async (e) => {
   const name = l.textContent.trim(); if (!name || /^(✕|⋯)$/.test(b.textContent.trim())) return;
   e.preventDefault(); e.stopImmediatePropagation();
   const ico = (b.querySelector(':scope > .ico') || {}).textContent || '', why = b.title && b.title.trim() !== name ? b.title.trim() : '';
-  if (!await ask((ico + ' ' + (why || name)).trim() + '?', { ok: name, danger: b.classList.contains('danger') })) return;
+  if (!await ask(T('common.ask_what', { what: (ico + ' ' + (why || name)).trim() }), {   // the question mark is the language's own (Arabic ؟)
+     ok: name, danger: b.classList.contains('danger') })) return;
   const input = b.tagName === 'LABEL' && b.querySelector('input');
   iconSure = true; try { (input || b).click(); } finally { iconSure = false; }
 }, true);

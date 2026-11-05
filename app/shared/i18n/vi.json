@@ -1,7 +1,9 @@
 {
  "page.update": "⬆️ Cập nhật",
+ "page.tab_remote": "Remote",
  "page.look_offline": "Không kiểm tra được bản mới · Thử lại",
  "common.later": "Để sau",
+ "common.ask_what": "{what}?",
  "page.the_part_running_on": "🔄 Phần chạy trên máy này vừa được cập nhật",
  "page.in_settings_press_quit": "Vào 🛠️ Cài đặt, bấm Tắt rồi mở lại TV Remote để dùng bản mới. Chưa làm thì vài nút sẽ báo lỗi.",
  "page.connecting": "đang kết nối...",
