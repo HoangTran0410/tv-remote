@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.47.0 - 2026-11-05
+
+Web 0.47.0 · Phone app 0.44.0 · TV app 0.45.0 · TV Home 0.29.0 · TV Channels 0.20.0 · TV Games 0.22.0 · TV Apps 0.6.0
 
 - Voice: when TV Setup Voice cannot load its speech model, the mic card says so ("Speech model could not load") instead of "No network for speech recognition".
 - TV Setup: the sleep timer no longer clears itself, and Telegram no longer says "slept", when the TV could not be turned off (ADB down): it keeps trying; the same for the "app closed" alert. One word on screen per failure and one report per version. The key filter checks that the overlay permission really took, and the "turn ADB back on" switch shows off when its permission is missing.
