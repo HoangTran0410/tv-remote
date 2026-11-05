@@ -77,6 +77,7 @@ is still poor in real use, the next step is Google's recognizer for searches onl
 | 3 | has a recognizer, Google answers a network / server error | on | TV Setup Voice listens at once, "say it again" on the card (`MicActivity.onError`) |
 | 4 | has a recognizer, speech heard but no word for 3.5 s (Google's server stalled) | on | one fresh try with TV Setup Voice (`MicActivity.stall`); nothing again → "Didn't catch that" |
 | 5 | has a recognizer, stalls | off | one fresh try with Google's; nothing again → "Didn't catch that" |
+| 7 | TV Setup Voice listens but its model or word list does not load (corrupt or missing files) | on | `VoiceService` answers `VoiceProtocol.ERROR_NO_MODEL` (not ERROR_SERVER); the card says "Speech model could not load", the key goes to the TV for 10 min like the other failures (`MicVoice.broke`); no retry, no network wording |
 | 6 | none (a box without Google, Google app switched off) | on | TV Setup Voice listens, with the commands, this TV's apps and scenes as its words (`MicVoice.words`) |
 | 7 | none | off | "No speech recognizer on this TV" and the key goes to the TV for 10 min; the page's switch is the way out |
 

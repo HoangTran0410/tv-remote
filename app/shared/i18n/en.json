@@ -2371,6 +2371,7 @@
  "mic.unknown": "Did not understand: “{text}”",
  "mic.no_recognizer": "This TV has no speech recognition: use the mic in the phone app",
  "mic.no_net": "No network for speech recognition",
+ "mic.no_model": "Speech model could not load",
  "mic.no_perm": "TV Setup may not use the microphone yet",
  "mic.allow": "Please allow TV Setup to use the microphone",
  "mic.use_phone": "Use the mic in the phone app. The mic button goes back to the Assistant for a few minutes.",

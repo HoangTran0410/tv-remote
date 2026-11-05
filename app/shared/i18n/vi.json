@@ -2287,6 +2287,7 @@
  "mic.unknown": "Chưa hiểu: “{text}”",
  "mic.no_recognizer": "TV này không có nhận giọng nói: dùng mic trên app điện thoại",
  "mic.no_net": "Không có mạng để nhận giọng nói",
+ "mic.no_model": "Không tải được bộ nhận giọng nói",
  "mic.no_perm": "TV Setup chưa được dùng micro",
  "mic.allow": "Hãy cho phép TV Setup dùng micro",
  "mic.use_phone": "Dùng mic trên app điện thoại. Nút mic về Trợ lý ít phút.",

@@ -2377,6 +2377,7 @@
   "mic.unknown": "Pas compris : « {text} »",
   "mic.no_recognizer": "Cette TV n’a pas de reconnaissance vocale : utilisez le micro de l’application pour téléphone",
   "mic.no_net": "Pas de réseau pour la reconnaissance vocale",
+  "mic.no_model": "Impossible de charger le modèle vocal",
   "mic.no_perm": "TV Setup n’a pas encore le droit d’utiliser le micro",
   "mic.allow": "Autorisez TV Setup à utiliser le micro",
   "mic.use_phone": "Utilisez le micro de l’application pour téléphone. Le bouton micro revient à l’Assistant pendant quelques minutes.",

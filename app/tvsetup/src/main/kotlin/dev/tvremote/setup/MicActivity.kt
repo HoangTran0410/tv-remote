@@ -251,6 +251,7 @@ class MicActivity : Activity(), RecognitionListener {
                     ui.removeCallbacks(giveUp); ui.postDelayed(giveUp, 8000)
                     listen()
                 } else { MicVoice.broke(); say(T("mic.no_net"), T("mic.use_phone"), 3500) }
+            VoiceProtocol.ERROR_NO_MODEL -> { MicVoice.broke(); say(T("mic.no_model"), T("mic.use_phone"), 3500) }    // TV Setup Voice could not load its model: not the network (flow row 7)
             SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> {
                 if (!MicVoice.granted(this)) ask() else { MicVoice.broke(); say(T("mic.no_perm"), T("mic.use_phone"), 3500) }
             }

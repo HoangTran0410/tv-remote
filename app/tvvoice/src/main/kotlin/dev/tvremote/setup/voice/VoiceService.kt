@@ -105,7 +105,7 @@ class VoiceService : RecognitionService() {
                         if (p.isNotEmpty() && p != last) { last = p; if (!spoke) { spoke = true; say { cb.beginningOfSpeech() } }; say { cb.partialResults(bundle(p)) } }
                     }
                 }
-                if (failed.get()) { say { cb.error(SpeechRecognizer.ERROR_SERVER) }; return }
+                if (failed.get()) { say { cb.error(VoiceProtocol.ERROR_NO_MODEL) }; return }
                 say { cb.endOfSpeech() }
                 val b = vosk?.let { answer(it.finalResult) }
                 say { if (b != null) cb.results(b) else cb.error(SpeechRecognizer.ERROR_NO_MATCH) }

@@ -19,6 +19,8 @@ object VoiceProtocol {
      * ranked alternatives), for [pick]. The add-on adds the second only when the first is not [sure] (dev/flows/voice.md, "free speech").
      */
     const val FREE = "dev.tvremote.voice.FREE"
+    /** The add-on's own `RecognitionListener.onError` code: its model or word list could not load (not a network fault, so not ERROR_SERVER). Outside Android's 1..13. */
+    const val ERROR_NO_MODEL = 1001
     const val FREE_SPEECH = "dev.tvremote.voice.FREE_SPEECH"      // request extra (Boolean, default false): also decode free speech (the user chose "commands + free speech"); false = nothing of it runs
     /** Application meta-data of the add-on: the language of its model ("vi", "en"). Absent = an old add-on, which is Vietnamese. */
     const val LANG_META = "dev.tvremote.voice.LANG"
