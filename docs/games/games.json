@@ -4,7 +4,7 @@
   "cores": {
     "snes": {
       "name": "SNES (bsnes-mercury performance)",
-      "on": false,
+      "on": true,
       "abi": {
         "arm64-v8a": {
           "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/bsnes_mercury_performance_libretro_android-arm64-v8a.so.zip",
@@ -27,7 +27,7 @@
     },
     "gba": {
       "name": "Game Boy Advance (mGBA)",
-      "on": false,
+      "on": true,
       "abi": {
         "arm64-v8a": {
           "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/mgba_libretro_android-arm64-v8a.so.zip",
@@ -49,7 +49,7 @@
     },
     "psx": {
       "name": "PlayStation (PCSX ReARMed)",
-      "on": false,
+      "on": true,
       "abi": {
         "arm64-v8a": {
           "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/pcsx_rearmed_libretro_android-arm64-v8a.so.zip",
@@ -95,7 +95,7 @@
     },
     "gb": {
       "name": "Game Boy (Gambatte)",
-      "on": false,
+      "on": true,
       "abi": {
         "arm64-v8a": {
           "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/gambatte_libretro_android-arm64-v8a.so.zip",
@@ -118,7 +118,7 @@
     },
     "gbc": {
       "name": "Game Boy Color (Gambatte)",
-      "on": false,
+      "on": true,
       "abi": {
         "arm64-v8a": {
           "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/gambatte_libretro_android-arm64-v8a.so.zip",
@@ -140,7 +140,7 @@
     },
     "md": {
       "name": "Mega Drive (ClownMDEmu)",
-      "on": false,
+      "on": true,
       "abi": {
         "arm64-v8a": {
           "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/clownmdemu_libretro_android-arm64-v8a.so.zip",
@@ -164,7 +164,7 @@
     },
     "sms": {
       "name": "Master System (SMS Plus GX)",
-      "on": false,
+      "on": true,
       "abi": {
         "arm64-v8a": {
           "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/smsplus_libretro_android-arm64-v8a.so.zip",
@@ -186,7 +186,7 @@
     },
     "gg": {
       "name": "Game Gear (SMS Plus GX)",
-      "on": false,
+      "on": true,
       "abi": {
         "arm64-v8a": {
           "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/smsplus_libretro_android-arm64-v8a.so.zip",
@@ -208,7 +208,7 @@
     },
     "pce": {
       "name": "PC Engine (Beetle PCE Fast)",
-      "on": false,
+      "on": true,
       "abi": {
         "arm64-v8a": {
           "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/mednafen_pce_fast_libretro_android-arm64-v8a.so.zip",
@@ -777,7 +777,7 @@
       "sha256": "0a0e8018dbbc8d7f8cd99f05e7cdc7b4cc9e358ecfe9377ebfb2291a84c6e310",
       "license": "MIT (code) + CC BY 4.0 (art and music)",
       "source": "https://github.com/SimonLarsen/tobutobugirl-dx",
-      "on": false
+      "on": true
     }
   ],
   "layouts": {}
