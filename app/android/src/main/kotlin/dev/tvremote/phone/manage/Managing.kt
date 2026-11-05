@@ -39,6 +39,8 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Toast
 import dev.tvremote.core.adb.AdbLink
+import dev.tvremote.phone.remote.kindOf
+import dev.tvremote.phone.remote.kindOff
 import dev.tvremote.core.web.HttpServer
 import dev.tvremote.core.manage.Manage
 import dev.tvremote.core.ontv.RemoteLabels
@@ -204,6 +206,7 @@ internal class Managing(private val a: MainActivity, root: FrameLayout) : HttpSe
     /** Shows the page for [tvHost], on [tab] when one is named ("auto", "apps"...). */
     fun open(tvHost: String?, tab: String? = null, then: String? = null) {
         if (tvHost == null) return
+        if ((a.basic?.kind ?: a.kindOf(a.entry ?: tvHost)) != dev.tvremote.core.remote.Remote.Kind.ANDROID) { a.kindOff(); return }   // LG / Samsung / Roku / VIDAA: this page works over ADB, which they lack: no connect attempt, no ADB help
         lastTab = tab; lastThen = then
         try {
             if (http == null) {

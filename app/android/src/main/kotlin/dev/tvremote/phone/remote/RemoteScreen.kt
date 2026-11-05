@@ -582,7 +582,7 @@ internal fun MainActivity.shot() {
 
 /** Menu, Input, TV settings, Guide, Live TV: keys that should open something. When the TV's screen ignores one, say so, so it does not look like a dead button. */
 internal fun MainActivity.opens(code: Int) {
-    if (basic != null) { if (code == 176) findSettings() else press(code); return }
+    if (basic != null) { if (code == 176 && kind() == dev.tvremote.core.remote.Remote.Kind.ANDROID) findSettings() else press(code); return }   // findSettings is the turn-ADB-on help: Android TV only
     val tv = tv
     if (tv == null || !tv.ready()) return
     Thread {

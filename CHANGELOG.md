@@ -4,6 +4,11 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- Phone app: on an LG, Samsung, Roku or VIDAA TV the Menu key no longer starts the "turn on ADB" help ("did Settings open?" then ADB steps and an ADB connection attempt); no ADB help or Manage screen opens for a TV without ADB.
+- Send the log page: the confirmation scrolls into view after Send.
+
 ## 0.47.0 - 2026-11-05
 
 Web 0.47.0 · Phone app 0.44.0 · TV app 0.45.0 · TV Home 0.29.0 · TV Channels 0.20.0 · TV Games 0.22.0 · TV Apps 0.6.0

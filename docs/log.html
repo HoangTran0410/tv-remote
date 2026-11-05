@@ -107,7 +107,9 @@
   setLang(root.dataset.lang);
   document.querySelectorAll(".lang button").forEach(function(b){ b.onclick = function(){ setLang(b.dataset.set); }; });
 
-  function say(el, text, kind){ el.textContent = text; el.className = "state" + (kind ? " " + kind : ""); }
+  function say(el, text, kind){ el.textContent = text; el.className = "state" + (kind ? " " + kind : "");
+    if (el.id === "sendstate" && text && el.scrollIntoView) el.scrollIntoView({ block: "center", behavior: "smooth" });   // on a phone it sits below the fold, past the send buttons
+  }
   function check(){                                                   // the log opens with "TV Remote <version>" or "TV Setup <version>" (WireLog.report)
     var t = log.value.trim();
     if (!t) return say($("logstate"), "");
