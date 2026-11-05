@@ -126,7 +126,7 @@
 
   // ---- the dialog
   var stage = document.getElementById("d-stage"), cap = document.getElementById("d-cap"), stopShow = null;
-  function bigSrc(it){ return "img/themes/" + it.id + "-big.webp"; }
+  function bigSrc(it){ return "img/themes/" + it.id + "-big.webp?v=1105"; }
   function pictureSrcs(it){
     var s = [bigSrc(it)], i = param(it.t, "i"); if (i) s.push(local(i));
     if (it.t.thumb) s.push(local(String(it.t.thumb)));

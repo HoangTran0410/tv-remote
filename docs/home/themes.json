@@ -439,7 +439,7 @@
     "shade": 35,
     "widgets": [
      "clock",
-     "calendar"
+     "weather"
     ],
     "cols": 5,
     "focus": "ring",
@@ -449,15 +449,14 @@
     "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Fpitch-night.jpg",
     "wsize": {
      "clock": "big",
-     "calendar": "big"
+     "weather": "big"
     },
     "wopt": {
      "clock": {
       "face": "digital",
       "look": "none"
      },
-     "calendar": {
-      "layout": "date",
+     "weather": {
       "look": "solid"
      }
     },
@@ -488,7 +487,6 @@
     "shade": 40,
     "widgets": [
      "lunar",
-     "calendar",
      "clock"
     ],
     "cols": 5,
@@ -499,14 +497,10 @@
     "wurl": "https://tvremote.pages.dev/home/loop.html?i=https%3A%2F%2Ftvremote.pages.dev%2Fhome%2Flanterns-red.jpg",
     "wsize": {
      "lunar": "big",
-     "calendar": "big",
-     "clock": "small"
+     "clock": "big"
     },
     "wopt": {
      "lunar": {
-      "look": "tonal"
-     },
-     "calendar": {
       "look": "tonal"
      },
      "clock": {
@@ -709,5 +703,5 @@
    }
   }
  ],
- "rev": 1793812138
+ "rev": 1793858971
 }

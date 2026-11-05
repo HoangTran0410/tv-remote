@@ -900,9 +900,18 @@ class HomeActivity : Activity() {
         while (p != null && p !== content) { y += p.top; p = p.parent as? View }
         val h = dp(48)
         tipBelow = y + row.height + dp(40) + h <= scroll.height - dp(8)
-        val at = if (tipBelow) y + row.height + dp(40) else y - h - dp(24)   // clear of the focused tile, which grows when focused
+        var at = if (tipBelow) y + row.height + dp(40) else y - h - dp(24)   // clear of the focused tile, which grows when focused
+        var x = dp(48)
+        if (!tipBelow) {                                              // above the row it lay over the widgets' lower half (8 of 16 themes, 2026-11-05): beside the gear when the bar has room
+            fun at(v: View): IntArray { val o = IntArray(2); var q: View? = v; while (q != null && q !== content) { o[0] += q.left; o[1] += q.top; q = q.parent as? View }; return o }
+            tipView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            val b = at(bar); val l = at(headLeft)
+            val bx = b[0] - dp(16) - tipView.measuredWidth
+            val leftEnd = if (headLeft.isShown && headLeft.width > 0) l[0] + headLeft.width else 0
+            if (bx >= leftEnd + dp(24)) { x = bx; at = b[1] + (bar.height - tipView.measuredHeight) / 2 }
+        }
         val lp = tipView.layoutParams as FrameLayout.LayoutParams
-        if (lp.topMargin != at) { lp.topMargin = at; tipView.requestLayout() }
+        if (lp.topMargin != at || lp.leftMargin != x) { lp.topMargin = at; lp.leftMargin = x; tipView.requestLayout() }
     }
 
     /** Shown while focus is on the first row's tiles (or on its ✕); an overlay in the scrolled page, so the grid does not move. */
