@@ -5,6 +5,7 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
 ## Unreleased
+- TV Setup Voice: Netflix, Spotify, SmartTube, TizenTube and Zing TV can now be opened by voice offline (each has a name the Vietnamese model knows, e.g. "nét phích"); TV360 in English.
 
 - Phone app: no more crash when the ADB link is checked before it finished connecting.
 - TV Setup Voice (on-TV speech) now hears searches and song or film names: a sentence the command list cannot hold used to come out as forced command words ("Ngày xưa anh nói" became "nghệ xoá hẹn noi phút"); the same sound is also decoded freely and used when the commands do not understand the grammar text. Commands stay exact and instant. A new choice in TV Setup's voice settings (the page and the TV screen): "Commands only (fast)" is the default and runs none of it; "Commands + free speech (slower, finds searches right)" turns it on. The add-on grows by about 14 MB either way (Vietnamese 39 MB, English 47 MB); a search on a weak box can take a few seconds more.

@@ -7,7 +7,7 @@ What a key or verb does is code, so a phrase can only be added to an action that
 else the copy kept, else the packed one), so a new phrase reaches them with no update. Signed with the launcher list's key
 (LAUNCHERS_KEY, default ~/.tv-remote-release/launchers.key). Run after every edit; commit the files together. Nothing here uploads.
 """
-import json, os, re, shutil, subprocess, sys
+import json, os, re, shutil, subprocess, sys, unicodedata
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LIST = os.path.join(ROOT, "docs", "voice", "phrases.json")
@@ -27,6 +27,29 @@ def fail(m):
 def strs(a, what):
     if not isinstance(a, list) or not all(isinstance(x, str) and x.strip() for x in a):
         fail(what + " must be a list of words")
+
+
+def heard(d, l, sp):
+    """Every app has a name the add-on's model can hear: Vosk drops a grammar word missing from the model's words (5 of 20 apps had
+    none, 2026-11-05: Netflix, Spotify, SmartTube, TizenTube, Zing TV). Checked against the word list the tvvoice build writes;
+    skipped, said, when that model was not built here."""
+    wl = os.path.join(ROOT, "app", "tvvoice", "build", "generated", "model-" + l, "model", "graph", "words.txt")
+    if not os.path.exists(wl):
+        print("- spoken.%s: model words not built (app/tvvoice/build.sh), app names not checked" % l)
+        return
+    vocab = {x.split(" ", 1)[0] for x in open(wl, encoding="utf-8")}
+    acc, spell = sp.get("words", {}), set(sp.get("spell", []))
+    fold = lambda w: "".join(c for c in unicodedata.normalize("NFD", w) if not unicodedata.combining(c)).replace("đ", "d")
+    def ok(name):                                            # as Phrases.spoken says it: written accents kept, else the accents map, spelled names
+        for w in name.lower().split():
+            f = fold(w)
+            if f in spell or w in vocab or (f == w and any(x in vocab for x in acc.get(w, "").split("|"))):
+                continue
+            return False
+        return True
+    deaf = [a["label"] for a in d["apps"] if not any(ok(n) for n in a["names"])]
+    if deaf:
+        fail("spoken.%s: no name the model knows for %s (add one in words it has, e.g. 'nét phích')" % (l, ", ".join(deaf)))
 
 
 def check():
@@ -70,6 +93,7 @@ def check():
             if not all(ch in sp.get("letters", {}) for ch in w):
                 fail("spoken.%s.spell: '%s' has a letter not in letters" % (l, w))
         strs(sp.get("numbers", ["x"]), "spoken.%s.numbers" % l)
+        heard(d, l, sp)
     acts = d.get("settings", {})                             # Settings pages: id -> the intent actions tried in order (Voice.Command.Setting)
     for i, al in acts.items():
         strs(al, "settings." + i)

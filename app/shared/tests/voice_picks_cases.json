@@ -11,6 +11,8 @@
         ["search cats", "null"],
         ["mở youtube", "app:com.google.android.youtube.tv"],
         ["mở smarttube", "app:org.smarttube.stable"],
+        ["mở smart túp", "app:org.smarttube.stable"],
+        ["mở tai dần túp", "app:io.gh.reisxd.tizentube.cobalt"],
         ["sơn tùng trên youtube", "search:com.google.android.youtube.tv:sơn tùng"]
       ]
     },

@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "rev": 8,
+  "rev": 9,
   "about": "Words of the spoken commands (Voice.kt, js/voice.js). What each KEY / verb DOES is code; the words are here. Accents and case do not matter (folded), 'tivi' and 'ti vi' read as 'tv'. Signed: dev/sign/sign_voice.py. An app with tube: a YouTube client the person may pick for 'YouTube' (main = the word YouTube, alt = another); its search link, when it has one, is what 'X on it' and 'search X' open.",
   "never_close": [
     "dev.tvremote.setup",
@@ -42,6 +42,8 @@
       ],
       "names": [
         "smarttube",
+        "smart túp",
+        "sờ mát túp",
         "smart tube",
         "smat tube",
         "sma tup",
@@ -58,6 +60,8 @@
       ],
       "names": [
         "tizentube",
+        "tai dần túp",
+        "ti dần túp",
         "tizen tube",
         "ti zen tube",
         "tizen tup"
@@ -71,6 +75,7 @@
       ],
       "names": [
         "netflix",
+        "nét phích",
         "net flix"
       ]
     },
@@ -81,6 +86,7 @@
       ],
       "names": [
         "spotify",
+        "spot ti phai",
         "spo ti phai"
       ]
     },
@@ -175,7 +181,8 @@
         "tv360",
         "tv 360",
         "tv ba sau khong",
-        "tv ba tram sau muoi"
+        "tv ba tram sau muoi",
+        "tv three sixty"
       ]
     },
     {
@@ -183,6 +190,7 @@
       "pkgs": [],
       "names": [
         "zing tv",
+        "dinh tv",
         "zing"
       ]
     },

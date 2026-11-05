@@ -82,8 +82,10 @@ def grammar(model_dir):
     out = []
     for t in texts:
         ws = []
-        for w in fold(t).split():
-            c = [x for x in acc.get(w, "").split("|") if x] or ([w] if w in vs else fm.get(w, [])[:1])
+        typed = t.lower().split()                                # a name written with accents keeps them ("nét phích"), as Phrases.spoken
+        for i, w in enumerate(fold(t).split()):
+            tw = typed[i] if len(typed) == len(fold(t).split()) and typed[i] != w else None
+            c = [tw] if tw else [x for x in acc.get(w, "").split("|") if x] or ([w] if w in vs else fm.get(w, [])[:1])
             if c: ws.append(c)
         if ws:
             for k in range(min(3, len(ws[0]))): out.append(" ".join(c[min(k, len(c) - 1)] for c in ws))
