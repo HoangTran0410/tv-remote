@@ -28,6 +28,7 @@ import android.widget.Toast
 class SceneActivity : Activity() {
     override fun onCreate(b: Bundle?) {
         super.onCreate(b)
+        window.decorView.layoutDirection = android.view.View.LAYOUT_DIRECTION_LTR   // supportsRtl is for Settings and dialogs (MainActivity)
         val job = Intent(this, SceneService::class.java).putExtras(intent.extras ?: Bundle())
         try {
             if (Build.VERSION.SDK_INT >= 26) startForegroundService(job) else startService(job)

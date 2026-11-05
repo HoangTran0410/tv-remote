@@ -213,12 +213,15 @@ object AdbPrompt {
      * A request to TV Setup's API on [host] ([path] with its query) with this device's [pass]. A pass with a fingerprint is only
      * ever sent over TLS to that certificate; plain HTTP is for a TV Setup too old to have it. Also the picture's relay (Tv.kt).
      */
+    /** One context per pinned certificate, so a connection after the first resumes its TLS session (the relay's touches, Tv.kt) */
+    private val pinned = java.util.concurrent.ConcurrentHashMap<String, javax.net.ssl.SSLSocketFactory>()
+
     fun openSetup(host: String, pass: String, path: String): HttpURLConnection {
         val token = pass.substringBefore(':')
         val pin = pass.substringAfter(':', "")
         val c = dev.tvremote.core.Lan.open(if (pin.isEmpty()) URL("http://$host:8765$path") else URL("https://$host:8766$path")) as HttpURLConnection
         if (c is HttpsURLConnection) {
-            c.sslSocketFactory = SSLContext.getInstance("TLS").apply { init(null, arrayOf<TrustManager>(Pin(pin)), null) }.socketFactory
+            c.sslSocketFactory = pinned.getOrPut(pin) { SSLContext.getInstance("TLS").apply { init(null, arrayOf<TrustManager>(Pin(pin)), null) }.socketFactory }
             c.hostnameVerifier = HostnameVerifier { _, _ -> true }
         }
         c.connectTimeout = 4000

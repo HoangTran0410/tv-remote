@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- RemoteWidget: the TV's name, power / mute / volume, then up to three scenes -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:background="@drawable/widget_bg" android:padding="10dp">
+    android:orientation="vertical" android:background="@drawable/widget_bg" android:padding="10dp" android:layoutDirection="ltr">
     <TextView android:id="@+id/w_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="TV Remote"
         android:textColor="#FF9AA0A6" android:textSize="12sp" android:textStyle="bold" android:singleLine="true" android:ellipsize="end" android:paddingStart="4dp" android:paddingBottom="6dp" />
     <LinearLayout android:layout_width="match_parent" android:layout_height="48dp" android:orientation="horizontal">

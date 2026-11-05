@@ -660,6 +660,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
         override fun onVideoSize(w: Int, h: Int) = this@MainActivity.onVideoSize(w, h)
         override fun onNetwork(mac: String, lan: String, tailscale: String) {}
         override fun wantsNetwork(): Boolean = false
+        override fun onPassRefused() { (entry ?: host)?.let { prefs.edit().remove("tvs:$it").apply() } }   // the next link fetches a new one (wantsPass)
     }
 
     internal var allowBox: android.app.Dialog? = null

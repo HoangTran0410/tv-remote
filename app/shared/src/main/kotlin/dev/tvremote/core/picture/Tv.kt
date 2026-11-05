@@ -102,6 +102,7 @@ class Tv(
         fun wantsNetwork(): Boolean = true                            // false: nobody uses the address (TV Setup's own session), so skip the `ip addr show`
         fun wantsPass(): Boolean = false                              // no TV Setup pass for this TV yet: fetch one while ADB works
         fun onPass(token: String) {}                                  // lets TV Setup answer "Allow USB debugging?" for us later, see AdbPrompt
+        fun onPassRefused() {}                                        // TV Setup no longer takes our pass (devices forgotten on the TV): drop it
     }
 
     companion object {
@@ -153,6 +154,7 @@ class Tv(
         /** Each TV's list_encoders, for [softFor] and the sound's codec ([soundCodec]) */
         private val encoderList = java.util.concurrent.ConcurrentHashMap<String, String>()
         private const val FIRST_FRAME_MS = 8000L
+        private const val TAP_MS = 250L                               // a finger-down held this long for its finger-up (relayTouch)
         private const val REJOIN_GAP_NS = 5_000_000_000L              // at most one join again for a key frame in 5 s (the relay's)
         /** How long a keys' session goes unused while another carries its keys before its own scrcpy-server rests: see [carry] */
         const val REST_MS = 60_000L
@@ -318,8 +320,10 @@ class Tv(
     @Volatile private var rejoin = false                              // a key frame wanted: joining again brings one (Feeds.video)
     @Volatile private var rejoinedAt = 0L                             // nanoTime of the last one: see resetVideo
     @Volatile private var noFrame = false                             // TV Setup answered but sent no picture in FIRST_FRAME_MS
-    private val touchIo = Executors.newSingleThreadExecutor()
+    private val touchIo = Executors.newSingleThreadScheduledExecutor()   // sends in order, and times a held finger-down
     private val pendingMove = java.util.concurrent.atomic.AtomicReference<org.json.JSONObject?>(null)
+    private val touchLock = Any()
+    private var heldDown: org.json.JSONObject? = null                 // a finger-down not sent yet: see relayTouch
 
     /**
      * Shows TV Setup's /api/video (Feeds.kt: 1 byte kind, 4 bytes length, the data). False when TV Setup could not be asked (not
@@ -346,7 +350,11 @@ class Tv(
             }, "tv-relay-first-frame").apply { isDaemon = true }.start()
             try {
                 val code = c.responseCode
-                if (code != 200) { WireLog.all.add("·", "picture $host TV Setup answered $code"); return shown.also { relayEnd(it, "http $code") } }
+                if (code != 200) {
+                    WireLog.all.add("·", "picture $host TV Setup answered $code")
+                    if (code == 401 || code == 403) listener.onPassRefused()   // as AdbPrompt.ask: "forgotten"; a new pass comes with the next ADB link
+                    return shown.also { relayEnd(it, "http $code") }
+                }
                 val inp = java.io.DataInputStream(java.io.BufferedInputStream(c.inputStream, 65536))
                 var bytes = 0L
                 var since = System.currentTimeMillis()
@@ -401,19 +409,43 @@ class Tv(
         if (!stopped) status("closed", why)
     }
 
-    /** A touch to TV Setup's /api/touch, in order on one thread; moves not yet sent give way to the newest. */
+    /**
+     * A touch to TV Setup's /api/touch, in order on one thread; moves not yet sent give way to the newest. Each request is a new
+     * connection (TV Setup answers one per connection), 50-300 ms apart on mobile data: a finger-down sent alone and its finger-up
+     * one request later reached the TV as a long press. So a down is held [TAP_MS]: an up in that time makes one "tap" request,
+     * a move or the time running out sends the down first, as it was.
+     */
     private fun relayTouch(d: org.json.JSONObject) {
+        relay ?: return
+        val a = d.optString("a")
+        synchronized(touchLock) {
+            when (a) {
+                "down" -> {
+                    heldDown?.let { postTouch(it) }
+                    heldDown = d
+                    try { touchIo.schedule({ synchronized(touchLock) { if (heldDown === d) { heldDown = null; postTouch(d) } } }, TAP_MS, java.util.concurrent.TimeUnit.MILLISECONDS) } catch (shuttingDown: RuntimeException) { }
+                    return
+                }
+                "up" -> heldDown?.let { down -> heldDown = null; postTouch(org.json.JSONObject().put("a", "tap").put("x", down.opt("x")).put("y", down.opt("y"))); return }
+                else -> heldDown?.let { down -> heldDown = null; postTouch(down) }
+            }
+            postTouch(d)
+        }
+    }
+
+    /** One request to /api/touch on [touchIo]; a move waiting there is replaced by the newest. */
+    private fun postTouch(d: org.json.JSONObject) {
         val pass = relay ?: return
         if (d.optString("a") == "move") { if (pendingMove.getAndSet(d) != null) return } else pendingMove.set(null)
         try {
-            touchIo.submit {
-                val msg = if (d.optString("a") == "move") pendingMove.getAndSet(null) ?: return@submit else d
+            touchIo.execute {
+                val msg = if (d.optString("a") == "move") pendingMove.getAndSet(null) ?: return@execute else d
                 try {
                     val c = dev.tvremote.core.adb.AdbPrompt.openSetup(host, pass, "/api/touch")
                     c.readTimeout = 5000; c.requestMethod = "POST"; c.doOutput = true
                     c.setRequestProperty("Content-Type", "application/json")
                     c.outputStream.use { it.write(msg.toString().toByteArray()) }
-                    c.responseCode; c.inputStream.close()             // read to the end: the connection is kept for the next one
+                    c.responseCode; c.inputStream.close()
                 } catch (ignored: Exception) { }
             }
         } catch (shuttingDown: RuntimeException) { }
@@ -464,7 +496,7 @@ class Tv(
                 val log = a.open("shell:CLASSPATH=" + REMOTE + " app_process / com.genymobile.scrcpy.Server " + VER + " scid=" + scid
                         + " tunnel_forward=true cleanup=false control=$wantControl send_dummy_byte=true send_device_meta=false clipboard_autosync=false "   // autosync on, GET_CLIPBOARD answers nothing
                         + (if (wantVideo) "video=true $video max_fps=" + fpsFor(quality, fps, soft != null, capped) + (soft?.let { " video_encoder=$it" } ?: "") else "video=false")
-                        + (if (hearing == null) " audio=false" else " audio=true audio_codec=$hearing" + (if (hearing == "opus") " audio_bit_rate=$audioBitRate" else "") + (if (sdk >= 33) " audio_source=playback" else "") + (if (share) " audio_dup=true" else ""))
+                        + (if (hearing == null) " audio=false" else " audio=true audio_codec=$hearing" + (if (hearing == "opus" || hearing == "aac") " audio_bit_rate=$audioBitRate" else "") + (if (sdk >= 33) " audio_source=playback" else "") + (if (share) " audio_dup=true" else ""))
                         // scrcpy presses POWER at start when the screen is off: TV Setup's own link, made again after a quiet
                         // update at night, turned a TV in standby on (issue #6). A person's remote still wakes it, as before
                         + (if (quiet) " power_on=false" else "")

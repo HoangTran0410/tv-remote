@@ -75,6 +75,8 @@ class RelayTest {
         override fun onVideoSize(w: Int, h: Int) { said.add("size $w x $h") }
         override fun onNetwork(mac: String, lan: String, tailscale: String) {}
         override fun wantsNetwork() = false
+        @Volatile var refused = false
+        override fun onPassRefused() { refused = true }
     }
 
     private fun tv(screen: Seen, l: Heard) = Tv(dir, { ByteArray(0) }, "127.0.0.1", screen, 1, 960, false, l, relay = "secretpass")
@@ -99,9 +101,13 @@ class RelayTest {
         val t = tv(screen, l)
         assertTrue("live", l.live.await(5, TimeUnit.SECONDS))
         assertTrue(t.ready())
-        t.touch(0, 0.25f, 0.5f); t.touch(2, 0.3f, 0.5f); t.touch(1, 0.3f, 0.5f)
-        val until = System.currentTimeMillis() + 3000
+        t.touch(0, 0.25f, 0.5f); t.touch(2, 0.3f, 0.5f); t.touch(1, 0.3f, 0.5f)   // a drag: down, the move, up
+        var until = System.currentTimeMillis() + 3000
         while (requests.count { it.startsWith("POST /api/touch") } < 2 && System.currentTimeMillis() < until) Thread.sleep(20)
+        Thread.sleep(300)
+        t.touch(0, 0.6f, 0.4f); Thread.sleep(60); t.touch(1, 0.6f, 0.4f)   // a quick tap: one request, not a down and an up apart
+        until = System.currentTimeMillis() + 3000
+        while (requests.none { it.contains("\"tap\"") } && System.currentTimeMillis() < until) Thread.sleep(20)
         hold.countDown()
         assertTrue("closed once the stream ends", l.over.await(5, TimeUnit.SECONDS))
         t.stop()
@@ -114,7 +120,8 @@ class RelayTest {
         val touches = requests.filter { it.startsWith("POST /api/touch") }.map { org.json.JSONObject(it.split('|')[2]) }
         assertEquals("down", touches.first().getString("a"))
         assertEquals(0.25, touches.first().getDouble("x"), 1e-6)
-        assertEquals("up", touches.last().getString("a"))
+        assertEquals(listOf("tap"), touches.drop(touches.indexOfFirst { it.getString("a") == "up" } + 1).map { it.getString("a") })
+        assertEquals(0.6, touches.last().getDouble("x"), 1e-6)
         assertEquals("closed", l.said.last())
     }
 
@@ -163,5 +170,6 @@ class RelayTest {
         assertEquals(1, requests.size)
         assertFalse(l.said.contains("live"))
         assertEquals("error", l.said.last())                          // the ADB session's own error, as without a relay
+        assertTrue("a refused pass is said, so the app drops it", l.refused)
     }
 }
