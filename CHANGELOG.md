@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.46.0 - 2026-11-05
+
+Web 0.46.0 · Phone app 0.43.0 · TV app 0.44.0 · TV Home 0.28.0 · TV Channels 0.19.0 · TV Games 0.21.0 · TV Apps 0.5.0
 - TV Setup Voice: Netflix, Spotify, SmartTube, TizenTube and Zing TV can now be opened by voice offline (each has a name the Vietnamese model knows, e.g. "nét phích"); TV360 in English.
 
 - Phone app: no more crash when the ADB link is checked before it finished connecting.
