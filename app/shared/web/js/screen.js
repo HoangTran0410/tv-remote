@@ -71,7 +71,7 @@ async function snapLoop(gen) {
 // over http) JMuxer makes it playable by a <video>, which buffers a little.
 const H264_Q = { 480: 0, 720: 1, 960: 2, 360: 3, 240: 4, hd: 'hd' }, H264_FPS = { 480: 15, 720: 20, 960: 20, 360: 15, 240: 15, hd: 30 };
 // ?stats=1: per-stage timestamps (wall ms) of every frame in window.VT, for measuring latency by hand; nothing is recorded otherwise.
-const VT = /[?&]stats=1/.test(location.search) ? (window.VT = { rx: [], dec: [], paint: [], jm: [], audio: [], arx: [], seq: 0 }) : null;
+const VT = /[?&]stats=1/.test(location.search) ? (window.VT = { rx: [], dec: [], paint: [], jm: [], audio: [], arx: [], agaps: [], seq: 0 }) : null;   // agaps: [time, ms of silence] per sound underrun
 const vtOff = VT ? Date.now() - performance.timeOrigin - performance.now() : 0;   // timeOrigin can sit tens of ms off the wall clock the server logs
 const vtNow = () => performance.timeOrigin + performance.now() + vtOff;
 const H264_END = new Uint8Array([0, 0, 0, 1, 9, 0xf0]);                // access unit delimiter
@@ -266,7 +266,7 @@ async function h264Loop(gen) {
   }
   const mine = player;
   streamCtl = new AbortController();
-  let why = T('screen.tv_stopped_sending');
+  let why = T('screen.tv_stopped_sending'), ended = '';
   try {
     const r = await fetch('/api/video?q=' + (H264_Q[size] ?? 1) + (tune.fps ? '&fps=' + tune.fps : '') + (tune.rate ? '&rate=' + tune.rate * 1000000 : '') + (tune.enc ? '&enc=' + tune.enc : '') + (picHand() ? '&hand=1' : ''), { signal: streamCtl.signal }); if (!r.ok) throw new Error('http');
     const rd = r.body.getReader(); let buf = new Uint8Array(0), off = 0;   // off: where the next packet starts in buf (no copy per packet)
@@ -281,9 +281,11 @@ async function h264Loop(gen) {
         if (kind === 0) { const d = new DataView(data.buffer, data.byteOffset, data.length); $('#screenbox').style.aspectRatio = d.getUint32(0) + ' / ' + d.getUint32(4); }
         else if (kind >= 1 && kind <= 3) { if (VT) VT.rx.push([kind === 1 ? -1 : ++VT.seq, vtNow(), len]); if (player === mine) mine.feed(kind, data); }
         else if (kind === 5) fellBehind();
+        else if (kind === 6) { ended = new TextDecoder().decode(data); pageSaid('picture: ended: ' + ended); }   // why the TV ended it, just before the end
       }
     }
   } catch (e) { why = T('screen.no_picture_from_tv'); }
+  if (ended) why = friendly(ended);
   if (screenOn && gen === screenGen && afterWake('screen')) { startScreen(); return; }   // this device slept, not the TV
   if (screenOn && gen === screenGen && !frames && !screenEl()) {     // never a frame: a TV with one encoder may be busy with another device
     await sleep(1000);                                                // our own scrcpy-server gone from the TV's list first

@@ -61,3 +61,11 @@ test('a launcher swap refused before anything changed says the TV kept its launc
   assert.match(en('launcher:rolledback:cast'), /^The TV kept its own home screen: /);
   assert.match(vi('launcher:rolledback:crash'), /^TV đã quay về màn hình chính của TV: Màn hình chính mới bị lỗi/);
 });
+
+test('the sound and picture ends have words, not scrcpy\'s own lines', () => {
+  const friendly = friendlyOf('en');
+  assert.match(friendly('scrcpy-server did not start on the TV: ERROR: Failed to initialize audio/opus'), /no sound encoder/);
+  assert.match(friendly('encoders: the TV did not list its video encoders'), /did not say which video encoders/);
+  assert.match(friendly('decoder'), /could not decode the TV/);
+  assert.match(friendly('scrcpy-server did not start on the TV'), /could not start sending/);
+});

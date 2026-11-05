@@ -4623,5 +4623,13 @@
   "telegram.cmd_speak": "Afficher un message sur la TV et le lire à voix haute",
   "tv_main.turn_back_on_cannot": "Pas encore actif : connectez ADB une fois pour que TV Setup obtienne l’autorisation de le réactiver",
   "guard.no_adb_standby": "Impossible d’éteindre la TV : le débogage ADB est désactivé sur cette TV",
-  "guard.no_adb_close": "Impossible de fermer {name} : le débogage ADB est désactivé sur cette TV"
+  "guard.no_adb_close": "Impossible de fermer {name} : le débogage ADB est désactivé sur cette TV",
+  "listen.refused": "La TV refuse de partager son son (Android {sdk}). Certaines TV et applis le bloquent.",
+  "listen.decoder_failed": "Ce navigateur n’a pas pu décoder le son de la TV, l’écoute s’est arrêtée.",
+  "listen.audio_blocked": "Le navigateur a coupé le son (appel ou onglet en arrière-plan). Touchez 🎧 pour réécouter.",
+  "listen.gave_up": "Impossible de garder le son de la TV connecté, l’écoute s’est arrêtée.",
+  "core.fr_sound_encoder": "Cette TV n’a pas d’encodeur audio pour envoyer son son.",
+  "core.fr_encoders": "La TV n’a pas indiqué ses encodeurs vidéo, donc pas d’image. Réessayez ou choisissez Logiciel.",
+  "core.fr_picture_decoder": "Cet appareil n’a pas pu décoder l’image de la TV. Essayez une qualité plus basse.",
+  "core.fr_scrcpy_start": "La TV n’a pas pu démarrer l’envoi. Réessayez ; sinon, redémarrez la TV."
 }

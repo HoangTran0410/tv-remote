@@ -38,6 +38,7 @@ function soundOut() {
   aout.gain.value = listenBoost();
   return aout;
 }
+let gapN = 0, gapMs = 0, gapMax = 0, gapAt = 0;                        // sound underruns (the lead ran out), told to the log every 30 s: the measure the next diagnosis needs
 let listenOn = false, listenCtl = null, actx = null, adec = null, anext = 0, abytes = 0, listenGen = 0, catchUp = false, alead = 0.08, acalm = 0, aquiet = false;
 
 async function opusHere() {
@@ -55,7 +56,10 @@ function playPcm(channels, rate) {
   channels.forEach((c, i) => buf.copyToChannel(c, i));
   const now = actx.currentTime;
   if (anext < now + 0.02) {                                          // ran dry (a stall): start again a little ahead
-    if (anext) { alead = Math.min(0.6, alead * 2); if (!listenEven()) leadKeep(alead); }
+    if (anext) {
+      const g = Math.max(0, now - anext) * 1000; gapN++; gapMs += g; gapMax = Math.max(gapMax, g); if (VT) VT.agaps.push([vtNow(), Math.round(g)]);
+      alead = Math.min(0.6, alead * 2); if (!listenEven()) leadKeep(alead);
+    }
     anext = now + alead; acalm = now;
   } else if (alead > leadBase() && now - acalm > 120) { alead = Math.max(leadBase(), alead * 0.8); acalm = now; if (!listenEven()) leadKeep(alead); }
   // After a stall the network hands over the late sound in one burst; played in turn, it would keep the whole stall as delay
@@ -74,12 +78,43 @@ function setListenUi(on, text) {
   put('#listeninfo', 'hidden', !text); put('#listeninfo', 'textContent', text || '');
 }
 
+// A decoder that fails is closed for good: made again from the same header (cheap), twice within 30 s; then listening stops and says so
+let decFails = 0, decFailAt = 0;
+function openDec(head, fmt, gen) {
+  if (adec) { try { adec.close(); } catch {} }
+  adec = new AudioDecoder({ output: (a) => {
+    const chs = []; for (let i = 0; i < a.numberOfChannels; i++) { const c = new Float32Array(a.numberOfFrames); a.copyTo(c, { planeIndex: i, format: 'f32-planar' }); chs.push(c); }
+    playPcm(chs, a.sampleRate); a.close();
+  }, error: (e) => {
+    if (gen !== listenGen) return;
+    pageSaid('listen: AudioDecoder ' + (e && e.message || e || 'failed'));
+    const now = Date.now(); if (now - decFailAt > 30000) decFails = 0; decFailAt = now;
+    if (++decFails <= 2) { try { openDec(head, fmt, gen); return; } catch (x) { pageSaid('listen: AudioDecoder again: ' + (x && x.message || x)); } }
+    stopListen(T('listen.decoder_failed'));
+  } });
+  adec.configure({ codec: 'opus', sampleRate: fmt.rate, numberOfChannels: fmt.ch, description: head });
+}
+// The browser can stop the sound under a running page (an iPhone call, the tab in the background): resume, and say so once if it cannot
+let audioSaid = false;
+function watchAudio() {
+  if (!actx || actx.state === 'running') { audioSaid = false; return; }
+  if (!listenOn) return;
+  actx.resume().catch(() => {});
+  setTimeout(() => {
+    if (!listenOn || !actx || actx.state === 'running' || audioSaid) return;
+    audioSaid = true; pageSaid('listen: AudioContext ' + actx.state); toast(T('listen.audio_blocked'));
+  }, 1500);
+}
+
 async function startListen(share) {
   const gen = ++listenGen;
   listenShared = !!share; try { localStorage.setItem('listenShare', listenShared ? '1' : '0'); } catch {}
   listenOn = true; setListenUi(true, T('listen.opening'));
   try {
-    actx = actx || new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+    if (!actx) {
+      actx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+      actx.addEventListener('statechange', watchAudio);
+    }
     if (navigator.audioSession) navigator.audioSession.type = 'playback';   // iPhone: play even with the silent switch on
     await actx.resume();                                              // inside the tap: browsers start sound only then
   } catch { stopListen(T('listen.no_browser_sound')); return; }
@@ -103,11 +138,7 @@ async function startListen(share) {
         else if (kind === 3 && new TextDecoder().decode(data) === 'tvsilent') listenTvLoud = false;
         else if (kind === 0) { const d = new DataView(data.buffer); fmt = { codec: data[0], rate: d.getUint32(1), ch: data[5] }; }
         else if (kind === 1 && fmt.codec === 1) {
-          adec = new AudioDecoder({ output: (a) => {
-            const chs = []; for (let i = 0; i < a.numberOfChannels; i++) { const c = new Float32Array(a.numberOfFrames); a.copyTo(c, { planeIndex: i, format: 'f32-planar' }); chs.push(c); }
-            playPcm(chs, a.sampleRate); a.close();
-          }, error: () => {} });
-          adec.configure({ codec: 'opus', sampleRate: fmt.rate, numberOfChannels: fmt.ch, description: data });
+          openDec(data, fmt, gen);
         } else if (kind === 2) {
           aquiet = false;
           if (VT) VT.arx.push([vtNow(), data.length]);
@@ -118,7 +149,10 @@ async function startListen(share) {
             playPcm(chs, fmt.rate);
           }
         } else if (kind === 6) { anext = 0; aquiet = true; }           // the TV went silent and nothing comes until it is not: no stall, no longer lead
-        else if (kind === 5) { why = new TextDecoder().decode(data) === 'unsupported' ? T('listen.needs_android_11') : friendly(new TextDecoder().decode(data)); }
+        else if (kind === 5) {
+          const w = new TextDecoder().decode(data);
+          why = w === 'unsupported' ? T('listen.needs_android_11') : w.startsWith('refused:') ? T('listen.refused', { sdk: w.slice(8) }) : friendly(w);   // refused: Android 11+ whose capture was refused
+        }
       }
     }
   } catch (e) { if (gen !== listenGen) return; why = e.name === 'AbortError' ? '' : T('listen.no_sound', { why: friendly(e.message) }); }
@@ -134,7 +168,9 @@ function stopListen(msg) {
 }
 
 setInterval(() => {                                                    // what it costs, next to the button
-  if (listenOn && (abytes || aquiet)) setListenUi(true, T('listen.listening_here') + ' · ' + (listenShared || listenTvLoud ? T('listen.tv_has_sound') : T('listen.tv_quiet')) + (listenHq() ? ' · ✨ ' + T('listen.high_quality') : '') + ' · ' + Math.round(abytes / 1024) + ' KB/s');
+  if (gapN) { if (!gapAt) gapAt = Date.now(); else if (Date.now() - gapAt > 30000) { pageSaid('listen: ' + gapN + ' sound gaps, ' + Math.round(gapMs) + ' ms in all, longest ' + Math.round(gapMax) + ' ms'); gapN = gapMs = gapMax = 0; gapAt = Date.now(); } }
+  if (listenOn && actx && actx.state !== 'running') setListenUi(true, T('listen.audio_blocked'));
+  else if (listenOn && (abytes || aquiet)) setListenUi(true, T('listen.listening_here') + ' · ' + (listenShared || listenTvLoud ? T('listen.tv_has_sound') : T('listen.tv_quiet')) + (listenHq() ? ' · ✨ ' + T('listen.high_quality') : '') + ' · ' + Math.round(abytes / 1024) + ' KB/s');
   abytes = 0;
 }, 1000);
 // 🎧: on or off at once, the way used last (picked with the chip under the header, once it plays); the session restarts either way

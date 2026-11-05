@@ -106,4 +106,16 @@ class SoundQueueTest {
         assertTrue(learnt >= 48000 * 15 / 100)
         assertTrue(next.gaps < maxOf(1, first.gaps)); assertTrue(even.gaps < maxOf(1, first.gaps))
     }
+
+    @Test fun gapsAreCountedForTheLog() {
+        val q = SoundQueue(4800, 48000)
+        assertEquals(null, q.takeGaps())
+        var t = 0L
+        repeat(5) { q.next(960, 0, t); t += 20 }                      // the first packets are held until [target] is here
+        repeat(60) { q.next(960, 960, t); t += 20 }                  // steady: the track always has a packet queued
+        q.next(960, 0, t + 2000)                                     // the link stalled 2 s: the track ran dry
+        val said = q.takeGaps()
+        assertTrue(said, said != null && said.startsWith("1 gaps") && said.contains("longest 19"))
+        assertEquals(null, q.takeGaps())
+    }
 }

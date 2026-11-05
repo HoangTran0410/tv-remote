@@ -79,6 +79,8 @@ class Tv(
         fun end() {}
         /** true: plays AAC too, so a TV with no Opus encoder sends AAC ([soundCodec]) */
         val aac: Boolean get() = false
+        /** true: plays raw PCM too, so a TV with no Opus (and no AAC the sink plays) sends PCM ([soundCodec]) */
+        val raw: Boolean get() = false
         /** the codec scrcpy was asked for ("opus", "aac", "raw"), before its config packet */
         fun codec(name: String) {}
     }
@@ -133,11 +135,16 @@ class Tv(
          * AAC ([aacOk]). An NVIDIA Shield (Android 11) lists only AAC and FLAC: asked for Opus, scrcpy-server died at once
          * ("Failed to initialize audio/opus") and the phone's 🎧 stayed silent (2026-11-05).
          */
-        fun soundCodec(asked: String?, list: String?, aacOk: Boolean): String? {
-            if (asked != "opus" || !aacOk || list == null || !list.contains("--audio-codec=")) return asked   // no list: as asked
+        fun soundCodec(asked: String?, list: String?, aacOk: Boolean, rawOk: Boolean = false): String? {
+            if (asked != "opus" || list == null || !list.contains("--audio-codec=")) return asked   // no list: as asked
             if (list.contains("--audio-codec=opus")) return asked
-            return if (list.contains("--audio-codec=aac")) "aac" else asked
+            if (aacOk && list.contains("--audio-codec=aac")) return "aac"
+            return if (rawOk) "raw" else asked                        // the web page: PCM, which needs no encoder on the TV
         }
+
+        /** The words the page and the phone get when the TV's sound capture is refused: "refused:<sdk>" (the phone reads the sdk too). */
+        fun refusedWord(sdk: Int) = "refused:$sdk"
+
 
         private const val MOUSE_ID: Short = 1
         private const val MOUSE_TICK_MS = 8                          // at most ~125 writes a second
@@ -244,6 +251,7 @@ class Tv(
     @Volatile private var stopped = false
     @Volatile private var stalled = false                             // the encoder sent no picture: once more with the software one
     @Volatile private var framed = false
+    @Volatile private var sdkSeen = 0                                 // the TV's Android SDK, for the words of a refused capture
     private val quietLock = Any()
     @Volatile private var quieted = false                             // this session turned the TV's volume to 0 (PrivateListen)
     @Volatile private var quietChecking = false
@@ -475,6 +483,7 @@ class Tv(
             if (Trace.on) Trace.log("s.pushed")
             var hearing = audio
             val sdk = facts.sdk
+            sdkSeen = sdk
             val share = hearing != null && audioShare && sdk >= 33
             if (hearing != null && audioShare && !share && sdk >= 30) status("audio", "noshare")
             if (hearing != null && sdk < 30) {                        // scrcpy captures sound from Android 11
@@ -482,8 +491,8 @@ class Tv(
                 hearing = null
                 if (!wantVideo && !wantControl) throw IOException("this TV cannot send its sound (Android 11 or newer is needed)")
             }
-            if (hearing == "opus" && audioSink?.aac == true) {
-                hearing = soundCodec(hearing, encoders(a), true)
+            if (hearing == "opus" && (audioSink?.aac == true || audioSink?.raw == true)) {
+                hearing = soundCodec(hearing, encoders(a), audioSink.aac, audioSink.raw)
                 if (hearing != "opus") WireLog.all.add("·", "picture $host no Opus encoder on the TV: sound as $hearing")
             }
             hearing?.let { audioSink?.codec(it) }
@@ -602,6 +611,11 @@ class Tv(
         Thread({
             try { Thread.sleep(FIRST_FRAME_MS) } catch (e: InterruptedException) { return@Thread }
             if (stopped || framed) return@Thread
+            if (encoders(a) == null) {                                // list_encoders did not answer: nothing to switch to, and the picture would wait for ever
+                status("error", "encoders: the TV did not list its video encoders")
+                video.close()
+                return@Thread
+            }
             val soft = softFor(a) ?: return@Thread
             if (stopped || framed) return@Thread
             WireLog.all.add("·", "picture $host no frame from the hardware encoder: $soft")
@@ -628,7 +642,7 @@ class Tv(
         encoderList[host]?.let { return it }
         val kept = File(dir, "encoders-" + host.replace(Regex("[^A-Za-z0-9.-]"), "_") + ".txt")
         try { if (kept.isFile) return kept.readText().also { encoderList[host] = it } } catch (ignored: IOException) { }
-        val list = try { a.shell("CLASSPATH=$REMOTE app_process / com.genymobile.scrcpy.Server $VER cleanup=false list_encoders=true 2>&1", 15000) } catch (e: IOException) { return null }   // cleanup=false: or scrcpy deletes its jar
+        val list = try { a.shell("CLASSPATH=$REMOTE app_process / com.genymobile.scrcpy.Server $VER cleanup=false list_encoders=true 2>&1", 15000) } catch (e: IOException) { WireLog.all.add("·", "picture $host list_encoders failed: ${e.message}"); return null }   // cleanup=false: or scrcpy deletes its jar
         if (list.contains("--video-codec=") || list.contains("--audio-codec=")) {
             encoderList[host] = list
             try { kept.writeText(list) } catch (ignored: IOException) { }
@@ -752,7 +766,10 @@ class Tv(
         val head = ByteArray(12)
         s.readFully(head, 0, 4)
         val id = ByteBuffer.wrap(head, 0, 4).int
-        if (id == 0 || id == 1) { status("audio", "unsupported"); return }   // e.g. the TV refused the capture
+        if (id == 0 || id == 1) {                                     // the TV refused the capture (a protected app, no permission, a vendor's build)
+            WireLog.all.add("·", "picture $host sound capture refused (codec id $id, Android sdk $sdkSeen)")
+            status("audio", refusedWord(sdkSeen)); return
+        }
         var bytes = 0L
         var heard = false
         var voiced = false                                            // something but silence in this window (raw: a non-zero sample; Opus: judged by the rate)

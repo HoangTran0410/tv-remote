@@ -25,6 +25,7 @@ class Feeds {
     @Volatile private var config: ByteArray? = null
     @Volatile private var opusHead: ByteArray? = null
     @Volatile private var notice: CatchUp.Packet? = null
+    @Volatile private var rawFallback = false                         // an Opus session the TV could not encode: PCM instead (the page plays both)
     @Volatile private var hush: Hush? = null                          // raw PCM's silences left out (Opus makes almost nothing of them)
 
     /** How many browsers of this server watch and listen now. */
@@ -44,7 +45,8 @@ class Feeds {
 
     /**
      * Kinds: 0 size (width, height), 1 codec config, 2 key frame, 3 frame, 4 nothing new, 5 it fell behind and caught up
-     * ([CatchUp]: the page steps the picture down after a few). A still picture sends nothing, so kind 4 goes out now and
+     * ([CatchUp]: the page steps the picture down after a few), 6 why the picture ended (words, just before the end; the page
+     * shows them through friendly()). A still picture sends nothing, so kind 4 goes out now and
      * then: that is how we notice the browser has left, and stop the encoder on the TV once the last one has.
      * [key]: what [make] asks for. A browser asking the same joins the running session (a key frame is asked for it); one
      * asking otherwise (a quality picked, or stepped down) restarts it, and every browser goes on with the new picture.
@@ -73,7 +75,12 @@ class Feeds {
         var self: Tv? = null
         val mine = { self != null && viewer === self }
         val v = make(object : Tv.Listener {
-            override fun onStatus(key: String, detail: String) { if ((key == "closed" || key == "error") && mine()) watchers.forEach { it.put(endPacket) } }
+            override fun onStatus(key: String, detail: String) {
+                if ((key == "closed" || key == "error") && mine()) {
+                    if (key == "error") { val p = packet(6, detail.toByteArray()); watchers.forEach { it.put(p) } }   // why, before the end
+                    watchers.forEach { it.put(endPacket) }
+                }
+            }
             override fun onVideoSize(w: Int, h: Int) {
                 val p = packet(0, ByteBuffer.allocate(8).putInt(w).putInt(h).array())
                 size = p; watchers.forEach { it.put(p) }
@@ -105,7 +112,7 @@ class Feeds {
     @Synchronized fun sound(key: String, hq: Boolean, opus: Boolean, make: (Tv.Listener, Tv.AudioSink) -> Tv): HttpServer.Response {
         val q = LinkedBlockingQueue<CatchUp.Packet>()
         val whole = opus || hq
-        q.add(packet(0, ByteBuffer.allocate(6).put((if (opus) 1 else 2).toByte()).putInt(if (whole) 48000 else 24000).put((if (whole) 2 else 1).toByte()).array()))
+        q.add(packet(0, ByteBuffer.allocate(6).put((if (opus && !rawFallback) 1 else 2).toByte()).putInt(if (whole) 48000 else 24000).put((if (whole) 2 else 1).toByte()).array()))
         val ear = Ear(q, if (whole) null else Downmix())
         val running = hearer?.takeIf { key == soundKey && !it.stopped() }
         if (running != null) {
@@ -122,7 +129,7 @@ class Feeds {
 
     private fun startSound(key: String, opus: Boolean, make: (Tv.Listener, Tv.AudioSink) -> Tv) {
         hearer?.stop()                                                // a browser asking another codec: every listener goes on with the new one
-        soundKey = key; opusHead = null; notice = null
+        soundKey = key; opusHead = null; notice = null; rawFallback = false
         val quiet = if (opus) null else Hush()
         hush = quiet
         var self: Tv? = null
@@ -130,22 +137,32 @@ class Feeds {
         val h = make(object : Tv.Listener {
             override fun onStatus(key: String, detail: String) {
                 if (!mine()) return
-                if (key == "audio") { val p = if (detail == "noshare" || detail == "tvsilent" || detail == "tvloud") packet(3, detail.toByteArray()) else packet(5, "unsupported".toByteArray()); notice = p; listeners.forEach { it.q.add(p) } }
+                if (key == "audio") { val p = if (detail == "noshare" || detail == "tvsilent" || detail == "tvloud") packet(3, detail.toByteArray()) else packet(5, detail.toByteArray()); notice = p; listeners.forEach { it.q.add(p) } }   // else "unsupported" (Android 10-) or "refused:<sdk>"
                 if (key == "closed" || key == "error") listeners.forEach { if (key == "error") it.q.add(packet(5, detail.toByteArray())); it.q.add(endPacket) }
             }
             override fun onVideoSize(w: Int, h: Int) { }
             override fun onNetwork(mac: String, lan: String, tailscale: String) { }
-        }, Tv.AudioSink { config, data ->
-            if (config) { if (opus) { opusHead = data; listeners.forEach { it.q.add(packet(1, data)) } }; return@AudioSink }
+        }, object : Tv.AudioSink {
+          override val raw: Boolean get() = opus                       // a TV with no Opus encoder: PCM, which the page plays at once
+          override fun codec(name: String) {
+            if (opus && name == "raw") {                              // the format said Opus; now it is PCM as captured (48 kHz stereo)
+                rawFallback = true
+                val p = packet(0, ByteBuffer.allocate(6).put(2).putInt(48000).put(2).array())
+                listeners.forEach { it.q.add(p) }
+            }
+          }
+          override fun audio(config: Boolean, data: ByteArray) {
+            if (config) { if (opus) { opusHead = data; listeners.forEach { it.q.add(packet(1, data)) } }; return }
             when (quiet?.feed(data)) {
-                Hush.HELD -> return@AudioSink
-                Hush.START -> { val p = packet(6, end); listeners.forEach { it.q.add(p) }; return@AudioSink }
+                Hush.HELD -> return
+                Hush.START -> { val p = packet(6, end); listeners.forEach { it.q.add(p) }; return }
             }
             val now = System.currentTimeMillis()
             for (e in listeners) {
                 if (e.q.size > 200) { if (e.q.size < 210) e.q.add(endPacket) }   // this browser cannot keep up: it goes, not the others
                 else e.q.add(CatchUp.Packet(2, CatchUp.packet(2, e.mix?.feed(data) ?: data), now))
             }
+          }
         })
         self = h
         hearer = h

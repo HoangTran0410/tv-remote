@@ -38,4 +38,13 @@ class SoftEncoderTest {
         assertEquals("opus", Tv.soundCodec("opus", null, aacOk = true))      // no list: as asked
         assertEquals("raw", Tv.soundCodec("raw", shield, aacOk = true))
     }
+
+    @Test fun webPageWithNoOpusAndNoAacGetsPcm() {
+        val flacOnly = "--audio-codec=flac --audio-encoder=OMX.google.flac.encoder (hybrid)"
+        assertEquals("raw", Tv.soundCodec("opus", flacOnly, aacOk = false, rawOk = true))   // the web page: scrcpy would die on Opus
+        assertEquals("raw", Tv.soundCodec("opus", shield, aacOk = false, rawOk = true))
+        assertEquals("aac", Tv.soundCodec("opus", shield, aacOk = true, rawOk = true))      // a sink that plays AAC keeps it
+        assertEquals("opus", Tv.soundCodec("opus", null, aacOk = false, rawOk = true))      // no list: as asked
+        assertEquals("refused:34", Tv.refusedWord(34))
+    }
 }

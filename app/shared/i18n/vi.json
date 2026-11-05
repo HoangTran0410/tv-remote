@@ -4449,5 +4449,13 @@
  "telegram.cmd_speak": "Hiện lời nhắn trên TV và đọc to",
  "tv_main.turn_back_on_cannot": "Chưa bật được: kết nối ADB một lần để TV Setup có quyền tự bật lại",
  "guard.no_adb_standby": "Không tắt được TV: ADB đang tắt. Bật Gỡ lỗi ADB trên TV",
- "guard.no_adb_close": "Không đóng được {name}: ADB đang tắt trên TV"
+ "guard.no_adb_close": "Không đóng được {name}: ADB đang tắt trên TV",
+ "listen.refused": "TV từ chối chia sẻ tiếng (Android {sdk}). Một số TV hoặc app chặn việc này.",
+ "listen.decoder_failed": "Trình duyệt không giải mã được tiếng từ TV nên đã dừng nghe.",
+ "listen.audio_blocked": "Trình duyệt đã tắt tiếng (cuộc gọi, hoặc tab chạy nền). Chạm 🎧 để nghe lại.",
+ "listen.gave_up": "Không giữ được kết nối tiếng với TV nên đã dừng nghe.",
+ "core.fr_sound_encoder": "TV này không có bộ mã hóa tiếng phù hợp để gửi tiếng.",
+ "core.fr_encoders": "TV không cho biết nó có bộ mã hóa hình nào, nên chưa có hình. Thử lại hoặc chọn Phần mềm.",
+ "core.fr_picture_decoder": "Máy này không giải mã được hình từ TV. Thử hạ chất lượng hình.",
+ "core.fr_scrcpy_start": "TV không bật được phần truyền hình. Thử lại; nếu vẫn lỗi, khởi động lại TV."
 }
