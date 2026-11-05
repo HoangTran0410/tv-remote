@@ -58,9 +58,17 @@ async function talk() {
   catch (e) { talking = null; mic.getTracks().forEach((t) => t.stop()); if (ac) ac.close(); toast(T('remote.error_why', { why: e.message || e })); return; }
   const t0 = performance.now();
   let id = null, sent = Promise.resolve(), held = [], heard = 0, quiet = 0, done = false, dropped = false;
+  let warned = false;
+  const warn = (text) => { if (!warned) { warned = true; toast(text); } };   // one message for a run of failed posts
   const send = (pcm, end) => {                                     // one after another: the TV plays them in the order sent
-    sent = sent.then(() => fetch('/api/voice?do=' + (end ? 'end' : 'data') + '&id=' + id,
-      { method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: pcm }).catch(() => {}));
+    sent = sent.then(async () => {
+      try {
+        const r = await fetch('/api/voice?do=' + (end ? 'end' : 'data') + '&id=' + id,
+          { method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: pcm });
+        if (!r.ok) { let e = r.statusText; try { e = (await r.json()).error || e; } catch {} warn(T('common.error_msg', { msg: friendly(e) })); return; }
+        if (end && !warned) toast(T('remote.talk_sent'));          // said only when the TV took the end
+      } catch { warn(T('core.server_unreachable')); }
+    });
   };
   const stop = (drop) => {
     if (done) return;
@@ -68,7 +76,7 @@ async function talk() {
     node.disconnect(); src.disconnect(); mic.getTracks().forEach((t) => t.stop()); ac.close();
     if (id === null) return;                                       // not started yet: the start's answer finishes it
     if (drop) api('/api/key', { key: 'BACK' }, true);              // no end: the TV would act on the half heard; Back shuts it
-    else { send(new Uint8Array(0), true); toast(T('remote.talk_sent')); }
+    else send(new Uint8Array(0), true);
   };
   talking = { stop }; lit(true);
   hearOpen({ done: () => stop(), cancel: () => stop(true) }, mic);
@@ -88,5 +96,5 @@ async function talk() {
   if (!r) { held = []; stop(true); return; }
   if (dropped) { api('/api/key', { key: 'BACK' }, true); return; } // cancelled while the TV was opening its Assistant
   id = r.id; held.forEach((p) => send(p)); held = [];
-  if (done) { send(new Uint8Array(0), true); toast(T('remote.talk_sent')); }
+  if (done) send(new Uint8Array(0), true);
 }

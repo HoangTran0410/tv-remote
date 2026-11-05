@@ -46,8 +46,16 @@ internal fun MainActivity.openLink(link: String) {
                 // too old is not missing: the fix is the update, in the Manage screen's TV Channels card
                 ui.post { say(T(if (r == Channels.Play.OLD) "core.fr_channels_old" else "remote.stream_needs_channels"), false) }
             }
-            tv.shell("am start -a android.intent.action.VIEW -d " + Adb.q(link))
-        } catch (ignored: Exception) { }
+            val out = tv.shell("am start -a android.intent.action.VIEW -d " + Adb.q(link))
+            // "Error: Activity not started, unable to resolve Intent": no app on the TV opens it (the test Scenes.link uses)
+            if (out.contains("Error") || out.lowercase().contains("unable to resolve")) {
+                dev.tvremote.core.WireLog.all.add("·", "open $link: " + out.trim().take(120))
+                ui.post { say(dev.tvremote.core.Errors.say(IllegalArgumentException("the TV has no app that can open this"), dev.tvremote.core.Words.lang), true) }
+            }
+        } catch (e: Exception) {
+            dev.tvremote.core.WireLog.all.add("·", "open $link: $e")
+            ui.post { say(dev.tvremote.core.Errors.say(e, dev.tvremote.core.Words.lang), true) }
+        }
     }.start()
 }
 
