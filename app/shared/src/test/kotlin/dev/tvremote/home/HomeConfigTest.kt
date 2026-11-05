@@ -674,7 +674,7 @@ class HomeConfigTest {
     }
 
     @Test fun marketAndNewsCardsHaveTheirOptionsAndOwnFeeds() {
-        assertEquals(listOf("size", "look", "layout", "show", "btc"), HomeConfig.options("market").map { it.id })
+        assertEquals(listOf("size", "look", "layout", "show", "btc", "fuel"), HomeConfig.options("market").map { it.id })
         assertEquals(listOf("size", "look", "src"), HomeConfig.options("news").map { it.id })
         assertTrue("market" in HomeConfig.WIDGETS && "news" in HomeConfig.WIDGETS)
         val c = HomeConfig.clean(JSONObject().put("feeds", JSONArray(listOf("https://a.x/r.xml", "ftp://no", "https://a.x/r.xml", "https://b.x/1", "https://b.x/2", "https://b.x/3", "https://b.x/4", "javascript:1"))))

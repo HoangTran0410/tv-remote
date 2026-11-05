@@ -33,6 +33,7 @@ internal const val GOLD_BAR = 0xFFF2C14E.toInt()
 internal const val C_USD = 0xFF4CAF7A.toInt(); internal const val C_EUR = 0xFF5B8DEF.toInt(); internal const val C_JPY = 0xFFEF6B6B.toInt()
 internal const val C_KRW = 0xFF7C8CF8.toInt(); internal const val C_CNY = 0xFFE5534B.toInt(); internal const val C_GBP = 0xFFB07CF2.toInt()
 internal const val C_BTC = 0xFFF7931A.toInt()
+internal const val C_FUEL = 0xFF5BB8E8.toInt()
 internal val SYMBOL = mapOf("USD" to ("$" to C_USD), "EUR" to ("€" to C_EUR), "JPY" to ("¥" to C_JPY), "KRW" to ("₩" to C_KRW),
     "CNY" to ("¥" to C_CNY), "GBP" to ("£" to C_GBP), "BTC" to ("₿" to C_BTC))
 
@@ -58,7 +59,13 @@ internal fun changeChip(c: android.content.Context, d: Float, pct: Double, size:
 /** One row of the widget: a badge, a muted name, the one figure in big tabular type on the right, and the change since yesterday. */
 internal class Line(val kind: String, val key: String, val icon: Int, val sign: String, val tint: Int, val name: String, val value: String, val pct: Double?)
 
-internal fun Widgets.lines(m: Market.Snap, show: String, btc: Boolean): List<Line> {
+internal fun Widgets.marketLines(m: Market.Snap) = lines(m, opt("market", "show"), opt("market", "btc") == "on", opt("market", "fuel") == "on")
+
+/** The fuel rows (RON 95, E5, diesel), VND per litre, each with its change since the price before (fuel moves about once a week). */
+internal fun fuelRows(f: Market.Fuel): List<Triple<String, Int, Long>> =
+    listOf(Triple("f_ron95", R.string.mk_ron95, f.ron95), Triple("f_e5", R.string.mk_e5, f.e5), Triple("f_do", R.string.mk_diesel, f.diesel)).filter { it.third > 0 }
+
+internal fun Widgets.lines(m: Market.Snap, show: String, btc: Boolean, fuel: Boolean = false): List<Line> {
     val tr = a.getString(R.string.mk_tr)
     fun g(key: String, name: Int, sell: Long) = Line("gold", key, R.drawable.ic_gold, "", GOLD_BAR, a.getString(name), fmtMil(sell) + " " + tr, Market.trend(a, key, sell.toDouble()))
     val gold = if (show == "rates") emptyList() else m.gold?.let { listOf(g("sjc", R.string.mk_sjc, it.sjcSell), g("ring", R.string.mk_ring, it.ringSell)) }.orEmpty()
@@ -67,7 +74,8 @@ internal fun Widgets.lines(m: Market.Snap, show: String, btc: Boolean): List<Lin
         Line("rate", r.code, 0, sign, col, r.code, fmtVnd(r.sell) + " ₫", Market.trend(a, r.code, r.sell))
     }
     val coin = if (btc) m.btc?.let { b -> Line("btc", "BTC", 0, "₿", SYMBOL.getValue("BTC").second, "BTC", "$" + String.format(Locale.getDefault(), "%,.0f", b.usd), b.pct) }?.let { listOf(it) }.orEmpty() else emptyList()
-    return gold + rates.take(1) + coin + rates.drop(1)
+    val oil = if (fuel) m.fuel?.let { f -> fuelRows(f).map { (k, n, v) -> Line("fuel", k, R.drawable.ic_fuel, "", C_FUEL, a.getString(n), fmtVnd(v.toDouble()) + " ₫", Market.sinceChange(a, k, v.toDouble())) } }.orEmpty() else emptyList()
+    return gold + oil + rates.take(1) + coin + rates.drop(1)                    // gold, then fuel: the big size shows SJC, ring, RON 95, E5
 }
 
 private fun Widgets.updated(m: Market.Snap) = a.getString(R.string.mk_upd, hm(m.at))
@@ -92,19 +100,19 @@ internal fun Widgets.marketFull(widget: LinearLayout, f: Facts) {
     if (m == null || m.empty) { widget.addView(head(a.getString(R.string.w_market), "")); widget.addView(note(a.getString(R.string.mk_none))); return }
     widget.gravity = Gravity.CENTER_VERTICAL
     widget.addView(head(a.getString(R.string.w_market), hm(m.at)))
-    val l = lines(m, opt("market", "show"), opt("market", "btc") == "on").take(4)
+    val l = marketLines(m).take(4)
     val box = LinearLayout(a).apply { orientation = VERTICAL; gravity = Gravity.CENTER_VERTICAL }
     for (x in l) box.addView(priceRow(x, true, l.size >= 4), LayoutParams(-1, 0, 1f))
     widget.addView(box, LayoutParams(-1, 0, 1f).apply { topMargin = dp(4) })
 }
 
-/** Half the height, or a narrow column: two prices (gold, then the dollar) and the time. */
+/** Half the height, or a narrow column: two prices (gold, then RON 95 when fuel is on, else the dollar). */
 internal fun Widgets.marketHalf(widget: LinearLayout, f: Facts) {
     val m = f.market
     widget.gravity = Gravity.CENTER_VERTICAL
     if (m == null || m.empty) { widget.addView(head(a.getString(R.string.w_market), "")); widget.addView(note(a.getString(R.string.mk_none))); return }
-    val l = lines(m, opt("market", "show"), opt("market", "btc") == "on")
-    val pick = (l.filter { it.kind == "gold" }.take(1) + l.filter { it.kind == "rate" }.take(1) + l.filter { it.kind == "btc" }).ifEmpty { l }.take(2)
+    val l = marketLines(m)
+    val pick = (l.filter { it.kind == "gold" }.take(1) + l.filter { it.kind == "fuel" }.take(1) + l.filter { it.kind == "rate" }.take(1) + l.filter { it.kind == "btc" }).ifEmpty { l }.take(2)
     for ((i, x) in pick.withIndex()) widget.addView(priceRow(x, false), LayoutParams(-1, -2).apply { if (i > 0) topMargin = dp(8) })
 }
 
@@ -113,7 +121,7 @@ internal fun Widgets.marketTicker(widget: LinearLayout, f: Facts, big: Boolean) 
     val m = f.market
     widget.gravity = Gravity.CENTER_VERTICAL
     if (m == null || m.empty) { widget.addView(note(a.getString(R.string.mk_none))); return }
-    val l = lines(m, opt("market", "show"), opt("market", "btc") == "on")
+    val l = marketLines(m)
     val moving = Motion.on && !Motion.calm
     val sep = "   ·   "
     val parts = l.map { it.name + " " + it.value }

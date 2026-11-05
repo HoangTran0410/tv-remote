@@ -179,7 +179,7 @@ class NewsActivity : Activity() {
 }
 
 /**
- * The Market widget's detail, on OK: every price with buy and sell, the time of the last update and the sources. The widget shows one
+ * The Market widget's detail, on OK: every price with buy and sell (fuel: one retail price per litre), the time of the last update and the sources. The widget shows one
  * figure per row; this is where both live.
  */
 class MarketActivity : Activity() {
@@ -224,10 +224,16 @@ class MarketActivity : Activity() {
             }
             fun rate(r: Market.Rate) { val s = SYMBOL[r.code]
                 line(0, s?.first ?: r.code, s?.second ?: Color.WHITE, r.code, if (r.buy > 0) fmtVnd(r.buy) + " ₫" else "", fmtVnd(r.sell) + " ₫", Market.trend(this, r.code, r.sell)) }
+            val fuel = m.fuel?.takeIf { dev.tvremote.home.HomeConfig.optValue(dev.tvremote.home.Store.get(this), "market", "fuel") == "on" }   // the widget's "fuel" switch
+            fuel?.let { f ->
+                panel.addView(label(getString(R.string.mk_fuel), 14f, DIMC).apply { setPadding(dpx(12), dpx(10), 0, 0) })
+                for ((k, n, v) in fuelRows(f)) line(R.drawable.ic_fuel, "", C_FUEL, getString(n), "", fmtVnd(v.toDouble()) + " ₫", Market.sinceChange(this, k, v.toDouble()))
+                if (m.rates.isNotEmpty() || m.btc != null) panel.addView(label(getString(R.string.home_ov_rates), 14f, DIMC).apply { setPadding(dpx(12), dpx(10), 0, 0) })   // the rates below are not fuel
+            }
             m.rates.take(1).forEach { rate(it) }
             m.btc?.let { c -> line(0, "₿", SYMBOL.getValue("BTC").second, "BTC", "", "$" + String.format(Locale.getDefault(), "%,.0f", c.usd), c.pct) }
             m.rates.drop(1).forEach { rate(it) }
-            val srcs = listOfNotNull(m.gold?.src?.takeIf { it.isNotEmpty() }, Sources.now.rates?.name?.takeIf { m.rates.isNotEmpty() && it.isNotEmpty() }, if (m.btc != null) Sources.now.crypto?.name else null).distinct()
+            val srcs = listOfNotNull(m.gold?.src?.takeIf { it.isNotEmpty() }, Sources.now.rates?.name?.takeIf { m.rates.isNotEmpty() && it.isNotEmpty() }, if (m.btc != null) Sources.now.crypto?.name else null, fuel?.src?.takeIf { it.isNotEmpty() }).distinct()
             if (srcs.isNotEmpty()) src = label(getString(R.string.mk_src, srcs.joinToString(" · ")), 14f, DIMC).apply { setPadding(dpx(4), dpx(12), 0, 0) }
         }
         panel.addOnLayoutChangeListener { v, _, _, _, _, _, _, _, _ ->                    // a row that does not fit whole is left out, never half shown

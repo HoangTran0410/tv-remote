@@ -255,7 +255,7 @@ internal fun Widgets.timerTonal(widget: LinearLayout, o: org.json.JSONObject?, w
 /** The first price big, the others in one line under it. */
 internal fun Widgets.marketTonal(widget: LinearLayout, f: Facts, width: Int, compact: Boolean) {
     val m = f.market
-    val l = if (m == null || m.empty) emptyList() else lines(m, opt("market", "show"), opt("market", "btc") == "on")
+    val l = if (m == null || m.empty) emptyList() else marketLines(m)
     if (l.isEmpty()) { tonalBody(widget, a.getString(R.string.w_market), "—", a.getString(R.string.mk_none), R.drawable.ic_gold, false, width, compact); return }
     val first = l[0]
     val chg = first.pct?.takeIf { Math.abs(it) >= 0.05 }?.let { (if (it > 0) " ▲" else " ▼") + String.format(java.util.Locale.getDefault(), "%.1f%%", Math.abs(it)) }.orEmpty()

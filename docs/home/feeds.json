@@ -1,10 +1,14 @@
 {
   "v": 1,
-  "rev": 1,
+  "rev": 2,
   "rates": { "kind": "vcb", "url": "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TyGia/pXML.aspx", "src": "Vietcombank" },
   "gold": [
     { "kind": "btmc", "url": "https://api.btmc.vn/api/BTMCAPI/getpricebtmc?key=3kd8ub1llcg9t45hnoh8hmn7t5kc2v", "src": "BTMC" },
     { "kind": "pnj", "url": "https://edge-api.pnj.io/ecom-frontend/v1/get-gold-price?zone=00", "src": "PNJ" }
+  ],
+  "fuel": [
+    { "kind": "saigonpetro", "url": "https://saigonpetro.com.vn/", "src": "Saigon Petro" },
+    { "kind": "webgia", "url": "https://webgia.com/gia-xang-dau/petrolimex/", "src": "Petrolimex (webgia.com)" }
   ],
   "crypto": { "kind": "binance", "url": "https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT", "src": "Binance" },
   "news": [

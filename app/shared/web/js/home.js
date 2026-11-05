@@ -128,7 +128,7 @@ function layGlyph(k) {
 // The words the schema names by id (HomeConfig.options: label `home.o_<option>`, value `home.ov_<value>`), listed so the id check sees them used
 const HOME_OPT_WORDS = ['home.o_size', 'home.o_face', 'home.o_theme', 'home.o_look', 'home.ov_big', 'home.ov_small', 'home.ov_classic', 'home.ov_minimal', 'home.ov_roman', 'home.ov_modern', 'home.ov_digital', 'home.ov_month', 'home.ov_date',
   'home.ov_dark', 'home.ov_light', 'home.ov_glass', 'home.ov_tonal', 'home.ov_solid', 'home.ov_none', 'home.ov_off', 'home.ov_on',
-  'home.o_layout', 'home.o_show', 'home.o_btc', 'home.o_src', 'home.ov_card', 'home.ov_ticker', 'home.ov_all', 'home.ov_gold', 'home.ov_rates', 'home.ov_auto', 'home.ov_mine', 'home.ov_both',
+  'home.o_layout', 'home.o_show', 'home.o_btc', 'home.o_fuel', 'home.o_src', 'home.ov_card', 'home.ov_ticker', 'home.ov_all', 'home.ov_gold', 'home.ov_rates', 'home.ov_auto', 'home.ov_mine', 'home.ov_both',
   'home.o_method', 'home.o_asr', 'home.o_hijri', 'home.ov_mwl', 'home.ov_isna', 'home.ov_egypt', 'home.ov_ummalqura', 'home.ov_karachi', 'home.ov_jakim', 'home.ov_kemenag', 'home.ov_singapore',
   'home.ov_turkey', 'home.ov_tehran', 'home.ov_morocco', 'home.ov_standard', 'home.ov_hanafi', 'home.ov_hijri_m1', 'home.ov_hijri_0', 'home.ov_hijri_p1'];
 // A widget's options, from the schema its TV Home reports ("wschema": HomeConfig.options): what was chosen, else the default
