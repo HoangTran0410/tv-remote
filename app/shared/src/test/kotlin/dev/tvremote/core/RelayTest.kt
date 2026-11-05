@@ -17,22 +17,18 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 /**
- * Tv's relay (the picture from TV Setup's /api/video, touches to its /api/touch) against a made-up TV Setup on 127.0.0.1:8765
+ * Tv's relay (the picture from TV Setup's /api/video, touches to its /api/touch) against a made-up TV Setup on 127.0.0.1 (a free port)
  * (a pass with no fingerprint is sent over plain HTTP, as to an old TV Setup), and the way back to ADB when no picture comes.
  */
 class RelayTest {
-    private val server: ServerSocket = run {                         // the test before may still be letting the port go: a few tries
-        var last: Exception? = null
-        repeat(50) {
-            try { return@run ServerSocket().apply { reuseAddress = true; bind(java.net.InetSocketAddress("127.0.0.1", 8765), 50) } }
-            catch (e: java.net.BindException) { last = e; Thread.sleep(100) }
-        }
-        throw last!!
+    private val server: ServerSocket = ServerSocket().apply {        // a free port: 8765 is the Computer app's on a developer's machine
+        reuseAddress = true; bind(java.net.InetSocketAddress("127.0.0.1", 0), 50)
+        dev.tvremote.core.adb.AdbPrompt.plainPort = localPort
     }
     private val requests = CopyOnWriteArrayList<String>()             // request line, cookie, body
     private val dir: File = Files.createTempDirectory("relay").toFile()
 
-    @After fun close() { server.close(); dir.deleteRecursively() }
+    @After fun close() { server.close(); dir.deleteRecursively(); dev.tvremote.core.adb.AdbPrompt.plainPort = 8765 }
 
     /** Answers each connection with [answer] (given the request line), on its own thread. */
     private fun serve(answer: (String, Socket) -> Unit) {

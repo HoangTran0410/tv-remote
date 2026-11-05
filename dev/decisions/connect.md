@@ -55,7 +55,7 @@ Why some code looks odd ([the list](../DECISIONS.md)).
 - **Away (a Tailscale address), the Phone app's picture comes from TV Setup's `/api/video`** (`Tv.relay`, the pass from
   `AdbPrompt.token`, HTTPS 8766 pinned), not from a scrcpy-server it drives over ADB. Our ADB acks each packet only when it is
   read (`Adb.kt`, no `delayed_ack`), so a stream has one packet in flight: on 5G with 25-53 ms ping, direct, the picture stuttered
-  at every size, and TV Setup's page on the same phone was smoother (the user, 2026-11-04, NVIDIA Shield). TV Setup talks to its
+  at every size, and TV Setup's page on the same phone was smoother (a Shield user, PR #20, 2026-11-04). TV Setup talks to its
   scrcpy at no distance and sends one plain TCP stream with its own CatchUp. Feeds sends no pts: the arrival time stands in (the
   decoder only matches out to in). A key frame is asked for by joining again (Feeds asks scrcpy for one per new viewer). Keys stay
   on the keys' session (the relay has no control socket to carry them). TV Setup not reachable, or refusing: ADB, as before.

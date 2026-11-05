@@ -216,10 +216,13 @@ object AdbPrompt {
     /** One context per pinned certificate, so a connection after the first resumes its TLS session (the relay's touches, Tv.kt) */
     private val pinned = java.util.concurrent.ConcurrentHashMap<String, javax.net.ssl.SSLSocketFactory>()
 
+    /** TV Setup's plain-HTTP port; a test moves it to a free one (8765 is the Computer app's on a developer's machine) */
+    @Volatile internal var plainPort = 8765
+
     fun openSetup(host: String, pass: String, path: String): HttpURLConnection {
         val token = pass.substringBefore(':')
         val pin = pass.substringAfter(':', "")
-        val c = dev.tvremote.core.Lan.open(if (pin.isEmpty()) URL("http://$host:8765$path") else URL("https://$host:8766$path")) as HttpURLConnection
+        val c = dev.tvremote.core.Lan.open(if (pin.isEmpty()) URL("http://$host:$plainPort$path") else URL("https://$host:8766$path")) as HttpURLConnection
         if (c is HttpsURLConnection) {
             c.sslSocketFactory = pinned.getOrPut(pin) { SSLContext.getInstance("TLS").apply { init(null, arrayOf<TrustManager>(Pin(pin)), null) }.socketFactory }
             c.hostnameVerifier = HostnameVerifier { _, _ -> true }

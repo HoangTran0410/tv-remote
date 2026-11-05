@@ -64,7 +64,7 @@ class Tv(
      * This device's TV Setup pass (AdbPrompt.token): the picture is taken from TV Setup's own /api/video and touches go to its
      * /api/touch, instead of a scrcpy-server driven over ADB from here. Over a far link (Tailscale on mobile data) ADB's one
      * packet in flight per stream, with 25-50 ms between packet and OKAY, stuttered at every size, while TV Setup on the TV
-     * talks to scrcpy at no distance and sends one plain stream (the user, 2026-11-04). Picture only; on any failure before
+     * talks to scrcpy at no distance and sends one plain stream (a Shield user, PR #20, 2026-11-04). Picture only; on any failure before
      * the first frame the session goes on over ADB as before. null: ADB.
      */
     private val relay: String? = null,
