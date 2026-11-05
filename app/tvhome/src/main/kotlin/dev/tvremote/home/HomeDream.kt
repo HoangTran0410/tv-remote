@@ -109,6 +109,7 @@ class DreamBody(private val c: Context) {
         }
         root.addView(View(c).apply { setBackgroundColor(0x70000000) }, FrameLayout.LayoutParams(-1, -1))   // dim: night, and words stay readable over a photo
 
+        Look.read(conf)                                               // the accent in this process too: the dream can start it alone
         val face = conf.optString("dface")
         block = LinearLayout(c).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL; setPadding(dp(40), dp(20), dp(40), dp(20)) }
         when (face) {
@@ -117,9 +118,9 @@ class DreamBody(private val c: Context) {
             "modern" -> {
                 val side = (dm.heightPixels * 0.56f).toInt()
                 block.orientation = LinearLayout.HORIZONTAL; block.gravity = Gravity.CENTER_VERTICAL
-                block.addView(ClockFace({ dp(it) }, c, "modern", false) { }, LinearLayout.LayoutParams(side, side))
+                block.addView(ClockFace({ dp(it) }, c, "modern", false, dial = false) { }, LinearLayout.LayoutParams(side, side))   // the date is beside it: not twice
                 val col = LinearLayout(c).apply { orientation = LinearLayout.VERTICAL }
-                wday = Font.on(TextView(c)).apply { textSize = 30f; setTextColor(Widgets.ACCENT); typeface = Font.bold }
+                wday = Font.on(TextView(c)).apply { textSize = 30f; setTextColor(Look.accent(Widgets.ACCENT)); typeface = Font.bold }
                 dayN = Font.on(TextView(c)).apply { textSize = 150f; setTextColor(INK); typeface = Font.medium; includeFontPadding = false }
                 mon = Font.on(TextView(c)).apply { textSize = 26f; setTextColor(SOFT) }
                 lunar = Font.on(TextView(c)).apply { textSize = 20f; setTextColor(FAINT); setPadding(0, dp(6), 0, 0) }

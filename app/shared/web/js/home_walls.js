@@ -187,10 +187,10 @@ function homeBar(conf) {
 
 /** HomeConfig.placed: the chosen widgets that get a place (a clock widget waiting for room leaves the bar's clock on). */
 function homePlaced(conf) {
-  const keys = conf.widgets || [];
+  const keys = (conf.widgets || []).filter((k) => k !== 'timer' && (!/^qr\d$/.test(k) || (conf.qrs && conf.qrs[k])));   // as HomeConfig.placed: a timer counts as not set
   if (!keys.length || typeof homePack !== 'function') return keys;
-  const big = keys.filter((k) => homeSize(conf, k) === 'big');
-  const p = conf.wplace === 'left' || conf.wplace === 'right' ? homePackColumn(keys, big, false, 378) : homePack(keys, big);
+  const big = keys.filter((k) => homeSize(conf, k) === 'big'), note = !!conf.note;
+  const p = conf.wplace === 'left' || conf.wplace === 'right' ? homePackColumn(keys, big, note, 378) : homePack(keys, big, note);
   return keys.filter((k) => !(p.waiting || []).includes(k));
 }
 

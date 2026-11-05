@@ -493,13 +493,20 @@ object HomeConfig {
      * widget takes the top bar's time, and with a calendar widget their date, while that line says the date (its default). The switches
      * stay as the person set them; taking the widget off brings the bar's back.
      */
-    fun barClock(o: JSONObject) = o.optBoolean("showClock", true) && "clock" !in placed(o)
-    fun barDate(o: JSONObject) = o.optBoolean("showDate", true) &&
-        !(o.optString("dstyle").ifEmpty { "date" } == "date" && placed(o).any { it == "clock" || it == "calendar" })
-    /** The chosen widgets that get a place (not waiting for room): a clock widget pushed out must not take the bar's clock with it. 378 dp: a 1080p screen under the top bar. Twin: homePlaced in js/home_walls.js. */
+    fun barClock(o: JSONObject, placed: List<String> = placed(o)) = o.optBoolean("showClock", true) && "clock" !in placed
+    fun barDate(o: JSONObject, placed: List<String> = placed(o)) = o.optBoolean("showDate", true) &&
+        !(o.optString("dstyle").ifEmpty { "date" } == "date" && placed.any { it == "clock" || it == "calendar" })
+    /**
+     * A guess of the widgets that get a place, for previews and before TV Home's first read (TV Home then passes what Widgets.show
+     * really placed): a clock widget pushed out must not take the bar's clock with it. A timer counts as not set, QR widgets only
+     * when written; 378 dp: a 1080p screen under the top bar. Twin: homePlaced in js/home_walls.js.
+     */
     fun placed(o: JSONObject): List<String> {
-        val keys = strs(o.optJSONArray("widgets")); if (keys.isEmpty()) return keys
-        val p = if (side(o.optString("wplace"))) packColumn(keys, bigs(o), false, 378) else pack(keys, bigs(o))
+        val qrs = o.optJSONObject("qrs")
+        val keys = strs(o.optJSONArray("widgets")).filter { it != "timer" && (it !in HomeQr.KEYS || qrs?.has(it) == true) }
+        if (keys.isEmpty()) return keys
+        val note = o.optString("note").isNotEmpty()
+        val p = if (side(o.optString("wplace"))) packColumn(keys, bigs(o), note, 378) else pack(keys, bigs(o), note)
         return keys - p.waiting.toSet()
     }
 

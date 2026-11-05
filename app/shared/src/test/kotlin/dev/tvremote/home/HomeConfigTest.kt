@@ -598,6 +598,9 @@ class HomeConfigTest {
         val c = JSONObject().put("wplace", "left").put("wsize", big).put("widgets", org.json.JSONArray(listOf("news", "system", "calendar", "clock")))
         assertTrue("clock" !in HomeConfig.placed(c)); assertTrue(HomeConfig.barClock(c))
         assertFalse(HomeConfig.barClock(JSONObject().put("widgets", org.json.JSONArray(listOf("clock")))))
+        val noted = JSONObject().put("widgets", org.json.JSONArray(listOf("calendar", "weather", "news", "adblock", "clock"))).put("note", "hi")
+        assertTrue(HomeConfig.barClock(noted))                                                                              // the note took the clock's room
+        assertTrue(HomeConfig.barClock(c, listOf("news")))                                                                  // TV Home passes what it really placed
     }
 
     @Test fun oldSavedThemeStillMatches() {                         // saved before wplace / tstyle / accent existed: clean() fills them, the theme must still read as "on"

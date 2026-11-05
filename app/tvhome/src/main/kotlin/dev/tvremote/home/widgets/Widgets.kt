@@ -157,6 +157,8 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
     private val side get() = HomeConfig.side(place)
     /** The height a side column may fill (px), set before [show] by the screen: what is left under the top bar. */
     var roomPx = 0
+    /** The widgets the last [show] gave a place (none waiting for room, none with nothing to show): the top bar's clock goes by these. */
+    var placed: List<String> = emptyList()
     /** Left / Right pressed on a widget with nothing beside it in the column: the screen decides (the grid, or nowhere). */
     var onSide: ((View, Int) -> Unit)? = null
 
@@ -313,7 +315,8 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
         val big = HomeConfig.bigs(JSONObject().put("wsize", sizes))
         val packed = if (side) HomeConfig.packColumn(keys, big, noteView != null, Math.round((if (roomPx > 0) roomPx else a.resources.displayMetrics.heightPixels * 2 / 3) / a.resources.displayMetrics.density))
             else HomeConfig.pack(keys, big, noteView != null)
-        if (packed.cols.isEmpty()) { visibility = View.GONE; return }
+        placed = keys - packed.waiting.toSet()
+        if (packed.cols.isEmpty()) { placed = emptyList(); visibility = View.GONE; return }
         fun plain(k: String, alone: Boolean): View? = when (k) {
             "lunar" -> f.moon?.let { lunar(it) }; "timer" -> timerView
             "clock" -> clock(if (!alone) 0 else if (k in big) 2 else 1)

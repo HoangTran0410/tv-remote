@@ -778,6 +778,10 @@ class HomeActivity : Activity() {
         }
     }
 
+    private var placedNow: List<String>? = null
+    /** The top bar's clock and date follow the widgets really placed (a clock widget with no room, or a timer with nothing to show, changes them). */
+    private fun placedSet(p: List<String>) { if (p != placedNow) { placedNow = p; clockAndDay() } }
+
     /** The widgets' numbers, read off the main thread; none at all while they are off. */
     private fun widgetsRead() {
         val want = Store.list(this, "widgets")
@@ -786,10 +790,10 @@ class HomeActivity : Activity() {
         if (none) noWidgets = true                                    // else kept until the read says: reset to false here, chosen widgets with nothing to show rebuilt the grid without end
         widgets.roomPx = (if (scroll.height > 0) scroll.height else resources.displayMetrics.heightPixels) - (if (head.bottom > 0) head.bottom else dp(118)) - dp(SIDE_TOP) - dp(16)   // two full blocks (2 x 180 + 12) under a head with the time (126 dp): 20 dp less above them than the row has, they fit
         peek()                                                        // the grid's margin is peek()'s alone: set here too, every minute's read made it jump
-        if (none) { widgets.visibility = View.GONE; return }
+        if (none) { widgets.visibility = View.GONE; placedSet(emptyList()); return }
         val sig = want.joinToString(",") + "|" + note.isNotEmpty()
         val held = widgets.visibility == View.GONE && widgetsLast != "-$sig"   // the row came last time (or nothing known): keep its place
-        if (held) widgets.hold()
+        if (held && !(noWidgets && HomeConfig.side(place()))) widgets.hold()   // a first column held beside a grid laid out full width pushed its last tiles off the screen
         bg.execute {
             val f = widgets.read(want)
             runOnUiThread {
@@ -798,6 +802,7 @@ class HomeActivity : Activity() {
                 // chosen but with nothing to show (the timer with no timer set, a lunar date off): no row, so the grid sits as with none
                 // (FPT, the user 2026-11-03: the timer alone left the grid up under an empty row)
                 val shown = widgets.visibility == View.VISIBLE
+                placedSet(if (shown) widgets.placed else emptyList())
                 if (noWidgets == shown) { noWidgets = !shown; peek(); if (HomeConfig.side(place())) { shownKey = ""; show() } }   // beside the grid they change its columns
                 (if (shown) sig else "-$sig").let { if (widgetsLast != it) widgetsLast = it }
                 if (held && shown && Motion.on) { widgets.alpha = 0f; widgets.animate().alpha(1f).setDuration(Motion.ms(240)).withLayer().start() }   // into the place kept
@@ -2081,8 +2086,9 @@ class HomeActivity : Activity() {
         greetLine.text = HomeConfig.headLine(conf, "g", t)
         headType(greetLine, "g", Font.regular); headType(dateLine, "d", Font.medium)
         greetLine.visibility = if (conf.optBoolean("greet", true)) View.VISIBLE else View.GONE
-        clock.visibility = if (HomeConfig.barClock(conf)) View.VISIBLE else View.GONE           // a clock widget is the clock then
-        dateLine.visibility = if (HomeConfig.barDate(conf)) View.VISIBLE else View.GONE
+        val placed = placedNow ?: HomeConfig.placed(conf)             // what the widgets really placed once read; a guess before
+        clock.visibility = if (HomeConfig.barClock(conf, placed)) View.VISIBLE else View.GONE   // a clock widget is the clock then
+        dateLine.visibility = if (HomeConfig.barDate(conf, placed)) View.VISIBLE else View.GONE
         rule.visibility = if (clock.isShown && (dateLine.isShown || greetLine.isShown)) View.VISIBLE else View.GONE   // the line between them only while there are two sides
         netPill.visibility = if (conf.optBoolean("showNet", true)) View.VISIBLE else View.GONE
         inputsPill.visibility = if (conf.optBoolean("showInputs", false)) View.VISIBLE else View.GONE
