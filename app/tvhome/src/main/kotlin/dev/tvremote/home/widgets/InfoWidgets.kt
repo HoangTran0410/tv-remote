@@ -82,14 +82,15 @@ private fun Widgets.updated(m: Market.Snap) = a.getString(R.string.mk_upd, hm(m.
 
 private fun Widgets.priceRow(x: Line, big: Boolean, dense: Boolean = false) = LinearLayout(a).apply {
     orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-    val bs = dp(if (big) 34 else 24)
+    val bs = dp(if (dense) 24 else if (big) 30 else 24)                 // four rows share ~116 dp: a 34 dp disc each touched the next
     addView(badgeView(a, bs, x.icon, x.sign, x.tint), LayoutParams(bs, bs))
     val who = LinearLayout(a).apply { orientation = VERTICAL; gravity = Gravity.CENTER_VERTICAL }
-    who.addView(text(x.name, if (dense) 12f else if (big) 14f else 12f, DIM).apply { maxLines = 1; includeFontPadding = false })
+    who.addView(text(x.name, if (dense) 13f else if (big) 14f else 12f, DIM).apply { maxLines = 1; includeFontPadding = false })
     x.pct?.takeIf { Math.abs(it) >= 0.05 && big }?.let { who.addView(changeChip(a, a.resources.displayMetrics.density, it, if (dense) 9f else 10f).apply { if (dense) setPadding(dp(6), 0, dp(6), 0) }, LayoutParams(-2, -2).apply { topMargin = dp(if (dense) 1 else 2) }) }
     addView(who, LayoutParams(0, -2, 1f).apply { leftMargin = dp(if (big) 12 else 8) })
     addView(Font.on(android.widget.TextView(a)).apply {
-        text = x.value; textSize = if (big) 21f else 15f; typeface = Font.medium; setTextColor(Color.WHITE); maxLines = 1; gravity = Gravity.END
+        text = x.value; textSize = if (dense) 16f else if (big) 18f else 15f;   // a price is read, not the widget's headline (weather's 34°)
+        typeface = Font.medium; setTextColor(Color.WHITE); maxLines = 1; gravity = Gravity.END
         fontFeatureSettings = "tnum"; includeFontPadding = false; setShadowLayer(dp(4).toFloat(), 0f, dp(1).toFloat(), SHADOW)
     }, LayoutParams(-2, -2))
 }
