@@ -481,7 +481,7 @@ async function homeOpen() {
   const ddarkFrom = el('input', { type: 'time', step: 1800, onchange: ddarkSend }), ddarkTo = el('input', { type: 'time', step: 1800, onchange: ddarkSend });
   const ddarkTimes = el('div', { className: 'ddark' }, el('label', {}, el('span', { textContent: T('home.ddark_from') }), ddarkFrom), el('label', {}, el('span', { textContent: T('home.ddark_to') }), ddarkTo));
   const center = el('input', { type: 'checkbox', onchange: () => send({ center: center.checked }) });   // the app grid's tiles in the middle of their row (HomeConfig "center", default off)
-  const wplaceHead = el('h3', { textContent: T('home.wplace') }), wplace = el('div', { className: 'fchips' });   // where the widgets sit (HomeConfig "wplace", default top); only a TV Home that reports it
+  const wplaceHead = el('h3', { textContent: T('home.wplace') }), wplace = el('div', { className: 'fchips wrap' });   // where the widgets sit (HomeConfig "wplace", default top); only a TV Home that reports it
   // remote keys that open an app, and the app that opens each time the TV turns on (HomeConfig keyon / keyapps / autoon / autoapp).
   // Both default off. TV Home answers a key on its own screen; TV Setup does it everywhere and the power-on app: said under each
   const keyOn = el('input', { type: 'checkbox', onchange: () => send({ keyon: keyOn.checked }) });
@@ -508,8 +508,8 @@ async function homeOpen() {
   // how the focused app shows (HomeConfig "focus"); absent from a TV Home older than the glass
   const focusHead = el('h3', { textContent: T('home.focus') }), focus = el('div', { className: 'fchips' });
   // how an app tile looks (HomeConfig "tstyle") and the one accent colour (HomeConfig "accent"); absent from a TV Home older than the two
-  const tstyleHead = el('h3', { textContent: T('home.tstyle') }), tstyle = el('div', { className: 'fchips' });
-  const accentHead = el('h3', { textContent: T('home.accent') }), accent = el('div', { className: 'fchips swatches' });
+  const tstyleHead = el('h3', { textContent: T('home.tstyle') }), tstyle = el('div', { className: 'fchips wrap' });
+  const accentHead = el('h3', { textContent: T('home.accent') }), accent = el('div', { className: 'fchips wrap swatches' });
   // app tiles per row (HomeConfig "cols", 4..8); only a TV Home that reports "colsOk"
   const colsHead = el('h3', { textContent: T('home.cols') }), cols = el('div', { className: 'fchips' });
   // rows of apps on the first screen (HomeConfig "rows", tenths, 0 = by itself), up to "rowsMax" the TV measured; a TV Home that reports "rowsOk"
