@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Silent failures now say so: the Dim dialog tells you when the TV does not answer (and a failing slider once, not on every move), Talk to the TV no longer says "Sent" when the voice upload failed, and the phone app's Open link over ADB says when the TV has no app for it.
 - TV Games: a real keyboard on the TV plays as two pads, each half its own player with its own slot (A: W A S D, J K U I, Q E, Enter, Tab; B: arrows and the number pad, or , . / ; [ ] on a laptop); the Back card lists the keys when a keyboard is plugged in. The TV remote, Map remote keys and menus are untouched.
 - TV Games: Game Boy, Game Boy Color, Mega Drive / Genesis, Master System, Game Gear and PC Engine (cores downloaded when first needed: Gambatte, clownmdemu, SMS Plus, Beetle PCE Fast; all free licences, no non-commercial core). Phone pad layouts: Mega Drive A B C X Y Z, PC Engine I II Run, Master System 1 2. Free homebrew: Tobu Tobu Girl Deluxe (Game Boy).
 - TV Games: SNES, Game Boy Advance and PlayStation cores are now on the download server and switched on (they were listed but off).

@@ -182,6 +182,6 @@ internal class TvKeys(private val dir: File, private val name: String) {
             val f = file(host)
             f.writeText(value)
             f.setReadable(false, false); f.setReadable(true, true)     // like the ADB key: this user only
-        } catch (ignored: IOException) { }
+        } catch (e: IOException) { dev.tvremote.core.WireLog.all.add("·", "$name key for $host not saved: $e") }   // pairing will be asked again next time
     }
 }

@@ -5,9 +5,10 @@ let dimSending = 0;
 
 async function dimOpen() {
   if (await needAdbSoon() || !await setupFor('dim')) return;
-  const now = await api('/api/dim', null, true); if (!now) return;
+  const now = await api('/api/dim'); if (!now) return;                  // not quiet: a TV that does not answer is said, the dialog does not just stay shut
   let s = { on: now.on, color: now.color, pct: now.pct };
-  const send = () => { clearTimeout(dimSending); dimSending = setTimeout(() => api('/api/dim', s, true), 120); };   // a slider moved: its last place
+  let failed = false;                                              // a drag sends many times: one message per run of failures
+  const send = () => { clearTimeout(dimSending); dimSending = setTimeout(async () => { failed = !await api('/api/dim', s, failed); }, 120); };   // a slider moved: its last place
   const chips = el('div', { className: 'fchips dimc' });
   const out = el('output');
   const r = el('input', { type: 'range', min: 5, max: 90, step: 5, value: s.pct, ariaLabel: T('dim.strength'), oninput: (e) => set({ pct: +e.target.value, on: true }) });
