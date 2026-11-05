@@ -88,10 +88,11 @@ class HomeThemesTest {
     @Test fun noTwoThemesShareMostOfTheirLayout() {
         val r = HomeConfig.parseReady(String(list), "99.0.0")
         fun knobs(c: org.json.JSONObject) = listOf(c.optString("wall") + c.optString("wurl") + c.optString("wcol"), c.optJSONArray("widgets").toString(), c.optInt("cols"),
-            c.optDouble("rows"), c.optBoolean("center"), c.optString("focus"), c.optJSONObject("wopt").toString())
+            c.optDouble("rows"), c.optBoolean("center"), c.optString("focus"), c.optJSONObject("wopt").toString(),
+            c.optString("tstyle"), c.optString("accent"), c.optString("wplace"))   // tile style, accent and where the widgets sit change a theme as much
         for (a in r.indices) for (b in a + 1 until r.size) {
             val x = knobs(r[a].conf); val y = knobs(r[b].conf)
-            assertTrue("${r[a].id} and ${r[b].id} differ in only ${x.indices.count { x[it] != y[it] }} of ${x.size} looks", x.indices.count { x[it] != y[it] } >= 3)
+            assertTrue("${r[a].id} and ${r[b].id} differ in only ${x.indices.count { x[it] != y[it] }} of ${x.size} looks", x.indices.count { x[it] != y[it] } >= 4)
         }
         assertTrue(r.size in 12..16)
     }
