@@ -141,6 +141,7 @@ flowchart LR
   subgraph tv["Trên TV"]
     adb["ADB của TV<br/><small>cổng 5555</small>"]
     helper["Tắt màn hình<br/><small>nằm trong TV Setup</small>"]
+    voice["TV Setup Voice<br/><small>tiếng nói không cần mạng · tùy chọn</small>"]
     setup["TV Setup<br/><small>chạy ngầm trên TV</small>"]
     home["TV Home<br/><small>màn hình chính</small>"]
     channels["TV Channels<br/><small>trình phát kênh</small>"]
@@ -160,10 +161,11 @@ flowchart LR
   tvapps -->|"6 cài"| setup
   home ==>|"7 dữ liệu"| setup
   setup -.->|"8 ADB"| adb
-  setup -->|"9 helper"| helper
-  clients ==>|"10 APK"| github
-  phone -->|"11 link cài"| downloader
-  clients -.->|"12 từ xa"| tailscale
+  setup -.->|"9 tải thêm"| voice
+  setup -->|"10 helper"| helper
+  clients ==>|"11 APK"| github
+  phone -->|"12 link cài"| downloader
+  clients -.->|"13 từ xa"| tailscale
 ```
 <!-- apps-map:end -->
 </details>

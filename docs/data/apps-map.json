@@ -3,7 +3,7 @@
   "view": { "w": 1000, "h": 560 },
   "groups": [
     { "id": "clients", "name": { "vi": "Ngoài TV", "en": "Outside the TV" }, "x": 20, "y": 30, "w": 230, "h": 300, "lx": 36, "ly": 52 },
-    { "id": "tv", "name": { "vi": "Trên TV", "en": "On the TV" }, "x": 430, "y": 30, "w": 550, "h": 420, "lx": 964, "ly": 52, "end": true },
+    { "id": "tv", "name": { "vi": "Trên TV", "en": "On the TV" }, "x": 430, "y": 30, "w": 550, "h": 500, "lx": 964, "ly": 52, "end": true },
     { "id": "ext", "name": { "vi": "Bên ngoài", "en": "Outside services" }, "x": 20, "y": 440, "w": 390, "h": 100, "lx": 36, "ly": 462 }
   ],
   "nodes": [
@@ -12,6 +12,7 @@
     { "id": "desktop", "group": "clients", "name": { "vi": "App máy tính", "en": "Computer app" }, "sub": { "vi": "Mac · Windows · Linux", "en": "Mac · Windows · Linux" }, "logo": "img/icon.png", "x": 40, "y": 250, "w": 190 },
     { "id": "adb", "group": "tv", "name": { "vi": "ADB của TV", "en": "The TV's ADB" }, "sub": { "vi": "cổng 5555", "en": "port 5555" }, "glyph": "terminal", "x": 460, "y": 230, "w": 170 },
     { "id": "helper", "group": "tv", "name": { "vi": "Tắt màn hình", "en": "Screen-off tool" }, "sub": { "vi": "nằm trong TV Setup", "en": "inside TV Setup" }, "glyph": "file", "x": 460, "y": 100, "w": 170 },
+    { "id": "voice", "group": "tv", "name": { "vi": "TV Setup Voice", "en": "TV Setup Voice" }, "sub": { "vi": "tiếng nói không cần mạng · tùy chọn", "en": "offline voice · optional" }, "glyph": "mic", "x": 700, "y": 458, "w": 200 },
     { "id": "setup", "group": "tv", "name": { "vi": "TV Setup", "en": "TV Setup" }, "sub": { "vi": "chạy ngầm trên TV", "en": "runs in the background" }, "logo": "img/app-setup.png", "x": 700, "y": 70, "w": 200 },
     { "id": "home", "group": "tv", "name": { "vi": "TV Home", "en": "TV Home" }, "sub": { "vi": "màn hình chính", "en": "home screen" }, "logo": "img/app-home.png", "x": 700, "y": 190, "w": 200 },
     { "id": "channels", "group": "tv", "name": { "vi": "TV Channels", "en": "TV Channels" }, "sub": { "vi": "trình phát kênh", "en": "channel player" }, "logo": "img/app-channels.png", "x": 700, "y": 300, "w": 200 },
@@ -62,6 +63,11 @@
       "what": { "vi": "Mọi việc TV Setup làm: nút nguồn, giới hạn app, luật, bảo vệ", "en": "Everything TV Setup does: power button, app limits, rules, guard" },
       "how": { "vi": "ADB nội bộ trên chính TV (127.0.0.1)", "en": "ADB on the TV itself (127.0.0.1)" },
       "missing": { "vi": "TV Setup tự thử bật lại. Nếu gỡ lỗi USB đang tắt thì cần bật lại trong cài đặt TV.", "en": "TV Setup tries to switch it back on. If USB debugging is off, turn it on again in the TV settings." } },
+    { "from": "setup", "to": "voice", "p": [700, 112, 700, 486], "dir": "v", "bend": -60, "told": "partial",
+      "tag": { "vi": "tải thêm", "en": "add-on" },
+      "what": { "vi": "Nghe lệnh giọng nói ngay trên TV, không cần Google hay Internet, tiếng Việt hoặc Anh (khoảng 40 MB)", "en": "Hears voice commands on the TV itself, without Google or the Internet, in Vietnamese or English (about 40 MB)" },
+      "how": { "vi": "TV Setup tải APK có chữ ký, chỉ khi bật “mic offline”", "en": "TV Setup downloads the signed APK, only while “offline mic” is on" },
+      "missing": { "vi": "Không có thì giọng nói dùng Google như trước; mọi thứ khác vẫn chạy.", "en": "Without it, voice uses Google as before; everything else still works." } },
     { "from": "setup", "to": "helper", "p": [700, 106, 632, 124], "dir": "h", "told": "ok",
       "tag": { "vi": "helper", "en": "helper" },
       "what": { "vi": "Tắt màn hình nhưng giữ tiếng", "en": "Turn the screen off but keep the sound" },

@@ -4,6 +4,7 @@
   var NS = "http://www.w3.org/2000/svg";
   var GLYPH = {                                                     // 24x24 line icons for the nodes that have no logo
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+    mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
     terminal: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/>',
     file: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/>',
     github: '<path d="M9 19c-4 1-4-2-6-2m12 4v-3a3 3 0 0 0-1-2c3 0 6-1.500 6-6a5 5 0 0 0-1-3 4 4 0 0 0 0-3s-1 0-3 1.500a10 10 0 0 0-6 0C8 4 7 4 7 4a4 4 0 0 0 0 3 5 5 0 0 0-1 3c0 4.500 3 6 6 6a3 3 0 0 0-1 2v3"/>',

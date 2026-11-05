@@ -137,6 +137,7 @@ flowchart LR
   subgraph tv["On the TV"]
     adb["The TV's ADB<br/><small>port 5555</small>"]
     helper["Screen-off tool<br/><small>inside TV Setup</small>"]
+    voice["TV Setup Voice<br/><small>offline voice · optional</small>"]
     setup["TV Setup<br/><small>runs in the background</small>"]
     home["TV Home<br/><small>home screen</small>"]
     channels["TV Channels<br/><small>channel player</small>"]
@@ -156,10 +157,11 @@ flowchart LR
   tvapps -->|"6 install"| setup
   home ==>|"7 data"| setup
   setup -.->|"8 ADB"| adb
-  setup -->|"9 helper"| helper
-  clients ==>|"10 APK"| github
-  phone -->|"11 install link"| downloader
-  clients -.->|"12 remote"| tailscale
+  setup -.->|"9 add-on"| voice
+  setup -->|"10 helper"| helper
+  clients ==>|"11 APK"| github
+  phone -->|"12 install link"| downloader
+  clients -.->|"13 remote"| tailscale
 ```
 <!-- apps-map:end -->
 </details>
