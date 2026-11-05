@@ -154,5 +154,8 @@
   "need_more": {
     "one": "Il manque %1$d joueur",
     "other": "Il manque %1$d joueurs"
-  }
+  },
+  "keys_title": "Clavier : deux joueurs",
+  "keys_p1": "Joueur A : W A S D déplacent · J K U I = A B X Y · Q E = L R · Entrée = Start · Tab = Select",
+  "keys_p2": "Joueur B : flèches · pavé num 1 2 4 5 = A B X Y · 7 8 = L R · Entrée num = Start · 0 num = Select"
 }

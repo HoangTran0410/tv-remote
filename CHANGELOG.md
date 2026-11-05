@@ -6,6 +6,9 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Games: a real keyboard on the TV plays as two pads, each half its own player with its own slot (A: W A S D, J K U I, Q E, Enter, Tab; B: arrows and the number pad, or , . / ; [ ] on a laptop); the Back card lists the keys when a keyboard is plugged in. The TV remote, Map remote keys and menus are untouched.
+- TV Games: Game Boy, Game Boy Color, Mega Drive / Genesis, Master System, Game Gear and PC Engine (cores downloaded when first needed: Gambatte, clownmdemu, SMS Plus, Beetle PCE Fast; all free licences, no non-commercial core). Phone pad layouts: Mega Drive A B C X Y Z, PC Engine I II Run, Master System 1 2. Free homebrew: Tobu Tobu Girl Deluxe (Game Boy).
+- TV Games: SNES, Game Boy Advance and PlayStation cores are now on the download server and switched on (they were listed but off).
 - TV Home: beside a widget column, widgets with nothing to show (a timer not set) no longer rebuild the screen without end; a clock widget with no room leaves the top bar's clock on; icon / glass tiles load their icons at start off the main thread; 9 ready-made themes tuned after a design review (focus ring where the accent met the wallpaper, darker shade on busy photos, fewer columns where icons were too small).
 - TV Home: the Market widget can show Vietnam's fuel prices (RON 95, E5 RON 92, diesel, per litre) next to gold, with the change since the last price move; its own switch, off by default. Read from Saigon Petro's site, else Petrolimex's table on webgia.com, every 3 hours while the widget is on screen.
 - TV Home: a theme file imported on the page keeps where the widgets sit and the custom colours; a theme saved before the newer choices still shows as the one in use; icon / glass tiles load their icons off the main thread; the theme's details list where the widgets sit; App rows is hidden beside a widget column (it did nothing there).

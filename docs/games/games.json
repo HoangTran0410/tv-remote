@@ -1,10 +1,10 @@
 {
   "v": 1,
-  "updated": "2026-11-02",
+  "updated": "2026-11-05",
   "cores": {
     "snes": {
       "name": "SNES (bsnes-mercury performance)",
-      "on": false,
+      "on": true,
       "abi": {
         "arm64-v8a": {
           "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/bsnes_mercury_performance_libretro_android-arm64-v8a.so.zip",
@@ -27,7 +27,7 @@
     },
     "gba": {
       "name": "Game Boy Advance (mGBA)",
-      "on": false,
+      "on": true,
       "abi": {
         "arm64-v8a": {
           "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/mgba_libretro_android-arm64-v8a.so.zip",
@@ -49,7 +49,7 @@
     },
     "psx": {
       "name": "PlayStation (PCSX ReARMed)",
-      "on": false,
+      "on": true,
       "abi": {
         "arm64-v8a": {
           "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/pcsx_rearmed_libretro_android-arm64-v8a.so.zip",
@@ -92,6 +92,141 @@
       ],
       "layout": "arcade",
       "file": "fbneo_libretro_android.so"
+    },
+    "gb": {
+      "name": "Game Boy (Gambatte)",
+      "on": true,
+      "abi": {
+        "arm64-v8a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/gambatte_libretro_android-arm64-v8a.so.zip",
+          "sha256": "2a3d5698358486f138a320598d265d150d1f27f3080bdc5f81c18c85889fcee0",
+          "size": 434140
+        },
+        "armeabi-v7a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/gambatte_libretro_android-armeabi-v7a.so.zip",
+          "sha256": "936fe44d1551889aaadeca9368403f19a83659930d1b18005e7bbbf27ee851fb",
+          "size": 369295
+        }
+      },
+      "license": "GPL-2.0",
+      "exts": [
+        "gb",
+        "dmg"
+      ],
+      "layout": "nes",
+      "file": "gambatte_libretro_android.so"
+    },
+    "gbc": {
+      "name": "Game Boy Color (Gambatte)",
+      "on": true,
+      "abi": {
+        "arm64-v8a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/gambatte_libretro_android-arm64-v8a.so.zip",
+          "sha256": "2a3d5698358486f138a320598d265d150d1f27f3080bdc5f81c18c85889fcee0",
+          "size": 434140
+        },
+        "armeabi-v7a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/gambatte_libretro_android-armeabi-v7a.so.zip",
+          "sha256": "936fe44d1551889aaadeca9368403f19a83659930d1b18005e7bbbf27ee851fb",
+          "size": 369295
+        }
+      },
+      "license": "GPL-2.0",
+      "exts": [
+        "gbc"
+      ],
+      "layout": "nes",
+      "file": "gambatte_libretro_android.so"
+    },
+    "md": {
+      "name": "Mega Drive (ClownMDEmu)",
+      "on": true,
+      "abi": {
+        "arm64-v8a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/clownmdemu_libretro_android-arm64-v8a.so.zip",
+          "sha256": "af0e4b6594cf8981780ddc89fd38f3411982c8ab101e74314796924388e8b4a0",
+          "size": 279524
+        },
+        "armeabi-v7a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/clownmdemu_libretro_android-armeabi-v7a.so.zip",
+          "sha256": "34922f5eed650a2ebf4225a0783892db8b1d7f64ca043141fcaedcc34cc829cf",
+          "size": 250940
+        }
+      },
+      "license": "AGPL-3.0",
+      "exts": [
+        "md",
+        "gen",
+        "smd"
+      ],
+      "layout": "md",
+      "file": "clownmdemu_libretro_android.so"
+    },
+    "sms": {
+      "name": "Master System (SMS Plus GX)",
+      "on": true,
+      "abi": {
+        "arm64-v8a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/smsplus_libretro_android-arm64-v8a.so.zip",
+          "sha256": "34f668cea710a28465fda2c63fd3db0710cede077f8a84aa69340ef326d0a70f",
+          "size": 67071
+        },
+        "armeabi-v7a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/smsplus_libretro_android-armeabi-v7a.so.zip",
+          "sha256": "b7bcfb0441acc7e31d646899eab1aee42a9369560f22022dba802fde995895b7",
+          "size": 46812
+        }
+      },
+      "license": "GPL-2.0",
+      "exts": [
+        "sms"
+      ],
+      "layout": "sms",
+      "file": "smsplus_libretro_android.so"
+    },
+    "gg": {
+      "name": "Game Gear (SMS Plus GX)",
+      "on": true,
+      "abi": {
+        "arm64-v8a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/smsplus_libretro_android-arm64-v8a.so.zip",
+          "sha256": "34f668cea710a28465fda2c63fd3db0710cede077f8a84aa69340ef326d0a70f",
+          "size": 67071
+        },
+        "armeabi-v7a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/smsplus_libretro_android-armeabi-v7a.so.zip",
+          "sha256": "b7bcfb0441acc7e31d646899eab1aee42a9369560f22022dba802fde995895b7",
+          "size": 46812
+        }
+      },
+      "license": "GPL-2.0",
+      "exts": [
+        "gg"
+      ],
+      "layout": "sms",
+      "file": "smsplus_libretro_android.so"
+    },
+    "pce": {
+      "name": "PC Engine (Beetle PCE Fast)",
+      "on": true,
+      "abi": {
+        "arm64-v8a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/mednafen_pce_fast_libretro_android-arm64-v8a.so.zip",
+          "sha256": "46c41bc1beb6678fe8a3547c1d67101e15f7c42427d491221e0aa29c00d68b74",
+          "size": 374150
+        },
+        "armeabi-v7a": {
+          "url": "https://github.com/HoangTran0410/tv-remote/releases/download/cores-1/mednafen_pce_fast_libretro_android-armeabi-v7a.so.zip",
+          "sha256": "bf92e08a4ab2b17e64f334b7579af8e87ff7ad1f1e3c9f33ee0d7cbc3a50b19c",
+          "size": 301173
+        }
+      },
+      "license": "GPL-2.0",
+      "exts": [
+        "pce"
+      ],
+      "layout": "pce",
+      "file": "mednafen_pce_fast_libretro_android.so"
     }
   },
   "web": [
@@ -629,6 +764,19 @@
       "sha256": "6bc87b12deaec9b528513ccba37bca1fc04236b97725190b5463942d5046b2b6",
       "license": "Free for non-commercial use, by the copyright holders' permission (mamedev.org)",
       "source": "https://www.mamedev.org/roms/teetert/",
+      "on": true
+    },
+    {
+      "id": "tobudx",
+      "name": "Tobu Tobu Girl Deluxe",
+      "img": "img/tobudx.v3.jpg",
+      "system": "gb",
+      "players": 1,
+      "genre": "arcade",
+      "url": "https://tvremote.pages.dev/games/roms/tobudx.gb",
+      "sha256": "0a0e8018dbbc8d7f8cd99f05e7cdc7b4cc9e358ecfe9377ebfb2291a84c6e310",
+      "license": "MIT (code) + CC BY 4.0 (art and music)",
+      "source": "https://github.com/SimonLarsen/tobutobugirl-dx",
       "on": true
     }
   ],

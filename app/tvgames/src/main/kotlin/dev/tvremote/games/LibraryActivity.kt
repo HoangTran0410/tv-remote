@@ -775,8 +775,8 @@ class LibraryActivity : ComponentActivity() {
                     else { saved = h.optString("file").replace(Regex("[^A-Za-z0-9._-]"), "").takeIf { it.endsWith(".$ext") }   // arcade: the core knows a game by its zip's name
                         ?: (h.optString("name").replace(Regex("[^A-Za-z0-9 ._-]"), "") + ".$ext"); writeWhole(File(Systems.romsDir(this), saved), bytes) }
                 }
-            } catch (e: java.io.IOException) { msg = getString(if (e.message == "too big") R.string.rom_big else R.string.rom_net) }
-            catch (e: Exception) { msg = getString(R.string.rom_net) }
+            } catch (e: java.io.IOException) { android.util.Log.w("TvGames", "rom download", e); msg = getString(if (e.message == "too big") R.string.rom_big else R.string.rom_net) }
+            catch (e: Exception) { android.util.Log.w("TvGames", "rom download", e); msg = getString(R.string.rom_net) }
             runOnUiThread {
                 if (isDestroyed || dl !== d) return@runOnUiThread
                 dl = null

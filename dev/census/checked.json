@@ -1054,6 +1054,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
+ "4cc2cadf89af8d0bb8d9ca4c|0.42.2": {
+  "at": "2026-11-05T18:53:04+07:00",
+  "n": 1,
+  "note": "ADB health report: nobody answered Allow on the TV (MiTV); prompt handling as designed"
+ },
  "4ccc484580e6ccb279185260|0.19.0": {
   "at": "2026-10-29T17:19:31+07:00",
   "n": 3,
@@ -3140,29 +3145,34 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "e854671036bc5c993fe48c57|0.35.0": {
-  "at": "2026-11-04T16:11:40+07:00",
+  "at": "2026-11-05T18:53:04+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
+  "note": "ADB health report: TV refused 5555 (ADB off on the box); self-check covers it"
  },
  "e854671036bc5c993fe48c57|0.37.0": {
-  "at": "2026-11-04T16:11:40+07:00",
+  "at": "2026-11-05T18:53:04+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
+  "note": "ADB health report: TV refused 5555 (ADB off on the box); self-check covers it"
  },
  "e854671036bc5c993fe48c57|0.38.0": {
-  "at": "2026-11-04T16:11:40+07:00",
+  "at": "2026-11-05T18:53:04+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
+  "note": "ADB health report: TV refused 5555 (ADB off on the box); self-check covers it"
  },
  "e854671036bc5c993fe48c57|0.42.0": {
-  "at": "2026-11-04T16:11:40+07:00",
+  "at": "2026-11-05T18:53:04+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
+  "note": "ADB health report: TV refused 5555 (ADB off on the box); self-check covers it"
  },
  "e854671036bc5c993fe48c57|0.42.2": {
-  "at": "2026-11-04T16:11:40+07:00",
+  "at": "2026-11-05T18:53:04+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
+  "note": "ADB health report: TV refused 5555 (ADB off on the box); self-check covers it"
+ },
+ "e854671036bc5c993fe48c57|0.44.0": {
+  "at": "2026-11-05T18:53:04+07:00",
+  "n": 1,
+  "note": "ADB health report: TV refused 5555 (ADB off on the box); self-check covers it"
  },
  "e94dd9684f447e3743727f48|0.33.1": {
   "at": "2026-10-29T18:31:22+07:00",

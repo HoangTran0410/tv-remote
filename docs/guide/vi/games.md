@@ -13,4 +13,12 @@ Chỉ có remote của TV: cài bằng Downloader, mã **2294968**. Link trực 
 7. Game nghiêng điện thoại (Bóng bay, Bida, Máy bay giấy…): bấm **Bật nghiêng**. Trình duyệt cảnh báo vì chuyển sang https: bấm **Nâng cao** rồi **Tiếp tục** (iPhone thêm **Cho phép**).
 8. Game web bị treo hay mới cập nhật? Trên TV giữ OK ở game web → **Mở bản mới nhất**; trên điện thoại menu ⚙ → **Tải lại game**.
 
+| Bàn phím cắm vào TV: hai tay cầm | Người A | Người B |
+| --- | --- | --- |
+| Di chuyển | W A S D | ← &uarr; &darr; → |
+| A B X Y | J K U I | Num 1 2 4 5 (laptop:,. /;) |
+| L R | Q E | Num 7 8 (laptop: [ ]) |
+| Start | Enter | Num Enter (laptop: right Shift) |
+| Select | Tab | Num 0 (laptop: right Ctrl) |
+
 ### Mẹo

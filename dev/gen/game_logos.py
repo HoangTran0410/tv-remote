@@ -545,6 +545,7 @@ GAMES = {
     "opennes-breakout": ("Breakout", "#8a2fc9", "#2a1060", breakout),
     "opennes-pong": ("Pong", "#2f3f9a", "#0b123a", pong),
     "stb": ("Super Tilt Bro", "#1f7ad8", "#0c2f6e", None),
+    "tobudx": ("Tobu Tobu Girl", "#2a8f6a", "#0c3a3a", None),
 }
 
 
@@ -651,6 +652,7 @@ SPRITES = {
                          "LLL.LLL.LLL.LLL", "LLL.LLL.LLL.LLL", "", "", ".......WW", ".......WW", "", "", "..CCCCCCCCCC"],
     "stb": ["....GGGGG", "...GGGGGGG", "...GGGWKGG", "...GGGGGGG", "....GGGGG", "...LLLLLLLLLSSS", "..LLLLLLLLLLSSSS", "..LLLLLLL...SSS",
             "..LLLLLLL", "...BBBBBB", "...BB..BB", "..BB....BB", ".BBB....BBB"],
+    "tobudx": ["...YYYY", "..YYYYYY", "..YSSKSY", "..YSSSSY", "...SSSS", "..WWRRWW", ".EWWRRWWE", "EEWWRRWWEE", "..WWRRWW", "...SSSS", "...S..S", "..SS..SS"],
     "opennes-pong": ["", "", "WW", "WW", "WW", "WW............WW", "WW.....WW.....WW", "WW.....WW.....WW", "WW............WW", "WW............WW", "..............WW", "..............WW", "..............WW", "", "", ""],
 }
 # id: (background, title colour, frame colour)
@@ -661,7 +663,9 @@ RETRO = {
     "filefixers": ("#0c2048", "A", "B"), "tabletennis": ("#0c3030", "W", "T"), "opennes-snake": ("#0c2c14", "L", "G"),
     "opennes-breakout": ("#240c48", "Y", "M"), "opennes-pong": ("#0c1034", "W", "B"),
     "stb": ("#0c2c48", "Y", "C"),
+    "tobudx": ("#0c3028", "L", "T"),
 }
+BADGE = {"tobudx": ("GB", "G")}                                 # the corner badge of a card that is not NES: text, colour
 RETRO_NAMES = {"croom": "CONCENTRATION", "ghostsgraves": "GHOSTS & GRAVES"}     # where the pixel title differs from the name
 
 
@@ -722,8 +726,9 @@ def draw_retro(gid):
     ty = 7 + 7 * sc + sc + 3
     d.rectangle([20, ty, LW - 21, ty], fill=hx(PAL[fc]))       # a rule under the name
     _sprite(im, SPRITES[gid], LW // 2, 56, 3)
-    d.rectangle([128, 76, 155, 85], fill=hx(PAL["R"]), outline=hx(PAL["K"]))      # the NES badge
-    _text(im, "NES", 142, 78, 1, "W", "K")
+    bt, bc = BADGE.get(gid, ("NES", "R"))
+    d.rectangle([128, 76, 155, 85], fill=hx(PAL[bc]), outline=hx(PAL["K"]))      # the console badge
+    _text(im, bt, 142, 78, 1, "W", "K")
     big = im.resize((W, H), Image.NEAREST)
     px = big.load()
     for y in range(3, H, LS):                                  # scanlines: the last row of every pixel row, 22% darker

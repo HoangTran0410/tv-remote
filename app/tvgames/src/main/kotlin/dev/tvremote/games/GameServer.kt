@@ -364,7 +364,7 @@ class GameServer private constructor(private val ctx: Context) {
     }
 
     private fun key(i: Int, down: Boolean, name: String, stamp: Long? = null) {
-        val code = KEYS[name] ?: return
+        val code = (if (!webMode) PadMap.phone(system, name) else null) ?: KEYS[name] ?: return
         if (lobby) { onLobbyBtn(i + 1, name, down); return }
         if (!webMode && name !in buttons && name !in DPAD && name !in CHOICE) return
         synchronized(slots) { if (down) slots[i].held.add(code) else slots[i].held.remove(code) }

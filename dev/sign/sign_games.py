@@ -13,8 +13,8 @@ import json, os, re, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LIST = os.path.join(ROOT, "docs", "games", "games.json")
 KEY = os.environ.get("LAUNCHERS_KEY", os.path.expanduser("~/.tv-remote-release/launchers.key"))
-LAYOUTS = {"nes", "snes", "gba", "ps", "arcade", "web"}                         # the pad's looks (assets/pad/pad.js SYS)
-SYSTEMS = {"nes", "snes", "gba", "psx", "arcade"}                               # Systems.kt
+LAYOUTS = {"nes", "snes", "gba", "ps", "arcade", "pce", "sms", "md", "web"}                         # the pad's looks (assets/pad/pad.js SYS)
+SYSTEMS = {"nes", "snes", "gba", "psx", "arcade", "gb", "gbc", "md", "sms", "gg", "pce"}                               # Systems.kt
 ABIS = {"arm64-v8a", "armeabi-v7a", "x86_64", "x86"}
 HEX = re.compile(r"^[0-9a-f]{64}$")
 

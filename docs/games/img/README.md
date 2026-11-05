@@ -15,6 +15,7 @@ Emblems only suggest what a game is; they copy no game's art. The games themselv
 | Game | Licence | Source |
 |---|---|---|
 | Robo Run (Haseeb) | GPL-3.0 | https://github.com/heaven-hm/roborun-nes |
+| Tobu Tobu Girl Deluxe (Tangram Games) | MIT (code), CC BY 4.0 (art, music) | https://github.com/SimonLarsen/tobutobugirl-dx |
 | Nova the Squirrel (NovaSquirrel) | GPL-3.0 | https://github.com/NovaSquirrel/NovaTheSquirrel |
 | Witch n' Wiz (Matt Hughson) | MIT | https://github.com/mhughson/mbh-A53-witchnwiz |
 | Stallar, File Fixers (Wendel Scardua) | MIT | https://github.com/wendelscardua/stallar (file-fixers) |
