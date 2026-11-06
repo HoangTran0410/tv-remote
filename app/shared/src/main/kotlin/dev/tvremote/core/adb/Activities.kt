@@ -18,10 +18,10 @@ class Activities(private val sh: (String) -> String) {
     /** "pkg/.Screen" of every screen taking [action] (with [category], and [mime] as a data type), or null: the TV could not say. */
     fun query(action: String, category: String? = null, mime: String? = null): List<String>? {
         if (native != false) {
-            val got = brief(sh("cmd package query-activities --brief -a $action" + (if (category != null) " -c android.intent.category.$category" else "") +
+            val got = brief(sh("cmd package query-activities --brief ${dev.tvremote.core.ontv.TvUser.USER} -a $action" + (if (category != null) " -c android.intent.category.$category" else "") +
                 (if (mime != null) " -t $mime" else "") + " 2>/dev/null"))
             if (got.isNotEmpty()) { native = true; return got }
-            if (native == null) native = brief(sh("cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2>/dev/null")).isNotEmpty()
+            if (native == null) native = brief(sh("cmd package query-activities --brief ${dev.tvremote.core.ontv.TvUser.USER} -a android.intent.action.MAIN -c android.intent.category.HOME 2>/dev/null")).isNotEmpty()
             if (native == true) return got                           // the command works: nothing takes this intent
         }
         val t = filters() ?: return null

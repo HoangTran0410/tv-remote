@@ -72,3 +72,20 @@ Why some code looks odd ([the list](../DECISIONS.md)).
 - Settings is locked in kids mode even though Google TV lists it as a HOME handler: through Settings a child could clear or uninstall TV Setup or change the clock.
 - TV Setup hosts the PIN screen, so it is always free; its own rule screens (MainActivity, ManageActivity) still ask the code when a PIN or Authenticator is set (MainActivity at once in onResume; Guard catches Manage brought back from Recents via the UsageEvents class name). Opened once, it stays open until another app comes to the front.
 - Verified on emulator-5554 (Android 14): computer app → `totp` + `kids` → opening TV Channels shows the PIN screen → the current Authenticator code opens it; TV Setup with a PIN asks, right PIN opens, leaving and coming back asks again.
+
+## Profiles: which user a command acts on (`core/ontv/TvUser.kt`, 2026-11-07)
+Measured on the Google TV emulator (Android 14, `pm create-user`, `am switch-user 10`, so `am get-current-user` = 10). The shell is not told the user in front: the
+default depends on the command.
+| Command run by our code | User it acted on (current = 10) |
+|---|---|
+| `pm list packages` (all, `-d`, `-e`, `-3`, `-s`) | user 0 (153 packages; `--user 10` gave 140) |
+| `pm disable-user --user 0 P` | user 0; `pm list -d --user 10` stayed empty, so the profile in front still had P |
+| `pm enable P` / `pm enable --user 0 P` | user 0 |
+| `pm disable-user --user current` / `pm enable --user current` | user 10 (works on API 34) |
+| `cmd package query-activities` (Settings activity, app turned off for one user) | user 0: off for user 0 only gave 0 hits, off for user 10 only still 1 |
+| `settings put/get secure` (no `--user`) | user 10, the one in front (put DEF, read `--user 10` = DEF, `--user 0` unchanged) |
+The page read user 0 back after Optimize TV's `--user 0` write, so a TV with a profile looked right while the profile in front kept the app. Fix: apps' on/off writes and
+the list reads carry `TvUser.USER` (`--user $(am get-current-user | grep -E '^[0-9]+$' || echo 0)`, asked by the TV each time, 0 on Android before 8), so a write and its
+read-back are one user; `query-activities` for the Apps list, Optimize TV and the keep-check (`Procs.KEEP_NOW`) carries it too. `settings` is left alone.
+Not changed: the other `query-activities` / `resolve-activity` calls (launcher swap, TvShell's pickers, guard sets `Setup.handlers`) still see user 0; the Reoptimize and Undo
+lists written before this change were under user 0 and Undo now enables for the user in front only. Undo done while another profile is in front does not reach the first one.

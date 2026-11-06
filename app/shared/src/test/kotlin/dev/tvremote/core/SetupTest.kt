@@ -34,7 +34,8 @@ class SetupTest {
         var stayDown = false                                          // ...and it never comes back
         var restarts = true                                           // false: only the link dropped
         var lost = false
-        fun sh(cmd: String): String {
+        fun sh(raw: String): String {
+            val cmd = raw.replace(dev.tvremote.core.ontv.TvUser.ID, "0")
             if (lost) throw IOException("adb connection lost")
             said += cmd
             if (cmd == "pm path android") return "package:/system/framework/framework-res.apk"   // the package service is up
@@ -54,7 +55,7 @@ class SetupTest {
             return when {
                 cmd == "pm has-feature android.software.leanback" -> tv.toString()
                 cmd.startsWith("pm list packages -d") -> disabled.joinToString("\n") { "package:$it" }
-                cmd == "pm list packages -e" -> (installed - disabled).joinToString("\n") { "package:$it" }
+                cmd.startsWith("pm list packages -e") -> (installed - disabled).joinToString("\n") { "package:$it" }
                 cmd.startsWith("cmd package query-activities") && "HOME" in cmd ->
                     homes.keys.filter { on(it) }.joinToString("\n") { "priority=${homes[it]}\n$it/.Home" }.ifEmpty { "dev.fake.stub/.Home" }   // a TV that has query-activities always has a home
                 cmd == "settings get secure default_input_method" -> keyboard
@@ -211,9 +212,9 @@ class SetupTest {
             "# Needs only adb on this computer. With the TV on the network:  adb connect 192.168.1.5:5555",
             "#   then  sh tv-restore-BRAVIA-4K.sh      (several devices: ADB_SERIAL=<ip>:5555 sh tv-restore-BRAVIA-4K.sh)",
             "A=\"adb\"; [ -n \"\$ADB_SERIAL\" ] && A=\"adb -s \$ADB_SERIAL\"",
-            "\$A shell 'pm enable --user 0 com.google.android.tvlauncher'",
-            "\$A shell 'pm enable --user 0 com.google.android.tungsten.setupwraith/.Home'",
-            "\$A shell 'pm enable --user 0 com.mitv.tvhome'",
+            "\$A shell 'pm enable --user ${dev.tvremote.core.ontv.TvUser.ID} com.google.android.tvlauncher'",
+            "\$A shell 'pm enable --user ${dev.tvremote.core.ontv.TvUser.ID} com.google.android.tungsten.setupwraith/.Home'",
+            "\$A shell 'pm enable --user ${dev.tvremote.core.ontv.TvUser.ID} com.mitv.tvhome'",
             "\$A shell 'cmd package set-home-activity com.google.android.tvlauncher/.MainActivity'",
             "\$A shell 'rm -f ${Setup.OFF_LIST} ${dev.tvremote.core.ontv.LauncherSwap.REC}'",
             "\$A shell 'for k in ${Setup.ANIM}; do settings put global \$k 1.0; done'",
@@ -226,7 +227,7 @@ class SetupTest {
         val tv = FakeTv(true, *Setup.LAUNCHER, *Setup.WIZARD, Setup.HOME_PKG, "com.android.tv.settings")
         tv.setup().apply(Setup.Choice(anim = false, home = true, disable = emptyList()))
         val script = tv.setup().restore("Model X", "now", "10.0.2.2")
-        assertTrue("pm enable --user 0 ${Setup.LAUNCHERX}'" in script)
+        assertTrue("pm enable --user ${dev.tvremote.core.ontv.TvUser.ID} ${Setup.LAUNCHERX}'" in script)
         assertTrue("setupwraith/.Home'" in script)
         tv.setup().undo()
         assertFalse(tv.setup().optimized())

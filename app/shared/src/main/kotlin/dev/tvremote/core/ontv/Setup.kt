@@ -123,7 +123,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
             val f = restoreName(model)
             b.append("#   then  sh ").append(f).append("      (several devices: ADB_SERIAL=<ip>:$port sh ").append(f).append(")\n")
             b.append("A=\"adb\"; [ -n \"\$ADB_SERIAL\" ] && A=\"adb -s \$ADB_SERIAL\"\n")
-            for (p in pkgs) b.append("\$A shell 'pm enable --user 0 ").append(p).append("'\n")
+            for (p in pkgs) b.append("\$A shell '").append(TvUser.enable(p)).append("'\n")
             if (home.isNotEmpty() && SAFE.matches(home) && '/' in home)
                 b.append("\$A shell 'cmd package set-home-activity ").append(home).append("'\n")
             b.append("\$A shell 'rm -f ").append(OFF_LIST).append(' ').append(LauncherSwap.REC).append("'\n")
@@ -162,7 +162,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     }
 
     private fun off(): Set<String> =
-        Pkg.list(sh, "-d", empty = true)
+        Pkg.list(sh, "-d " + TvUser.USER, empty = true)
 
     private fun record(): List<String> = sh("cat $OFF_LIST 2>/dev/null").split("\n").map { it.trim() }.filter { it.isNotEmpty() }   // "" is in no list
 
@@ -209,7 +209,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     fun plan(label: (String) -> String?): org.json.JSONObject {
         tvOnly()
         Bloat.fresh()
-        val enabled = Pkg.list(sh, "-e")
+        val enabled = Pkg.list(sh, "-e " + TvUser.USER)
         val guard = (handlers() ?: throw IOException(t("optimize.cant_check_apps"))) + persistent()
         val suggest = suggested().filter { it in enabled && it !in guard }
         val home = homeNow()
@@ -339,7 +339,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
      */
     private fun turnOff(p: String): String {
         sh("grep -qx '$p' $OFF_LIST 2>/dev/null || echo '$p' >> $OFF_LIST")
-        val out = sh("pm disable-user --user 0 $p")
+        val out = sh(TvUser.disable(p))
         if (!DEAD.containsMatchIn(out)) sh("am force-stop $p")
         return out
     }
@@ -406,7 +406,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     fun undo() {
         var on = 0
         for (p in undoable())
-            if (has(p.substringBefore('/'))) { sh("pm enable --user 0 $p"); on++ }   // p may be one screen of an app (the wizard's Home)
+            if (has(p.substringBefore('/'))) { sh(TvUser.enable(p)); on++ }   // p may be one screen of an app (the wizard's Home)
         sh("rm -f $OFF_LIST")
         LauncherSwap(sh).let { s -> if (s.state()?.why == LauncherSwap.KEY) s.rollback("user") else s.dropKey(); s.forget() }   // the key filter lets Home pass
         sh("for k in $ANIM; do settings put global \$k 1.0; done")

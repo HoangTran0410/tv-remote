@@ -1,4 +1,5 @@
 package dev.tvremote.core.manage
+import dev.tvremote.core.ontv.TvUser
 import dev.tvremote.core.B64
 import dev.tvremote.core.Words
 import dev.tvremote.core.adb.Adb
@@ -107,7 +108,7 @@ internal class SetupApi(core: ManageCore, private val copy: TvCopy) : ManagePart
 
     /** Whether one of the TV's own launchers ([Setup.LAUNCHER]) is on: then it, not the HOME role, decides where Home lands. */
     private fun stockOn(): Boolean {
-        val on = sh("pm list packages -e").split("\n").map { it.removePrefix("package:").trim() }
+        val on = sh(TvUser.list("-e")).split("\n").map { it.removePrefix("package:").trim() }
         return Setup.LAUNCHER.any { it in on }
     }
 

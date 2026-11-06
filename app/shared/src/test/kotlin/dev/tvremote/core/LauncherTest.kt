@@ -44,7 +44,8 @@ class LauncherTest {
             if (forgot) return "android/com.android.internal.app.ResolverActivity"
             return on.maxByOrNull { it.value }?.key?.let { "$it/.Home" } ?: "android/.Resolver"
         }
-        fun sh(cmd: String): String {
+        fun sh(raw: String): String {
+            val cmd = raw.replace(dev.tvremote.core.ontv.TvUser.ID, "0")
             said += cmd
             Regex("^pm disable-user --user 0 (\\S+)$").find(cmd)?.let { disabled += it.groupValues[1]; chosen = null; return "" }
             Regex("^pm disable --user 0 (\\S+) 2>&1$").find(cmd)?.let { if (!wizardLocked) disabled += it.groupValues[1]; chosen = null; return "" }
@@ -72,7 +73,7 @@ class LauncherTest {
                     "Broadcast completed: result=0, data=\"" + java.util.Base64.getEncoder().encodeToString(st.toString().toByteArray()) + "\""
                 }
                 cmd.startsWith("pm list packages -U ") -> "package:${cmd.substringAfterLast(' ')} uid:10039"
-                cmd == "pm list packages -e" -> (installed - disabled).joinToString("\n") { "package:$it" }
+                cmd.startsWith("pm list packages -e") -> (installed - disabled).joinToString("\n") { "package:$it" }
                 cmd.startsWith("pm list packages -d") -> disabled.joinToString("\n") { "package:$it" }
                 cmd.startsWith("cmd package query-activities") ->
                     homes.keys.filter { it in installed && it !in disabled && "$it/.Home" !in disabled }.joinToString("\n") { "priority=${homes[it]}\n$it/.Home" }
