@@ -242,12 +242,12 @@ async function homeOpen() {
   const apps = () => r.apps.map((a) => a.pkg);
   const send = async (change) => {
     const n = await homeLink.write(change);
-    if (n && n.installed) { r = n; homeNow = n; draw(); }
+    if (n && n.installed && take(n)) draw();   // no `config` in the answer: keep what is drawn
   };
   // only a whole snapshot replaces what is drawn: an answer without `config` (a failed or partial upload on a weak link) left r with
   // none and every redraw threw (census 5829f935, 0.44.0, a photo picked)
   const take = (n) => { if (n && n.config) { r = n; homeNow = n; return true; } return false; };
-  const after = async (n) => { take(n); draw(); const t = await homeLink.read(true); if (t && t.installed) { keepThumbs(t); r = t; homeNow = t; draw(); } };   // a photo came or went: its small picture
+  const after = async (n) => { if (take(n)) draw(); const t = await homeLink.read(true); if (t && t.installed && take(t)) { keepThumbs(t); draw(); } };   // a photo came or went: its small picture; take(): an answer without `config` is not drawn
   const dropPhoto = async (id) => { const n = await homeLink.drop(id); if (n && n.installed) await after(n); };
   // on the TV itself (TV Setup's page) there is no ✕ to aim at with the D-pad: OK held on a photo asks, then deletes, as on TV Home
   const holdDrop = (b, id) => {
@@ -639,7 +639,7 @@ async function homeOpen() {
     // up to 3 (a whole photo's blur, a page's snap: a weak box may need more than the first 2 s)
     if (!now && homeShots.now && (prevAsked !== key || prevTries < 3) && !HOME_ART[c.wall] && !HOME_WALLS[c.wall]) {
       prevTries = prevAsked === key ? prevTries + 1 : 1; prevAsked = key;
-      setTimeout(async () => { const t = await homeLink.read(true, true); if (t && t.installed && d.isConnected) { keepThumbs(t); r = t; homeNow = t; drawPrev(r.config); } }, 2000);
+      setTimeout(async () => { const t = await homeLink.read(true, true); if (t && t.installed && d.isConnected && take(t)) { keepThumbs(t); drawPrev(r.config); } }, 2000);
     }
     const paint = (img) => { if (at === prevAt) homeThemePaint(prevCv, c, tiles, img, look, new Date()); };
     paint(null);

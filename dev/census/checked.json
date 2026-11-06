@@ -205,19 +205,19 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "11e6a1d8790c4769373b5dbb|0.26.3": {
-  "at": "2026-11-06T12:38:08+07:00",
+  "at": "2026-11-07T05:15:47+07:00",
   "n": 1,
-  "note": "Zalo in-app browser's own zaloJSV2 eval (<anonymous>:1:2); errbox now ignores <anonymous>-only stacks"
+  "note": "zaloJSV2 is injected by Zalo in-app browser, not our code"
  },
  "11e6a1d8790c4769373b5dbb|0.27.0": {
-  "at": "2026-11-06T12:38:08+07:00",
+  "at": "2026-11-07T05:15:47+07:00",
   "n": 1,
-  "note": "Zalo in-app browser's own zaloJSV2 eval (<anonymous>:1:2); errbox now ignores <anonymous>-only stacks"
+  "note": "zaloJSV2 is injected by Zalo in-app browser, not our code"
  },
  "11e6a1d8790c4769373b5dbb|0.32.1": {
-  "at": "2026-11-06T12:38:08+07:00",
+  "at": "2026-11-07T05:15:47+07:00",
   "n": 1,
-  "note": "Zalo in-app browser's own zaloJSV2 eval (<anonymous>:1:2); errbox now ignores <anonymous>-only stacks"
+  "note": "zaloJSV2 is injected by Zalo in-app browser, not our code"
  },
  "11f560fd63eab6e7d75a2f82|0.34.1": {
   "at": "2026-10-30T09:08:05+07:00",
@@ -360,44 +360,44 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "1b64c0fdb7081f015b2765c2|0.22.1": {
-  "at": "2026-11-05T17:16:58+07:00",
+  "at": "2026-11-07T05:15:48+07:00",
   "n": 1,
-  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
+  "note": "fixed 5d4096ec typeof guard, old versions only"
  },
  "1b64c0fdb7081f015b2765c2|0.23.0": {
-  "at": "2026-11-05T17:16:58+07:00",
+  "at": "2026-11-07T05:15:48+07:00",
   "n": 2,
-  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
+  "note": "fixed 5d4096ec typeof guard, old versions only"
  },
  "1b64c0fdb7081f015b2765c2|0.24.0": {
-  "at": "2026-11-05T17:16:58+07:00",
+  "at": "2026-11-07T05:15:48+07:00",
   "n": 5,
-  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
+  "note": "fixed 5d4096ec typeof guard, old versions only"
  },
  "1b64c0fdb7081f015b2765c2|0.24.1": {
-  "at": "2026-11-05T17:16:58+07:00",
+  "at": "2026-11-07T05:15:48+07:00",
   "n": 2,
-  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
+  "note": "fixed 5d4096ec typeof guard, old versions only"
  },
  "1b64c0fdb7081f015b2765c2|0.25.0": {
-  "at": "2026-11-05T17:16:58+07:00",
+  "at": "2026-11-07T05:15:48+07:00",
   "n": 5,
-  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
+  "note": "fixed 5d4096ec typeof guard, old versions only"
  },
  "1b64c0fdb7081f015b2765c2|0.26.0": {
-  "at": "2026-11-05T17:16:58+07:00",
+  "at": "2026-11-07T05:15:48+07:00",
   "n": 1,
-  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
+  "note": "fixed 5d4096ec typeof guard, old versions only"
  },
  "1b64c0fdb7081f015b2765c2|0.26.1": {
-  "at": "2026-11-05T17:16:58+07:00",
+  "at": "2026-11-07T05:15:48+07:00",
   "n": 8,
-  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
+  "note": "fixed 5d4096ec typeof guard, old versions only"
  },
  "1b64c0fdb7081f015b2765c2|0.26.3": {
-  "at": "2026-11-05T17:16:58+07:00",
+  "at": "2026-11-07T05:15:48+07:00",
   "n": 8,
-  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
+  "note": "fixed 5d4096ec typeof guard, old versions only"
  },
  "1bb957ff3a488ee2d9b284a4|0.42.0": {
   "at": "2026-11-04T06:24:38+07:00",
@@ -1315,9 +1315,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "5829f9352b7b17a070bc391f|0.44.0": {
-  "at": "2026-11-06T07:18:04+07:00",
+  "at": "2026-11-07T05:15:46+07:00",
   "n": 1,
-  "note": "home.js: an upload answer without config replaced r; take() keeps only whole snapshots"
+  "note": "home.js after/send/preview retry drew an answer without config: now take() (this commit)"
  },
  "58e80942ee619021d01ddea4|0.29.0": {
   "at": "2026-11-05T10:40:19+07:00",
@@ -1485,9 +1485,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "630851a66dd88f88ce3eb053|0.18.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-07T05:15:47+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "framework TextClock detach on Android 11 Xiaomi, TV Home 0.18.0 only; not ours"
  },
  "6453fc09f98a48af143c6eb9|0.42.0": {
   "at": "2026-11-03T23:36:46+07:00",
