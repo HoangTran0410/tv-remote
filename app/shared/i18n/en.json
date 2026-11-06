@@ -1568,7 +1568,7 @@
  "setup.turn_on_adb_title": "Allow full control",
  "setup.turn_on_adb_note": "To open apps, see the screen and install apps on the TV. Press the button below and this page does it for you.",
  "setup.ts_step_title": "Control the TV away from home",
- "setup.ts_step_later": "Optional. Do it after step 1.",
+ "setup.ts_step_later": "Optional. Do it once ADB is on.",
  "setup.ts_in_network": "Tailscale is on the network",
  "setup.ts_ip_note": "The TV’s Tailscale IP: {ip}. Worth doing: in the Tailscale admin page open the TV’s ⋯ menu → Disable key expiry, so the TV is not signed out after about 180 days.",
  "setup.remote_paired": "Remote buttons paired",

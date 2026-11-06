@@ -1571,7 +1571,7 @@
   "setup.turn_on_adb_title": "Autoriser le contrôle complet",
   "setup.turn_on_adb_note": "Pour ouvrir des applis, voir l'écran et installer des applis sur la TV. Appuyez sur le bouton ci-dessous : cette page s'en charge.",
   "setup.ts_step_title": "Contrôler la TV hors de chez vous",
-  "setup.ts_step_later": "Facultatif. À faire après l'étape 1.",
+  "setup.ts_step_later": "Facultatif. À faire une fois ADB activé.",
   "setup.ts_in_network": "Tailscale est sur le réseau",
   "setup.ts_ip_note": "IP Tailscale de la TV : {ip}. À faire : dans la page d’administration de Tailscale, ouvrez le menu ⋯ de la TV → Désactiver l’expiration de la clé, pour que la TV ne soit pas déconnectée au bout d’environ 180 jours.",
   "setup.remote_paired": "Touches de la télécommande associées",

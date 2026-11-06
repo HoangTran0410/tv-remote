@@ -1597,7 +1597,7 @@
  "setup.turn_on_adb_title": "Разрешить полное управление",
  "setup.turn_on_adb_note": "Чтобы открывать и устанавливать приложения и видеть экран ТВ. Нажмите кнопку ниже — страница всё сделает сама.",
  "setup.ts_step_title": "Управление вне дома",
- "setup.ts_step_later": "Необязательно. После шага 1.",
+ "setup.ts_step_later": "Необязательно. Когда ADB будет включён.",
  "setup.ts_in_network": "Tailscale в сети",
  "setup.ts_ip_note": "IP Tailscale ТВ: {ip}. Стоит сделать: в админке Tailscale меню ⋯ у ТВ → Disable key expiry, чтобы через ~180 дней не вышел из аккаунта.",
  "setup.remote_paired": "Кнопки пульта сопряжены",

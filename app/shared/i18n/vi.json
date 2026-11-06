@@ -1502,7 +1502,7 @@
  "setup.turn_on_adb_title": "Cho phép điều khiển đầy đủ",
  "setup.turn_on_adb_note": "Để mở app, xem màn hình và cài app trên TV. Bấm nút dưới, trang này làm giúp bạn.",
  "setup.ts_step_title": "Điều khiển khi không ở nhà",
- "setup.ts_step_later": "Không bắt buộc. Làm sau bước 1.",
+ "setup.ts_step_later": "Không bắt buộc. Làm sau khi bật ADB.",
  "setup.ts_in_network": "Tailscale đã vào mạng",
  "setup.ts_ip_note": "IP Tailscale của TV: {ip}. Nên làm thêm: trong trang quản trị Tailscale, mở menu ⋯ của TV → Disable key expiry, để TV không bị đăng xuất sau khoảng 180 ngày.",
  "setup.remote_paired": "Nút remote đã ghép",

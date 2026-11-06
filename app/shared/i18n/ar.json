@@ -1656,7 +1656,7 @@
  "setup.turn_on_adb_title": "اسمح بالتحكم الكامل",
  "setup.turn_on_adb_note": "لفتح التطبيقات، ورؤية الشاشة، وتثبيت التطبيقات على التلفزيون. اضغط الزر بالأسفل وتتولى هذه الصفحة الباقي.",
  "setup.ts_step_title": "تحكّم في التلفزيون وأنت خارج البيت",
- "setup.ts_step_later": "اختياري. سوّه بعد الخطوة 1.",
+ "setup.ts_step_later": "اختياري. سوّه بعد تشغيل ADB.",
  "setup.ts_in_network": "Tailscale متصل بالشبكة",
  "setup.ts_ip_note": "IP التلفزيون في Tailscale: {ip}. يُنصح به: في صفحة إدارة Tailscale افتح قائمة ⋯ الخاصة بالتلفزيون ← Disable key expiry، حتى لا يُسجَّل خروج التلفزيون بعد حوالي 180 يومًا.",
  "setup.remote_paired": "أزرار الريموت مرتبطة",
