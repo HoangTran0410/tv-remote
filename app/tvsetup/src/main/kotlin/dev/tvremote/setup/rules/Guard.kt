@@ -352,7 +352,10 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
     private var noAdbSaid = false
 
     /** A rule could not act for want of ADB: one word on screen per failure episode (until ADB answers again), and the census hears it once per version. */
-    private fun noAdb(text: String) {
+    private fun noAdb(said: String) {
+        // Fire TV: "ADB debugging is off" was false (census AFTMA2857F, 2026-11-07); Amazon blocks an app's own ADB, nothing on the TV turns it on
+        val text = if (!android.os.Build.MANUFACTURER.equals("Amazon", true)) said
+            else said.substringBefore(':').trimEnd() + ": " + T("tv_main.fire_adb_blocked")
         AdbReport.once(c, "rules_no_adb", text)
         if (noAdbSaid) return
         noAdbSaid = true
