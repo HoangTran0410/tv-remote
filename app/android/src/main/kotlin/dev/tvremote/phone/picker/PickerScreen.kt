@@ -110,7 +110,7 @@ internal fun MainActivity.wake(ip: String) {
 }
 
 /** The port that answers while the TV is on: ADB's on an Android TV, the remote link's on an LG or Samsung TV. */
-internal fun MainActivity.upPort(ip: String): Int = kindOf(ip).let { if (it == Remote.Kind.ANDROID) 5555 else Remote.Kind.ports(it).first() }
+internal fun MainActivity.upPort(ip: String): Int = kindOf(ip).let { if (it == Remote.Kind.ANDROID) dev.tvremote.core.adb.AdbPort.of(ip) else Remote.Kind.ports(it).first() }
 
 // ---------------------------------------------------------------- saved TVs
 internal fun MainActivity.name(ip: String): String = pref("name:$ip")
@@ -160,7 +160,7 @@ internal fun MainActivity.probeSaved() {
             val t0 = System.currentTimeMillis()
             // the saved address first, then the TV's other one: its Tailscale IP when away, its home IP when at home
             val via = listOf(ip, pref("ts:$ip"), pref("lan:$ip")).filter { it.isNotEmpty() }.distinct()
-                .firstOrNull { h -> kindOf(ip).let { k -> if (k != Remote.Kind.ANDROID) Remote.Kind.ports(k).any { open(h, it, 1500) } else open(h, 5555, 2500) || prefs.getBoolean("atv:$ip", false) && open(h, 6466, 1500) } }
+                .firstOrNull { h -> kindOf(ip).let { k -> if (k != Remote.Kind.ANDROID) Remote.Kind.ports(k).any { open(h, it, 1500) } else adbPortUp(h, 2500) > 0 || prefs.getBoolean("atv:$ip", false) && open(h, 6466, 1500) } }
             val up = via != null
             if (!up) try { Thread.sleep((1000 - (System.currentTimeMillis() - t0)).coerceAtLeast(0)) } catch (e: InterruptedException) { }   // a refused port answers at once: "trying again" must still be seen
             val lan = pref("lan:$ip")
@@ -299,7 +299,7 @@ internal fun MainActivity.scan() {
             val lan = lanNetwork()
             val seen = { ip: String ->
                 if (synchronized(found) { if (ip in found) false else found.add(ip) }) {
-                    val adb = open(ip, 5555, 900, lan)
+                    val adb = adbPortScan(ip, 900, lan) > 0
                     if (ip in saved && adb && host == null) ui.post { route[ip] = ip; reach[ip] = true; showReach(ip, true) }   // found here: not "no answer" above
                     val n = name(ip).ifEmpty { dev.tvremote.core.remote.Ssdp.castName(ip) }
                     ui.post { foundList.addView(foundRow(ip, n, adb)) }   // shown as soon as it answers, not after the whole network
@@ -310,7 +310,7 @@ internal fun MainActivity.scan() {
             val pool = Executors.newFixedThreadPool(96)
             for (net in nets) for (i in 1 until 255) {
                 val ip = net + i
-                pool.execute { if (open(ip, 6466, 900, lan) || open(ip, 5555, 900, lan)) seen(ip) }
+                pool.execute { if (open(ip, 6466, 900, lan) || adbPortScan(ip, 900, lan) > 0) seen(ip) }
             }
             pool.shutdown()
             pool.awaitTermination(25, TimeUnit.SECONDS)

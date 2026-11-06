@@ -1,6 +1,7 @@
 package dev.tvremote.phone.scenes
 
 import dev.tvremote.phone.picker.message
+import dev.tvremote.phone.picker.adbPortUp
 import dev.tvremote.phone.picker.open
 import dev.tvremote.phone.picker.reachAroundVpn
 
@@ -46,7 +47,7 @@ internal class Headless(private val c: Context) {
             } catch (e: Remote.Refused) { T("headless.the_tv_said_no", "name" to name)
             } catch (e: Exception) { name + ": " + (e.message ?: e.javaClass.simpleName) } finally { a.close() }
         }
-        via.firstOrNull { open(it, 5555, 2000) }?.let { host ->
+        via.firstOrNull { adbPortUp(it, 2000) > 0 }?.let { host ->
             val link = AdbLink(c.filesDir, host)
             var err: String? = null
             var done = false
