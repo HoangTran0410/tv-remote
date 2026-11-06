@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Optimize TV, the Apps tab, scenes and the home-screen swap now work on Android 5-8 TVs, which have no `cmd package query-activities`: they read the package manager's own table instead, and Optimize refuses to turn anything off (with a plain message) when the TV cannot say which apps are Settings or inputs.
 - A step that fails while ADB still works (a bad link to pin, the TV not answering one command, a full disk on the phone) now says what failed, not "no ADB connection to the TV yet".
 - Wireless debugging: a pairing the TV forgot now says "pair again" instead of a raw "Failure in SSL library", and a TLS port that went away is forgotten instead of being dialled on every try.
 - Installing TV Games / TV Channels / TV Apps while GitHub cannot be reached says so, instead of "it comes in the next release".

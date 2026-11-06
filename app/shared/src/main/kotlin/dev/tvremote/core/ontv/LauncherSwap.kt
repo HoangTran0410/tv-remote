@@ -24,7 +24,6 @@ class LauncherSwap(private val sh: (String) -> String, private val log: (String)
     companion object {
         const val REC = "/data/local/tmp/tvr-launcher.json"
         const val CONFIRM_SEC = 30
-        private const val HOMES = "cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2>/dev/null"
         /**
          * The home screen in use, its component on the last line. Android 10+ keeps it as the HOME role: resolve-activity answered
          * Android's picker on an FPT box (Android 14) right after another launcher was installed, while Home still opened TV Home, and
@@ -143,9 +142,14 @@ class LauncherSwap(private val sh: (String) -> String, private val log: (String)
     private fun enabled(): Set<String> =
         sh("pm list packages -e").split("\n").map { it.removePrefix("package:").trim() }.filter { it.isNotEmpty() }.toSet()
 
-    private fun homes(): List<String> = sh(HOMES).split("\n").map { it.trim() }.filter { it.contains('/') && !it.startsWith("priority") && !factory(it) }
+    private fun homes(): List<String> = (acts.query("android.intent.action.MAIN", "HOME") ?: emptyList()).filter { !factory(it) }
+    private val acts = dev.tvremote.core.adb.Activities(sh)
 
-    fun homeNow(): String = last(sh(RESOLVE_HOME))
+    /** The home screen in use; where the TV cannot say (Android 8 and older) the only launcher it has, else "". */
+    fun homeNow(): String {
+        val r = last(sh(RESOLVE_HOME))
+        return if (r.matches(Regex("[\\w.]+/[\\w.$]+"))) r else (homes().singleOrNull() ?: "")
+    }
 
     /** What the Home button opens for the person: the launcher of a kept key-way record, else the HOME role ([homeNow]). */
     fun homeOpens(): String = state()?.takeIf { it.why == KEY && it.state == "kept" && it.comp in homes() }?.comp ?: homeNow()

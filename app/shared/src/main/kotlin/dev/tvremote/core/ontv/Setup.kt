@@ -21,6 +21,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     constructor(link: dev.tvremote.core.adb.AdbLink, dir: File?, lang: String, log: Log) : this(null, dir, lang, { link.get().shell(it) }, { link.get() }, log)
     private val adb: Adb? get() = fresh?.invoke() ?: adb0
     private fun t(id: String, vararg a: Pair<String, Any?>) = Words.get(lang, id, *a)
+    private val acts = dev.tvremote.core.adb.Activities(sh)          // asked once per run: the resolver table is read at most once
 
     companion object {
         /** The home screen Optimize TV gives: TV Home, this project's own (was FLauncher, a 10 MB download from someone else's releases). */
@@ -84,11 +85,19 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
          * emulator's to com.android.tv.provision). Or a PERSISTENT one: Android starts it again, it never stays off (tv-detox).
          * One shell call, made only before turning one off, clearing or removing it.
          */
-        fun inUse(sh: (String) -> String, p: String): Boolean = inUse(
-            sh("dumpsys package $p 2>/dev/null | grep -cE 'android.permission.TV_INPUT_HARDWARE| pkgFlags=.*PERSISTENT'; dumpsys wifi 2>/dev/null | grep -cE 'cname=$p([ ,]|$)'" +
+        fun inUse(sh: (String) -> String, p: String): Boolean = inUse(sh("dumpsys package $p 2>/dev/null | grep -cE 'android.permission.TV_INPUT_HARDWARE| pkgFlags=.*PERSISTENT'; dumpsys wifi 2>/dev/null | grep -cE 'cname=$p([ ,]|$)'" +
                 // the TV's Settings and inputs, whatever the brand calls them: a Sony whose Settings another tool removed hung at its logo
                 "; cmd package query-activities --brief -a android.settings.SETTINGS 2>/dev/null | grep -c '^ *$p/'" +
-                "; cmd package query-activities --brief -a android.intent.action.VIEW -t vnd.android.cursor.item/channel 2>/dev/null | grep -c '^ *$p/'"))
+                "; cmd package query-activities --brief -a android.intent.action.VIEW -t vnd.android.cursor.item/channel 2>/dev/null | grep -c '^ *$p/'" +
+                // q0: this TV has no query-activities (Android 8 and older), so the two counts above mean nothing
+                "; cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2>/dev/null | grep -q / || echo q0").let { out ->
+            if (!out.lines().any { it.trim() == "q0" }) out
+            else {                                                    // asked of the resolver table instead; unknown = in use (fail closed)
+                val a = dev.tvremote.core.adb.Activities(sh)
+                val mine = listOf(a.packages("android.settings.SETTINGS"), a.packages("android.intent.action.VIEW", mime = "vnd.android.cursor.item/channel"))
+                if (mine.any { it == null }) "1" else out + "\n" + mine.count { p in it!! }
+            }
+        })
         fun inUse(out: String): Boolean = out.lines().any { (it.trim().toIntOrNull() ?: 0) > 0 }
         /** What this project turned off beyond its own lists, so Undo can turn exactly that back on. Kept on the TV. */
         const val OFF_LIST = "/data/local/tmp/tvr-disabled.txt"
@@ -200,20 +209,20 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
         tvOnly()
         Bloat.fresh()
         val enabled = sh("pm list packages -e").split("\n").filter { it.startsWith("package:") }.map { it.substring(8).trim() }.toSet()
-        val guard = handlers() + persistent()
+        val guard = (handlers() ?: throw IOException(t("optimize.cant_check_apps"))) + persistent()
         val suggest = suggested().filter { it in enabled && it !in guard }
         val home = homeNow()
         val shown = HashSet<String>()
+        var unknown = false
         for (cat in arrayOf("LEANBACK_LAUNCHER", "LAUNCHER"))              // the apps a person sees on the TV
-            for (line in sh("cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.$cat 2>/dev/null").split("\n"))
-                if (line.contains('/')) shown.add(line.trim().substringBefore('/'))
+            acts.packages("android.intent.action.MAIN", cat)?.let { shown.addAll(it) } ?: run { unknown = true }
         val others = shown.filter { it in enabled && it !in suggest && it != home && !kept(it) && it !in guard }.sortedBy { (label(it) ?: it).lowercase() }
         fun item(p: String) = org.json.JSONObject().put("pkg", p).put("label", Bloat.suggest()[p] ?: label(p) ?: NAMES[p] ?: p.split('.').let { s -> if (s.last().length <= 3 && s.size > 1) s.takeLast(2).joinToString(".") else s.last() })
         return org.json.JSONObject()
             .put("anim", sh("settings get global window_animation_scale").trim() != "0.0")
             .put("tvhome", has(HOME_PKG)).put("home", home)
             .put("suggest", org.json.JSONArray(suggest.map { item(it) }))
-            .put("apps", org.json.JSONArray(others.map { item(it) }))
+            .put("apps", org.json.JSONArray(others.map { item(it) })).put("apps_unknown", unknown)
     }
 
     /** What to do: animations off, FLauncher as the home screen, and which apps to turn off (null: the suggested ones). */
@@ -237,7 +246,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
 
         Bloat.fresh()
         val pick = c.disable ?: suggested()
-        val keep = setOf(homeNow(), keyboardNow().substringBefore('/'), if (c.home) HOME_PKG else "") + handlers()   // whatever the list says, the TV keeps a home, a keyboard, its inputs and Settings
+        val keep = setOf(homeNow(), keyboardNow().substringBefore('/'), if (c.home) HOME_PKG else "") + (handlers() ?: throw IOException(t("optimize.cant_check_apps"))) + homes()   // whatever the list says, the TV keeps a home, a keyboard, its inputs and Settings
         val said = LinkedHashMap<String, String>()                    // each app tried, and pm's last line about it
         val sys = systemPid()
         for (p in pick.distinct()) {
@@ -305,10 +314,16 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     /**
      * The apps that open an input (VIEW of a channel: TV Home's input tiles, InputOpen) and Settings, asked of the TV rather than by
      * name: one turned off left the input tiles dead on a Sony W800G and Settings unreachable on a W800C (cleanyourtv 6fa18972).
-     * Empty where the shell has no query-activities (Android 8 and older): the name lists alone, as before.
+     * Android 8 and older have no query-activities: [Activities] reads the resolver table; null (neither works) refuses the step.
      */
-    private fun handlers(): Set<String> = sh("cmd package query-activities --brief -a android.intent.action.VIEW -t vnd.android.cursor.item/channel 2>/dev/null;" +
-        " cmd package query-activities --brief -a android.settings.SETTINGS 2>/dev/null").split("\n").filter { it.contains('/') }.map { it.trim().substringBefore('/') }.toSet()
+    private fun handlers(): Set<String>? {
+        val ch = acts.packages("android.intent.action.VIEW", mime = "vnd.android.cursor.item/channel")
+        val st = acts.packages("android.settings.SETTINGS")
+        return if (ch == null || st == null) null else ch + st       // null: the TV could not say, so nothing may be turned off on a guess
+    }
+
+    /** Every launcher the TV has: on a TV whose default home cannot be asked (Android 8 and older) none of them is turned off. */
+    private fun homes(): Set<String> = acts.packages("android.intent.action.MAIN", "HOME") ?: emptySet()
 
     /** The PERSISTENT apps, never offered: filtered on the TV, ~150 B and ~35 ms where the whole dump is ~600 KB (emulator). */
     private fun persistent(): Set<String> = sh("dumpsys package packages 2>/dev/null | awk '/^  Package \\[/{p=\$2} / pkgFlags=\\[.*PERSISTENT/{print substr(p,2,length(p)-2)}'")

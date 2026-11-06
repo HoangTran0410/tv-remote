@@ -56,7 +56,7 @@ class SetupTest {
                 cmd.startsWith("pm list packages -d") -> disabled.joinToString("\n") { "package:$it" }
                 cmd == "pm list packages -e" -> (installed - disabled).joinToString("\n") { "package:$it" }
                 cmd.startsWith("cmd package query-activities") && "HOME" in cmd ->
-                    homes.keys.filter { on(it) }.joinToString("\n") { "priority=${homes[it]}\n$it/.Home" }
+                    homes.keys.filter { on(it) }.joinToString("\n") { "priority=${homes[it]}\n$it/.Home" }.ifEmpty { "dev.fake.stub/.Home" }   // a TV that has query-activities always has a home
                 cmd == "settings get secure default_input_method" -> keyboard
                 cmd == "ime list -s" -> keyboards.joinToString("\n")
                 cmd == "cat ${Setup.OFF_LIST} 2>/dev/null" -> offList.joinToString("\n")

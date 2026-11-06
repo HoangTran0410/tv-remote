@@ -2474,6 +2474,7 @@
  "tv_server.locked_15": "Nhập sai mã nhiều lần: đợi 15 phút rồi thử lại.",
  "tv_server.wait_s": "Đợi {n} giây rồi thử lại.",
  "optimize.device_not_tv_optimize": "Máy này không phải TV. Tối ưu TV đổi màn hình chính và tắt app hệ thống, nên chỉ dùng cho TV.",
+ "optimize.cant_check_apps": "Chưa hỏi được TV đâu là Cài đặt và cổng vào, nên không tắt app nào. Hãy cập nhật TV Setup rồi thử lại.",
  "optimize.tailscale_starts_again_by": "✓ Tailscale: tự chạy lại sau khi TV ngủ hoặc khởi động lại",
  "optimize.transition_animations_off": "✓ Hiệu ứng chuyển cảnh: tắt",
  "optimize.turned_off_apps": "✓ Đã tắt {n} app",

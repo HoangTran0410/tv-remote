@@ -2570,6 +2570,7 @@
     "other": "Attendez {n} secondes, puis réessayez."
   },
   "optimize.device_not_tv_optimize": "Cet appareil n’est pas une TV. Optimiser la TV remplace l’écran d’accueil et désactive des applications système : c’est réservé aux TV.",
+  "optimize.cant_check_apps": "La TV n’a pas dit quelles applis sont les Réglages ou les entrées : rien n’a été désactivé. Mettez TV Setup à jour et réessayez.",
   "optimize.tailscale_starts_again_by": "✓ Tailscale : redémarre tout seul après la veille ou un redémarrage",
   "optimize.transition_animations_off": "✓ Animations de transition : désactivées",
   "optimize.turned_off_apps": {

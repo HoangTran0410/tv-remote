@@ -2681,6 +2681,7 @@
   "other": "انتظر {n} ثانية ثم أعد المحاولة."
  },
  "optimize.device_not_tv_optimize": "هذا الجهاز ليس تلفزيونًا. تسريع التلفزيون يغيّر الشاشة الرئيسية ويوقف تطبيقات النظام، لذلك هو للتلفزيونات فقط.",
+ "optimize.cant_check_apps": "لم يحدد التلفزيون تطبيقات الإعدادات والمدخلات، لذلك لم يُوقَف أي تطبيق. حدّث TV Setup وحاول مجددًا.",
  "optimize.tailscale_starts_again_by": "✓ Tailscale: يعمل من جديد تلقائيًا بعد وضع الاستعداد أو إعادة التشغيل",
  "optimize.transition_animations_off": "✓ الحركات الانتقالية: متوقفة",
  "optimize.turned_off_apps": {

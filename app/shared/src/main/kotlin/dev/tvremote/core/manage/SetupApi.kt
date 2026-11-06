@@ -92,8 +92,8 @@ internal class SetupApi(core: ManageCore, private val copy: TvCopy) : ManagePart
         if (pkg in Setup.LAUNCHER && swapped) {
             swap.rollback("user")
             if (swap.homeNow().substringBefore('/') != pkg)            // rollback chose the one before, not the one picked
-                sh("c=\$(cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME | grep -m1 '$pkg/'); " +
-                    "[ -n \"\$c\" ] && cmd package set-home-activity \$c >/dev/null 2>&1")
+                dev.tvremote.core.adb.Activities(::sh).query("android.intent.action.MAIN", "HOME")?.firstOrNull { it.startsWith("$pkg/") }
+                    ?.let { sh("cmd package set-home-activity $it >/dev/null 2>&1") }
         } else if (pkg !in Setup.LAUNCHER && (swapped || stockOn())) {
             if (!swap.take(pkg)) {
                 val why = swap.refused.ifEmpty { swap.state()?.why ?: "" }   // the Wi-Fi or casting the wizard holds: what to do about it, not only "refused"
