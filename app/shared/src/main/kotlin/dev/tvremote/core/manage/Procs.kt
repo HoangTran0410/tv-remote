@@ -35,8 +35,8 @@ internal object Procs {
 
     /** The home screen, the keyboard and the accessibility services in use, the apps the user installed and the ones with a tile, as [keepNow] reads them. */
     const val KEEP_NOW = "{ " + dev.tvremote.core.ontv.LauncherSwap.RESOLVE_HOME + "; } | tail -1; " +
-        "settings get secure default_input_method; settings get secure enabled_accessibility_services; pm list packages -3; for c in LEANBACK_LAUNCHER LAUNCHER; do " +
-        "cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.\$c 2>/dev/null; done"
+        "settings get secure default_input_method; settings get secure enabled_accessibility_services; pm list packages -3 ${dev.tvremote.core.ontv.TvUser.USER}; for c in LEANBACK_LAUNCHER LAUNCHER; do " +
+        "cmd package query-activities --brief ${dev.tvremote.core.ontv.TvUser.USER} -a android.intent.action.MAIN -c android.intent.category.\$c 2>/dev/null; done"
 
     /**
      * What may be stopped on this TV: the apps a person installed or can open from a tile (YouTube is a system app on most

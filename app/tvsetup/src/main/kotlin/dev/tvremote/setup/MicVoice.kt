@@ -270,7 +270,7 @@ object MicVoice {
         if (b.reason.isEmpty()) return ""
         if (adb != null && b.reason == GOOGLE) try {
             adb.shell("grep -qx '${b.pkg}' ${dev.tvremote.core.ontv.Setup.OFF_LIST} 2>/dev/null || echo '${b.pkg}' >> ${dev.tvremote.core.ontv.Setup.OFF_LIST}")
-            adb.shell("pm disable-user --user 0 ${b.pkg}")
+            adb.shell(dev.tvremote.core.ontv.TvUser.disable(b.pkg))
             adb.shell("am force-stop ${b.pkg}")
             return "off"
         } catch (e: Exception) { android.util.Log.w("MicVoice", "free: $e") }

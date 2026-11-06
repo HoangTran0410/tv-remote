@@ -1,4 +1,5 @@
 package dev.tvremote.core.manage
+import dev.tvremote.core.ontv.TvUser
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.adb.TvShell
 import dev.tvremote.core.manage.Procs.KEEP_NOW
@@ -96,7 +97,7 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
     private fun appsReport(): JSONObject {
         // one shell round trip: the parts come back separated by "#~#" lines (meminfo --oom: the full one asks every app, seconds on a slow TV)
         val p = sh("getprop ro.product.manufacturer; getprop ro.product.model; getprop ro.build.version.release; grep MemTotal /proc/meminfo; " +
-            "printf '\\043~\\043\\n'; pm list packages -3 -e; printf '\\043~\\043\\n'; pm list packages -s -e; printf '\\043~\\043\\n'; pm list packages -d; " +
+            "printf '\\043~\\043\\n'; ${TvUser.list("-3 -e")}; printf '\\043~\\043\\n'; ${TvUser.list("-s -e")}; printf '\\043~\\043\\n'; ${TvUser.list("-d")}; " +
             "printf '\\043~\\043\\n'; dumpsys meminfo --oom").split("#~#\n")
         val part = { i: Int -> p.getOrElse(i) { "" } }
         val list = { i: Int -> part(i).split("\n").filter { it.startsWith("package:") }.map { it.substring(8).trim() }.sorted() }
@@ -116,9 +117,9 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
     private fun apps(system: Boolean): JSONObject {
         val pkgs = ArrayList<String>()
         // the apps turned off are always listed, so "Turn on" is at hand without showing every system app
-        val listing = sh("pm list packages" + (if (system) "" else " -3") + "; echo '#~#'; pm list packages -d; echo '#~#'; " +
+        val listing = sh(TvUser.list(if (system) "" else "-3") + "; echo '#~#'; " + TvUser.list("-d") + "; echo '#~#'; " +
             "dumpsys package packages | grep -E '^  Package \\[|^    versionName='" +   // every version in one go: ~0.2 s
-            (if (!system) "; echo '#~#'; for c in LEANBACK_LAUNCHER LAUNCHER; do cmd package query-activities --brief -a android.intent.action.MAIN" +
+            (if (!system) "; echo '#~#'; for c in LEANBACK_LAUNCHER LAUNCHER; do cmd package query-activities --brief ${TvUser.USER} -a android.intent.action.MAIN" +
                 " -c android.intent.category.\$c 2>/dev/null; done" else "")).split("#~#")
         for (line in listing.getOrElse(3) { "" }.jsplit("\n"))
             if (line.contains('/')) line.trim().substringBefore('/').let { if (it !in pkgs) pkgs.add(it) }
@@ -167,7 +168,7 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
             // off and on again, for the system apps nobody uses (Undo-able, unlike uninstalling); never what the TV or this project needs
             "disable" -> {
                 if (Setup.mustKeep(pkg) || pkg == homeNow() || Setup.inUse(::sh, pkg)) throw IllegalArgumentException("protected: the TV needs this app")
-                val out = sh("pm disable-user --user 0 $pkg 2>&1")
+                val out = sh("${TvUser.disable(pkg)} 2>&1")
                 if (!out.contains("disabled")) throw IllegalArgumentException(out.trim().ifEmpty { "disable failed" })
                 return HttpServer.Response.ok()
             }
@@ -178,7 +179,7 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
                 return HttpServer.Response.ok()
             }
             "enable" -> {
-                val out = sh("pm enable $pkg 2>&1")
+                val out = sh("${TvUser.enable(pkg)} 2>&1")
                 if (!out.contains("enabled")) throw IllegalArgumentException(out.trim().ifEmpty { "enable failed" })
                 return HttpServer.Response.ok()
             }

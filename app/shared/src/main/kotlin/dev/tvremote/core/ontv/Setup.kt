@@ -113,7 +113,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
             val f = restoreName(model)
             b.append("#   then  sh ").append(f).append("      (several devices: ADB_SERIAL=<ip>:$port sh ").append(f).append(")\n")
             b.append("A=\"adb\"; [ -n \"\$ADB_SERIAL\" ] && A=\"adb -s \$ADB_SERIAL\"\n")
-            for (p in pkgs) b.append("\$A shell 'pm enable --user 0 ").append(p).append("'\n")
+            for (p in pkgs) b.append("\$A shell '").append(TvUser.enable(p)).append("'\n")
             if (home.isNotEmpty() && SAFE.matches(home) && '/' in home)
                 b.append("\$A shell 'cmd package set-home-activity ").append(home).append("'\n")
             b.append("\$A shell 'rm -f ").append(OFF_LIST).append(' ').append(LauncherSwap.REC).append("'\n")
@@ -152,7 +152,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     }
 
     private fun off(): Set<String> =
-        sh("pm list packages -d 2>/dev/null").split("\n").map { it.removePrefix("package:").trim() }.filter { it.isNotEmpty() }.toSet()
+        sh(TvUser.list("-d") + " 2>/dev/null").split("\n").map { it.removePrefix("package:").trim() }.filter { it.isNotEmpty() }.toSet()
 
     private fun record(): List<String> = sh("cat $OFF_LIST 2>/dev/null").split("\n").map { it.trim() }.filter { it.isNotEmpty() }   // "" is in no list
 
@@ -199,13 +199,13 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     fun plan(label: (String) -> String?): org.json.JSONObject {
         tvOnly()
         Bloat.fresh()
-        val enabled = sh("pm list packages -e").split("\n").filter { it.startsWith("package:") }.map { it.substring(8).trim() }.toSet()
+        val enabled = sh(TvUser.list("-e")).split("\n").filter { it.startsWith("package:") }.map { it.substring(8).trim() }.toSet()
         val guard = handlers() + persistent()
         val suggest = suggested().filter { it in enabled && it !in guard }
         val home = homeNow()
         val shown = HashSet<String>()
         for (cat in arrayOf("LEANBACK_LAUNCHER", "LAUNCHER"))              // the apps a person sees on the TV
-            for (line in sh("cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.$cat 2>/dev/null").split("\n"))
+            for (line in sh("cmd package query-activities --brief ${TvUser.USER} -a android.intent.action.MAIN -c android.intent.category.$cat 2>/dev/null").split("\n"))
                 if (line.contains('/')) shown.add(line.trim().substringBefore('/'))
         val others = shown.filter { it in enabled && it !in suggest && it != home && !kept(it) && it !in guard }.sortedBy { (label(it) ?: it).lowercase() }
         fun item(p: String) = org.json.JSONObject().put("pkg", p).put("label", Bloat.suggest()[p] ?: label(p) ?: NAMES[p] ?: p.split('.').let { s -> if (s.last().length <= 3 && s.size > 1) s.takeLast(2).joinToString(".") else s.last() })
@@ -323,7 +323,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
      */
     private fun turnOff(p: String): String {
         sh("grep -qx '$p' $OFF_LIST 2>/dev/null || echo '$p' >> $OFF_LIST")
-        val out = sh("pm disable-user --user 0 $p")
+        val out = sh(TvUser.disable(p))
         if (!DEAD.containsMatchIn(out)) sh("am force-stop $p")
         return out
     }
@@ -390,7 +390,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     fun undo() {
         var on = 0
         for (p in undoable())
-            if (has(p.substringBefore('/'))) { sh("pm enable --user 0 $p"); on++ }   // p may be one screen of an app (the wizard's Home)
+            if (has(p.substringBefore('/'))) { sh(TvUser.enable(p)); on++ }   // p may be one screen of an app (the wizard's Home)
         sh("rm -f $OFF_LIST")
         LauncherSwap(sh).let { s -> if (s.state()?.why == LauncherSwap.KEY) s.rollback("user") else s.dropKey(); s.forget() }   // the key filter lets Home pass
         sh("for k in $ANIM; do settings put global \$k 1.0; done")

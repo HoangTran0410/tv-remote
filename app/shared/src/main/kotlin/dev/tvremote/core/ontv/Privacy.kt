@@ -50,7 +50,7 @@ object Privacy {
         return """
 ionice -c 3 -p ${'$'}${'$'} 2>/dev/null
 echo '#sys'; pm list packages -s 2>/dev/null
-echo '#off'; pm list packages -d 2>/dev/null
+echo '#off'; pm list packages -d ${TvUser.USER} 2>/dev/null
 KN=${'$'}(pm list packages 2>/dev/null | grep -E '^package:($k)${'$'}')
 echo '#known'; echo "${'$'}KN"
 A=${'$'}(settings get secure enabled_accessibility_services 2>/dev/null); echo '#a11y'; echo "${'$'}A"

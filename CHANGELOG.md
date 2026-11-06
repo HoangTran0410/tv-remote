@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Google TV with a profile switched in: Optimize TV, Undo, the Apps list, Reoptimize and the launcher swap turn apps off and on, and read the list, for the profile in front (they acted on the first profile only, so an app turned off still showed for the second one).
 - A step that fails while ADB still works (a bad link to pin, the TV not answering one command, a full disk on the phone) now says what failed, not "no ADB connection to the TV yet".
 - Wireless debugging: a pairing the TV forgot now says "pair again" instead of a raw "Failure in SSL library", and a TLS port that went away is forgotten instead of being dialled on every try.
 - Installing TV Games / TV Channels / TV Apps while GitHub cannot be reached says so, instead of "it comes in the next release".
