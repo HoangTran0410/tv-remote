@@ -385,7 +385,8 @@ async function rokuScreens() {
     for (let i = 0; i < keys.length && !stop; i++) {
       line.textContent = T('roku.sending', { n: i + 1, total: keys.length });
       const r = await api('/api/key', { key: keys[i] }); if (!r) { stop = true; break; }
-      shown++; at += keys[i] === 'HOME' && keys[i + 1] === 'HOME' ? R.homeGap : R.gap;
+      const gap = keys[i] === 'HOME' && keys[i + 1] === 'HOME' ? R.homeGap : R.gap;
+      shown++; at = Math.max(at + gap, performance.now() + gap / 2);   // a stalled answer (Wi-Fi): at least half a gap, not the rest at once
       if (i + 1 < keys.length) await sleep(Math.max(0, at - performance.now()));
     }
     if (d.open) d.close();

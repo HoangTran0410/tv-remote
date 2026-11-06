@@ -26,6 +26,13 @@ class AdbKeyFileTest {
         assertEquals(now, Adb(d).fingerprint())                       // and the new one is kept whole
     }
 
+    @Test fun mismatchedPairMakesANewOne() {
+        val d = dir(); val other = dir()
+        val old = Adb(d).fingerprint(); Adb(other)
+        File(other, "adbkey.pk8").copyTo(File(d, "adbkey.pk8"), overwrite = true)   // a new private key, the old public one: both parse
+        assertNotEquals(old, Adb(d).fingerprint())
+    }
+
     @Test fun garbagePrivateKeyMakesANewOne() {
         val d = dir()
         Adb(d)

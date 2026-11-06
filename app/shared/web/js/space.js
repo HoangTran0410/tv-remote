@@ -15,7 +15,8 @@ async function spaceDraw(size, retry, freed) {
   const dlg = $('#spacedlg');
   if (!dlg.open) return;
   if (!r) { dlg.close(); return; }
-  if (freed !== null && r.ok) { dlg.close(); toast(T('space.cache_done', { size: fmtSize(freed) })); retry(); return; }
+  // size unknown (an install from a link) and nothing freed: the same download would only fail again, so the dialog stays
+  if (freed !== null && r.ok && (r.need || freed > 0)) { dlg.close(); toast(T('space.cache_done', { size: fmtSize(freed) })); retry(); return; }
   const again = el('button', { type: 'button', className: 'primary', textContent: T('space.try_again'), onclick: () => { dlg.close(); retry(); } });
   const cache = el('button', { type: 'button', textContent: T('space.free_cache'), onclick: async () => {
     cache.disabled = true;
@@ -25,6 +26,7 @@ async function spaceDraw(size, retry, freed) {
   } });
   const parts = [];
   if (r.free != null) parts.push(el('p', { className: 'state', textContent: r.need ? T('space.need', { need: fmtSize(r.need), free: fmtSize(r.free) }) : T('space.have', { free: fmtSize(r.free) }) }));
+  if (freed !== null && !r.need) parts.push(el('p', { className: 'note', textContent: T('space.cache_done', { size: fmtSize(freed) }) }));
   if (freed !== null && r.need && r.free != null) parts.push(el('p', { className: 'note', textContent: T('space.still_short', { size: fmtSize(freed), short: fmtSize(r.need - r.free) }) }));
   parts.push(el('div', { className: 'actions' }, cache, again));
   seedMeta(r.apps);
@@ -38,8 +40,9 @@ function spaceRow(a, redraw) {
   const pkg = a.pkg, icon = appIcon(pkg), name = el('span', { textContent: appName(pkg) });
   onMeta(pkg, (m) => { icon.fill(m); put(name, 'textContent', appName(pkg)); });
   const act = (label, path, askText, danger) => el('button', { type: 'button', className: 'small' + (danger ? ' danger' : ''), textContent: label, onclick: async (e) => {
+    const b = e.currentTarget;                                        // read before the await: the event's currentTarget is null after it
     if (!await ask(askText, { ok: label, danger: true })) return;
-    e.currentTarget.disabled = true;
+    b.disabled = true;
     const x = await api(path, { pkg });
     if (x) { toast(T('apps.what_name', { what: label, name: appName(pkg) })); appsStale(); }
     redraw();

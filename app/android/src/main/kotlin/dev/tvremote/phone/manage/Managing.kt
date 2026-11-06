@@ -106,7 +106,7 @@ internal class Managing(private val a: MainActivity, root: FrameLayout) : HttpSe
                 if (w === this@Managing.web) a.ui.post { rebuild() }
                 return true
             }
-            override fun onPageFinished(w: WebView?, url: String?) { pending?.let { pending = null; this@Managing.web.evaluateJavascript(it, null) }; cover(coverB, true) }
+            override fun onPageFinished(w: WebView?, url: String?) { pending?.let { pending = null; this@Managing.web.evaluateJavascript(ours(it), null) }; cover(coverB, true) }
         }
         web.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(w: WebView?, cb: ValueCallback<Array<Uri>>?, params: FileChooserParams?): Boolean {
@@ -227,7 +227,7 @@ internal class Managing(private val a: MainActivity, root: FrameLayout) : HttpSe
             } else {
                 link?.check()                                         // the same TV again: make sure its connection still answers
                 if (tab != null) web.evaluateJavascript("showTab('" + tab.filter { it.isLetter() } + "')", null)
-                if (then != null) web.evaluateJavascript(then, null)
+                if (then != null) web.evaluateJavascript(ours(then), null)
             }
             view.visibility = View.VISIBLE
             web.onResume()
@@ -385,4 +385,8 @@ internal class Managing(private val a: MainActivity, root: FrameLayout) : HttpSe
             report(if (ok) "done" else "error", 100, result)
         }.start()
     }
+
+    /** Script the app runs in the page: its stack is only "<anonymous>" frames, which the error box drops as a hosting app's own (Zalo);
+     *  one frame of ours added, so a renamed or missing page function still shows a box and reaches census. */
+    private fun ours(js: String) = "try{$js\n}catch(e){if(e&&e.stack)try{e.stack+='\\n    at phone (phone://then:1:1)'}catch(x){}throw e}"
 }

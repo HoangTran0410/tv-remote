@@ -230,7 +230,8 @@ private fun MainActivity.rokuSend(keys: List<String>, gap: Long, homeGap: Long) 
         if (i >= keys.size) { dlg.dismiss(); say(T("roku.done"), false); return }
         dlg.setMessage(T("roku.sending", "n" to i + 1, "total" to keys.size))
         press(Scenes.KEYS[keys[i]] ?: return, feel = false)
-        at += if (keys[i] == "HOME" && keys.getOrNull(i + 1) == "HOME") homeGap else gap
+        val g = if (keys[i] == "HOME" && keys.getOrNull(i + 1) == "HOME") homeGap else gap
+        at = maxOf(at + g, android.os.SystemClock.uptimeMillis() + g / 2)   // a stalled main thread: at least half a gap, not the rest at once
         window.decorView.postDelayed({ step(i + 1) }, maxOf(0L, at - android.os.SystemClock.uptimeMillis()))
     }
     step(0)

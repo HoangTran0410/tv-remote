@@ -175,7 +175,7 @@ class Adb(private val dir: File) : Closeable {
                     // good (census aa5953e5, a Fire TV, 2026-11-06): a key that cannot be read is no key, so a new one is made
                     // (the TV asks "Allow USB debugging?" once more) and written whole or not at all
                     val kept = if (priv.exists() && pub.exists()) try {
-                        KeyPair(kf.generatePublic(X509EncodedKeySpec(pub.readBytes())), kf.generatePrivate(PKCS8EncodedKeySpec(priv.readBytes())))
+                        KeyPair(kf.generatePublic(X509EncodedKeySpec(pub.readBytes())), kf.generatePrivate(PKCS8EncodedKeySpec(priv.readBytes()))).takeIf { pair(it) }
                     } catch (e: java.security.GeneralSecurityException) { null } else null
                     kept ?: KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair().also { k ->
                         whole(priv, k.private.encoded)
@@ -185,6 +185,15 @@ class Adb(private val dir: File) : Closeable {
             }
         }
     }
+
+    /** The two files are one key: a power cut between writing them leaves a new private key with the old public one, which both
+     *  parse but the TV would ask to "Allow" for ever (it stores the public key, the signature never matches). */
+    private fun pair(k: KeyPair): Boolean = try {
+        val b = "tvr".toByteArray()
+        val s = java.security.Signature.getInstance("SHA256withRSA")
+        s.initSign(k.private); s.update(b); val sig = s.sign()
+        s.initVerify(k.public); s.update(b); s.verify(sig)
+    } catch (e: java.security.GeneralSecurityException) { false }
 
     /** Connects and authenticates. If the TV does not know this app's key yet, waits (3 minutes) for the person to allow it. */
     @Throws(Exception::class)

@@ -287,7 +287,8 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
         val o = JSONObject().put("need", need).put("ok", free == null || free >= need)
         if (free != null) o.put("free", free)
         val apps = JSONArray()
-        for (a in dev.tvremote.core.ontv.Space.top(out, { Setup.mustKeep(it) })) {
+        val home = homeNow()                                          // its Clear data / Remove would only answer "protected"
+        for (a in dev.tvremote.core.ontv.Space.top(out, { Setup.mustKeep(it) || it == home })) {
             apps.put(JSONObject().put("pkg", a.pkg).put("bytes", a.bytes).put("data", a.data).put("cache", a.cache).put("user", a.user)
                 .put("meta", Manage.meta(labels, a.pkg)))
         }
