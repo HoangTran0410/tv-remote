@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Move to a new TV (phone app, TV web page, Computer app; TV tab): one backup file with scenes, the home screen and quick keys, bedtime, limits, schedules, app locks (the list only), favourite channels, the apps Optimize TV turned off and the list of installed apps. On the new TV the page shows what the file holds, you tick what to restore, each part goes back through its own route and a part that fails says so while the rest go on; apps are only listed, with a button to the store or TV Apps. PINs and Telegram keys are never in the file. New `/api/backup` and `/api/backup/restore` carry the TV-side parts.
 - TV Home customize page (phone app, TV web page, Computer app): a TV Home that answers a read or a change without its settings no longer throws "Cannot read properties of undefined (themesBuiltin)"; the page keeps what it shows.
 - A TV that drops the ADB link (`adb connection lost: EOFException`; TCL, Skyworth, Xiaomi) no longer fails the page's request: Manage redials once and runs the command again when it never reached the TV, or when it only reads (dumpsys, pm list, getprop, settings get ...); installs, keys and launches are never repeated.
 

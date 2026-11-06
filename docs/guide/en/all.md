@@ -1231,6 +1231,8 @@ Home Assistant sends the token in the `x-tvr-hook` header, out of the logs.
 
 > 💡 Apps the other TV lacks are left out; own photo walls and QR codes are not copied. App locks need a PIN: type a new one for the other TV, the old one cannot be read back.
 
+> 💡 **📦 Move to a new TV** (Setup tab): **Save backup file** on the old TV, then on the new one **Open backup file**, tick items, **Restore**. PINs are not in the file.
+
 ## See every TV at a glance
 
 Each saved TV has a line: **On**, **Standby** or **No answer**, with its model and the app open. It refreshes every 10 seconds.
