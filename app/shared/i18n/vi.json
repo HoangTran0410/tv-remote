@@ -4560,5 +4560,15 @@
  "home.ov_s30": "30 giây",
  "home.ov_m1": "1 phút",
  "home.ov_m5": "5 phút",
- "home.ov_m15": "15 phút"
+ "home.ov_m15": "15 phút",
+ "core.fr_launcher_noplay": "TV không mở được Google Play. Bạn tự mở Google Play trên TV rồi tìm launcher này.",
+ "core.fr_home_pic_full": "Tối đa {n} hình cho app: xóa bớt một hình rồi thêm.",
+ "core.fr_home_theme_missing": "Giao diện này không còn nữa. Chọn giao diện khác.",
+ "core.fr_nothing_to_restore": "Không có gì để hoàn tác: Tối ưu TV chưa đổi gì trên TV này.",
+ "core.fr_no_home": "TV Home chưa mở trên màn hình TV. Mở TV Home trên TV rồi thử lại.",
+ "core.fr_themeshare_busy": "Giao diện của bạn đang được gửi. Đợi gửi xong.",
+ "core.fr_video_noanswer": "TV không trả lời nữa. Thử lại; nếu vẫn bị, khởi động lại TV.",
+ "core.fr_copy_not_stored": "Tệp chưa được lưu trên TV. Kiểm tra TV còn dung lượng trống rồi thử lại.",
+ "core.fr_tv_noanswer": "TV không trả lời. Kiểm tra TV đang bật và cùng Wi-Fi, rồi thử lại.",
+ "core.fr_no_scene": "Kịch bản này không còn nữa. Có thể đã bị đổi tên hoặc xóa."
 }

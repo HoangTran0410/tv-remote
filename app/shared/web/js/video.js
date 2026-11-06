@@ -157,7 +157,7 @@ async function vbCamera(prev, facing, onAspect, onEnd) {
     const ok = await VideoEncoder.isConfigSupported(cfg).catch(() => ({ supported: false }));
     if (!ok.supported) throw new Error('video:codec');
     const r = await fetch('/api/videobox/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ w, h, ...vbPlace() }) });
-    if (!r.ok) { let e = r.statusText; try { e = (await r.json()).error || e; } catch {} throw new Error(e); }
+    if (!r.ok) { let e = r.statusText; try { e = (await r.json()).error || e; } catch {} throw new Error(isStale(r.status, e) ? STALE : adbWords(r.status, e)); }
     enc = new VideoEncoder({
       output: (chunk) => {
         const b = new Uint8Array(chunk.byteLength); chunk.copyTo(b);

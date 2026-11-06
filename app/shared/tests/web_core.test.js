@@ -165,3 +165,13 @@ test('i18n.js: one language file before the first paint; English only the first 
   assert.equal(ctx.T('a.none'), 'a.none');
   assert.deepEqual(loaded, ['fr', 'en', 'vi'], 'each fallback read once');
 });
+
+test('isStale(): only the router\'s own 404 on the Computer app means "page newer than server"; a route\'s own 404 keeps its words', () => {
+  const mk = (core) => new Function('CORE', line(core, 'isStale') + '; return isStale;');
+  const pc = mk(core)('pc'), tv = mk(core)('tv');
+  assert.equal(pc(404, 'not found'), true);
+  assert.equal(pc(404, 'Not Found'), true);
+  for (const e of ['no such job', 'unknown job', 'no picture', 'no icon', 'no such scene']) assert.equal(pc(404, e), false, e);
+  assert.equal(pc(500, 'not found'), false);
+  assert.equal(tv(404, 'not found'), false);
+});

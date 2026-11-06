@@ -123,7 +123,7 @@ async function startListen(share) {
   let fmt = { codec: 2, rate: 24000, ch: 1 }, ts = 0, why = T('listen.tv_stopped_sending');
   try {
     const r = await fetch('/api/audio?codec=' + (opus ? 'opus' : 'pcm') + (listenShared ? '&share=1' : '') + (listenHq() ? '&hq=1' : ''), { signal: listenCtl.signal });
-    if (!r.ok) { let e = r.statusText; try { e = (await r.json()).error || e; } catch {} throw new Error(r.status === 404 && CORE === 'pc' ? STALE : e); }
+    if (!r.ok) { let e = r.statusText; try { e = (await r.json()).error || e; } catch {} throw new Error(isStale(r.status, e) ? STALE : adbWords(r.status, e)); }
     toast(listenShared ? T('listen.playing_both') : T('listen.playing_here'));
     const rd = r.body.getReader(); let buf = new Uint8Array(0);
     for (;;) {

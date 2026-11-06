@@ -4731,5 +4731,15 @@
  "home.ov_s30": "30 s",
  "home.ov_m1": "1 min",
  "home.ov_m5": "5 min",
- "home.ov_m15": "15 min"
+ "home.ov_m15": "15 min",
+  "core.fr_launcher_noplay": "La TV n’a pas pu ouvrir Google Play. Ouvrez Google Play sur la TV vous-même et cherchez ce lanceur.",
+  "core.fr_home_pic_full": "{n} images d’application au maximum : supprimez-en une d’abord.",
+  "core.fr_home_theme_missing": "Ce thème n’existe plus. Choisissez-en un autre.",
+  "core.fr_nothing_to_restore": "Rien à annuler : Optimiser la TV n’a rien modifié sur cette TV.",
+  "core.fr_no_home": "TV Home n’est pas affiché sur la TV pour le moment. Ouvrez TV Home sur la TV, puis réessayez.",
+  "core.fr_themeshare_busy": "Votre thème est déjà en cours d’envoi. Attendez la fin de l’envoi.",
+  "core.fr_video_noanswer": "La TV a cessé de répondre. Réessayez ; si cela continue, redémarrez la TV.",
+  "core.fr_copy_not_stored": "Le fichier n’a pas été enregistré sur la TV. Vérifiez qu’il reste de la place sur la TV, puis réessayez.",
+  "core.fr_tv_noanswer": "La TV ne répond pas. Vérifiez qu’elle est allumée et sur le même Wi-Fi, puis réessayez.",
+  "core.fr_no_scene": "Cette scène n’existe plus. Elle a peut-être été renommée ou supprimée."
 }

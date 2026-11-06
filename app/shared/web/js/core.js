@@ -120,9 +120,14 @@ async function api(path, data, quiet, ms) {
   if (b) { b.classList.add('busy'); b.busyN = (b.busyN || 0) + 1; }
   try { return await call(path, data, quiet, ms); } finally { if (b && !--b.busyN) b.classList.remove('busy'); }
 }
+// Only the router's own miss (Server.kt dispatch: "not found", or no JSON body at all) means the server is older than the page; the
+// 404s a route answers on purpose ("no such job", "unknown job", "no picture", "no icon") are real answers and keep their words.
+const isStale = (status, e) => status === 404 && CORE === 'pc' && (!e || e === 'Not Found' || e === 'not found');
 // "adb:allow", "adb: <Java's words>": what a person can do about it
 const adbWords = (status, e) => status === 503 && /^adb/.test(e) && !/adb (pair|tls)/.test(e)
   ? (/allow/.test(e) ? T('core.adb_allow') : T('core.adb_not_yet')) : e;
+// What a page shows for a failed call it made itself (not through api()): the ADB words, then the friendly ones
+const errWords = (status, e) => friendly(adbWords(status, e));
 // A read that must not hang (a TV gone silent holds the socket): ms opts in, never for an upload, a download, an install or a wait
 // on slow TV work, which end when they end. AbortSignal.timeout is missing in old WebViews: a timer and a controller do the same.
 function timeoutSignal(ms) {
@@ -143,7 +148,7 @@ async function call(path, data, quiet, ms) {
       if (!quiet && needSetup(e)) return null;                         // asked as a question with its button, not a toast
       if (!quiet && /channels:old/.test(e)) { chanOld(); return null; }   // TV Channels is there but too old for the link: Update, not "missing"
       if (r.status === 403 && e === 'scope') { refresh(); if (!quiet) toast(scopeWhy()); return null; }   // the owner may have just changed it
-      if (r.status === 404 && CORE === 'pc') e = STALE;
+      if (isStale(r.status, e)) e = STALE;
       if (adbWords(r.status, e) !== e) { e = adbWords(r.status, e); setTimeout(refresh, 300); }
       if (!quiet) toast(T('common.error_msg', { msg: friendly(e) })); return null;
     }
@@ -275,9 +280,22 @@ const FRIENDLY = [
   [/apps:offline/, T('core.fr_tvapps_offline')],
   [/launcher:home/, T('core.fr_launcher_home')],
   [/launcher:play/, T('core.fr_launcher_play')],
+  [/launcher:noplay/, T('core.fr_launcher_noplay')],
   [/launcher:self/, T('core.fr_launcher_self')],
   [/launcher:fit/, T('core.fr_launcher_fit')],
   [/launcher:install:(.*)/, (m) => T('core.fr_launcher_install', { msg: friendly(m[1]) })],
+  [/home:pic_full/, T('core.fr_home_pic_full', { n: 40 })],       // HomeConfig.PICS_MAX
+  [/home:theme_missing|^theme_missing$/, T('core.fr_home_theme_missing')],
+  [/privacy:stalled/, T('core.fr_tv_stopped')],
+  [/setup:nothing_to_restore/, T('core.fr_nothing_to_restore')],
+  [/^no_home$/, T('core.fr_no_home')],
+  [/themeshare:busy/, T('core.fr_themeshare_busy')],
+  [/^video: (no answer|closed)$/, T('core.fr_video_noanswer')],
+  [/upload cut short/, T('core.fr_copy_incomplete')],
+  [/the TV did not store the whole file|the TV could not store the file/, T('core.fr_copy_not_stored')],
+  [/^the TV did not answer$/, T('core.fr_tv_noanswer')],
+  [/^no such scene$/, T('core.fr_no_scene')],
+  [/^launcher:install:removed$/, T('core.fr_removed_after_install')],
   [/home:missing/, T('core.fr_home_missing')],
   [/home:pin_old/, T('errors.pin_old')],
   [/pin_bad_link/, T('errors.pin_bad_link')],
