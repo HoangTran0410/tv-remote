@@ -105,13 +105,13 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
         /** The script's file name: the same in the download and in the script's own "how to run" line. */
         fun restoreName(model: String) = "tv-restore-" + model.replace(Regex("[^A-Za-z0-9_.-]+"), "-").trim('-').ifEmpty { "tv" } + ".sh"
 
-        fun restoreScript(model: String, date: String, host: String, apps: List<String>, home: String): String {
+        fun restoreScript(model: String, date: String, host: String, apps: List<String>, home: String, port: Int = dev.tvremote.core.adb.AdbPort.CLASSIC): String {
             val pkgs = apps.filter { SAFE.matches(it) }.distinct()
             val b = StringBuilder("#!/bin/sh\n")
             b.append("# Restore for the TV ").append(model.replace(Regex("[^\\w .-]"), "").trim().ifEmpty { "?" }).append(", saved ").append(date.replace(Regex("[^\\w :+-]"), "")).append(" by TV Remote (Optimize TV, Undo).\n")
-            b.append("# Needs only adb on this computer. With the TV on the network:  adb connect ").append(host.replace(Regex("[^\\w.:-]"), "")).append(":5555\n")
+            b.append("# Needs only adb on this computer. With the TV on the network:  adb connect ").append(host.replace(Regex("[^\\w.:-]"), "")).append(":$port\n")
             val f = restoreName(model)
-            b.append("#   then  sh ").append(f).append("      (several devices: ADB_SERIAL=<ip>:5555 sh ").append(f).append(")\n")
+            b.append("#   then  sh ").append(f).append("      (several devices: ADB_SERIAL=<ip>:$port sh ").append(f).append(")\n")
             b.append("A=\"adb\"; [ -n \"\$ADB_SERIAL\" ] && A=\"adb -s \$ADB_SERIAL\"\n")
             for (p in pkgs) b.append("\$A shell 'pm enable --user 0 ").append(p).append("'\n")
             if (home.isNotEmpty() && SAFE.matches(home) && '/' in home)
@@ -383,7 +383,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     @Throws(IOException::class)
     fun restore(model: String, date: String, host: String): String {
         val home = LauncherSwap(sh).state()?.let { it.prev.takeIf { p -> p.substringBefore('/') != it.pkg } } ?: ""
-        return restoreScript(model, date, host, undoable().filter { has(it.substringBefore('/')) }, home)
+        return restoreScript(model, date, host, undoable().filter { has(it.substringBefore('/')) }, home, dev.tvremote.core.adb.AdbPort.known(host))   // a BeeCube: 5877
     }
 
     @Throws(Exception::class)

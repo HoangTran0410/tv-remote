@@ -38,4 +38,24 @@ class AdbPortTest {
         AdbPort.remember(dir, "10.9.0.4", 5555)                    // typed with 5555: back to the usual order
         assertEquals(5555, AdbPort.candidates("10.9.0.4").first())
     }
+
+    @Test fun theOtherPortsAreNamedOnlyInAdbPort() {                  // a new port goes into OTHERS once: the scans, Diagnose, the update report follow
+        val src = java.io.File("src/main/kotlin")
+        val hits = src.walkTopDown().filter { it.isFile && it.name.endsWith(".kt") && it.name != "AdbPort.kt" }.flatMap { f ->
+            f.readLines().mapIndexedNotNull { i, l ->
+                val code = l.trimStart().takeUnless { it.startsWith("*") || it.startsWith("/*") || it.startsWith("//") }?.substringBefore(" // ") ?: return@mapIndexedNotNull null
+                if (AdbPort.OTHERS.any { p -> Regex("\\b$p\\b").containsMatchIn(code) }) "${f.name}:${i + 1}" else null
+            }
+        }.toList()
+        assertEquals(emptyList<String>(), hits)
+    }
+
+    @Test fun aScriptForATvTypedWithItsPortNamesThatPort() {
+        val dir = java.nio.file.Files.createTempDirectory("port").toFile()
+        AdbPort.remember(dir, "10.9.0.5", 5877)
+        assertEquals(5877, AdbPort.known("10.9.0.5"))
+        assertEquals(5555, AdbPort.known("10.9.0.6"))
+        val out = dev.tvremote.core.ontv.Setup.restoreScript("BeeCube", "2026-11-07 09:00:00", "10.9.0.5", emptyList(), "", AdbPort.known("10.9.0.5"))
+        org.junit.Assert.assertTrue(out, "adb connect 10.9.0.5:5877" in out && "ADB_SERIAL=<ip>:5877" in out)
+    }
 }

@@ -167,7 +167,7 @@ class LauncherSwap(private val sh: (String) -> String, private val log: (String)
         refused = ""; opened = ""; via = ""
         val all = homes()
         val ours = all.firstOrNull { it.startsWith("$pkg/") } ?: run { log("no home activity"); return false }   // not a launcher
-        if (state()?.why == KEY) dropKey()                            // flow row 1: the launcher picked before lets go of Home
+        if (state()?.why == KEY) { dropKey(); forget() }              // flow row 1: the launcher picked before lets go of Home, and its record
         keyWhy(all, pkg)?.let { return byKey(pkg, it) }               // rows 2-5: the swap could break the TV
         // [before]: read before its APK went in. Android 9 forgets the home chosen when a new launcher is installed (a BRAVIA then
         // answered its picker), and only Android 10+ keeps it as a role

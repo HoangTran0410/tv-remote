@@ -109,4 +109,11 @@ class FleetStatusTest {
         val board = FleetStatus.Board({ throw RuntimeException("boom") })
         try { assertEquals(FleetStatus.UP, board.round(listOf("a"))[0].state) } finally { board.close() }
     }
+
+    @Test fun aLiveOnlyReadingHasNoModelForTheCacheToFill() {        // CMD_LIVE: the getprops are sent once per connection
+        val s = FleetStatus.parse("h", "  mWakefulness=Awake\n#~#\n  mCurrentFocus=Window{1 u0 com.netflix.ninja/.MainActivity}\n#~#\n12.5 3.1\nMemTotal: 1000 kB\nMemAvailable: 250 kB\n")
+        assertEquals(FleetStatus.ON, s.state); assertEquals("com.netflix.ninja", s.app); assertEquals(25, s.memFree)
+        assertEquals("", s.model)
+        org.junit.Assert.assertTrue(FleetStatus.CMD.startsWith(FleetStatus.CMD_LIVE))
+    }
 }

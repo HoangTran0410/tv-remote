@@ -35,6 +35,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
     @Volatile private var sock: SSLSocket? = null
     private val out = Executors.newSingleThreadExecutor()
     @Volatile private var live = false
+    private val SILENT_MS = 20_000                                    // 4 missed pings; a read timeout drops the link and connect() dials it again
     @Volatile private var closed = false
 
     /** What the TV calls itself, known once connected. */
@@ -154,7 +155,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
         } catch (ignored: Exception) {
         }
         if (!live) { try { s.close() } catch (ignored: Exception) { }; return null }
-        s.soTimeout = 0
+        s.soTimeout = SILENT_MS                                       // the TV pings every 5 s: silence = a pulled plug or a lost Wi-Fi with no FIN; connect()'s reader dials again
         return s
     }
 

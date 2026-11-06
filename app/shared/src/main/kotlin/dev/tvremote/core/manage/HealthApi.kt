@@ -36,13 +36,13 @@ internal class HealthApi(core: ManageCore) : ManagePart(core) {
         return JSONObject().put("apps", apps)
     }
 
-    /** Lifts what [by] suspended: the shell's own with `pm unsuspend`, any other package by clearing its data (Android then lifts all of its suspensions; it also resets that app). Then reads again. */
+    /** Lifts what [by] suspended, under each Android user it did so: the shell's own with `pm unsuspend`, any other package by clearing its data (Android then lifts all of its suspensions; it also resets that app). Then reads again. */
     private fun unsuspend(by: String): JSONObject {
         require(PKG.matcher(by).matches() || by in Suspended.SHELL) { "bad package" }
-        val mine = Suspended.of(Suspended.parse(sh(Suspended.CMD)), by).filter { PKG.matcher(it).matches() }
+        val out = sh(Suspended.CMD)
+        val mine = Suspended.of(Suspended.parse(out), by).filter { PKG.matcher(it).matches() }
         if (mine.isEmpty()) return suspended()
-        if (by in Suspended.SHELL) for (p in mine) sh("pm unsuspend $p 2>&1")
-        else sh("pm clear $by 2>&1")
+        for (cmd in Suspended.lift(by, mine, Suspended.users(out, by))) sh(cmd)   // under each user it locked them for (a Google TV profile)
         for (i in 0 until 4) {                                         // Android lifts them a moment after the clear returns
             if (Suspended.of(Suspended.parse(sh(Suspended.CMD)), by).isEmpty()) break
             Thread.sleep(600)
@@ -87,7 +87,9 @@ internal class HealthApi(core: ManageCore) : ManagePart(core) {
     @Synchronized private fun slowFacts(adb: Adb): List<String> {
         val now = System.currentTimeMillis()
         if (slowFor !== adb || now - slowAt > 60_000 || slowParts.isEmpty()) {
-            slowParts = (adb.shell(HEALTH_STATIC) + "#~##~##~##~#").jsplit("#~#", -1).take(5)
+            val same = slowFor === adb && slowParts.isNotEmpty() && slowParts[0].isNotBlank()   // model, Android, chip: fixed on one link
+            val got = (adb.shell(if (same) HEALTH_STATIC.substring(HEALTH_PROPS.length) else HEALTH_STATIC) + "#~##~##~##~#").jsplit("#~#", -1).take(5)
+            slowParts = if (same) listOf(slowParts[0]) + got.drop(1) else got
             slowFor = adb; slowAt = now
         }
         return slowParts
@@ -259,8 +261,10 @@ internal class HealthApi(core: ManageCore) : ManagePart(core) {
         // the reading itself (top, its shell and awk, adbd carrying it: 20-35 % on the FPT box) is not the TV's load: left out
         private const val TOP_APPS = "top -n 1 -b -o %CPU,ARGS -s 1 | awk '\$2==\"top\"||\$2==\"sh\"||\$2==\"awk\"||\$2==\"adbd\"{next} \$1~/^[0-9.]+\$/{n=\$2; if (n~/^[a-z][a-z0-9_]*(\\.[A-Za-z0-9_]+)+(:|\$)/) sub(/:.*/,\"\",n); else n=\"-\"; c[n]+=\$1; k[n]++} END{for(x in c) print c[x], k[x], x}'"
         /** The separator is printed from octal codes, so it does not appear in this command's own line in the `top` output. */
-        private const val HEALTH_STATIC = "getprop ro.product.manufacturer; getprop ro.product.model; getprop ro.build.version.release; getprop ro.build.version.sdk; " +
-                "getprop ro.build.version.security_patch; getprop ro.board.platform; getprop ro.product.cpu.abi; cat /sys/devices/system/cpu/present; " +
+        private const val HEALTH_PROPS = "getprop ro.product.manufacturer; getprop ro.product.model; getprop ro.build.version.release; getprop ro.build.version.sdk; " +
+                "getprop ro.build.version.security_patch; getprop ro.board.platform; getprop ro.product.cpu.abi; cat /sys/devices/system/cpu/present; "
+        /** [HEALTH_PROPS] are read once per link: after that the command starts at its first separator (part 0 kept from the cache). */
+        private const val HEALTH_STATIC = HEALTH_PROPS +
                 "printf '\\043~\\043\\n'; wm size; wm density; dumpsys display | grep -m1 -o 'fps=[0-9.]*'; printf '\\043~\\043\\n'; dumpsys wifi | grep -m1 mWifiInfo; " +
                 "printf '\\043~\\043\\n'; ip -o -4 addr show; printf '\\043~\\043\\n'; " + Sensors.SLOW
 

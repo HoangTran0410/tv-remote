@@ -33,7 +33,7 @@ class RemoteLabels(private val link: AdbLink, helper: () -> ByteArray, private v
         if (saved != null) {
             names = saved
             ok = true
-            Thread({ synchronized(running) { if (stamps == null) ask() } }, "meta-refresh")   // fresh() may have run it first.apply { isDaemon = true }.start()
+            Thread({ synchronized(running) { if (stamps == null) ask() } }, "meta-refresh").apply { isDaemon = true }.start()   // fresh() may have run it first
             return saved
         }
         return ask()

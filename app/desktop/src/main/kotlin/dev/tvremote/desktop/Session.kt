@@ -171,20 +171,23 @@ class Session(val host: String, private val keys: File, cache: File, helper: () 
         feeds.viewer?.let { if (it.ready()) return it }
         ctlUsed = System.currentTimeMillis()
         val t = synchronized(this) {
+            if (closed) throw IOException("TV changed")             // before a Tv: its init starts a session on the old TV nobody would stop
             ctl ?: Tv(keys, jar, host, null, 0, 0, false, object : Tv.Listener {
                 override fun onStatus(key: String, detail: String) { if (key == "closed" || key == "error") synchronized(this@Session) { ctl = null } }
                 override fun onVideoSize(w: Int, h: Int) { }
                 override fun onNetwork(mac: String, lan: String, tailscale: String) { }
             }).also { fresh ->
-                if (closed) throw IOException("TV changed")
+                if (closed) { fresh.stop(); throw IOException("TV changed") }
                 ctl = fresh
-                timers.schedule(object : Runnable {
+                try { timers.schedule(object : Runnable {
                     override fun run() {
                         if (ctl !== fresh) return
                         if (System.currentTimeMillis() - ctlUsed > 60000 && feeds.viewer == null) { synchronized(this@Session) { if (ctl === fresh) ctl = null }; fresh.stop() }
                         else timers.schedule(this, 15, TimeUnit.SECONDS)
                     }
-                }, 15, TimeUnit.SECONDS)
+                }, 15, TimeUnit.SECONDS) } catch (e: java.util.concurrent.RejectedExecutionException) {   // closed meanwhile: no sweeper would ever stop it
+                    ctl = null; fresh.stop(); throw IOException("TV changed")
+                }
             }
         }
         for (i in 0 until 100) {                                      // the first one starts scrcpy-server on the TV: a few seconds

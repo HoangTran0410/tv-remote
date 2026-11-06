@@ -22,7 +22,7 @@ object AdbAccess {
         val loopback get() = address == "127.0.0.1" || address == "::1"
     }
 
-    const val CLASSIC_PORT = 5555
+    const val CLASSIC_PORT = dev.tvremote.core.adb.AdbPort.CLASSIC
     private const val SEP = "=====TVR====="
     private const val MARK = "user_keys="
 

@@ -44,7 +44,7 @@ Cases (`app/shared/src/main/kotlin/dev/tvremote/core/ontv/LauncherSwap.kt:WHYS`)
 | # | Told apart by | Way | Test |
 |---|---|---|---|
 | 0 | not a launcher (no HOME activity) | none: false, nothing touched | `aPackageWithNoHomeActivityIsRefusedUntouched` |
-| 1 | a key-way record from before | its rule is dropped first, then the rows below | `theWayBackFromTheKeyFilterLetsHomePassAndANewPickReplacesIt` |
+| 1 | a key-way record from before | its rule is dropped and its record forgotten first (a failed pick below then leaves no record naming the old launcher), then the rows below | `theWayBackFromTheKeyFilterLetsHomePassAndANewPickReplacesIt` |
 | 2 | Chromecast / Google TV Streamer (`LauncherSwap.CAST_HOSTS`): the wizard off breaks casting | key, via `cast` | `aChromecastKeepsItsWizardForCastingAndTvSetupTakesHome` |
 | 3 | `com.control.device` (a ZTE box that factory-resets with no system launcher on) | key, via `zte` | `aZteBoxWithItsResetWatchdogKeepsItsLauncherOn` |
 | 3b | Skyworth's remote service `com.smartdevice.global.service` and 2+ Android users (a Google TV profile): its hotkeys ask launcherx's provider, off = a crash per press, RescueParty resets settings, then a factory-reset prompt (cleanyourtv issue 2973) | key, via `users` | `aSkyworthRemoteServiceWithASecondUserKeepsLauncherxOn` |
