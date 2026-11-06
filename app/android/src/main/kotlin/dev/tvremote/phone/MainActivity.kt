@@ -378,7 +378,22 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
         if (b != null && b.getBoolean("about")) about.visibility = View.VISIBLE
         if (prefs.getBoolean("autoUpdate", true)) checkUpdate(false)
         SceneStore.changed(this)                                      // the widget and shortcuts after an update of the app
+        NotificationRemote.screen = notifyKey
     }
+
+    /** A key from the remote in the notification (NotificationRemote.kt): the remote screen's way while it is live on the TV
+     *  used last; false sends it there through its own connection. */
+    internal val notifyKey: (Int) -> Boolean = fun(code: Int): Boolean {
+        if (!live() || (entry ?: host) != pref("ips").split(",").firstOrNull { it.isNotEmpty() }) return false
+        val tv = tv
+        if (code == NotificationKeys.POWER && tv != null)             // no question as on the screen's power key: the widget's and tile's toggle
+            Thread { try { dev.tvremote.phone.scenes.Headless.power(dev.tvremote.core.scenes.Scenes.Shell({ tv.shell(it) }), true) } catch (ignored: Exception) { } }.start()
+        else ui.post { press(code, feel = false) }
+        return true
+    }
+
+    /** Settings' "remote in notifications" switch, redrawn when Android's question was answered (InfoScreens.kt). */
+    internal var notifyLabel: (() -> Unit)? = null
 
     override fun onSaveInstanceState(out: Bundle) {
         super.onSaveInstanceState(out)
@@ -402,6 +417,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
         val away = awaySince > 0 && android.os.SystemClock.elapsedRealtime() - awaySince >= 5000
         if (away) tv?.check(2500)                                     // before anything asks the TV: a dead link is cut and dialled again
         if (keysAway) { keysAway = false; host?.let { resumeBasic(it) } } else startSession()
+        NotificationRemote.sync(this)                                 // on in Settings: shown again (it goes after long unused)
         if (::playing.isInitialized) { playing.wake(); nowApp.wake() }   // asked at once, not at their next tick
     }
 
@@ -440,6 +456,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
         // recreated (dark mode at sunset, a font size, the language): this instance's session, sound and keys end with it, or
         // they would go on beside the new one's, with nothing left on screen that can stop them
         ui.removeCallbacksAndMessages(null)
+        if (NotificationRemote.screen === notifyKey) NotificationRemote.screen = null
         if (listen) { listen = false; listenService(false); stopSound() }
         stopSession()
         basic?.close()
@@ -986,6 +1003,14 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
     override fun onRequestPermissionsResult(request: Int, permissions: Array<out String>, results: IntArray) {
         super.onRequestPermissionsResult(request, permissions, results)
         if (request == 31) talk.permission(results.isNotEmpty() && results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED)
+        if (request == NotificationRemote.ASK) {
+            if (results.isNotEmpty() && results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) NotificationRemote.sync(this)
+            else {                                                    // nothing could show: the switch goes back off
+                prefs.edit().putBoolean(NotificationRemote.PREF, false).apply()
+                notifyLabel?.invoke()
+                Toast.makeText(this, T("notification_remote.allow"), Toast.LENGTH_LONG).show()
+            }
+        }
         if (request == Managing.CAMERA_ASK && ::managing.isInitialized) managing.cameraAnswer(results.isNotEmpty() && results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED)
     }
 

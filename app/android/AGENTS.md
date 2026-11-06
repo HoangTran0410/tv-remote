@@ -14,7 +14,8 @@ Read with the root [AGENTS.md](../../AGENTS.md) (rules, build, tests, releases a
 app/android/.../phone/   phone app: extension functions on MainActivity, one file per part, in a folder per feature (as app/tvhome's)
   (root)                 what Android or the OS names or starts: PhoneApp, MainActivity (state, lifecycle), SceneActivity + SceneService
                          (widget, tiles, shortcuts), ListenService (🎧), WorkService, QuietUpdate (silent on Android 12+; `$Done` receiver),
-                         Tiles (Quick Settings), RemoteWidget. Manifest names, pinned widgets and shortcuts point here: never move them.
+                         Tiles (Quick Settings), RemoteWidget, NotificationRemote (the remote in notifications / on the lock
+                         screen, off by default; keys via the remote screen when live, else Headless). Manifest names, pinned widgets and shortcuts point here: never move them.
   remote/                the remote screen: RemoteScreen, PhoneRemote (from remote.json), Typing, KbdWatch, KeysOnly, InputsMenu,
                          Rescuing (Unfreeze TV), GamesPointer, PadMap (a game controller -> keys; the page's is `js/gamepad.js`)
   picture/               the TV's picture: Pip (floating player), VideoFrame, Drawing (✏️), AirMouse (the gyroscope as a pointer: a virtual

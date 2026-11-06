@@ -97,7 +97,7 @@ No ADB? The Phone and Computer apps still send keys after pairing with the code 
 | Turn on a TV that is fully off (Wake-on-LAN) | ✓ | | ✓ |
 | Keys before the TV has allowed ADB | ✓ | | ✓ |
 | Infrared remote (phone's IR blaster, no network) | ✓ | | |
-| Widget, Quick Settings tiles, the phone's volume keys | ✓ | | |
+| Widget, Quick Settings tiles, the phone's volume keys, a remote in notifications and on the lock screen | ✓ | | |
 | Game controller | ✓ | ✓ | ✓ |
 | Link for Home Assistant, Shortcuts (Siri) | | ✓ | ✓ |
 | Telegram bot | needs TV Setup | set up here | needs TV Setup |

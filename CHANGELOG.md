@@ -53,6 +53,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - Telegram history in Settings: a double-tapped More no longer adds the same rows twice, and rows of the chat (or TV) left meanwhile no longer land in the new list.
 - Setup tab steps: switching TV no longer carries over a pairing started on the old one, nor draws the old TV's steps under the new one.
 - Words: Russian counts use the right form for 2-4 (22-24 …) everywhere; Russian has the scene "Add to TV Home" words; the voice settings say the offline commands come in Vietnamese or English (with both sizes, ru/fr); Vietnamese stream errors and the RAM card in plain words; the guest check-out in Russian no longer reads "evict"; Vietnamese says "app" and, in the Files tab, "tệp" throughout.
+- Phone app: a remote in notifications and on the lock screen (Settings → Notifications, off by default): Volume down / up, Play / Pause, Mute and Power for the TV used last, through the same connection as the remote screen when it is open. It closes its connection 2 minutes after a press and goes away after 2 hours unused, when switched off, or when no TV is saved (issue #8).
 
 ## 0.48.0 - 2026-11-07
 

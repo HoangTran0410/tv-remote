@@ -1,5 +1,6 @@
 package dev.tvremote.phone.manage
 
+import dev.tvremote.phone.NotificationRemote
 import dev.tvremote.phone.MainActivity
 import dev.tvremote.phone.R
 import dev.tvremote.phone.ir.title
@@ -117,6 +118,21 @@ internal fun MainActivity.buildSettings(): View {
     }
     buzzLabel()
     box.addView(buzzRow)
+
+    box.addView(head(T("notification_remote.head")), gap(18))     // NotificationRemote.kt: off by default
+    lateinit var notifyRow: Button
+    val notifyLabel = { notifyRow.setToggle(prefs.getBoolean(NotificationRemote.PREF, false), T("notification_remote.switch")) }
+    notifyRow = row("") {
+        val on = !prefs.getBoolean(NotificationRemote.PREF, false)
+        prefs.edit().putBoolean(NotificationRemote.PREF, on).apply()   // off: the service sees it and ends itself
+        notifyLabel()
+        if (on && android.os.Build.VERSION.SDK_INT >= 33 && !NotificationRemote.allowed(this)) requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), NotificationRemote.ASK)
+        else if (on) NotificationRemote.sync(this)
+    }
+    notifyLabel()
+    this.notifyLabel = notifyLabel
+    box.addView(notifyRow)
+    box.addView(note(T("notification_remote.note")))
 
     box.addView(head(T("info_screens.tv_keyboard")), gap(18))
     lateinit var kbdRow: Button

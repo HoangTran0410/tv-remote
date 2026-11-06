@@ -156,6 +156,7 @@ internal fun MainActivity.save(ip: String, model: String) {
     val e = prefs.edit().putString("ips", TextUtils.join(",", ips))
     if (model.isNotEmpty()) e.putString("name:$ip", model)
     e.apply()
+    dev.tvremote.phone.NotificationRemote.sync(this)               // the first TV saved: the notification's remote can show
 }
 
 /** Asks each saved TV, every 8 s while the picker shows, whether it answers, and through which of its addresses. */
