@@ -18,3 +18,4 @@ Tab **📁 Tệp** là trình quản lý tệp của TV.
 ### Mẹo
 
 - APK trùng app hệ thống của TV: bấm **Cài thành app riêng**, file đổi tên gói (.copy) rồi cài cạnh app có sẵn. Không dùng cho.apks /.xapk.
+- TV hết chỗ để cài: bấm **Dọn bộ nhớ đệm rồi thử lại**, hoặc **Xóa dữ liệu** / **Gỡ** một trong 5 app chiếm nhiều chỗ nhất.

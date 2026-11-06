@@ -4457,5 +4457,16 @@
  "core.fr_sound_encoder": "TV này không có bộ mã hóa tiếng phù hợp để gửi tiếng.",
  "core.fr_encoders": "TV không cho biết nó có bộ mã hóa hình nào, nên chưa có hình. Thử lại hoặc chọn Phần mềm.",
  "core.fr_picture_decoder": "Máy này không giải mã được hình từ TV. Thử hạ chất lượng hình.",
- "core.fr_scrcpy_start": "TV không bật được phần truyền hình. Thử lại; nếu vẫn lỗi, khởi động lại TV."
+ "core.fr_scrcpy_start": "TV không bật được phần truyền hình. Thử lại; nếu vẫn lỗi, khởi động lại TV.",
+ "space.title": "TV không đủ chỗ trống",
+ "space.need": "Cần {need}, TV còn trống {free}.",
+ "space.have": "TV còn trống {free}.",
+ "space.free_cache": "Dọn bộ nhớ đệm rồi thử lại",
+ "space.try_again": "Thử lại",
+ "space.cache_done": "Đã dọn {size}.",
+ "space.still_short": "Đã dọn {size}, vẫn thiếu {short}.",
+ "space.biggest": "App chiếm nhiều chỗ nhất",
+ "space.no_list": "TV này không cho xem app nào chiếm chỗ. Gỡ bớt app hoặc tệp ở tab Ứng dụng và Tệp.",
+ "space.remove_updates": "Gỡ bản cập nhật",
+ "space.updates_ask": "Gỡ các bản cập nhật của {name}? App quay về bản có sẵn trong TV."
 }

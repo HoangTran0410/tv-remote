@@ -226,7 +226,7 @@ const FRIENDLY = [
   [/stream closed|socket closed|broken pipe/i, T('core.fr_connection_lost')],   // ADB cut: another TV chosen, or the network dropped
   [/no sign-in link/i, T('core.fr_no_signin_link')],
   [/storage full: file=(\d+) free=(\d+) need=(\d+) apk=([01])/, (m) => T(m[4] === '1' ? 'core.fr_storage_apk' : 'core.fr_storage_file', { free: fmtSize(+m[2]), size: fmtSize(+m[1]), need: fmtSize(+m[3]) })],
-  [/INSUFFICIENT_STORAGE|No space left/i, T('core.fr_no_space')],
+  [/INSUFFICIENT_STORAGE|No space left|not enough space/i, T('core.fr_no_space')],
   [/no app that can open/i, T('core.fr_no_viewer_app')],
   [/cannot be opened \(no launcher screen\)|no launcher activity/i, T('core.fr_no_launcher')],
   [/adb pair: wrong code/i, T('core.fr_pair_wrong_code')],

@@ -131,3 +131,5 @@ dialog.ask.qkpick .card { width:min(760px, 94vw); }
 .choosegrid2 .tile[hidden] { display:none; }
 .qkbadge:not(.red):not(.green):not(.yellow):not(.blue):not(:empty) { background:var(--bg); border-radius:8px; padding:0 6px; line-height:18px; }   /* readable over a wide logo */
 .chm .chstar::after { content:''; position:absolute; inset:-8px; }   /* drawn 28px, hit area 44px; the star is absolute, so it is its own anchor */
+#spacebody { display:flex; flex-direction:column; gap:var(--gap); }   /* the "no room" dialog: numbers, buttons, then the big apps */
+#spacebody > * { margin:0; }

@@ -19,6 +19,7 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
     override fun route(what: String, post: Boolean, r: HttpServer.Request): HttpServer.Response? {
         when (what) {
             "apps" -> return HttpServer.Response.json(apps(r.q("system") == "1"))
+            "storage" -> return HttpServer.Response.json(storage(r.q("size").toLongOrNull() ?: 0L))
             "apps/report" -> return HttpServer.Response.json(appsReport())
             "privacy" -> if (!post) return HttpServer.Response.json(privacy.snapshot(r.q("since").toIntOrNull() ?: 0, r.q("id").toIntOrNull() ?: -1))   // the scan under way or the last one (Privacy.kt); a route nobody but the owner may use (Scope allows none of it)
             "recents" -> if (!post) return HttpServer.Response.json(recents())
@@ -279,6 +280,21 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
     }
 
     /** Closes the apps that are only waiting in the background (what is on screen stays); says how much memory came back, in MB. */
+    /** An install did not fit: {free, need, ok, apps}: the TV's free bytes, what [size] (an APK) needs, the biggest apps to trim ([dev.tvremote.core.ontv.Space]). */
+    private fun storage(size: Long): JSONObject {
+        val out = sh(dev.tvremote.core.ontv.Space.READ)
+        val free = dev.tvremote.core.ontv.Space.free(out)
+        val need = if (size > 0) TvPaths.needed(size, 2) else 0L
+        val o = JSONObject().put("need", need).put("ok", free == null || free >= need)
+        if (free != null) o.put("free", free)
+        val apps = JSONArray()
+        for (a in dev.tvremote.core.ontv.Space.top(out, { Setup.mustKeep(it) })) {
+            apps.put(JSONObject().put("pkg", a.pkg).put("bytes", a.bytes).put("data", a.data).put("cache", a.cache).put("user", a.user)
+                .put("meta", Manage.meta(labels, a.pkg)))
+        }
+        return o.put("apps", apps)
+    }
+
     private fun free(): JSONObject {
         val avail = { (Meminfo.kb(sh("cat /proc/meminfo"), "MemAvailable") ?: 0L) / 1024 }
         val before = avail()
