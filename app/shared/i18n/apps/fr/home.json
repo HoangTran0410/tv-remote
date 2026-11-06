@@ -908,5 +908,15 @@
   "folder_items": {
     "one": "%d élément",
     "other": "%d éléments"
-  }
+  },
+    "w_frame": "Cadre photo",
+    "c_frame_sub": "vos photos, l’une après l’autre",
+    "frame_empty": "Pas encore de photos. Ajoutez-en depuis le téléphone : Widgets › Cadre photo.",
+    "frame_add": "Ajouter des photos depuis le téléphone",
+    "home_o_every": "Changer toutes les",
+    "home_ov_s10": "10 s",
+    "home_ov_s30": "30 s",
+    "home_ov_m1": "1 min",
+    "home_ov_m5": "5 min",
+    "home_ov_m15": "15 min"
 }

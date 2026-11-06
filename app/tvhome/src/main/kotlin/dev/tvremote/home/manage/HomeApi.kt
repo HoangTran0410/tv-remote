@@ -21,7 +21,7 @@ import dev.tvremote.home.HomeConfig
 /**
  * What a client is told of TV Home and what it may change: one place for the two ways in, [HomeReceiver] (a phone or computer with ADB,
  * the answer in a broadcast) and [ManageServer] (the settings page TV Home serves itself). The answer: {version, config, apps:
- * [{pkg, label}], photo: whether wall.jpg is there, photos: [{id, v}] the ones there are (v: when each changed), thumbs: {id: base64
+ * [{pkg, label}], photo: whether wall.jpg is there, photos: [{id, v}] the ones there are (v: when each changed), framePics: [{id, v}] the photo frame's, thumbs: {id: base64
  * JPEG}, bing: {date, title, copyright} of the picture kept}. Always on the main thread: Store and the screen live there.
  */
 object HomeApi {
@@ -55,6 +55,13 @@ object HomeApi {
             photos.put(JSONObject().put("id", id).put("v", f.lastModified()).put("size", f.length()))   // size: a theme file shows what its photos add up to
             if (thumbs) thumb(c, id)?.let { pictures.put(id, it) }
         }
+        val frame = JSONArray()                                       // the photo frame's photos: id, stamp (the page's thumbnails are kept by it)
+        for (id in HomeConfig.frame(config.optJSONArray("frame"))) {
+            val f = dev.tvremote.home.apps.Pics.file(c, id)
+            if (!f.isFile) continue
+            frame.put(JSONObject().put("id", id).put("v", f.lastModified()))
+            if (thumbs) picThumb(c, id, f)?.let { pictures.put(id, it) }
+        }
         val library = JSONArray()
         for (v in Videos.list(c)) {
             library.put(v.json())
@@ -74,7 +81,7 @@ object HomeApi {
             .put("linkOk", true)                                    // takes any link and answers what opens it (/h/link): the page's preview asks first
             .put("pinOk", true)                                     // takes links to pin (/h/pin, HomeReceiver pin): clients check it, an older TV Home lacks it
             .put("photo", File(c.getExternalFilesDir(null), "wall.jpg").isFile)
-            .put("photos", photos).put("thumbs", pictures).put("shots", shots)
+            .put("photos", photos).put("framePics", frame).put("thumbs", pictures).put("shots", shots)
             // the media library (Videos.kt): its items, the work under way, the room left and the cap; the screen's real size for previews
             .put("video", JSONObject().put("items", library).put("job", Videos.job?.json() ?: JSONObject.NULL).put("free", Videos.free(c)).put("max", HomeConfig.VIDEO_MAX_BYTES).put("libmax", HomeConfig.VIDEO_LIB_MAX).put("perf", Videos.perf(c) ?: JSONObject.NULL))
             .put("display", JSONObject().put("w", dw).put("h", dh))
@@ -94,6 +101,21 @@ object HomeApi {
         }
         return Base64.encodeToString(bytes, Base64.NO_WRAP)
     }
+
+    /** 96x54 JPEG of a frame photo (pics/<id>.jpg, already small), cropped to fill, cached like [thumb]. */
+    private fun picThumb(c: Context, id: String, f: File): String? = try {
+        val cache = File(c.cacheDir, "t-$id-${f.lastModified()}.jpg")
+        val bytes = if (cache.isFile) cache.readBytes() else {
+            val b = (dev.tvremote.home.apps.Pics.load(c, id) as? android.graphics.drawable.BitmapDrawable)?.bitmap ?: return null
+            val k = maxOf(96f / b.width, 54f / b.height)
+            val s = Bitmap.createScaledBitmap(b, maxOf(96, Math.round(b.width * k)), maxOf(54, Math.round(b.height * k)), true)
+            val out = ByteArrayOutputStream()
+            Bitmap.createBitmap(s, (s.width - 96) / 2, (s.height - 54) / 2, 96, 54).compress(Bitmap.CompressFormat.JPEG, 70, out)
+            c.cacheDir.listFiles { x -> x.name.startsWith("t-$id-") }?.forEach { it.delete() }
+            out.toByteArray().also { cache.writeBytes(it) }
+        }
+        Base64.encodeToString(bytes, Base64.NO_WRAP)
+    } catch (e: Exception) { null } catch (e: OutOfMemoryError) { null }
 
     /**
      * [file] (in [Videos.staging]) is taken into the media library on a thread of its own (a GIF or a heavy video is made light first:
@@ -139,6 +161,13 @@ object HomeApi {
      * "ok", "target" (not an app or shortcut), "full" (PICS_MAX others already) or "image" (not a picture). Main thread, like the rest.
      */
     fun saveAppPic(c: Context, target: String, jpeg: ByteArray): String {
+        if (target == HomeConfig.FRAME) {                             // one more photo for the photo frame widget: same file, its id at the end of "frame"
+            val have = HomeConfig.frame(Store.get(c).optJSONArray("frame"))
+            if (have.size >= HomeConfig.FRAME_MAX) return "full"
+            val id = dev.tvremote.home.apps.Pics.save(c, jpeg) ?: return "image"
+            Store.change(c, JSONObject().put("frame", JSONArray(have + id)))
+            return "ok"
+        }
         if (!dev.tvremote.home.Target.valid(target) || HomeConfig.isLive(target) || HomeConfig.isFolder(target)) return "target"
         val have = Store.get(c).optJSONObject("pics") ?: JSONObject()
         if (!have.has(target) && have.length() >= HomeConfig.PICS_MAX) return "full"

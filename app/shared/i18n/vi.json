@@ -4520,5 +4520,19 @@
  "space.biggest": "App chiếm nhiều chỗ nhất",
  "space.no_list": "TV này không cho xem app nào chiếm chỗ. Gỡ bớt app hoặc tệp ở tab Ứng dụng và Tệp.",
  "space.remove_updates": "Gỡ bản cập nhật",
- "space.updates_ask": "Gỡ các bản cập nhật của {name}? App quay về bản có sẵn trong TV."
+ "space.updates_ask": "Gỡ các bản cập nhật của {name}? App quay về bản có sẵn trong TV.",
+ "home.w_frame": "Khung ảnh: ảnh của bạn, lần lượt từng tấm",
+ "home.frame": "Ảnh trong khung",
+ "home.frame_add": "＋ Thêm ảnh",
+ "home.frame_none": "Chưa có ảnh. Thêm tối đa 10 tấm.",
+ "home.frame_n": "Ảnh {n}",
+ "home.frame_remove": "Xóa ảnh",
+ "home.frame_done": "Đã thêm ảnh",
+ "core.fr_home_frame_old": "Cập nhật TV Home để dùng khung ảnh.",
+ "home.o_every": "Đổi ảnh sau",
+ "home.ov_s10": "10 giây",
+ "home.ov_s30": "30 giây",
+ "home.ov_m1": "1 phút",
+ "home.ov_m5": "5 phút",
+ "home.ov_m15": "15 phút"
 }

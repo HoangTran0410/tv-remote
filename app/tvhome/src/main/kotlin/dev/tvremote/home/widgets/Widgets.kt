@@ -57,6 +57,7 @@ import dev.tvremote.home.R
  *   lunar   the lunar date, the next full moon or new month, the days to Tết ([Lunar], worked out here)
  *   timer   the sleep timer or bedtime and the time left (TV Setup's rules, through the same provider); none while neither is set
  *   prayer  the five prayers and the sunrise of today at the weather's place, the next one with its countdown, the Hijri date ([Prayer], offline)
+ *   frame   the person's own photos one after another with a fade ([FrameView], HomeConfig "frame"); kept across the minute's rebuild
  *   note    the family's note (HomeConfig "note"), while there is one
  *   qr1..4  QR widgets (HomeConfig "qrs", [QrView]): big by default, the glass widget with only the code on white
  */
@@ -216,6 +217,12 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
     internal var speed: TextView? = null; internal var speedUp: TextView? = null
     internal var ghzMemo: Float? = null
 
+    /** The photo frame, kept from one [show] to the next (its picture and its timer go on); null while the widget is off. */
+    private var frame: FrameView? = null
+    /** Home left / back in front (onPause / onResume): the frame's swap timer stops and starts with it. */
+    fun paused(p: Boolean) { pausedNow = p; frame?.resumed = !p }
+    private var pausedNow = false
+
     init {
         orientation = HORIZONTAL; clipChildren = false; clipToPadding = false
         setLayerType(LAYER_TYPE_HARDWARE, null)                        // drawn once into a texture: the dock's focus animation only copies it
@@ -316,6 +323,7 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
         val packed = if (side) HomeConfig.packColumn(keys, big, noteView != null, Math.round((if (roomPx > 0) roomPx else a.resources.displayMetrics.heightPixels * 2 / 3) / a.resources.displayMetrics.density))
             else HomeConfig.pack(keys, big, noteView != null)
         placed = keys - packed.waiting.toSet()
+        if ("frame" !in placed) { frame?.release(); frame = null }       // off, or no room: nothing held, no timer
         if (packed.cols.isEmpty()) { placed = emptyList(); visibility = View.GONE; return }
         fun plain(k: String, alone: Boolean): View? = when (k) {
             "lunar" -> f.moon?.let { lunar(it) }; "timer" -> timerView
@@ -333,7 +341,11 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
             col.keys.forEachIndexed { j, k ->
                 val alone = col.keys.size == 1 && !(side && col.keys[0] !in big)   // a lone widget has the column's whole height; in a side column a small one is a half-height pill
                 val full = alone && w >= dp(FULL_MIN)                  // alone it has the whole height: the full form, small or big (a small one alone was a tall card with half its words, 2026-11-05)
-                val v: View = if (tonal(k)) tonalWidget(!full).also { c -> tonalFill(k, c, f, w, !full, label, qrs) }     // one path for every widget: a figure, a caption, a badge
+                val v: View = if (k == "frame") (frame ?: FrameView(a, dp).also { frame = it; it.resumed = !pausedNow }).also { fv ->
+                    (fv.parent as? ViewGroup)?.removeView(fv)                // last minute's column
+                    fv.set(HomeConfig.frame(Store.get(a).optJSONArray("frame")), FrameShow.everyMs(opt("frame", "every")), w,
+                        if (side) dp(col.weight) / col.keys.size else if (alone) dp(BIG_H) else (dp(BIG_H) - dp(12)) / 2)
+                } else if (tonal(k)) tonalWidget(!full).also { c -> tonalFill(k, c, f, w, !full, label, qrs) }     // one path for every widget: a figure, a caption, a badge
                 else if (k in BIG) widget().also { c ->
                     if (full) when (k) {
                         "system" -> system(c, f, w)

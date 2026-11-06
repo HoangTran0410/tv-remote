@@ -810,5 +810,15 @@
   "folder_delete": "Xóa thư mục",
   "folder_note": "Xóa thư mục thì mọi thứ trong đó về lại màn hình chính.",
   "folder_full": "Không thêm được thư mục nữa",
-  "folder_items": {"one": "%d ô", "other": "%d ô"}
+  "folder_items": {"one": "%d ô", "other": "%d ô"},
+  "w_frame": "Khung ảnh",
+  "c_frame_sub": "ảnh của bạn, lần lượt từng tấm",
+  "frame_empty": "Chưa có ảnh. Thêm ảnh từ điện thoại: Widget › Khung ảnh.",
+  "frame_add": "Thêm ảnh từ điện thoại",
+  "home_o_every": "Đổi ảnh sau",
+  "home_ov_s10": "10 giây",
+  "home_ov_s30": "30 giây",
+  "home_ov_m1": "1 phút",
+  "home_ov_m5": "5 phút",
+  "home_ov_m15": "15 phút"
 }

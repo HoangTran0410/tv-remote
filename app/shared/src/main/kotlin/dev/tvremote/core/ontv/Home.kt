@@ -143,6 +143,7 @@ object Home {
      */
     @Throws(IOException::class)
     fun appPic(adb: Adb, target: String, jpeg: ByteArray): JSONObject {
+        if (target == HomeConfig.FRAME) return framePic(adb, jpeg)
         if (!Target.valid(target) || HomeConfig.isLive(target) || HomeConfig.isFolder(target)) throw IllegalArgumentException("pic target")
         if (jpeg.size < 4 || jpeg.size > HomeConfig.PIC_BYTES || jpeg[0] != 0xFF.toByte() || jpeg[1] != 0xD8.toByte()) throw IllegalArgumentException("pic image")
         val sh: (String) -> String = { adb.shell(it) }
@@ -157,6 +158,27 @@ object Home {
         sh("mkdir -p " + path.substringBeforeLast('/'))
         if (!adb.put(path, jpeg, true)) throw IOException("home:photo")
         return call(sh, JSONObject().put("pics", JSONObject(have.toString()).put(target, id)))
+    }
+
+    /**
+     * One more photo for the photo frame widget ("frame"): the same small JPEG and folder as [appPic], its id added at the end of the
+     * list. A TV Home from before the frame answers `home:frame_old`, a full one `home:frame_full`.
+     */
+    @Throws(IOException::class)
+    private fun framePic(adb: Adb, jpeg: ByteArray): JSONObject {
+        if (jpeg.size < 4 || jpeg.size > HomeConfig.PIC_BYTES || jpeg[0] != 0xFF.toByte() || jpeg[1] != 0xD8.toByte()) throw IllegalArgumentException("pic image")
+        val sh: (String) -> String = { adb.shell(it) }
+        val now = call(sh, null)
+        if (!now.optBoolean("installed")) throw IOException("home:missing")
+        val conf = now.optJSONObject("config") ?: JSONObject()
+        if (!conf.has("frame")) throw IOException("home:frame_old")
+        val have = HomeConfig.frame(conf.optJSONArray("frame"))
+        if (have.size >= HomeConfig.FRAME_MAX) throw IOException("home:frame_full")
+        val id = String.format("%08x", java.security.SecureRandom().nextInt())
+        val path = HomeConfig.picPath(id)
+        sh("mkdir -p " + path.substringBeforeLast('/'))
+        if (!adb.put(path, jpeg, true)) throw IOException("home:photo")
+        return call(sh, JSONObject().put("frame", org.json.JSONArray(have + id)))
     }
 
     /**

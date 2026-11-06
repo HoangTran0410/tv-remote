@@ -90,7 +90,8 @@ import org.json.JSONObject
  *           "recent", in the order Android's usage events came, never by the clock), "adblock" (whether Private DNS names an ad-blocking
  *           resolver, [ADBLOCK_DNS]; OK turns it on / off, which needs [WRITE_SECURE] granted over ADB; Android 9+: before it TV Home
  *           leaves it out of "wschema"), "prayer" (the five prayers and the sunrise of today at the weather's place, worked out on the TV
- *           with no network: the next one with a countdown, and the Hijri date; options: method, Asr school, Hijri adjust)
+ *           with no network: the next one with a countdown, and the Hijri date; options: method, Asr school, Hijri adjust), "frame"
+ *           (a photo frame: the person's own photos in [frame], one after another with a fade every "every" ([FRAME_EVERY]); one photo stays)
  *           Their order in the list is the order on the screen (the page and the TV's panel move them).
  *   qrs     QR widgets: {"qr1": {tpl, f, cap, show}, ...} up to [HomeQr.QR_MAX], each a template's fields (Wi-Fi, link, text, phone, SMS,
  *           e-mail, contact: [HomeQr]) and a caption; a widget is on the screen when its key is also in "widgets" (the order, the size).
@@ -132,6 +133,8 @@ import org.json.JSONObject
  *           at most [PIC_W] x [PIC_H] in TV Home's external files folder (pics/<id>.jpg, [picPath]) that a client put there or sent to
  *           the page's server. It replaces the tile's banner or icon wherever TV Home draws it; removing the key brings the app's own back.
  *           Not a theme key
+ *   frame   the photo frame widget's photos: ["<8 hex id>", ...] in the order shown, at most [FRAME_MAX]; the same small JPEGs as "pics"
+ *           (pics/<id>.jpg, sent the same way, [FRAME] as the target), so one sweep keeps both. Not a theme key
  *   tiles   live widgets ("tile:<provider package>/<id>", [isLive]) and launcher shortcuts ("pin:<package>/<id>", [Target.isPin]) on the app grid, at most [TILES_MAX]. A provider (TV Setup's RAM
  *           live widget: tile:dev.tvremote.setup/ram, and its sleep timer; TV Channels' tile:dev.tvremote.channels/next) draws its value
  *           itself, in its layout (gauge / next / toggle); the key then sits in dock / hidden / order like an app's package name.
@@ -282,7 +285,7 @@ object HomeConfig {
         }
         return null
     }
-    val WIDGETS = listOf("system", "usage", "calendar", "lunar", "timer", "weather", "air", "recent", "adblock", "clock", "market", "news", "prayer") + HomeQr.KEYS
+    val WIDGETS = listOf("system", "usage", "calendar", "lunar", "timer", "weather", "air", "recent", "adblock", "clock", "market", "news", "prayer", "frame") + HomeQr.KEYS
     /**
      * One option of a widget, the single source of what the settings dialog offers (TV Home's Customize and the page render it, nobody
      * hardcodes a widget's options): [type] "choice" (one of [values]) or "toggle" ("off" / "on", drawn as a switch). [default] is what a
@@ -307,6 +310,7 @@ object HomeConfig {
             k == "news" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("src", "choice", listOf("auto", "mine", "both"), "auto"))
             k == "prayer" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("method", "choice", listOf("auto") + PRAYER_METHODS, "auto"),
                 Opt("asr", "choice", listOf("standard", "hanafi"), "standard"), Opt("hijri", "choice", listOf("hijri_m1", "hijri_0", "hijri_p1"), "hijri_0"))
+            k == "frame" -> listOf(size, Opt("every", "choice", FRAME_EVERY.keys.toList(), "s30"))
             k in TONAL -> listOf(size, Opt("look", "choice", LOOKS, "glass"))
             k in WIDGETS -> listOf(size)
             else -> emptyList()
@@ -369,7 +373,7 @@ object HomeConfig {
     }
     /** A widget's size when nobody chose: the four large widgets are big, the small pills (lunar, timer, clock, and the note) small. */
     fun defaultSize(k: String) = if (k in BIG_KINDS) "big" else "small"
-    private val BIG_KINDS = setOf("system", "usage", "calendar", "weather", "air", "market", "news", "prayer") + HomeQr.KEYS     // a code is read from the sofa: big until chosen otherwise
+    private val BIG_KINDS = setOf("system", "usage", "calendar", "weather", "air", "market", "news", "prayer", "frame") + HomeQr.KEYS     // a code is read from the sofa: big until chosen otherwise
     /**
      * Widths as weights (a column's share of the row): a big widget, the calendar (seven day columns) a little more, a small column
      * (stacked pills, or one standing) a little less. The row holds [BUDGET] at most: three big widgets and a small column fit; a
@@ -450,6 +454,12 @@ object HomeConfig {
     const val PIC_H = 270
     const val PIC_BYTES = 300_000                                     // the file; one that is bigger is not used
     val PIC_ID = Regex("[0-9a-f]{8}")
+    /** The photo frame: at most this many photos, sent as an own picture with this target (the "pkg" of /apppic), how long each stays. */
+    const val FRAME_MAX = 10
+    const val FRAME = "frame"
+    val FRAME_EVERY = linkedMapOf("s10" to 10_000L, "s30" to 30_000L, "m1" to 60_000L, "m5" to 300_000L, "m15" to 900_000L)
+    /** The frame's photo ids: 8 hex each, once, at most [FRAME_MAX], in the order given. */
+    fun frame(a: JSONArray?): List<String> = strs(a).filter { PIC_ID.matches(it) }.distinct().take(FRAME_MAX)
     const val PLACE_MAX = 60
     const val GNAME_MAX = 24
     const val GTEXT_MAX = 60
@@ -807,6 +817,7 @@ object HomeConfig {
             .put("qrs", qrs)
             .put("names", names(o.optJSONObject("names")))
             .put("pics", pics(o.optJSONObject("pics")))
+            .put("frame", JSONArray(frame(o.optJSONArray("frame"))))
             .put("themes", JSONArray(customThemes(o)))
             .also { out -> before(o)?.let { out.put(BEFORE, it) } }
             .put("widgets", JSONArray(widgets))

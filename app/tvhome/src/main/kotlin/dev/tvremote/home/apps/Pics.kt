@@ -17,6 +17,8 @@ import java.io.File
 object Pics {
     /** target -> picture id, as the settings say (HomeActivity keeps it in step, like [Apps.names]). */
     @Volatile var ids: Map<String, String> = emptyMap()
+    /** The photo frame widget's photos (HomeConfig "frame"): the same kind of file, kept by the same sweep. */
+    @Volatile var frame: List<String> = emptyList()
 
     private const val GRACE_MS = 10 * 60_000L                         // a client puts the file first and the setting after: a young file is never swept
 
@@ -35,7 +37,13 @@ object Pics {
     /** The own picture of [pkg], or null (none set, the file gone or too big, not a picture). Off the main thread. */
     fun of(c: Context, pkg: String): Drawable? = ids[pkg]?.let { load(c, it) }
 
-    fun load(c: Context, id: String): Drawable? {
+    fun load(c: Context, id: String): Drawable? = bitmap(c, id, HomeConfig.PIC_W, HomeConfig.PIC_H)?.let { BitmapDrawable(c.resources, it) }
+
+    /**
+     * Picture [id] no bigger than [bw] x [bh] (and never over [HomeConfig.PIC_W] x [HomeConfig.PIC_H]): read with inSampleSize, RGB_565;
+     * null for a missing, oversized, corrupt or not-a-picture file. Off the main thread.
+     */
+    fun bitmap(c: Context, id: String, bw: Int, bh: Int): Bitmap? {
         if (!HomeConfig.PIC_ID.matches(id)) return null
         val f = file(c, id)
         if (!f.isFile || f.length() > HomeConfig.PIC_BYTES) return null
@@ -43,12 +51,13 @@ object Pics {
             val o = BitmapFactory.Options().apply { inJustDecodeBounds = true }
             BitmapFactory.decodeFile(f.path, o)
             if (!sane(o.outWidth, o.outHeight)) return null
-            val (w, h) = fit(o.outWidth, o.outHeight)
+            val (fw, fh) = fit(o.outWidth, o.outHeight)
+            val k = minOf(1f, maxOf(bw.toFloat() / fw, bh.toFloat() / fh))   // covers the box (a frame crops to fill), never over the stored size
+            val w = maxOf(1, (fw * k).toInt()); val h = maxOf(1, (fh * k).toInt())
             val read = BitmapFactory.decodeFile(f.path, BitmapFactory.Options().apply {
                 inSampleSize = Wall.sample(o.outWidth, o.outHeight, w, h); inPreferredConfig = Bitmap.Config.RGB_565
             }) ?: return null
-            val out = if (read.width > w || read.height > h) Bitmap.createScaledBitmap(read, w, h, true).also { if (it !== read) read.recycle() } else read
-            BitmapDrawable(c.resources, out)
+            if (read.width > w || read.height > h) Bitmap.createScaledBitmap(read, w, h, true).also { if (it !== read) read.recycle() } else read
         } catch (e: Exception) { null } catch (e: OutOfMemoryError) { null }
     }
 
