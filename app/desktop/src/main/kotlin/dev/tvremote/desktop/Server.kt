@@ -276,7 +276,7 @@ class Server(private val repo: File, private val keys: File, private val pass: P
         val post = r.method == "POST"
         if (post && r.path !in INPUT_ROUTES) infoAt.clear()           // an action (install, save...) may have changed what the status shows; a key press cannot
         if (post && r.path == "/api/support/app") return Response.json(when (r.json().optString("act")) {   // About: let support look at this app
-            "start" -> if (support.start() == null) JSONObject().put("failed", if (support.left == 0) "none_left" else "no_net") else support.state()
+            "start" -> if (support.start(dev.tvremote.core.SupportRelay.Said.of(r.json())) == null) JSONObject().put("failed", if (support.left == 0) "none_left" else "no_net") else support.state()
             "stop" -> { support.stop(); support.state() }
             else -> support.state()
         })

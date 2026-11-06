@@ -118,6 +118,8 @@ def main():
     r = call(base, "/v1/support", {"code": a.code})
     live = f"lets support look for {int((r['live'] - r['now']) / 60000) + 1} more min" if r["live"] > r["now"] else "not open now"
     print(f'{r["code"]}  {r["app"]} {r["v"]}  {r["model"]}  sent {when(r["made"], r["now"])}, seen {when(r["seen"], r["now"])}, {live}\n')
+    said = [l for l in r["report"].split("\n")[:2] if l.startswith("[said] ")]   # what the sender chose / wrote (the first lines of the report)
+    print(("SENDER SAID: " + " | ".join(l[7:] for l in said) + "\n\n") if said else "(the sender said nothing)\n")
     print(r["report"])
 
 

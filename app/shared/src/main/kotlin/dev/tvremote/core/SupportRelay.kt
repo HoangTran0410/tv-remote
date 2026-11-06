@@ -41,9 +41,9 @@ class SupportRelay(
     private fun base() = Census.url.trimEnd('/') + "/v1/support"
 
     /** Sends the report; the code to read out, or null when the worker cannot be reached (or today's sends are used up: [left] 0). */
-    fun send(): String? {
+    fun send(said: Said = Said.NONE): String? {
         val body = JSONObject().put("id", Census.id().ifEmpty { java.util.UUID.randomUUID().toString() }).put("app", app).put("v", version)
-            .put("model", model).put("report", fit(try { report() } catch (e: Exception) { "report: $e" }, 56_000, tail = true))
+            .put("model", model).put("report", said.header() + fit(try { report() } catch (e: Exception) { "report: $e" }, 56_000, tail = true))
         left = -1
         val r = post(base(), body) ?: return null
         left = r.optInt("left", -1)
@@ -55,8 +55,8 @@ class SupportRelay(
     }
 
     /** Lets the owner read for [MINUTES], with a fresh report first (the facts of now with the code). Blocks: off the main thread. */
-    fun start(): String? {
-        val code = send() ?: return null
+    fun start(said: Said = Said.NONE): String? {
+        val code = send(said) ?: return null
         val key = lastKey
         val r = post("${base()}/live", JSONObject().put("code", code).put("key", key).put("minutes", MINUTES))?.takeIf { it.has("live") } ?: return null
         asked = 0
@@ -150,7 +150,25 @@ class SupportRelay(
         } finally { c.disconnect() }
     } catch (e: Exception) { null }
 
+    /**
+     * What the person said went wrong, asked before a send (census 2026-11: 34 of the last 50 reports had no words): one of
+     * [PROBLEMS] and a few words, both optional. It travels as the first lines of the report (the worker keeps the report as
+     * text, so it needs no new field) and `dev/census/support.py` shows them first.
+     */
+    class Said(problem: String = "", text: String = "") {
+        val problem = problem.takeIf { it in PROBLEMS } ?: ""
+        val text = Scrub.text(text.replace(Regex("\\s+"), " ").trim().take(280), keepIps = true)
+        fun header(): String = (if (problem.isNotEmpty()) "[said] problem: $problem\n" else "") + (if (text.isNotEmpty()) "[said] text: $text\n" else "")
+        companion object {
+            val NONE = Said()
+            /** From a request's JSON (`problem`, `text`); missing = nothing said. */
+            fun of(j: JSONObject?) = if (j == null) NONE else Said(j.optString("problem"), j.optString("text"))
+        }
+    }
+
     companion object {
+        /** The ids of the ask (words `said.<id>`); the page's chips (js/core.js SAID_PROBLEMS) are the same list. */
+        val PROBLEMS = listOf("connect", "key", "app", "media", "other")
         const val MINUTES = 30
         const val MAX_ANSWER = 200_000                                // bytes as sent; the worker keeps 256 KB (src/support.js MAX_ANSWER)
 

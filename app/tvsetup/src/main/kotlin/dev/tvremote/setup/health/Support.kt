@@ -60,12 +60,12 @@ object Support {
     internal fun scrub(s: String): String = Scrub.text(s, keepIps = true)
 
     /** Sends the report; the code to read out, or null. Blocks: off the main thread. */
-    fun send(c: Context): String? = relay(c).send()
+    fun send(c: Context, said: SupportRelay.Said = SupportRelay.Said.NONE): String? = relay(c).send(said)
 
     /** Lets the owner read for [MINUTES]; [said] gets the code, or null, on its own thread. */
-    fun start(c: Context, said: (String?) -> Unit) {
+    fun start(c: Context, said: SupportRelay.Said = SupportRelay.Said.NONE, got: (String?) -> Unit) {
         val r = relay(c)
-        Thread({ said(r.start()) }, "support-start").apply { isDaemon = true }.start()
+        Thread({ got(r.start(said)) }, "support-start").apply { isDaemon = true }.start()
     }
 
     /** At start: support open when TV Setup stopped (an update, a kill) goes on with the same code, else no pass is kept. */
@@ -77,14 +77,14 @@ object Support {
 
     /**
      * For the phone, the computer and the web page (RulesReceiver "support", `/api/support/tv`): [act] "start", "stop" or "state";
-     * `{open, code, min, left}`, or `{failed: "no_net" | "none_left" | why}`. Blocks up to 30 s on "start": off the main thread.
+     * `{open, code, min, left}` ([said]: the answer to "What went wrong?", optional), or `{failed: "no_net" | "none_left" | why}`. Blocks up to 30 s on "start": off the main thread.
      */
-    fun act(c: Context, act: String): JSONObject = try {
+    fun act(c: Context, act: String, said: SupportRelay.Said = SupportRelay.Said.NONE): JSONObject = try {
         when (act) {
             "start" -> {
                 if (!RemoteService.isRunning()) try { RemoteService.start(c, true) } catch (e: Exception) { }   // its routes answer support
                 val got = LinkedBlockingQueue<String>()
-                start(c) { got.put(it ?: "") }
+                start(c, said) { got.put(it ?: "") }
                 if (got.poll(30, TimeUnit.SECONDS).isNullOrEmpty()) JSONObject().put("failed", if (left == 0) "none_left" else "no_net") else state(c)
             }
             "stop" -> { stop(c); state(c) }
