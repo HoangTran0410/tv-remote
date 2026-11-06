@@ -74,7 +74,7 @@ object AdbTls {
     }
 
     /** Port 5555 answers (so a TV whose Wireless debugging is off still connects the old way). */
-    fun plainOpen(host: String): Boolean = try { dev.tvremote.core.Lan.connect(host, 5555, 1500).close(); true } catch (e: Exception) { false }
+    fun plainOpen(host: String): Boolean = AdbPort.find(host) > 0
 
     // ---------- finding the ports ----------
 

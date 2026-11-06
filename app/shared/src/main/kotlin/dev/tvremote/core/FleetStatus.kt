@@ -79,7 +79,7 @@ object FleetStatus {
      */
     fun read(host: String, kind: String, open: (Int) -> Boolean, link: AdbLink?, shellMs: Long = 6000, now: () -> Long = System::currentTimeMillis): Status {
         if (kind != Remote.Kind.ANDROID) return Status(host, if (Remote.Kind.ports(kind).any { open(it) }) UP else OFF, at = now())
-        if (!open(5555)) return Status(host, if (open(6466)) UP else OFF, at = now())      // keys only: ADB off, the remote link on
+        if (dev.tvremote.core.adb.AdbPort.candidates(host).none { open(it) }) return Status(host, if (open(6466)) UP else OFF, at = now())      // keys only: ADB off, the remote link on
         val l = link ?: return Status(host, UP, at = now())
         val until = System.nanoTime() + 3_000_000_000L                // a link still dialling gets a moment (the first round after opening the list)
         var st = l.state()
