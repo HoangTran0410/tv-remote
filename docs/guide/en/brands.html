@@ -2,6 +2,8 @@
 
 Beta. Only in the phone app and the computer app.
 
+Roku: **More** › **Tools** › **Roku hidden screens** opens its secret screens (Wi-Fi, network, HDMI, developer mode, restart). The app presses the key sequence for you, and Cancel stops it.
+
 1. Turn the TV on and join the same Wi-Fi.
 2. Scan, pick the TV.
 3. If the TV asks to allow, choose Allow (VIDAA asks a 4-digit code).

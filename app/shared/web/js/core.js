@@ -433,7 +433,7 @@ async function refreshRead() {
 // An LG or Samsung TV is driven through its own remote link and has no ADB: what needs a capability it lacks is marked
 // data-needs="cap ..." and hidden (cards), greyed (buttons, keys it has no name for: a press says why) or, for a tab, kept
 // greyed with a card of what it does on an Android TV ([data-kindintro], KIND_INTRO): a feature to find out about, not a gap.
-let TV_KIND = 'android', CAPS = null, kindSig = '';
+let TV_KIND = 'android', TV_KEYS = null, CAPS = null, kindSig = '';   // TV_KEYS: the keys a non-Android TV takes (a Roku TV has Volume, a stick has not)
 // A browser let in by a shared QR may have less than the owner (Scope.kt in TV Setup): "remote" presses keys and opens apps,
 // "view" only watches. The page marks those parts data-needs="control" (pressing anything) or "full" (the owner's), as for a
 // TV that cannot; the other tabs are left out for a guest, as they are the owner's only.
@@ -485,7 +485,7 @@ const LOG_PAGE = 'https://tvremote.pages.dev/log';
 function applyKind(s) {
   const scope = s.scope || 'full', kind = s.kind || 'android', sig = kind + '|' + scope + '|' + (s.caps || []).join() + '|' + (s.keys || []).join();
   if (sig === kindSig) return;
-  kindSig = sig; TV_KIND = kind; CAPS = s.caps ? new Set(s.caps) : null; SCOPE = scope;
+  kindSig = sig; TV_KIND = kind; TV_KEYS = s.keys ? new Set(s.keys) : null; CAPS = s.caps ? new Set(s.caps) : null; SCOPE = scope;
   document.documentElement.dataset.kind = kind; document.documentElement.dataset.scope = scope;
   document.querySelectorAll('nav.tabs [data-tab]').forEach((t) => { t.hidden = scope !== 'full' && t.dataset.tab !== 'remote'; });
   if (scope !== 'full' && currentTab && currentTab !== 'remote') showTab('remote');   // a guest now: the other tabs are the owner's

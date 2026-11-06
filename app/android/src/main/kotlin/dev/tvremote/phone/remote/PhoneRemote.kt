@@ -69,11 +69,12 @@ internal val phoneActions: Map<String, MainActivity.(String?) -> Unit> = mapOf(
     "shot" to act { shot() },
     "open" to act { quickOpen() },
     "apps" to act { if (kind() != dev.tvremote.core.remote.Remote.Kind.ANDROID) openInstalled() else if (!needsAdb()) managing.open(host, "apps") },   // an Android TV's apps: the Apps tab, tiles with a search
-    "menu" to act { m -> menu(T(remoteGroups[m] ?: return@act), -1, remoteMenu(m!!, setOfNotNull("ir".takeIf { irAvailable() }, "native".takeIf { kind() != Remote.Kind.ANDROID }))) },   // "ir": this phone has an IR LED; "native": LG, Samsung, Roku, VIDAA
+    "menu" to act { m -> menu(T(remoteGroups[m] ?: return@act), -1, remoteMenu(m!!, setOfNotNull("ir".takeIf { irAvailable() }, "roku".takeIf { kind() == Remote.Kind.ROKU }, "native".takeIf { kind() != Remote.Kind.ANDROID }))) },   // "ir": this phone has an IR LED; "native": LG, Samsung, Roku, VIDAA
     "key" to act { k -> val code = Scenes.KEYS[k] ?: return@act; if (code in Tv.OPENERS) opens(code) else press(code) },   // a key from a menu (Tools)
     "timer" to act { timerMenu() },
     "scenes" to act { scenesMenu() },
     "privacy" to act { trackingMenu() },
+    "rokuScreens" to act { rokuScreens() },
     "notify" to act { if (!needsAdb()) managing.open(host, then = "fromRemote(notifyDialog)") },   // the page's dialogs (js/notify.js, dim.js, setup.js): one copy
     "draw" to act { if (drawing) stopDrawing() else startDrawing() },
     "search" to act { askText(T("remote.search_play_store"), T("phone_remote.e_g_vlc"), T("remote.search")) { openLink("market://search?c=apps&q=" + java.net.URLEncoder.encode(it, "UTF-8")) } },   // the TV's Play Store takes searches only this way
@@ -200,4 +201,37 @@ internal fun MainActivity.trackingMenu() {
         Triple("@tag|" + T("track.ads"), T("track.${k}_ads"), open),
         Triple("@mic|" + T("track.mic"), T("track.${k}_mic"), open),
         Triple("@guide|" + T("track.guide"), T("track.guide_sub")) { web("https://tvremote.pages.dev/guide#tracking-other") }))
+}
+
+/**
+ * Roku's hidden screens (remote.json "roku"; the page's rokuScreens): Home and arrows one by one with a pause between, the press times
+ * laid out from the start so a slow answer does not stretch the gaps. A dialog says where it is and stops on Cancel.
+ */
+internal fun MainActivity.rokuScreens() {
+    val r = remoteSpec().roku
+    val tv = basic?.keys?.contains(Scenes.KEYS["VOL_UP"]) == true     // a Roku TV, not a stick
+    menu(T("roku.title"), -1, r.screens.filter { !it.tvOnly || tv }.map { x ->
+        Triple("@tv|" + T(x.t), "") {
+            val go = { rokuSend(x.keys, r.gap, r.homeGap) }
+            val ask = x.ask
+            if (ask == null) go() else dev.tvremote.phone.ui.Popup.Builder(this).setMessage(T(ask)).setPositiveButton(T(x.askOk ?: "common.ok")) { _, _ -> go() }
+                .setNegativeButton(T("common.cancel"), null).show()
+        }
+    })
+}
+
+private fun MainActivity.rokuSend(keys: List<String>, gap: Long, homeGap: Long) {
+    var stop = false
+    val dlg = dev.tvremote.phone.ui.Popup.Builder(this).setMessage(T("roku.sending", "n" to 1, "total" to keys.size))
+        .setNegativeButton(T("common.cancel")) { _, _ -> stop = true }.setOnCancelListener { stop = true }.show()
+    var at = android.os.SystemClock.uptimeMillis()
+    fun step(i: Int) {
+        if (stop) return
+        if (i >= keys.size) { dlg.dismiss(); say(T("roku.done"), false); return }
+        dlg.setMessage(T("roku.sending", "n" to i + 1, "total" to keys.size))
+        press(Scenes.KEYS[keys[i]] ?: return, feel = false)
+        at += if (keys[i] == "HOME" && keys.getOrNull(i + 1) == "HOME") homeGap else gap
+        window.decorView.postDelayed({ step(i + 1) }, maxOf(0L, at - android.os.SystemClock.uptimeMillis()))
+    }
+    step(0)
 }

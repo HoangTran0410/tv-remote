@@ -367,3 +367,28 @@ function trackingMenu() {
     ['@mic|' + T('track.mic'), T(mic), open],
     ['@guide|' + T('track.guide'), T('track.guide_sub'), () => window.open('https://tvremote.pages.dev/guide#tracking-other', '_blank')]], -1, true);
 }
+
+// Roku's hidden screens (remote.json "roku", the guide's #brands): Home and arrows pressed one by one over ECP, a pause between. The press times
+// are laid out from the start, not from each answer, so a slow answer does not stretch the gaps. Long enough to stop: a dialog with Cancel.
+const rokuKeys = (s) => s.split(' ').flatMap((t) => { const [k, n] = t.split('*'); return Array(+n || 1).fill(k); });
+async function rokuScreens() {
+  const R = REMOTE.roku, tv = !!TV_KEYS && TV_KEYS.has('VOL_UP');   // a Roku TV, not a stick
+  menuDlg(T('roku.title'), -1, R.screens.filter((x) => !x.tvOnly || tv).map((x) => ['@tv|' + T(x.t), '', async () => {
+    if (x.ask && !await ask(T(x.ask), { ok: T(x.askOk), danger: true })) return;
+    const keys = rokuKeys(x.keys); let stop = false, shown = 0;
+    const line = el('p', { textContent: T('roku.sending', { n: 1, total: keys.length }) });
+    const d = el('dialog', { className: 'ask' }, el('div', { className: 'card' }, line,
+      el('div', { className: 'acts' }, el('button', { type: 'button', textContent: T('common.cancel'), onclick: () => { stop = true; d.close(); } }))));
+    d.addEventListener('close', () => { stop = true; d.remove(); });
+    document.body.append(d); d.showModal();
+    let at = performance.now();
+    for (let i = 0; i < keys.length && !stop; i++) {
+      line.textContent = T('roku.sending', { n: i + 1, total: keys.length });
+      const r = await api('/api/key', { key: keys[i] }); if (!r) { stop = true; break; }
+      shown++; at += keys[i] === 'HOME' && keys[i + 1] === 'HOME' ? R.homeGap : R.gap;
+      if (i + 1 < keys.length) await sleep(Math.max(0, at - performance.now()));
+    }
+    if (d.open) d.close();
+    if (shown === keys.length) toast(T('roku.done'));
+  }]), -1, true);
+}

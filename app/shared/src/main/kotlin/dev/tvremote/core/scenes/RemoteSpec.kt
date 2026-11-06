@@ -31,7 +31,13 @@ object RemoteSpec {
         fun subWords(): String = if (sub.isEmpty()) "" else T(sub)
     }
 
-    class Spec(val rows: Map<String, List<List<Entry>>>, val menus: Map<String, List<Entry>>)
+    /** One of Roku's hidden screens ("roku" in remote.json): [keys] are [Scenes.KEYS] names, already spelled out ("HOME*3" is three). */
+    class RokuScreen(val id: String, val t: String, val keys: List<String>, val tvOnly: Boolean, val ask: String?, val askOk: String?)
+
+    /** The hidden screens and the pauses between presses: [gap] ms, [homeGap] between two Home presses. */
+    class RokuScreens(val gap: Long, val homeGap: Long, val screens: List<RokuScreen>)
+
+    class Spec(val rows: Map<String, List<List<Entry>>>, val menus: Map<String, List<Entry>>, val roku: RokuScreens = RokuScreens(350, 250, emptyList()))
 
     fun parse(json: String, core: String): Spec {
         val root = JSONObject(json)
@@ -41,7 +47,15 @@ object RemoteSpec {
         }
         val menus = LinkedHashMap<String, List<Entry>>()
         root.optJSONObject("menus")?.let { m -> for (name in m.keys()) menus[name] = entries(m.getJSONArray(name), core) }
-        return Spec(rows, menus)
+        val roku = root.optJSONObject("roku")?.let { r ->
+            val a = r.getJSONArray("screens")
+            RokuScreens(r.getLong("gap"), r.getLong("homeGap"), (0 until a.length()).map { i ->
+                val x = a.getJSONObject(i)
+                RokuScreen(x.getString("id"), x.getString("t"), x.getString("keys").split(" ").flatMap { tok -> tok.substringBefore("*").let { k -> List(tok.substringAfter("*", "1").toInt()) { k } } },
+                    x.optBoolean("tvOnly"), x.optString("ask").ifEmpty { null }, x.optString("askOk").ifEmpty { null })
+            })
+        } ?: RokuScreens(350, 250, emptyList())
+        return Spec(rows, menus, roku)
     }
 
     private fun entries(a: JSONArray, core: String): List<Entry> = (0 until a.length()).mapNotNull { entry(a.getJSONObject(it), core) }

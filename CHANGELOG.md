@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Roku: Tools has "Roku hidden screens" (platform and CPU, Wi-Fi, network, HDMI, developer mode, installed apps, force restart and more); the app sends each secret key sequence over ECP with a pause between presses, shows progress and can be cancelled, and asks before a restart
 - TV Home: a TCL remote's Netflix, YouTube, Prime Video and Apple TV buttons open their app on the home screen again when the stock launcher is off
 - Installing an APK on a TV without room now opens one dialog instead of a one-line error: what the APK needs against what the TV has free, a "Clear cache and try again" button, and the 5 apps using the most space with Clear data and Uninstall (Remove updates for updated system apps); Android 14's "not enough space" from pm is now recognised as a full TV (new `/api/storage`, 0.15 s)
 - TV Home settings page: a picture upload whose answer came back incomplete no longer breaks the page until it is reopened

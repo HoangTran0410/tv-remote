@@ -2,6 +2,8 @@
 
 Thử nghiệm (beta). Chỉ có trong app điện thoại và app máy tính.
 
+Roku: **Thêm** › **Tiện ích** › **Màn hình ẩn của Roku** mở các màn hình bí mật (Wi-Fi, mạng, HDMI, chế độ nhà phát triển, khởi động lại). App bấm dãy phím thay bạn và có nút Hủy.
+
 1. Bật TV và nối cùng Wi-Fi.
 2. Quét mạng, chọn TV.
 3. TV hỏi cho phép thì chọn Cho phép (VIDAA hỏi mã 4 số).

@@ -43,6 +43,23 @@
       ]
     ]
   },
+  "roku": {
+    "_": "Roku's hidden screens (the guide's #brands): each is Home, then arrows / Rev / Fwd, pressed one by one over ECP. 'gap' ms between two presses; 'homeGap' between two Home presses (the Roku takes them faster); 'keys' are this file's key names, 'NAME*3' = three presses; 'tvOnly': only a Roku TV (a stick has no such screen); 'ask': a question first, because it reboots. Run by rokuScreens (js/remote.js, PhoneRemote.kt).",
+    "gap": 350,
+    "homeGap": 250,
+    "screens": [
+      { "id": "platform", "t": "roku.s_platform", "keys": "HOME*5 FFWD DOWN REWIND DOWN FFWD" },
+      { "id": "wifi", "t": "roku.s_wifi", "keys": "HOME*5 UP DOWN UP DOWN UP" },
+      { "id": "system", "t": "roku.s_system", "keys": "HOME*5 FFWD*3 REWIND*2" },
+      { "id": "ads", "t": "roku.s_ads", "keys": "HOME*5 UP RIGHT DOWN LEFT UP" },
+      { "id": "hdmi", "t": "roku.s_hdmi", "keys": "HOME*5 DOWN LEFT UP*3", "tvOnly": true },
+      { "id": "channels", "t": "roku.s_channels", "keys": "HOME*3 UP*2 LEFT RIGHT LEFT RIGHT LEFT" },
+      { "id": "developer", "t": "roku.s_developer", "keys": "HOME*3 UP*2 RIGHT LEFT RIGHT LEFT RIGHT" },
+      { "id": "network", "t": "roku.s_network", "keys": "HOME*5 RIGHT LEFT RIGHT LEFT RIGHT" },
+      { "id": "restart", "t": "roku.s_restart", "keys": "HOME*5 UP REWIND*2 FFWD*2", "ask": "roku.restart_ask", "askOk": "roku.restart_ok" },
+      { "id": "tvmenu", "t": "roku.s_tvmenu", "keys": "HOME*5 REWIND DOWN FFWD DOWN REWIND", "tvOnly": true }
+    ]
+  },
   "menus": {
     "tools": [
       { "id": "tools-keys", "icon": "tv", "t": "rkey.tools_keys", "sub": "rkey.tools_keys_sub", "do": "menu", "arg": "tvkeys" },
@@ -53,6 +70,8 @@
       { "id": "tools-rescue", "icon": "alert", "t": "rkey.rescue", "sub": "rkey.rescue_sub", "do": "rescue", "needs": ["adb"] },
       { "id": "tools-privacy", "icon": "shield", "t": "rkey.privacy", "sub": "rkey.privacy_sub", "do": "privacy", "when": "native",
         "why": "LG, Samsung, Roku, VIDAA keep their tracking switches in their own menus; an Android TV has Health → Privacy" },
+      { "id": "tools-roku", "icon": "tv", "t": "rkey.roku_screens", "sub": "rkey.roku_screens_sub", "do": "rokuScreens", "when": "roku",
+        "why": "Roku's secret screens are key sequences sent over ECP (see \"roku\" below); only a Roku has them" },
       { "id": "tools-home", "icon": "sliders", "t": "rkey.home_custom", "do": "homeCustom", "needs": ["adb"], "cores": ["phone"],
         "why": "on the web TV Home has its own key in the grid" },
       { "id": "tools-ir", "icon": "pulse", "t": "rkey.ir", "do": "ir", "cores": ["phone"], "when": "ir",
