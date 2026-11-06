@@ -114,6 +114,11 @@ function renderRules() {
   const now = r.volume_now;
   put('#volstate', 'textContent', r.volume === undefined ? '' : r.volume_fixed ? T('auto.vol_fixed')
     : now ? T('auto.vol_now', { max: now.max, to: now.to }) : '');
+  // turn off when nobody uses it; a TV Setup older than it has no "idle_h" in its answer
+  const idle = r.idle_h || 0;
+  $('#idlehrs').replaceChildren(...[0, 1, 2, 3, 4].map((h) => el('button', { type: 'button', className: h === idle ? 'on' : '', textContent: h ? T('auto.idle_h', { n: h }) : T('auto.idle_off'),
+    onclick: () => saveIdle(h) })));
+  put('#idlestate', 'textContent', idle ? T('auto.idle_on', { n: idle }) : '');
   // the memory notice; a TV Setup older than it has no "ram" in its answer
   const ram = r.ram || { on: false, pct: 90 };
   if (document.activeElement !== $('#ramon')) $('#ramon').checked = !!ram.on;
@@ -124,6 +129,7 @@ function renderRules() {
   // folded, each card says what is on (js/fold.js); one that is on starts open
   const off = T('fold.off'), nApps = (n) => T('fold.apps', { n }), ranges = (xs) => xs.map((v) => v.from + ' – ' + v.to).join(', ');
   foldSum('sleepcard', r.sleep_at ? T('fold.sleep', { at: clock(r.sleep_at) }) : off, !!r.sleep_at);
+  foldSum('idlecard', idle ? T('auto.idle_h', { n: idle }) : off, idle > 0);
   foldSum('bedcard', b.on && beds.length ? ranges(beds) : off, !!b.on);
   foldSum('limitcard', rows.length ? nApps(rows.length) : off, rows.length > 0);
   foldSum('lockcard', lock.apps.length ? nApps(lock.apps.length) : off, lock.apps.length > 0);
@@ -179,6 +185,10 @@ $('#bedon').addEventListener('change', async () => {
   const r = await saveBeds(list, $('#bedon').checked);
   if (r && r.bedtime.on) toast(T('auto.bed_enabled'));
 });
+async function saveIdle(hours) {
+  if (hours > 0 && RULES && RULES.idle_h === undefined && !await setupFor('idleoff')) return null;   // an older TV Setup would refuse the action
+  return loadRules({ do: 'idle', hours });
+}
 async function saveRam(on, pct, auto) {
   if (RULES && RULES.ram === undefined && !await setupFor('ram')) { $('#ramon').checked = false; $('#ramauto').checked = false; return null; }
   const cur = (RULES && RULES.ram) || {};

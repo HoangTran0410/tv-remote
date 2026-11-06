@@ -103,6 +103,8 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
     @Volatile private var stopped = false
     private var warnedSleep = 0L                                      // the sleep_at already warned about
     private var bedWarnedAt = 0L                                      // bedtime: when this turn-on was warned about, 0 when not yet
+    private var idleWarnedAt = 0L                                     // "Still watching?": when it began (SystemClock.elapsedRealtime), 0 when not
+    private var idleReadAt = 0L                                       // no look at the TV's last key before this (elapsed)
     private var totalWarnedAt = 0L                                    // the day's total used up: when the minute's grace began, 0 when not
     private val nearlyWarned = HashSet<String>()                      // "pkg day": the five-minute notice was shown
     private val lastStop = java.util.concurrent.ConcurrentHashMap<String, Long>()   // also read by the guard-lock thread (schedules)
@@ -206,6 +208,13 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
 
         // ---- scenes that start at a time or when an app opens (nothing happens with none)
         SceneTimer.tick(c, now, on)?.let { next = minOf(next, it.coerceAtLeast(1_000L)) }
+        // ---- turn off when nobody uses it (off: nothing is read; on: one read when the deadline could have come, see IdleOff)
+        val idleH = IdleOff.hours(o)
+        if (idleH > 0 && on) next = minOf(next, idleLook(idleH))
+        else { idleWarnedAt = 0; idleReadAt = 0 }
+
+        // ---- scenes that start at a time (nothing happens with none)
+        SceneTimer.tick(c, now)?.let { next = minOf(next, it.coerceAtLeast(1_000L)) }
 
         // ---- volume: a range may just have begun with the sound up
         if ((o.optJSONArray("volume")?.length() ?: 0) > 0) {
@@ -265,6 +274,23 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
         return next
     }
 
+
+    /** One look for [IdleOff] when it is due; returns ms to the next one. */
+    private fun idleLook(hours: Int): Long {
+        val el = android.os.SystemClock.elapsedRealtime()              // not the clock: it jumps on a box that booted in the wrong year
+        if (el < idleReadAt) return maxOf(3_000L, idleReadAt - el)
+        val ago = IdleOff.parseAgo(sh("dumpsys power | grep -m1 lastUserActivityTime="))
+        val s = IdleOff.step(hours, ago, idleWarnedAt, el)
+        idleWarnedAt = s.warnedAt
+        var wait = s.next
+        when (s.act) {
+            IdleOff.Act.WARN -> { warn("idle", System.currentTimeMillis() + IdleOff.WARN_MS, "") }
+            IdleOff.Act.STANDBY -> if (standby()) wait = 60_000L else { idleWarnedAt = el - IdleOff.WARN_MS; wait = 15_000L }   // no ADB: the warning stays due, tried again
+            else -> {}
+        }
+        idleReadAt = el + wait
+        return maxOf(3_000L, wait)
+    }
 
     // ---- app locks
     @Volatile private var unlocked = ""                               // the app the PIN was given for, until another comes to the front
@@ -383,6 +409,7 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
         if (out == null || out.contains("Error")) say(when (kind) {
             "sleep" -> T("guard.the_tv_turns_off")
             "bed" -> T("guard.bedtime_the_tv_turns")
+            "idle" -> T("guard.idle_the_tv_turns")
             "ram" -> T("guard.the_tv_s_memory")
             "sched" -> T("guard.sched_closed", "name" to label(pkg))
             "total" -> T("kids.total_up")

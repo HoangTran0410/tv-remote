@@ -342,6 +342,12 @@
         <p class="state" id="bedstate"></p>
         <div class="actions" id="bedacts"></div>
       </section>
+      <section class="card" id="idlecard">
+        <h2 data-i18n="auto.idle_title">📺 Tự tắt khi không ai dùng</h2>
+        <p class="note" data-i18n="auto.idle_note">Quá số giờ này không bấm phím, TV hỏi “Còn xem không?” rồi tắt sau 1 phút. Xem phim mà không bấm phím cũng tính.</p>
+        <div class="fchips" id="idlehrs" role="group" aria-label="Số giờ không bấm phím" data-i18n-aria-label="auto.idle_hours_label"></div>
+        <p class="state" id="idlestate"></p>
+      </section>
       <section class="card" id="limitcard">
         <div class="card-head"><h2 data-i18n="auto.daily_app_limits">⏳ Giới hạn app mỗi ngày</h2><button class="small primary" data-open="limitdlg" data-i18n="common.add">＋ Thêm</button></div>
         <div class="list" id="limits"></div>
