@@ -243,7 +243,9 @@ async function supShow(what, s) {                                     // the cod
 }
 function supMark(what, s) {                                           // the button says the code while support looks
   const b = $(what === 'app' ? '#supapp' : '#suptv');
-  b.textContent = s && s.open ? T('support.stop_sub', { code: s.code, min: s.min }) : T(what === 'app' ? 'support.this_app' : 'support.this_tv');
+  const text = s && s.open ? T('support.stop_sub', { code: s.code, min: s.min }) : T(what === 'app' ? 'support.this_app' : 'support.short');
+  if (what === 'app') b.textContent = text;
+  else b.replaceChildren(el('span', { className: 'ico', textContent: '👁️' }), el('span', { className: 'lbl', textContent: ' ' + text }));   // the top bar's icon + label
   b.classList.toggle('on', !!(s && s.open));
 }
 for (const what of ['app', 'tv']) $(what === 'app' ? '#supapp' : '#suptv').addEventListener('click', async () => {

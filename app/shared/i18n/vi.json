@@ -4200,7 +4200,7 @@
  "support.title": "👁️ Hỗ trợ từ xa",
  "support.page_note": "Khi có lỗi, người hỗ trợ xem trạng thái và nhật ký 30 phút, không đổi gì. Bạn đọc cho họ mã 8 số.",
  "support.this_app": "Cho xem app này",
- "support.this_tv": "👁️ Cho hỗ trợ xem TV này",
+ "support.short": "Hỗ trợ",
  "support.tv_note": "Người hỗ trợ đọc trạng thái và nhật ký của TV 30 phút, không đổi gì. Bạn đọc cho họ mã 8 số.",
  "support.no_net_here": "Không gửi được: máy này chưa vào được Internet. Kiểm tra mạng rồi thử lại.",
  "support.read_out_stop": "Đọc mã này cho người hỗ trợ. Họ xem được trong {min} phút; bấm Dừng ở đây khi xong.",

@@ -39,7 +39,7 @@ section.card.pair { text-align:center; padding:28px 16px; align-items:center; }
 #pairerr { min-height:20px; margin-top:10px; }
 /* Until a TV is chosen there is only the list of TVs: no tabs, no remote, nothing that needs a TV. */
 main:not(.picking) #picker { display:none; }
-main.picking > .tabs, main.picking > .panel, main.picking > #help, main.picking #chipTv, main.picking #chipAdb, main.picking #switchtv { display:none; }
+main.picking > .tabs, main.picking > .panel, main.picking > #help, main.picking #chipTv, main.picking #chipAdb, main.picking #switchtv, main.picking #suptv { display:none; }
 #picker { display:flex; flex-direction:column; gap:14px; }
 #pickcols.solo { grid-template-columns:1fr; max-width:640px; width:100%; margin:0 auto; }
 #picker .item { cursor:pointer; }

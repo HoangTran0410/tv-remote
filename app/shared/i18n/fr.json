@@ -4371,7 +4371,7 @@
   "support.title": "👁️ Assistance à distance",
   "support.page_note": "En cas de problème, le support lit l'état et le journal pendant 30 minutes, sans rien modifier. Vous lui dictez un code à 8 chiffres.",
   "support.this_app": "Les laisser voir cette application",
-  "support.this_tv": "👁️ Laisser le support voir cette TV",
+ "support.short": "Assistance",
   "support.tv_note": "Le support lit l'état et le journal de la TV pendant 30 minutes, sans rien modifier. Vous lui dictez un code à 8 chiffres.",
   "support.no_net_here": "Envoi impossible : cet appareil n'a pas accès à Internet. Vérifiez le réseau, puis réessayez.",
   "support.read_out_stop": "Dictez ce code à la personne qui vous aide. Elle peut regarder pendant {min} min ; appuyez sur Arrêter ici quand c'est fini.",

@@ -43,6 +43,7 @@
       <span class="chip" id="chipTv"><i></i><span>TV: ...</span></span>
       <span class="chip" id="chipAdb"><i></i><span>ADB: ...</span></span>
       <button class="small" id="switchtv" data-for="pc" title="Chọn TV khác, tìm TV mới" data-i18n-title="page.choose_another_tv_find"><span class="ico">📺</span><span class="lbl" data-i18n="page.change_tv"> Đổi TV</span></button>
+      <button class="small" id="suptv" data-needs="adb" title="Người hỗ trợ đọc trạng thái và nhật ký của TV 30 phút, không đổi gì. Bạn đọc cho họ mã 8 số." data-i18n-title="support.tv_note"><span class="ico">👁️</span><span class="lbl" data-i18n="support.short"> Hỗ trợ</span></button>   <!-- up here: people asked to read a code out should not hunt for it -->
       <button class="small" id="aboutbtn" data-for="pc tv" title="Cài đặt, giới thiệu" data-i18n-title="page.settings_about"><span class="ico">🛠️</span><span class="lbl" data-i18n="page.settings"> Cài đặt</span></button>
     </div>
   </header>
@@ -395,7 +396,6 @@
       <section class="card" data-adb-gated id="tvsetcard">
         <div class="card-head"><h2>📺 TV</h2><button class="small" id="tvreboot" data-asks><span class="ico">🔁</span><span class="lbl" data-i18n="tv.restart_the_tv"> Khởi động lại TV</span></button></div>
         <div class="tvset" id="tvset"><div class="muted" data-i18n="tv.reading_the_tv_s">Đang đọc cài đặt TV...</div></div>
-        <div class="actions"><button class="small" id="suptv" title="Người hỗ trợ đọc trạng thái và nhật ký của TV 30 phút, không đổi gì. Bạn đọc cho họ mã 8 số." data-i18n-title="support.tv_note" data-i18n="support.this_tv">👁️ Cho hỗ trợ xem TV này</button></div>
       </section>
       <section class="card" data-adb-gated id="tscard" data-for="tv phone">
         <h2 data-i18n="tv.tailscale_control_away_from">🌐 Tailscale · điều khiển khi không ở nhà</h2>

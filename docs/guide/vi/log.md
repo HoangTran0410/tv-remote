@@ -14,6 +14,6 @@
 
 > 💡 **Cho hỗ trợ xem 30 phút** chỉ cho đọc trạng thái, không bấm hay đổi gì; dừng được bất cứ lúc nào.
 
-> 💡 Mở cho TV từ điện thoại hay máy tính: tab **Thiết lập**, thẻ TV, **👁️ Cho hỗ trợ xem TV này**. Cho xem chính app điện thoại hay máy tính: **Giới thiệu**.
+> 💡 Mở cho TV từ điện thoại hay máy tính: nút **👁️ Hỗ trợ** trên thanh trên cùng. Cho xem chính app điện thoại hay máy tính: **Giới thiệu**.
 
 > 💡 Nhật ký có cả chỗ tiếng bị ngắt (số lần, độ dài) và lý do hình dừng.
