@@ -69,6 +69,8 @@
   "remote.line_size": "Épaisseur du trait",
   "remote.put_a_picture_from": "Afficher sur la TV une image de cet appareil",
   "remote.picture": "🖼️ Image",
+ "remote.video": "🎞️ Vidéo",
+ "remote.video_tip": "Une vidéo ou une caméra dans un cadre sur la TV",
   "remote.type_a_message_shown": "Saisissez un message à afficher en grand sur la TV",
   "remote.text": "💬 Texte",
   "remote.take_back_the_last": "Annuler le dernier trait",

@@ -69,6 +69,8 @@
  "remote.line_size": "Толщина линии",
  "remote.put_a_picture_from": "Показать картинку с этого устройства на ТВ",
  "remote.picture": "🖼️ Картинка",
+ "remote.video": "🎞️ Видео",
+ "remote.video_tip": "Видео или камера в окне на экране телевизора",
  "remote.type_a_message_shown": "Ввести сообщение — крупно на экране ТВ",
  "remote.text": "💬 Текст",
  "remote.take_back_the_last": "Отменить последнюю линию",

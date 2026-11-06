@@ -69,6 +69,8 @@
  "remote.line_size": "سُمك الخط",
  "remote.put_a_picture_from": "اعرض صورة من هذا الجهاز على التلفزيون",
  "remote.picture": "🖼️ صورة",
+ "remote.video": "🎞️ فيديو",
+ "remote.video_tip": "تشغيل فيديو أو كاميرا في إطار على التلفزيون",
  "remote.type_a_message_shown": "اكتب رسالة تظهر كبيرة على التلفزيون",
  "remote.text": "💬 نص",
  "remote.take_back_the_last": "تراجع عن آخر خط",

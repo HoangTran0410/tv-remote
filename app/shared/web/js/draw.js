@@ -92,6 +92,7 @@ function drawStop() {
   put('#drawcv', 'hidden', true); put('#drawbar', 'hidden', true); $('#r-draw').classList.remove('on');
 }
 $('#drawdone').addEventListener('click', drawStop);
+$('#drawvid').addEventListener('click', () => { drawStop(); videoOpen(); });   // the same Video on TV box as the TV card's (video.js), not a second one
 $('#drawundo').addEventListener('click', () => drawSend({ o: 'u' }));
 $('#drawclear').addEventListener('click', () => { drawLocal.length = 0; drawPaint(); drawSend({ o: 'x' }); });
 // one swatch for the colour in use; the colours and the line's size open under it, and close once one is picked (or on a tap elsewhere)

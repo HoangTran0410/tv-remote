@@ -69,6 +69,8 @@
  "remote.line_size": "Line size",
  "remote.put_a_picture_from": "Show a picture from this device on the TV",
  "remote.picture": "🖼️ Picture",
+ "remote.video": "🎞️ Video",
+ "remote.video_tip": "Play a video or a camera in a box on the TV",
  "remote.type_a_message_shown": "Type a message to show big on the TV",
  "remote.text": "💬 Text",
  "remote.take_back_the_last": "Undo the last line",
