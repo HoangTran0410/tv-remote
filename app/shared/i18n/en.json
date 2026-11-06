@@ -293,7 +293,7 @@
  "scenedlg.at": "Start at",
  "scenedlg.at_note": "The TV runs the scene by itself at that time, no phone needed. Leave empty to run it only when you tap it.",
  "scenedlg.at_time": "Time",
- "scenedlg.at_clear": "No time",
+ "scenedlg.at_clear": "Remove the time",
  "scenedlg.at_repeat": "Repeat",
  "scenedlg.at_once": "Once",
  "scenedlg.at_date": "Date",

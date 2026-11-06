@@ -284,7 +284,7 @@
  "scenedlg.at": "Начать в",
  "scenedlg.at_note": "ТВ сам запустит сцену в это время, телефон не нужен. Пусто: только по нажатию.",
  "scenedlg.at_time": "Время",
- "scenedlg.at_clear": "Без времени",
+ "scenedlg.at_clear": "Убрать время",
  "scenedlg.at_repeat": "Повтор",
  "scenedlg.at_once": "Один раз",
  "scenedlg.at_date": "Дата",

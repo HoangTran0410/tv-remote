@@ -506,13 +506,13 @@ const atText = (at) => at.time + ' · ' + (at.date || dayText(at.days));
 function drawSceneAt() {
   const box = $('#sceneat'); if (!box) return;
   if (!atTime) atTime = el('input', { type: 'time', 'aria-label': T('scenedlg.at_time'),      // one input kept, so typing in it is not interrupted by the redraw
-    oninput: (e) => { if (!e.target.value) atDraft = null; else if (!atDraft) atDraft = atFrom({ time: e.target.value }); else atDraft.time = e.target.value; if (!!atDraft !== atShown) drawSceneAt(); } });
+    oninput: (e) => { if (!e.target.value) atDraft = null; else if (!atDraft) atDraft = atFrom({ time: e.target.value }); else atDraft.time = e.target.value; if (!!atDraft !== atShown) drawSceneAt(); else sceneSums(); } });
   const time = atTime; time.value = atDraft ? atDraft.time : ''; atShown = !!atDraft;
   const rows = [el('div', { className: 'atrow' }, time, atDraft ? el('button', { type: 'button', className: 'small', textContent: T('scenedlg.at_clear'), onclick: () => { atDraft = null; drawSceneAt(); } }) : null)];
   if (atDraft) {
     const mode = (once, label) => el('button', { type: 'button', className: atDraft.once === once ? 'on' : '', textContent: label, 'aria-pressed': atDraft.once === once, onclick: () => { atDraft.once = once; drawSceneAt(); } });
     rows.push(el('div', { className: 'fchips' }, mode(false, T('scenedlg.at_repeat')), mode(true, T('scenedlg.at_once'))));
-    if (atDraft.once) rows.push(el('div', { className: 'atrow' }, el('input', { type: 'date', value: atDraft.date, min: todayStr(), 'aria-label': T('scenedlg.at_date'), oninput: (e) => { atDraft.date = e.target.value; } })));
+    if (atDraft.once) rows.push(el('div', { className: 'atrow' }, el('input', { type: 'date', value: atDraft.date, min: todayStr(), 'aria-label': T('scenedlg.at_date'), oninput: (e) => { atDraft.date = e.target.value; sceneSums(); } })));
     else {
       const days = el('div', { className: 'fchips schedays' }, ...[1, 2, 3, 4, 5, 6, 7].map((d) => el('button', { type: 'button', className: atDraft.days.has(d) ? 'on' : '', textContent: dayName(d), 'aria-pressed': atDraft.days.has(d),
         onclick: () => { if (atDraft.days.has(d) && atDraft.days.size === 1) return; atDraft.days.has(d) ? atDraft.days.delete(d) : atDraft.days.add(d); drawSceneAt(); } })));
@@ -520,12 +520,20 @@ function drawSceneAt() {
       rows.push(days);
     }
   }
-  box.replaceChildren(...rows);
+  box.replaceChildren(...rows); sceneSums();
 }
+// the line under each folded title: what is set, empty (hidden) when nothing is
+function sceneSums() {
+  const say = ($('#scenesay').value || '').split(',').map((x) => x.trim()).filter(Boolean);
+  put('#scenesaysum', 'textContent', say.length ? '“' + say.join('”, “') + '”' : '');
+  const at = atOut(); put('#sceneatsum', 'textContent', at ? atText(at) : '');
+}
+$('#scenesay').addEventListener('input', sceneSums);
 function editScene(sc) {
   editing = sc; atDraft = atFrom(sc && sc.at); put('#sceneatbox', 'hidden', NATIVE()); drawSceneAt(); draft = sc ? JSON.parse(JSON.stringify(sc.steps)) : [];
   put('#scenetitle', 'textContent', T(sc ? 'auto.scene_edit_title' : 'auto.scene_new_title'));
-  $('#scenename').value = sc ? sc.name : ''; $('#sceneicon').value = sc ? sc.icon || '' : ''; $('#scenesay').value = sc && sc.say ? sc.say.join(', ') : '';
+  $('#scenename').value = sc ? sc.name : ''; $('#sceneicon').value = sc ? sc.icon || '' : ''; $('#scenesay').value = sc && sc.say ? sc.say.join(', ') : ''; sceneSums();
+  $('#scenesayfold').open = false; $('#sceneatbox').open = false;                   // folded each time: the summary line says what is set
   put('#scenedel', 'hidden', !sc);
   $('#scenetpl').replaceChildren(...(sc ? [] : [el('span', { className: 'muted', textContent: T('auto.examples') }), ...TEMPLATES.map((t) => el('button', { className: 'small', textContent: t.icon + ' ' + t.name, onclick: () => {
     $('#scenename').value = t.name; $('#sceneicon').value = t.icon; draft = JSON.parse(JSON.stringify(t.steps)); drawSteps();

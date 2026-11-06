@@ -293,7 +293,7 @@
   "scenedlg.at": "Démarrer à",
   "scenedlg.at_note": "La TV lance la scène toute seule à cette heure, sans téléphone. Vide : seulement quand vous l’appuyez.",
   "scenedlg.at_time": "Heure",
-  "scenedlg.at_clear": "Sans heure",
+  "scenedlg.at_clear": "Retirer l'heure",
   "scenedlg.at_repeat": "Répéter",
   "scenedlg.at_once": "Une fois",
   "scenedlg.at_date": "Date",

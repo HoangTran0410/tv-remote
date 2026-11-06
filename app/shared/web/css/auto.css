@@ -25,7 +25,10 @@ form > .timerow + .line { margin-top:10px; }
 #limits .name .bar { max-width:260px; }
 .scenebox { display:flex; flex-direction:column; gap:10px; margin-top:12px; }
 .scenebox h3 { margin:4px 0 0; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
-.atbox { margin-top:0; }
+.scenefold { border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin-top:12px; }   /* Voice phrases, Start at: folded under the steps */
+.scenefold > summary h3 { margin:0; }
+#scenesay { width:100%; box-sizing:border-box; }
+.scenefold > :not(summary) + :not(summary) { margin-top:8px; }
 .atrow { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
 #sceneat > * + * { margin-top:8px; }                              /* time, Repeat | Once, days or date: one gap between rows */
 .line2 { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
