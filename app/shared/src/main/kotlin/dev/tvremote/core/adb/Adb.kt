@@ -252,7 +252,7 @@ class Adb(private val dir: File) : Closeable {
             if (!AdbTls.plainOpen(host)) throw failure ?: IOException("adb tls: no port")   // nothing on 5555 to fall back to: say what the TLS port said
         }
         try {
-            connect(host, 5555, prompt)
+            connect(host, AdbPort.of(host), prompt)
         } catch (e: IOException) {
             wirelessOnly(host)?.let { throw it }                      // no 5555, but Wireless debugging: pairing is what is missing
             throw e

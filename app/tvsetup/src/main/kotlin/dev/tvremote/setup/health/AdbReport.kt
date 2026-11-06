@@ -66,7 +66,7 @@ object AdbReport {
             append("fingerprint=").append(Build.FINGERPRINT).append('\n')
             props.forEach { append(it).append('=').append(prop(it)).append('\n') }
             listOf("adb_enabled", "adb_wifi_enabled", "development_settings_enabled").forEach { append(it).append('=').append(global(it)).append('\n') }
-            append("127.0.0.1:5555 ").append(probe(5555)).append('\n')
+            (listOf(5555) + dev.tvremote.core.adb.AdbPort.props().filter { it != 5555 }).forEach { append("127.0.0.1:$it ").append(probe(it)).append('\n') }
             append("keep_adb=").append(try { KeepAdb.can(c) } catch (e: Exception) { "?" }).append('\n')
         }
     }
