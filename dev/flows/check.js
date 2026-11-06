@@ -87,7 +87,11 @@ function check(root = ROOT) {
 /** Commits in [range] that changed a flow's Code but not the flow, with no "Flow: unchanged" line. */
 function commits(range, root = ROOT) {
   const git = (...a) => execFileSync('git', a, { cwd: root, encoding: 'utf8' });
-  const list = flows(root).map((f) => ({ file: f.file, code: parts(f.text).code }));
+  const list = flows(root).map((f) => {
+    let names;                                                      // the flow's file under every name it had: a renamed flow still counts
+    return { file: f.file, code: parts(f.text).code,
+      names: () => names || (names = [...new Set([f.file, ...git('log', '--follow', '--name-only', '--format=', '--', f.file).split('\n').filter(Boolean)])]) };
+  });
   const errs = [];
   for (const sha of git('rev-list', '--no-merges', range).split('\n').filter(Boolean)) {
     const msg = git('log', '-1', '--format=%B', sha);
@@ -95,7 +99,7 @@ function commits(range, root = ROOT) {
     const changed = git('diff-tree', '--no-commit-id', '--name-only', '-r', sha).split('\n');
     for (const f of list) {
       const hit = f.code.filter((p) => changed.includes(p));
-      if (hit.length && !changed.includes(f.file))
+      if (hit.length && !f.names().some((n) => changed.includes(n)))
         errs.push(sha.slice(0, 8) + ' changed ' + hit.join(', ') + ' but not ' + f.file + ' (update it, or add "Flow: unchanged (<why>)" to the message)');
     }
   }
