@@ -50,7 +50,7 @@ input[type=checkbox] { width:18px; height:18px; accent-color:var(--accent); }
 .check > input[type=checkbox]:checked { background:var(--sel); box-shadow:inset 0 0 0 1.5px var(--accent); }
 .check > input[type=checkbox]:checked::after { transform:translateX(16px); background:var(--accent-text); }
 .check > input[type=checkbox]:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
-input[type=time], input[type=number] { font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:0 10px; min-height:var(--ctl); }
+input[type=time], input[type=date], input[type=number] { font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:0 10px; min-height:var(--ctl); }
 input[type=number] { width:84px; }
 /* ---- UI kit (js/ui.js): the shapes every tab but the remote is made of. A card spaces its own children (--gap), so
    nothing inside needs a margin; titles: h2 the card's (small capitals), h3 a group's; p.note a line of explanation. ---- */

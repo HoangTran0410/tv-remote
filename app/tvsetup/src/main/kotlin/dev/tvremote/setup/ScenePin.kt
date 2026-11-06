@@ -90,24 +90,31 @@ internal object ScenePin {
     }
 }
 
+/**
+ * Runs [scene] over this TV's own ADB link in a thread of its own, with a toast before and after. A tile on TV Home and a timed scene
+ * ([dev.tvremote.setup.rules.SceneTimer]) both start it here. Over ADB (the shell), so Android 14's block on a background app opening a screen never applies.
+ */
+internal fun runNow(c: Context, scene: JSONObject) {
+    val ui = Handler(Looper.getMainLooper())
+    fun say(t: String) = ui.post { Toast.makeText(c, t, Toast.LENGTH_LONG).show() }
+    say(Words.get(Words.lang, "auto.running", "name" to scene.optString("name")))
+    Thread({
+        if (!RemoteService.isRunning()) try { RemoteService.start(c, true) } catch (e: Exception) { }
+        var adb = RemoteService.adb()
+        for (i in 0 until 20) { if (adb != null) break; Thread.sleep(500); adb = RemoteService.adb() }   // TV Setup was asleep: give its ADB link a moment
+        if (adb == null) { say(Words.get(Words.lang, "scenepin.no_adb")); return@Thread }
+        val failed = Scenes.run(scene.getJSONArray("steps"), Scenes.Shell({ adb.shell(it) }) { m -> Rules.change(c, JSONObject().put("do", "sleep").put("minutes", m)) })
+        say(if (failed == null) Words.get(Words.lang, "auto.done", "name" to scene.optString("name")) else Words.get(Words.lang, "auto.done_but", "why" to failed))
+    }, "scene-run").apply { isDaemon = true }.start()
+}
+
 /** What a scene tile on TV Home opens: shows nothing, runs the scene over this TV's own ADB link and says how it went. */
 class SceneRunActivity : Activity() {
     override fun onCreate(b: Bundle?) {
         super.onCreate(b)
         val scene = ScenePin.scene(intent)
         finish()
-        val c = applicationContext
-        val ui = Handler(Looper.getMainLooper())
-        fun say(t: String) = ui.post { Toast.makeText(c, t, Toast.LENGTH_LONG).show() }
-        if (scene == null) { say(Words.get(Words.lang, "headless.this_scene_is_gone")); return }
-        say(Words.get(Words.lang, "auto.running", "name" to scene.optString("name")))
-        Thread({
-            if (!RemoteService.isRunning()) try { RemoteService.start(c, true) } catch (e: Exception) { }
-            var adb = RemoteService.adb()
-            for (i in 0 until 20) { if (adb != null) break; Thread.sleep(500); adb = RemoteService.adb() }   // TV Setup was asleep: give its ADB link a moment
-            if (adb == null) { say(Words.get(Words.lang, "scenepin.no_adb")); return@Thread }
-            val failed = Scenes.run(scene.getJSONArray("steps"), Scenes.Shell({ adb.shell(it) }) { m -> Rules.change(c, JSONObject().put("do", "sleep").put("minutes", m)) })
-            say(if (failed == null) Words.get(Words.lang, "auto.done", "name" to scene.optString("name")) else Words.get(Words.lang, "auto.done_but", "why" to failed))
-        }, "scene-tile").apply { isDaemon = true }.start()
+        if (scene == null) { Toast.makeText(applicationContext, Words.get(Words.lang, "headless.this_scene_is_gone"), Toast.LENGTH_LONG).show(); return }
+        runNow(applicationContext, scene)
     }
 }

@@ -49,4 +49,5 @@ screen and eats them. Reached from Optimize TV, TV Home's Quick keys ("keytest" 
   closing apps, the notice `WarnActivity`), so they work with every other device off. All three clients reach them the same way:
   `am broadcast -n dev.tvremote.setup/.RulesReceiver --es set <base64 json>` over ADB (`RulesClient.kt`);
   the receiver needs the shell's DUMP permission, so apps cannot call it. No receiver = TV Setup missing or older than the timer.
+- A scene with `at` (a time + weekdays, or a date) is kept by `rules/SceneTimer.kt` (prefs `scenetimer`, filled by RulesReceiver "scenes" / the TV page's save) and started by `Guard.check` through `runNow` (ScenePin.kt); no alarm: `Rules.active` is true only while one exists. A cursor per scene, grace 5 min, so a boot clock jump never replays a backlog. A TV Setup older than `SetupNeed` "scenetime" answers "scenes" without `timed`: the save is refused with the update question.
 - Scenes are kept per client (computer: `tvs.json` "scenes"; TV Setup: prefs; phone: `SceneStore`), cleaned by `Scenes.clean`; `GET /api/scenes?download=1` is the backup file the page imports back.

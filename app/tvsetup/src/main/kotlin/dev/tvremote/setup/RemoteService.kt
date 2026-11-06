@@ -632,7 +632,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
 
     /** The one scenes handler of every core (Scenes.Routes); here the list is kept in the preferences. */
     private val sceneRoutes by lazy {
-        Scenes.Routes({ scenes() }, { prefs.edit().putString("scenes", it.toString()).apply(); ScenePin.publish(this, it) }, { "adb:$adbState" }) {
+        Scenes.Routes({ scenes() }, { prefs.edit().putString("scenes", it.toString()).apply(); ScenePin.publish(this, it); dev.tvremote.setup.rules.SceneTimer.set(this, it) }, { "adb:$adbState" }) {
             link?.let { l -> Scenes.Shell({ l.getQuiet().shell(it) }) { m -> Rules.change(this, JSONObject().put("do", "sleep").put("minutes", m)) } }
         }.also { it.pin = { sc -> ScenePin.request(this, sc) } }
     }

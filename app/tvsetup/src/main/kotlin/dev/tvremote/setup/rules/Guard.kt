@@ -195,6 +195,9 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
             next = minOf(next, 5_000)
         } else bedWarnedAt = 0
 
+        // ---- scenes that start at a time (nothing happens with none)
+        SceneTimer.tick(c, now)?.let { next = minOf(next, it.coerceAtLeast(1_000L)) }
+
         // ---- volume: a range may just have begun with the sound up
         if ((o.optJSONArray("volume")?.length() ?: 0) > 0) {
             ui.post { capVolume() }

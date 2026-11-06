@@ -59,6 +59,7 @@ internal object Rules {
         return o.optLong("sleep_at") > System.currentTimeMillis() || o.optJSONObject("bedtime")?.optBoolean("on") == true || (o.optJSONObject("limits")?.length() ?: 0) > 0
             || (o.optJSONArray("volume")?.length() ?: 0) > 0 || ram(o).let { it.optBoolean("on") || it.optBoolean("auto") }
             || locked(o).isNotEmpty() || kidsMode(o) || totalMin(o, System.currentTimeMillis()) != null
+            || SceneTimer.any(c)                                       // a scene that starts at a time (Guard's check starts it)
             || o.optBoolean("awake")                                   // KeepAwake lives in the service
             || o.optBoolean("mic")                                     // MicVoice: the key filter stays on for the remote's mic button
             || o.optBoolean("holdkeys")                                // HoldKeys: KeyFixWatch keeps the key filter on

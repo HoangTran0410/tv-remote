@@ -20,6 +20,9 @@ import dev.tvremote.core.ontv.SetupNeed
  * Steps: wake, sleep, key {key}, app {pkg}, link {url}, volume {level}, wait {s}, timer {min} (TV Setup's sleep timer, 0 cancels),
  * input {id, label} (an [Inputs] id; the label is only for showing).
  * notify {title, text, corner, seconds} (a card on the TV's screen, see [Notify]).
+ *
+ * Optional "at" (start at a time, run by TV Setup on the TV itself): {time: "20:30", days: [1..7]} every week on those days (Monday = 1),
+ * or {time, date: "2026-11-20"} once. No "at" = only when someone runs it (see [nextAt], [clean]).
  */
 object Scenes {
     /** What the steps need from the TV. ADB does all of it ([Shell]); the keys-only connection some. */
@@ -120,8 +123,12 @@ object Scenes {
                 val list = if (post) r.json().optJSONArray("scenes") else null
                 if (post && list == null) HttpServer.Response.error(400, "scenes required")
                 else {
-                    if (list != null) { val kept = clean(list); save(kept); publish?.invoke(kept) }
-                    if (r.query.containsKey("download")) backup(all()) else HttpServer.Response.json(JSONObject().put("scenes", all()))
+                    val missing = if (list == null) null else {
+                        val kept = clean(list)
+                        try { publish?.invoke(kept); save(kept); null } catch (e: SetupNeed.Missing) { e }   // times need a newer TV Setup: publish comes first, so nothing is saved half-way
+                    }
+                    if (missing != null) HttpServer.Response.error(409, missing.message.toString())
+                    else if (r.query.containsKey("download")) backup(all()) else HttpServer.Response.json(JSONObject().put("scenes", all()))
                 }
             }
             r.path == "/api/scene/run" && r.method == "POST" ->
@@ -148,7 +155,53 @@ object Scenes {
      * Last save wins: this list replaces whatever TV Setup showed, even one saved on the TV's own page.
      */
     fun publishThroughSetup(sh: (String) -> String, saved: JSONArray) {
-        try { RulesClient.call(sh, JSONObject().put("do", "scenes").put("scenes", saved)) } catch (e: Exception) { }
+        val timed = (0 until saved.length()).any { saved.optJSONObject(it)?.has("at") == true }
+        val r = try { RulesClient.call(sh, JSONObject().put("do", "scenes").put("scenes", saved)) } catch (e: Exception) { return }
+        // A scene with a time is useless unless the TV keeps it: a TV Setup that answers without "timed" is too old (or missing), and the client says so
+        if (timed && !r.optBoolean("timed")) throw SetupNeed.Missing("scenetime", if (r.has("setup")) r.optString("have") else SetupNeed.have(sh))
+    }
+
+    private val HHMM = Regex("([01]?\\d|2[0-3]):([0-5]\\d)")
+    private val DATE = Regex("(\\d{4})-(\\d{2})-(\\d{2})")
+
+    /** A scene's "start at" as stored: {time, days (sorted, unique, 1..7: none given = every day)} or {time, date}; null when there is no valid time. */
+    fun cleanAt(a: JSONObject?): JSONObject? {
+        a ?: return null
+        val m = HHMM.matchEntire(a.optString("time").trim()) ?: return null
+        val out = JSONObject().put("time", "%02d:%s".format(m.groupValues[1].toInt(), m.groupValues[2]))
+        val d = DATE.matchEntire(a.optString("date").trim())
+        if (d != null) {
+            val (y, mo, da) = d.destructured
+            if (mo.toInt() !in 1..12 || da.toInt() !in 1..31) return null
+            return out.put("date", "$y-$mo-$da")
+        }
+        val days = a.optJSONArray("days")
+        val set = java.util.TreeSet<Int>()
+        for (i in 0 until (days?.length() ?: 0)) days!!.optInt(i).let { if (it in 1..7) set.add(it) }
+        return out.put("days", JSONArray(if (set.isEmpty()) (1..7).toList() else set.toList()))
+    }
+
+    /**
+     * The first moment after [after] (ms) that [at] ([cleanAt]'s shape) starts, in the TV's time zone; null when a one-off date has gone by.
+     * Pure in its inputs: TV Setup's SceneTimer keeps the cursor, so a clock that jumps never makes a backlog of runs.
+     */
+    fun nextAt(at: JSONObject, after: Long, zone: java.util.TimeZone = java.util.TimeZone.getDefault()): Long? {
+        val m = HHMM.matchEntire(at.optString("time")) ?: return null
+        val h = m.groupValues[1].toInt(); val mi = m.groupValues[2].toInt()
+        fun cal(y: Int, mo: Int, d: Int) = java.util.Calendar.getInstance(zone).apply { clear(); set(y, mo, d, h, mi, 0) }
+        val date = DATE.matchEntire(at.optString("date"))
+        if (date != null) {
+            val t = cal(date.groupValues[1].toInt(), date.groupValues[2].toInt() - 1, date.groupValues[3].toInt()).timeInMillis
+            return if (t > after) t else null
+        }
+        val days = at.optJSONArray("days")?.let { a -> (0 until a.length()).map { a.optInt(it) }.toSet() } ?: (1..7).toSet()
+        val start = java.util.Calendar.getInstance(zone).apply { timeInMillis = after }
+        for (i in 0..7) {
+            val c = cal(start.get(java.util.Calendar.YEAR), start.get(java.util.Calendar.MONTH), start.get(java.util.Calendar.DAY_OF_MONTH) + i)
+            val dow = (c.get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7 + 1                 // Sunday = 1 in Calendar; Monday = 1 here
+            if (dow in days && c.timeInMillis > after) return c.timeInMillis
+        }
+        return null
     }
 
     /** From a client with ADB: asks TV Setup to offer [scene] to TV Home as a pinned tile (RulesReceiver "scenepin"). Throws [SetupNeed.Missing] when it is missing or old. */
@@ -187,7 +240,8 @@ object Scenes {
             val id = sc.optString("id").let { if (it.matches(Regex("[A-Za-z0-9_-]{1,24}"))) it else "s" + System.nanoTime().toString(36) }
             val o = JSONObject().put("id", id).put("name", name).put("icon", sc.optString("icon").take(8)).put("steps", steps)
             val say = phrases(sc.optJSONArray("say"))
-            if (say.isNotEmpty()) o.put("say", JSONArray(say))               // absent = none: scenes saved before stay byte-for-byte the same
+            cleanAt(sc.optJSONObject("at"))?.let { o.put("at", it) }        // absent = only when run by hand
+            if (say.isNotEmpty()) o.put("say", JSONArray(say))             // absent = none: scenes saved before stay byte-for-byte the same
             out.put(o)
         }
         return out

@@ -238,4 +238,38 @@ class ScenesTest {
         assertEquals(503, r.status)
         assertTrue(String(r.body).contains("adb:none"))
     }
+
+    // ---- "start at"
+    private val utc = java.util.TimeZone.getTimeZone("UTC")
+    private fun ms(s: String) = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm").apply { timeZone = utc }.parse(s)!!.time
+    private fun at(s: String) = JSONObject(s)
+
+    @Test fun atIsCleanedAndKept() {
+        val sc = JSONObject().put("name", "x").put("steps", JSONArray().put(JSONObject().put("do", "wake")))
+        assertNull(Scenes.clean(JSONArray().put(JSONObject(sc.toString()))).getJSONObject(0).optJSONObject("at"))     // none = as before
+        val weekly = Scenes.clean(JSONArray().put(JSONObject(sc.toString()).put("at", at("{time:'7:05',days:[5,1,1,9]}")))).getJSONObject(0).getJSONObject("at")
+        assertEquals("07:05", weekly.getString("time")); assertEquals("[1,5]", weekly.getJSONArray("days").toString())
+        val every = Scenes.cleanAt(at("{time:'20:30'}"))!!
+        assertEquals(7, every.getJSONArray("days").length())
+        assertEquals("2026-11-20", Scenes.cleanAt(at("{time:'20:30',date:'2026-11-20'}"))!!.getString("date"))
+        assertNull(Scenes.cleanAt(at("{time:'25:00'}"))); assertNull(Scenes.cleanAt(at("{time:'20:30',date:'2026-13-01'}"))); assertNull(Scenes.cleanAt(null))
+    }
+
+    @Test fun nextAtWeeklyAndOnce() {
+        val mon = at("{time:'08:00',days:[1]}")                                   // 2026-11-02 is a Monday
+        assertEquals(ms("2026-11-02 08:00"), Scenes.nextAt(mon, ms("2026-11-02 07:59"), utc))
+        assertEquals(ms("2026-11-09 08:00"), Scenes.nextAt(mon, ms("2026-11-02 08:00"), utc))   // strictly after
+        assertEquals(ms("2026-11-09 08:00"), Scenes.nextAt(mon, ms("2026-11-05 12:00"), utc))
+        val once = at("{time:'20:00',date:'2026-11-20'}")
+        assertEquals(ms("2026-11-20 20:00"), Scenes.nextAt(once, ms("2026-11-01 00:00"), utc))
+        assertNull(Scenes.nextAt(once, ms("2026-11-20 20:00"), utc))
+        assertEquals(ms("2026-12-01 06:00"), Scenes.nextAt(at("{time:'06:00',days:[2]}"), ms("2026-11-25 07:00"), utc))   // over a month end (Tuesday)
+    }
+
+    @Test fun timedSceneNeedsANewerTvSetup() {
+        val list = JSONArray().put(JSONObject().put("id", "a").put("name", "x").put("at", at("{time:'20:30'}")).put("steps", JSONArray().put(JSONObject().put("do", "wake"))))
+        val sh = { c: String -> if (c.contains("RulesReceiver")) "Broadcast completed: result=0, data=\"" + dev.tvremote.core.B64.encode("{\"ok\":true}".toByteArray()) + "\"" else "" }
+        try { Scenes.publishThroughSetup(sh, list); org.junit.Assert.fail("an old TV Setup answers without timed") } catch (e: SetupNeed.Missing) { assertEquals("scenetime", e.feature) }
+        Scenes.publishThroughSetup(sh, JSONArray())                                  // nothing timed: quiet as before
+    }
 }

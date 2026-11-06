@@ -25,6 +25,9 @@ form > .timerow + .line { margin-top:10px; }
 #limits .name .bar { max-width:260px; }
 .scenebox { display:flex; flex-direction:column; gap:10px; margin-top:12px; }
 .scenebox h3 { margin:4px 0 0; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+.atbox { margin-top:0; }
+.atrow { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+#sceneat .fchips { margin-top:8px; }
 .line2 { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
 .line2 > input:first-child { flex:0 0 64px; text-align:center; font-size:20px; }
 .line2 select { min-height:var(--ctl); }

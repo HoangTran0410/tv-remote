@@ -489,7 +489,7 @@ function renderScenes() {
   foldSum('scenecard', SCENES.length ? T('fold.scenes', { n: SCENES.length }) : T('fold.off'), SCENES.length > 0);
   $('#scenelist').replaceChildren(...(SCENES.length ? SCENES.map((sc) => el('div', { className: 'item' },
     el('div', { className: 'ficon', textContent: sc.icon || '🎬' }),
-    el('div', { className: 'name' }, el('span', { textContent: sc.name }), el('small', { textContent: sc.steps.map(stepText).join(' → ') })),
+    el('div', { className: 'name' }, el('span', { textContent: sc.name }), el('small', { textContent: (sc.at ? '🕗 ' + atText(sc.at) + ' · ' : '') + sc.steps.map(stepText).join(' → ') })),
     el('div', { className: 'acts' }, setLabel(el('button', { className: 'small primary', onclick: () => runScene(sc) }), '▶', T('auto.run')),
       setLabel(el('button', { className: 'small', onclick: () => editScene(sc) }), '✏️', T('auto.edit')))))
     : [UI.empty(T('auto.no_scenes'))]));
@@ -497,8 +497,33 @@ function renderScenes() {
 
 // the editor: a name, an emoji, and steps added one by one
 let editing = null, draft = [];
+// ---------- "Start at": a time plus days (weekly) or one date; TV Setup starts the scene on the TV (Scenes.kt "at", SceneTimer.kt) ----------
+let atTime = null, atShown = false, atDraft = null;                                                  // null = no time; else { time, once, days: Set, date }
+const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const atFrom = (at) => at ? { time: at.time, once: !!at.date, days: new Set(at.days || [1, 2, 3, 4, 5, 6, 7]), date: at.date || todayStr() } : null;
+const atOut = () => !atDraft || !atDraft.time ? null : atDraft.once ? { time: atDraft.time, date: atDraft.date } : { time: atDraft.time, days: [...atDraft.days].sort() };
+const atText = (at) => at.time + ' · ' + (at.date || dayText(at.days));
+function drawSceneAt() {
+  const box = $('#sceneat'); if (!box) return;
+  if (!atTime) atTime = el('input', { type: 'time', 'aria-label': T('scenedlg.at_time'),      // one input kept, so typing in it is not interrupted by the redraw
+    oninput: (e) => { if (!e.target.value) atDraft = null; else if (!atDraft) atDraft = atFrom({ time: e.target.value }); else atDraft.time = e.target.value; if (!!atDraft !== atShown) drawSceneAt(); } });
+  const time = atTime; time.value = atDraft ? atDraft.time : ''; atShown = !!atDraft;
+  const rows = [el('div', { className: 'atrow' }, time, atDraft ? el('button', { type: 'button', className: 'small', textContent: T('scenedlg.at_clear'), onclick: () => { atDraft = null; drawSceneAt(); } }) : null)];
+  if (atDraft) {
+    const mode = (once, label) => el('button', { type: 'button', className: atDraft.once === once ? 'on' : '', textContent: label, 'aria-pressed': atDraft.once === once, onclick: () => { atDraft.once = once; drawSceneAt(); } });
+    rows.push(el('div', { className: 'fchips' }, mode(false, T('scenedlg.at_repeat')), mode(true, T('scenedlg.at_once'))));
+    if (atDraft.once) rows.push(el('div', { className: 'atrow' }, el('input', { type: 'date', value: atDraft.date, min: todayStr(), 'aria-label': T('scenedlg.at_date'), oninput: (e) => { atDraft.date = e.target.value; } })));
+    else {
+      const days = el('div', { className: 'fchips schedays' }, ...[1, 2, 3, 4, 5, 6, 7].map((d) => el('button', { type: 'button', className: atDraft.days.has(d) ? 'on' : '', textContent: dayName(d), 'aria-pressed': atDraft.days.has(d),
+        onclick: () => { if (atDraft.days.has(d) && atDraft.days.size === 1) return; atDraft.days.has(d) ? atDraft.days.delete(d) : atDraft.days.add(d); drawSceneAt(); } })));
+      days.setAttribute('role', 'group'); days.setAttribute('aria-label', T('scheddlg.days'));
+      rows.push(days);
+    }
+  }
+  box.replaceChildren(...rows);
+}
 function editScene(sc) {
-  editing = sc; draft = sc ? JSON.parse(JSON.stringify(sc.steps)) : [];
+  editing = sc; atDraft = atFrom(sc && sc.at); put('#sceneatbox', 'hidden', NATIVE()); drawSceneAt(); draft = sc ? JSON.parse(JSON.stringify(sc.steps)) : [];
   put('#scenetitle', 'textContent', T(sc ? 'auto.scene_edit_title' : 'auto.scene_new_title'));
   $('#scenename').value = sc ? sc.name : ''; $('#sceneicon').value = sc ? sc.icon || '' : ''; $('#scenesay').value = sc && sc.say ? sc.say.join(', ') : '';
   put('#scenedel', 'hidden', !sc);
@@ -577,7 +602,9 @@ function draftScene() {
   if (!name) { toast(T('auto.name_scene')); $('#scenename').focus(); return null; }
   if (!draft.length) { toast(T('auto.add_step')); return null; }
   const say = $('#scenesay').value.split(',').map((x) => x.trim()).filter(Boolean).slice(0, 5);   // "Câu gọi": the server drops empties and repeats (Scenes.phrases)
-  return { id: editing ? editing.id : 's' + Date.now().toString(36), name, icon: $('#sceneicon').value.trim(), ...(say.length ? { say } : {}), steps: draft };
+  const at = NATIVE() ? null : atOut();
+  if (atDraft && atDraft.once && !atDraft.date) { toast(T('scenedlg.at_date')); return null; }
+  return { id: editing ? editing.id : 's' + Date.now().toString(36), name, icon: $('#sceneicon').value.trim(), ...(say.length ? { say } : {}), ...(at ? { at } : {}), steps: draft };
 }
 $('#scenesave').addEventListener('click', async () => {
   const sc = draftScene(); if (!sc) return;

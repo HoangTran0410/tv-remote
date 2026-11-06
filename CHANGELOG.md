@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Scenes can start by themselves: the scene editor has an optional "Start at" (a time plus weekdays to repeat, or one date). TV Setup keeps and starts them on the TV, so the phone and computer need not be on; with no timed scene nothing runs for it. A run missed while the TV was off or its clock jumped is skipped, not made up. Needs a newer TV Setup (the page offers the update).
+
 - ADB on a port other than 5555 (BeeCube Extreme2 uses 5877): TV Setup dials the TV's own port, the phone and computer apps try 5877 too; any other port can be typed with the address (`192.168.1.5:5877`, or a comma on a phone's number pad) and is kept for that TV
 
 - Health → Now: four views, updated every 2 seconds while open (nothing runs once it is left). This TV: CPU, RAM and storage rings, a 60 s network chart and the facts in two columns (on for, screen, Android, patch, Wi-Fi, signal, MAC with copy); CPU: the apps / system / storage-wait split, each core, the apps running; RAM: in use / cached / free, swap, apps by memory with Stop; Network: the speed now, totals since start, open connections and each app's traffic
