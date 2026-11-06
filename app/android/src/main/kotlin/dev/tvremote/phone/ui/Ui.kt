@@ -148,6 +148,7 @@ internal fun Context.head(s: String): TextView {
     val v = label(s, 12, MUTED)
     v.typeface = Typeface.DEFAULT_BOLD
     v.letterSpacing = 0.08f
+    v.isAllCaps = true                                                // a section head is always capitals, whatever the words file says
     return v
 }
 
