@@ -23,7 +23,7 @@ async function recentsNow(now) {
   } finally { recentsBusy = false; if (recentsAgain) { recentsAgain = false; recentsNow(true); } }
 }
 /** The open apps in their order, those whose name or package has [q]. */
-const recentsList = (q) => [...recentsOpen.keys()].filter((p) => !q || p.toLowerCase().includes(q) || appName(p).toLowerCase().includes(q));
+const recentsList = (q) => [...recentsOpen.keys()].filter((p) => foldHas(q, p, appName(p)));   // q folded (foldText), as the Apps search gives it
 /** A row's line under its name: on screen or when, and its memory. */
 function recentsSub(pkg) {
   const a = recentsOpen.get(pkg), mb = recentsMb.get(pkg);

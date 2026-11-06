@@ -73,8 +73,8 @@ async function clipDialog() {
     if (await api('/api/clip', { text: box.value, paste })) { toast(T(paste ? 'playing.pasted' : 'playing.copied_to_tv')); d.close(); }
   };
   const copy = async () => {
-    try { await navigator.clipboard.writeText(box.value); toast(T('playing.copied_here')); d.close(); }
-    catch { box.select(); toast(T('playing.copy_failed')); }
+    if (await clipCopy(box.value)) { toast(T('playing.copied_here')); d.close(); }
+    else { box.select(); toast(T('playing.copy_failed')); }
   };
   const d = el('dialog', { className: 'ask' }, el('div', { className: 'card' },
     el('div', { className: 'card-head' }, el('h2', { textContent: T('playing.clip_title') }), el('button', { className: 'small iconbtn', textContent: '✕', title: T('common.close'), 'aria-label': T('common.close'), onclick: () => d.close() })),

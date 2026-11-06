@@ -6,6 +6,15 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- After picking another TV, a slow answer from the old one no longer replaces the new TV's cards, apps, settings or Health figures.
+- The TV's web page: pairing tells a wrong code, too many wrong codes and no network apart, instead of always "the code has expired".
+- Several TVs: one missed progress check no longer freezes the install lines and hides Stop; after ten it says the connection was lost.
+- Copy buttons work on the TV's plain-http web page too (the kids mode backup codes, the app log, the TV's clipboard).
+- Safari 14 to 15.3 (no dialog support) now get "The browser needs an update" instead of questions that silently do nothing.
+- Health, its RAM apps, the Setup tab's TV settings and the Apps list: a first read that fails says so, with Try again, instead of a spinner or a blank list.
+- Searching Apps, Files, Quick launch and Open apps ignores accents ("truyen hinh" finds "Truyền hình").
+- The page loads only its own language's words before it draws; English and Vietnamese only when a word is missing.
+
 - The 👁️ Support button (let support look at this TV for 30 minutes) sits in the top bar now, not at the bottom of the Setup tab's TV card.
 - Draw on the TV: a 🎞️ Video button beside Picture and Text opens the Video on TV box (a video or a camera in a frame on the TV).
 - TV Home photos on the TV's web page: holding OK to delete a photo no longer throws when the list was drawn again meanwhile.

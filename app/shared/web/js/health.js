@@ -73,7 +73,7 @@ async function loadSleep(now) {
   sleepBusy = false;
   if (gen !== sleepGen || hmode !== 'sleep') return;
   if (!p) {
-    if (!sleepSeen) box.replaceChildren(UI.say(T('health.could_not_read')), el('div', { className: 'actions' }, el('button', { textContent: T('health.try_again'), onclick: () => loadSleep(true) })));
+    if (!sleepSeen) failed(box, () => loadSleep(true));
     return;
   }
   const seen = JSON.stringify([p, rules && rules.awake]).replace(/"now":\d+/, '');
@@ -337,12 +337,6 @@ const PLAIN = () => [                                                 // the usu
   [/^signal 11 /, T('health.why_sigsegv')], [/^signal 6 /, T('health.why_sigabrt')], [/^(java\.lang\.)?OutOfMemoryError/, T('health.why_oom')],
 ];
 const plain = (why) => (PLAIN().find(([re]) => re.test(why)) || [])[1] || why;
-async function copyText(t) {
-  let ok = false;
-  try { await navigator.clipboard.writeText(t); ok = true; } catch {}
-  if (!ok) { const a = el('textarea', { value: t }); document.body.append(a); a.select(); try { ok = document.execCommand('copy'); } catch {} a.remove(); }  // plain-HTTP pages (the TV's) have no clipboard API
-  toast(ok ? T('health.copied') : T('health.copy_failed'));
-}
 async function loadErrors() {
   const box = $('#herr');
   box.replaceChildren(el('div', { className: 'muted waiting', textContent: T('health.reading_from_the_tv') }));
@@ -511,7 +505,8 @@ async function loadRamApps(now) {
   hramAt = Date.now();
   const box = $('#hramapps');
   if (!box.childElementCount) box.replaceChildren(el('p', { className: 'muted', textContent: T('health.reading_from_the_tv') }));
-  const r = await api('/api/procs', null, true);
+  const gen = tvGen, r = await api('/api/procs', null, true);
+  if (!r && gen === tvGen && hsub === 'ram' && box.querySelector(':scope > p.muted')) failed(box, () => loadRamApps(true));   // nothing shown yet
   if (!r || hsub !== 'ram') return;
   const top = Math.max(1, ...r.apps.map((a) => a.mb));
   box.replaceChildren(UI.list(r.apps.slice(0, 15).map((a) => {
@@ -568,11 +563,12 @@ async function suspCheck() {
 async function loadHealth() {
   if (hmode !== 'now') return;
   if (healthBusy || ADB.state !== 'ready') return;
-  healthBusy = true;
+  healthBusy = true; const gen = tvGen;
   if (!hliveT) hliveGo(true);                                         // not again while it runs: one reading every 2 s
   // a picture shown outside this page (the phone app's own remote screen, its PiP, another device): the TV's own count
   const [h, seen] = await Promise.all([api('/api/health' + (hsub === 'cpu' ? '?apps=1' : ''), null, true), screenOn ? {} : watchersNow()]);
   healthBusy = false;
+  if (!h && gen === tvGen && currentTab === 'health' && !$('.health').classList.contains('ready')) failed($('#hwait'), loadHealth);   // never read yet
   if (!h || currentTab !== 'health') return;
   if (!$('.health').classList.contains('ready')) $('.health').classList.add('ready');
   speedLoad();   // add() writes the attribute even when it is there

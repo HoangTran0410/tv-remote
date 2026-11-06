@@ -34,9 +34,9 @@ function renderPlaces() {
   $('#crumbs').replaceChildren(...kids);
 }
 function renderFiles() {
-  const q = $('#filesq').value.trim().toLowerCase(), sort = $('#filessort').value;
+  const q = foldText($('#filesq').value.trim()), sort = $('#filessort').value;
   const cmp = sort === 'new' ? (a, b) => b.mtime.localeCompare(a.mtime) : sort === 'big' ? (a, b) => b.size - a.size : (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true });
-  const rows = fileItems.filter((i) => !q || i.name.toLowerCase().includes(q)).sort((a, b) => (b.dir - a.dir) || cmp(a, b)).map((i) => {
+  const rows = fileItems.filter((i) => foldHas(q, i.name)).sort((a, b) => (b.dir - a.dir) || cmp(a, b)).map((i) => {
     const full = join(i.name), [icon, kind] = kindOf(i);
     const btn = (text, title, fn, cls = '') => el('button', { textContent: text, title, ariaLabel: title, className: 'small ' + cls, onclick: (e) => { e.stopPropagation(); fn(e); } });
     const acts = el('div', { className: 'acts' });

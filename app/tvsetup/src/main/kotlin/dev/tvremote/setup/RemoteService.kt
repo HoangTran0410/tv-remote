@@ -876,7 +876,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         if (want != got) {
             if (++guesses >= 5) code = null
             if (++wrong >= 15) { wrong = 0; code = null; lockedUntil = System.currentTimeMillis() + 15 * 60000 }
-            return HttpServer.Response.error(400, if (code == null) "expired" else "wrong")
+            return HttpServer.Response.error(400, if (code == null) "locked" else "wrong")   // locked: gone for too many wrong tries, not for time
         }
         code = null
         wrong = 0

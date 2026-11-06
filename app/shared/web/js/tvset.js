@@ -41,8 +41,9 @@ let tvsetBusy = false;
 
 async function loadTvset() {
   if (ADB.state !== 'ready' || tvsetBusy) return;
-  const r = await api('/api/tvset', null, true);
+  const gen = tvGen, r = await api('/api/tvset', null, true);
   if (r) drawTvset(readTvset(r.text));
+  else if (gen === tvGen && $('#tvset > .muted')) failed($('#tvset'), loadTvset);   // still "Reading TV settings...": say so, with Try again
 }
 
 function drawTvset(t) {
