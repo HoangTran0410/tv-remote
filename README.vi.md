@@ -99,7 +99,7 @@ Chưa có ADB? App điện thoại và app máy tính vẫn bấm phím được
 | Bật TV khi đã tắt hẳn (Wake-on-LAN) | ✓ | | ✓ |
 | Bấm phím khi TV chưa cho ADB | ✓ | | ✓ |
 | Remote hồng ngoại (đèn IR của điện thoại, không cần mạng) | ✓ | | |
-| Widget, ô Cài đặt nhanh, phím âm lượng của máy | ✓ | | |
+| Widget, ô Cài đặt nhanh, phím âm lượng của máy, điều khiển ở thanh thông báo và màn hình khóa | ✓ | | |
 | 🎮 Tay cầm chơi game | ✓ | ✓ | ✓ |
 | Link cho Home Assistant, Phím tắt (Siri) | | ✓ | ✓ |
 | Bot Telegram | cần TV Setup | cài đặt tại đây | cần TV Setup |

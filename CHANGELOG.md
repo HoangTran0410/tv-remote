@@ -4,6 +4,10 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- Phone app: a remote in notifications and on the lock screen (Settings → Notifications, off by default): Volume down / up, Play / Pause, Mute and Power for the TV used last, through the same connection as the remote screen when it is open. It closes its connection 2 minutes after a press and goes away after 2 hours unused, when switched off, or when no TV is saved (issue #8).
+
 ## 0.48.0 - 2026-11-07
 
 Web 0.48.0 · Phone app 0.45.0 · TV app 0.46.0 · TV Home 0.29.1 · TV Channels 0.20.0 · TV Games 0.22.0 · TV Apps 0.6.0

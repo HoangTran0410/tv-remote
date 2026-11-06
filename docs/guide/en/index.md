@@ -81,7 +81,7 @@ Remote control for Android TV / Google TV (and LG, Samsung, Roku, VIDAA) with no
 - [Away from home (Tailscale)](away.md): Tailscale is a free private network joining your devices. No ports opened to the Internet. _(tailscale xa nha vpn 100 key expiry wake on lan dem)_
 - [LG, Samsung, Roku, VIDAA TVs](brands.md): Beta. Only in the phone app and the computer app. _(sony bravia xiaomi tcl android tv lg webos samsung tizen roku vidaa hang khac beta)_
 - [Turn off tracking on Samsung, LG, Roku, VIDAA TVs](tracking-other.md): These TVs let no app do it for you: it takes the remote, once. Menu names change between years: if the words differ, look under Privacy. _(theo doi acr quang cao quyen rieng tu samsung lg roku vidaa hisense viewing information live plus tat theo doi dns chan quang cao privacy tracking ads)_
-- [Phone app extras](extras.md):  _(widget tile shortcut phim tat man hinh chinh am luong cap nhat)_
+- [Phone app extras](extras.md):  _(widget tile shortcut phim tat man hinh chinh am luong cap nhat notification thong bao lock screen man hinh khoa)_
 
 ## When something is wrong
 - [App settings](settings.md): Tap 🛠️ in the top corner to open Settings. _(cai dat settings giao dien sang toi theme ngon ngu language rung vibrate kiem tra ban moi cap nhat tat thoat quit)_
