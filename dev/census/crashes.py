@@ -8,7 +8,7 @@
   crashes.py --json             machine output for agents: [{sig, app, v, kind, msg, count, installs, first, last, device, stack}]
   crashes.py --since 2026-10-01 only crashes first seen on/after that day
   crashes.py --new              what has not been looked at: a crash never marked, or one that happened again after its mark (every version)
-  crashes.py --mark SIG|all [--note "why"]   marks it looked at (its count now), in checked.json (committed: every session and machine sees it)
+  crashes.py --mark SIG|all [--note "why"]   marks it (all = what --new lists) looked at (its count now), in checked.json (committed: every session and machine sees it)
   crashes.py SIG --frames       adds repo path:line for each stack frame that maps to a file here (also with --json: "frames")
   crashes.py --url http://127.0.0.1:8787   a local `wrangler dev`
 """
@@ -142,6 +142,7 @@ def main():
     marks = checked()
     if o.mark:
         rows = call(o.url, "/v1/crashes", {"sig": "" if o.mark == "all" else full(o, o.mark), "v": o.v, "app": o.app})["crashes"]
+        if o.mark == "all": rows = [r for r in rows if unseen(r, marks) > 0]   # only what --new lists: the others keep their own notes
         at = __import__("datetime").datetime.now().astimezone().isoformat(timespec="seconds")
         for r in rows:
             k = r["sig"] + "|" + r["v"]

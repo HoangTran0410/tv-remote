@@ -30,9 +30,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "029730d62a668d07e4544e63|0.34.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "029730d62a668d07e4544e63|0.34.2": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -90,9 +90,9 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
  "0cc42fae2aa5fd9fed3c6839|0.31.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:53+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "0d9f97b24e188d539096d5f4|0.29.0": {
   "at": "2026-10-28T14:05:30+07:00",
@@ -130,9 +130,9 @@
   "note": "web: home_pin.js lookbehind on old Safari; rewritten + scrub.test checks every page script (2026-10-30)"
  },
  "0f95a375919818dbbccd484e|0.44.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:54+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "10008337d9a0f8f648c7fce1|0.32.1": {
   "at": "2026-11-05T10:40:10+07:00",
@@ -140,9 +140,9 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "10008337d9a0f8f648c7fce1|0.35.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:10+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "10beb007bf91c5ebda6acc25|0.25.0": {
   "at": "2026-10-27T09:37:02+07:00",
@@ -160,9 +160,9 @@
   "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
  },
  "10d226c42e6185c27fb45f11|0.34.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-03T23:36:43+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
  },
  "10d226c42e6185c27fb45f11|0.37.0": {
   "at": "2026-11-03T23:36:43+07:00",
@@ -205,9 +205,9 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "11e6a1d8790c4769373b5dbb|0.26.3": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T12:38:08+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "Zalo in-app browser's own zaloJSV2 eval (<anonymous>:1:2); errbox now ignores <anonymous>-only stacks"
  },
  "11e6a1d8790c4769373b5dbb|0.27.0": {
   "at": "2026-11-06T12:38:08+07:00",
@@ -240,9 +240,9 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "11f863dfd6e576b428b0c908|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "13b5562e22b1aff18d3e7207|0.15.0": {
   "at": "2026-10-30T09:07:55+07:00",
@@ -250,9 +250,9 @@
   "note": "channels: shutdownNow interrupts the screen executor; screenThread ends the job quietly (2026-10-30)"
  },
  "13b5562e22b1aff18d3e7207|0.15.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "13ebb1a66fdaf61270829f5a|0.26.3": {
   "at": "2026-11-05T10:40:10+07:00",
@@ -270,29 +270,29 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "13ebb1a66fdaf61270829f5a|0.37.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:10+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "13ebb1a66fdaf61270829f5a|0.40.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "13ebb1a66fdaf61270829f5a|0.44.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "13ebb1a66fdaf61270829f5a|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "15987037e515d85bb3c833f1|0.34.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:11+07:00",
   "n": 4,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "15bc83da3a291a861c407efa|0.32.1": {
   "at": "2026-10-29T17:19:56+07:00",
@@ -330,14 +330,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "1687964a36ac08f836317d80|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "1767cfe49cb2205aca9b8b0e|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "176ea5adf56548e1a66feb7d|0.34.1": {
   "at": "2026-10-30T09:08:06+07:00",
@@ -365,24 +365,24 @@
   "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.23.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.24.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 5,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.24.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.25.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 5,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.26.0": {
   "at": "2026-11-05T17:16:58+07:00",
@@ -390,14 +390,14 @@
   "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.26.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 8,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1b64c0fdb7081f015b2765c2|0.26.3": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:58+07:00",
   "n": 8,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "old computer app 0.26.1 again; fixed in 5d4096ec (typeof guard)"
  },
  "1bb957ff3a488ee2d9b284a4|0.42.0": {
   "at": "2026-11-04T06:24:38+07:00",
@@ -405,9 +405,9 @@
   "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "1bfd183ebabe1f558e4b349e|0.26.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:08+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "1bfd183ebabe1f558e4b349e|0.33.1": {
   "at": "2026-11-05T21:24:08+07:00",
@@ -415,29 +415,29 @@
   "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "1bfd183ebabe1f558e4b349e|0.34.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:08+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "1bfd183ebabe1f558e4b349e|0.34.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:08+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "1bfd183ebabe1f558e4b349e|0.34.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:08+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "1c570f260459c0b84513dc9d|0.34.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:12+07:00",
   "n": 4,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "1d068b0e2ad4d8683265d6a9|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 4,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "1d068b0e2ad4d8683265d6a9|0.33.1": {
   "at": "2026-10-30T09:08:07+07:00",
@@ -450,14 +450,14 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "1d1586341fa4c7bfe6945938|0.17.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "1d3638fa73c4e4f58e7afdf7|0.45.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "1d6f4d6ca98627c06c8cca53|0.30.0": {
   "at": "2026-11-05T10:40:13+07:00",
@@ -470,19 +470,19 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "1d6f4d6ca98627c06c8cca53|0.42.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:13+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "1d6f4d6ca98627c06c8cca53|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:13+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "1d6f4d6ca98627c06c8cca53|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:13+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "1eaf9599017372e7ef226194|0.28.0": {
   "at": "2026-11-03T10:12:57+07:00",
@@ -495,9 +495,9 @@
   "note": "fixed in 314c0f33 (Adb ArrayList(streams.values))"
  },
  "21d6ea2f3f739402aeb51852|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "23014c193c198786a043ff99|0.34.1": {
   "at": "2026-10-30T09:08:07+07:00",
@@ -510,9 +510,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "25473d8d21bbc354ae617435|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "26d2655349a426cd1a66e207|0.34.1": {
   "at": "2026-11-04T03:07:24+07:00",
@@ -525,14 +525,14 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "2762d2d3012a1454188ebd57|0.11.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "279257163db37d501475990c|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T06:05:57+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "system_server died (DeadSystemException) on a 'Pixel 10 Pro XL' Android 13 box; the second is Guard's dialog for the first"
  },
  "28126a90d382b19bee86236d|0.21.1": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -545,9 +545,9 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "2a125baae45135ddf67b1231|0.26.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-03T23:36:35+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "another FPT Play 650 (Android 11, not the owner's 14): adb_enabled=0, adbd stopped; FPT locks Developer options (memory fpt-isp-box-support), TV Setup already asks to turn ADB on"
  },
  "2a125baae45135ddf67b1231|0.26.3": {
   "at": "2026-11-03T23:36:35+07:00",
@@ -560,9 +560,9 @@
   "note": "another FPT Play 650 (Android 11, not the owner's 14): adb_enabled=0, adbd stopped; FPT locks Developer options (memory fpt-isp-box-support), TV Setup already asks to turn ADB on"
  },
  "2a920a01f1a672f5b5e3208a|0.38.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T18:44:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "2c1ad75d9d4e80f1f1768d8c|0.25.0": {
   "at": "2026-10-27T09:37:04+07:00",
@@ -570,9 +570,9 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "2c21539a7c14d00d27e83676|0.26.3": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "2c21539a7c14d00d27e83676|0.38.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -620,9 +620,9 @@
   "note": "Safari with stale HTML + new JS (auto.js stopped at #supgo); 1 install, left"
  },
  "312bbcd02ded9c242b05435d|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "312bbcd02ded9c242b05435d|0.34.1": {
   "at": "2026-11-05T21:24:07+07:00",
@@ -665,14 +665,14 @@
   "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "312bbcd02ded9c242b05435d|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "312bbcd02ded9c242b05435d|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:07+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3165ca140d8765602735689f|0.23.0": {
   "at": "2026-10-26T21:47:37+07:00",
@@ -690,19 +690,19 @@
   "note": "fixed in 5d4096ec"
  },
  "3178f9a58fcc2b3b3aaceecc|0.38.4": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "3178f9a58fcc2b3b3aaceecc|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "31e00182e8bae0d89ebdda1f|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:14+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "328e5f3956d4038c74a6b2b4|0.40.0": {
   "at": "2026-11-03T15:54:04+07:00",
@@ -740,9 +740,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "36ed6f00323d0cadd9f817c7|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:15+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "3894b2245b830470df7f8316|0.34.2": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -760,14 +760,14 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "39af9333f7eea45d78f8bf79|0.8.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "39af9333f7eea45d78f8bf79|0.9.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "3a1bf82f27788cf110a94668|0.24.1": {
   "at": "2026-10-27T09:37:06+07:00",
@@ -775,9 +775,9 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "3a1bf82f27788cf110a94668|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "3a7f7e5a379246b2cfa355c6|0.33.1": {
   "at": "2026-10-29T17:19:41+07:00",
@@ -805,14 +805,14 @@
   "note": "fixed in 314c0f33 (IR import capped 1 MB)"
  },
  "3d3fb10724ef308cde567ed9|0.42.0": {
-  "at": "2026-11-06T16:30:21+07:00",
+  "at": "2026-11-06T17:03:04+07:00",
   "n": 1,
   "note": "watch: scrcpy-server gave no first packet and said nothing (serverSaid empty) on STREAM-SYSTEM ATV R1 (Realtek rtd284o, Android 11), same install since 0.42; like ELEXIA 2K"
  },
  "3d3fb10724ef308cde567ed9|0.45.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:04+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "watch: scrcpy-server gave no first packet and said nothing (serverSaid empty) on STREAM-SYSTEM ATV R1 (Realtek rtd284o, Android 11), same install since 0.42; like ELEXIA 2K"
  },
  "3d5dffd0b165e9e474f753dd|0.38.3": {
   "at": "2026-11-03T03:42:51+07:00",
@@ -840,19 +840,19 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "3de729f6815ae508958555a8|0.34.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:15+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "3de729f6815ae508958555a8|0.37.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:15+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "3de729f6815ae508958555a8|0.38.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:15+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "3de729f6815ae508958555a8|0.38.4": {
   "at": "2026-11-05T10:40:15+07:00",
@@ -875,14 +875,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "3de729f6815ae508958555a8|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:15+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "3de729f6815ae508958555a8|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:15+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "3df75f21109cfe64c6abe060|0.30.0": {
   "at": "2026-10-30T09:08:09+07:00",
@@ -895,9 +895,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "3e2e54bac9ca5b483b94307f|0.24.3": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-03T03:42:49+07:00",
   "n": 4,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "fixed in 098bbb74 + f38e624b, released in TV Home 0.25.0 (v0.41.0)"
  },
  "3eba4ca5a45b04107595e6ee|0.30.0": {
   "at": "2026-11-03T23:36:45+07:00",
@@ -935,9 +935,9 @@
   "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.30.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 4,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.31.0": {
   "at": "2026-11-05T21:24:09+07:00",
@@ -945,14 +945,14 @@
   "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.34.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.35.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.38.2": {
   "at": "2026-11-05T21:24:09+07:00",
@@ -960,19 +960,19 @@
   "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.38.4": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.44.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "3f685f9c7cdca8d898486836|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "41dd31f77cb49ce98c2242e0|0.28.0": {
   "at": "2026-10-27T09:37:26+07:00",
@@ -990,9 +990,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "457abcc7833427ac40dcc540|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "457f2bad9ad912b88a771ef4|0.30.0": {
   "at": "2026-10-28T14:05:36+07:00",
@@ -1000,9 +1000,9 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
  "45972be738bf66381e0ca25b|0.21.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "45cfe265b35478a34a5dd8dc|0.32.1": {
   "at": "2026-10-29T17:20:00+07:00",
@@ -1015,14 +1015,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "4664ee61b8bdc5497e1638b0|0.35.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:16+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "4664ee61b8bdc5497e1638b0|0.37.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:16+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "4664ee61b8bdc5497e1638b0|0.42.0": {
   "at": "2026-11-05T10:40:16+07:00",
@@ -1040,24 +1040,24 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "478a387890933579fecf99b4|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:16+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "47a5c9da4073a9a70ad6b63e|0.38.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:17+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "47a5c9da4073a9a70ad6b63e|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:17+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "47a5c9da4073a9a70ad6b63e|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "47baed67085a7343b6f1e186|0.30.0": {
   "at": "2026-10-28T14:05:36+07:00",
@@ -1085,14 +1085,14 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "4a246e0d976dd69f7dab894c|0.26.3": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "4a246e0d976dd69f7dab894c|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "4a246e0d976dd69f7dab894c|0.34.1": {
   "at": "2026-10-30T09:08:11+07:00",
@@ -1140,9 +1140,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "4cc2cadf89af8d0bb8d9ca4c|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T18:53:04+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB health report: nobody answered Allow on the TV (MiTV); prompt handling as designed"
  },
  "4ccc484580e6ccb279185260|0.19.0": {
   "at": "2026-10-29T17:19:31+07:00",
@@ -1180,9 +1180,9 @@
   "note": "phone: ListenService stopped before up; stop()/starting() as WorkService (2026-10-30)"
  },
  "511aac2ae7b48b7a5dfec692|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:18+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "516d4346df0ee681f688361c|0.33.1": {
   "at": "2026-10-30T09:08:13+07:00",
@@ -1195,9 +1195,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "51dc038179c56548b3f420d0|0.26.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "51dc038179c56548b3f420d0|0.35.0": {
   "at": "2026-11-05T21:24:09+07:00",
@@ -1205,9 +1205,9 @@
   "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "51dc038179c56548b3f420d0|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:09+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "5255e1fda001cda94f5657bc|0.30.0": {
   "at": "2026-10-29T17:19:32+07:00",
@@ -1215,9 +1215,9 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "5255e1fda001cda94f5657bc|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "5268ade07cdb119d2175ece4|0.34.1": {
   "at": "2026-10-30T09:08:13+07:00",
@@ -1225,9 +1225,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "5268ade07cdb119d2175ece4|0.44.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "52ad8714d4c28394d69bd949|0.32.1": {
   "at": "2026-10-29T18:31:17+07:00",
@@ -1255,9 +1255,9 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "535993e358ec33bffb4a2ab7|0.37.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T03:07:28+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "535993e358ec33bffb4a2ab7|0.38.2": {
   "at": "2026-11-04T03:07:28+07:00",
@@ -1275,9 +1275,9 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "540531d4e90b1e309bd50e2c|0.26.3": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:19+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "540531d4e90b1e309bd50e2c|0.37.0": {
   "at": "2026-11-05T10:40:19+07:00",
@@ -1285,14 +1285,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "54c0d260ef1a42595613d51b|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "54cd95b51847ecef54bdeeb7|0.26.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "55209ee33992f6defe5cd82a|0.32.0": {
   "at": "2026-10-29T17:20:02+07:00",
@@ -1310,9 +1310,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "5829f9352b7b17a070bc391f|0.44.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T07:18:04+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "home.js: an upload answer without config replaced r; take() keeps only whole snapshots"
  },
  "58e80942ee619021d01ddea4|0.29.0": {
   "at": "2026-11-05T10:40:19+07:00",
@@ -1320,14 +1320,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "58e80942ee619021d01ddea4|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:19+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "5a3f0f3294d8f48d02e14828|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:20+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "5b47665e5391015e7bcf0337|0.23.0": {
   "at": "2026-10-29T17:19:33+07:00",
@@ -1340,9 +1340,9 @@
   "note": "loadTvset race, fixed 314c0f33/4e59757e (v0.40.3); old phone 0.31.0 only"
  },
  "5b47665e5391015e7bcf0337|0.31.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 4,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "5b75f99db4e89f1bf05e9ba7|0.42.0": {
   "at": "2026-11-05T10:40:21+07:00",
@@ -1350,14 +1350,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "5b75f99db4e89f1bf05e9ba7|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:21+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "5bff425f65d93c72f20a0551|0.31.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "5bff425f65d93c72f20a0551|0.38.4": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -1365,9 +1365,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "5c1d53c0ff40eec779d13fb7|0.45.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "5c3d20915ff953ae9d0d2071|0.30.0": {
   "at": "2026-11-03T23:36:45+07:00",
@@ -1395,9 +1395,9 @@
   "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
  },
  "5c3d20915ff953ae9d0d2071|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "5d45b4ecf8bcf041b9118638|0.32.1": {
   "at": "2026-10-29T17:20:03+07:00",
@@ -1420,14 +1420,14 @@
   "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "5df1b3d619bed9fd987a0aad|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:55+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "5e37967511de4c97ab10ff0c|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:35+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "watch: scrcpy-server gave no first packet and said nothing (ELEXIA 2K, Android 14, 1 install); nothing to go on yet"
  },
  "5e49fc275903f2d19df2cf96|0.26.3": {
   "at": "2026-10-27T09:37:12+07:00",
@@ -1480,9 +1480,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "630851a66dd88f88ce3eb053|0.18.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "6453fc09f98a48af143c6eb9|0.42.0": {
   "at": "2026-11-03T23:36:46+07:00",
@@ -1495,9 +1495,9 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "64c43089956318c76addf6db|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "657db7980ca8eda492ca97eb|0.29.0": {
   "at": "2026-10-28T14:05:41+07:00",
@@ -1510,14 +1510,14 @@
   "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "66117b3e1febeea1e420d98a|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T18:44:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "66117b3e1febeea1e420d98a|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "6643ac5ba371539b73349499|0.26.3": {
   "at": "2026-10-26T21:47:45+07:00",
@@ -1525,9 +1525,9 @@
   "note": "Safari with stale HTML + new JS (auto.js stopped at #supgo); 1 install, left"
  },
  "66eb0755a0216e63a9de947c|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "67b6ae315c3b66df4877b275|0.32.1": {
   "at": "2026-11-05T10:40:21+07:00",
@@ -1535,9 +1535,9 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "67b6ae315c3b66df4877b275|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:21+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "67c022dfb5a21bcb3a3560b8|0.24.1": {
   "at": "2026-11-04T16:11:40+07:00",
@@ -1545,19 +1545,19 @@
   "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.26.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T16:11:40+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.26.3": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T16:11:40+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.28.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T16:11:40+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.29.0": {
   "at": "2026-11-04T16:11:40+07:00",
@@ -1565,9 +1565,9 @@
   "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.30.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T16:11:40+07:00",
   "n": 4,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.31.0": {
   "at": "2026-11-04T16:11:40+07:00",
@@ -1575,14 +1575,14 @@
   "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T16:11:40+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.34.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T16:11:40+07:00",
   "n": 4,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.34.2": {
   "at": "2026-11-04T16:11:40+07:00",
@@ -1620,19 +1620,19 @@
   "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.42.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T16:11:40+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused ADB), not a code fault"
  },
  "67c022dfb5a21bcb3a3560b8|0.44.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "6829ee79c1f5ab7a1c5a60b1|0.39.0": {
   "at": "2026-11-03T06:59:47+07:00",
@@ -1695,14 +1695,14 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "6c3b94df5aa42e57587aa4d8|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "6ca924d6b3c5ee9382ca8aee|0.23.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "6ca924d6b3c5ee9382ca8aee|0.24.0": {
   "at": "2026-10-26T21:47:40+07:00",
@@ -1715,14 +1715,14 @@
   "note": "old version (<=0.24): gone in current page"
  },
  "6ca924d6b3c5ee9382ca8aee|0.25.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "6ca924d6b3c5ee9382ca8aee|0.26.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "6d3fd1a68f8079203661e09d|0.34.0": {
   "at": "2026-10-29T18:31:20+07:00",
@@ -1745,9 +1745,9 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "6dacec2975b1bb386c15d443|0.35.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "6dacec2975b1bb386c15d443|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -1820,14 +1820,14 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "727cc3d044f20ebf34ab3ec0|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:22+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "72f479fc5e46b710d40d7e11|0.28.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "72f479fc5e46b710d40d7e11|0.29.0": {
   "at": "2026-11-02T02:38:20+07:00",
@@ -1835,9 +1835,9 @@
   "note": "dev only: test port 8769 on the Mac, page swapped on disk under an open tab"
  },
  "72f479fc5e46b710d40d7e11|0.33.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "72f479fc5e46b710d40d7e11|0.37.1": {
   "at": "2026-11-02T02:38:20+07:00",
@@ -1900,14 +1900,14 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "7d486133c5a3968021adf4a8|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:23+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "7d771aa76ccffaeeca2f2333|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "7e4f66aa5d11a64666081bad|0.31.0": {
   "at": "2026-11-03T03:42:53+07:00",
@@ -1935,9 +1935,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "819edc86a6f9a4f74a368f01|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:23+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "822b0111c9f2158f9464d890|0.32.1": {
   "at": "2026-10-29T17:20:07+07:00",
@@ -1970,9 +1970,9 @@
   "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
  "849cab1d400f0aea1d9415e5|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "851970ad88ae206fa9b4fc6c|0.32.1": {
   "at": "2026-10-29T17:19:47+07:00",
@@ -2010,9 +2010,9 @@
   "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
  },
  "86af8cb18d7c1247988aba2e|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "86e0f0317c01d63472f141c3|0.30.0": {
   "at": "2026-11-05T21:24:10+07:00",
@@ -2025,9 +2025,9 @@
   "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.34.0": {
   "at": "2026-11-05T21:24:10+07:00",
@@ -2080,29 +2080,29 @@
   "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.44.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "86e0f0317c01d63472f141c3|0.45.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "897eccbc3b0589286bfafdf9|0.34.1": {
   "at": "2026-10-30T09:08:18+07:00",
@@ -2125,9 +2125,9 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "89c864c5bcda91e3bdbc548e|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:24+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "8ac025d31943ec5d772dea17|0.15.1": {
   "at": "2026-10-30T09:08:19+07:00",
@@ -2140,14 +2140,14 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "8b0447a852bcaa8a65d99111|0.42.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T08:19:12+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB refused / error: ADB off on the user's TV (known)"
  },
  "8baf906db5be83b7065a065b|0.35.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "8cc45d691499f04251481711|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -2180,14 +2180,14 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "8df727a91b09f361587ab76b|0.44.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:56+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "8df727a91b09f361587ab76b|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "8f22ae153e0767895dc5fd31|0.13.0": {
   "at": "2026-10-29T17:20:09+07:00",
@@ -2275,9 +2275,9 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "9659ee5141f26b46035bdb58|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:25+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "9696ea1b86da0f777e461096|0.26.0": {
   "at": "2026-10-27T09:37:17+07:00",
@@ -2295,9 +2295,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "98e4a5508c52307f590d62a1|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T06:05:57+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "system_server died (DeadSystemException) on a 'Pixel 10 Pro XL' Android 13 box; the second is Guard's dialog for the first"
  },
  "99c0fdd3111273770ef39822|0.32.1": {
   "at": "2026-10-29T17:20:10+07:00",
@@ -2325,9 +2325,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "9ef13edc2b7b0446bc5e321a|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:26+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "9f2bc53e50f426e518d8f3d3|0.24.3": {
   "at": "2026-11-03T01:11:12+07:00",
@@ -2340,9 +2340,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "9f69fe73209a99d57f0c2e92|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "9fae8eef259fdd7309a272c5|0.32.1": {
   "at": "2026-11-05T10:40:26+07:00",
@@ -2365,19 +2365,19 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "9fae8eef259fdd7309a272c5|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:26+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "9fae8eef259fdd7309a272c5|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "a11df287c4b27a276b8f644e|0.27.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "a166ac41f307459b1591b95a|0.34.1": {
   "at": "2026-10-30T09:08:01+07:00",
@@ -2425,9 +2425,9 @@
   "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
  },
  "a3e2566824d6782617e3795d|0.37.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:27+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "a3f667697fbe6c1df462f460|0.28.0": {
   "at": "2026-10-30T09:08:23+07:00",
@@ -2450,14 +2450,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "a468264ed0a50f4f2ddd7dce|0.30.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:27+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "a468264ed0a50f4f2ddd7dce|0.34.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:27+07:00",
   "n": 4,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "a468264ed0a50f4f2ddd7dce|0.35.0": {
   "at": "2026-11-05T10:40:27+07:00",
@@ -2480,9 +2480,9 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "a54cc4711ab55a41b38bd0ab|0.40.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T03:07:29+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "a54cc4711ab55a41b38bd0ab|0.41.0": {
   "at": "2026-11-04T03:07:29+07:00",
@@ -2500,14 +2500,14 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "a61105e296172cd1c6bf213f|0.31.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-03T03:42:55+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "a61105e296172cd1c6bf213f|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-03T03:42:55+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "a61105e296172cd1c6bf213f|0.37.0": {
   "at": "2026-11-03T03:42:55+07:00",
@@ -2555,14 +2555,14 @@
   "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
  },
  "a7704446a8c7641a1f20ede1|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "a7711f7084c62b477cccd209|0.31.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "a7967957521e813d21074e5d|0.32.1": {
   "at": "2026-10-29T17:20:12+07:00",
@@ -2580,9 +2580,9 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "aa5953e524fd57327d2e3858|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T00:58:39+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB key file cut short: Adb.kt now makes a new key and writes keys whole (tmp + rename)"
  },
  "ac1f05f98ad5126b3167283a|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -2590,9 +2590,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "acdba55882fadd0770660405|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "ae16036c3fb4c0f133138391|0.42.0": {
   "at": "2026-11-04T03:07:30+07:00",
@@ -2630,9 +2630,9 @@
   "note": "left: NPE inside system_server, platform"
  },
  "b1ccd0d29d66cdd753d27562|0.27.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:04+07:00",
   "n": 6,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "phone 0.27.0 on a Meizu Android 6 (released 0.44.0): NoClassDefFoundError of an R8 lambda on old ART, no newer version affected; still the one install"
  },
  "b2b52cae0dafc491fb1e1cd6|0.34.0": {
   "at": "2026-10-30T09:08:25+07:00",
@@ -2665,14 +2665,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "b3dbb5ec6f1c76a39a24c383|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:28+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "b3dbb5ec6f1c76a39a24c383|0.44.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "b3f651e44e8ee5e6436726b0|0.35.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -2680,19 +2680,19 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "b4de9bca4cad8c69bdd93b02|0.41.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T19:34:27+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "old phone 0.41.2; fixed already (Adb.kt:610 not connected -> IOException), released"
  },
  "b4de9bca4cad8c69bdd93b02|0.42.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T19:34:27+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "old phone 0.41.2; fixed already (Adb.kt:610 not connected -> IOException), released"
  },
  "b5217008041ee98e6efd9bc7|0.28.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "b5217008041ee98e6efd9bc7|0.29.0": {
   "at": "2026-11-02T02:38:20+07:00",
@@ -2700,9 +2700,9 @@
   "note": "dev only: 8769, same"
  },
  "b5217008041ee98e6efd9bc7|0.33.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "b5217008041ee98e6efd9bc7|0.37.1": {
   "at": "2026-11-02T02:38:20+07:00",
@@ -2755,14 +2755,14 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "bb235b5156d5dfe6f4b07f66|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T03:07:30+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "bb235b5156d5dfe6f4b07f66|0.34.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T03:07:30+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "bb235b5156d5dfe6f4b07f66|0.34.2": {
   "at": "2026-11-04T03:07:30+07:00",
@@ -2785,9 +2785,9 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "bb235b5156d5dfe6f4b07f66|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "bb6aa51a71dd220857d39503|0.24.1": {
   "at": "2026-10-27T09:37:20+07:00",
@@ -2815,9 +2815,9 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "c027dc29c86d963f76853764|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-04T18:44:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "c05b84ecf31e01fbc030366e|0.26.3": {
   "at": "2026-10-26T21:47:47+07:00",
@@ -2835,19 +2835,19 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "c1350475387f482bb09ddfe1|0.42.0": {
-  "at": "2026-11-06T16:29:51+07:00",
+  "at": "2026-11-05T10:40:29+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "c1350475387f482bb09ddfe1|0.43.0": {
-  "at": "2026-11-06T16:29:51+07:00",
+  "at": "2026-11-05T10:40:29+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "c1350475387f482bb09ddfe1|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "c1c835f8856d2ea2eb4d8120|0.32.1": {
   "at": "2026-10-29T17:20:16+07:00",
@@ -2855,9 +2855,9 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "c22f98dbe2c655204dfaaf89|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "c2ce1b1434df896de8fd1d70|0.23.0": {
   "at": "2026-11-06T12:32:24+07:00",
@@ -2865,9 +2865,9 @@
   "note": "TV Setup 0.26.3 only; fixed long ago (RemoteService.foreground() first in onStartCommand, comment cites c2ce1b14)"
  },
  "c2ce1b1434df896de8fd1d70|0.26.3": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T12:32:24+07:00",
   "n": 4,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup 0.26.3 only; fixed long ago (RemoteService.foreground() first in onStartCommand, comment cites c2ce1b14)"
  },
  "c2ce1b1434df896de8fd1d70|0.27.0": {
   "at": "2026-11-06T12:32:24+07:00",
@@ -2890,14 +2890,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "c373576682d59c3aa492f81e|0.30.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:29+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "c373576682d59c3aa492f81e|0.34.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:29+07:00",
   "n": 4,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "c373576682d59c3aa492f81e|0.35.0": {
   "at": "2026-11-05T10:40:29+07:00",
@@ -2910,14 +2910,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
  "c6a86068f3601afb5dbbefd8|0.31.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "c72b1cc15e0a7d87e1b728a1|0.24.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T19:34:28+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "DeadSystemException on TV Setup 0.24.1 (very old): Android's system_server died, not ours"
  },
  "c76047145558da719bf26343|0.27.0": {
   "at": "2026-10-28T14:05:51+07:00",
@@ -2930,9 +2930,9 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
  "c76047145558da719bf26343|0.35.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "c76047145558da719bf26343|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -2975,9 +2975,9 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "cb86f676dfffbcf108630018|0.28.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "cb86f676dfffbcf108630018|0.29.0": {
   "at": "2026-11-02T02:38:20+07:00",
@@ -2985,9 +2985,9 @@
   "note": "dev only: 8769, same"
  },
  "cb86f676dfffbcf108630018|0.33.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "cb86f676dfffbcf108630018|0.37.1": {
   "at": "2026-11-02T02:38:20+07:00",
@@ -3025,9 +3025,9 @@
   "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "cc0ca3bfdda49c7e255d18ca|0.42.2": {
-  "at": "2026-11-06T16:29:51+07:00",
+  "at": "2026-11-04T18:44:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
+  "note": "TV Setup ADB health report (refused / allow unanswered / tls not paired), not a code fault"
  },
  "cdc88b4f64446e3dd3fda07e|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -3050,9 +3050,9 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "cedafe90cec01d6382f4d473|0.26.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "cedafe90cec01d6382f4d473|0.33.1": {
   "at": "2026-11-05T21:24:10+07:00",
@@ -3060,14 +3060,14 @@
   "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "cedafe90cec01d6382f4d473|0.34.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "cedafe90cec01d6382f4d473|0.34.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:10+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "cedafe90cec01d6382f4d473|0.34.2": {
   "at": "2026-11-05T21:24:10+07:00",
@@ -3075,9 +3075,9 @@
   "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "cf638452843273d51ba6f9f8|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-03T06:59:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "cf638452843273d51ba6f9f8|0.34.1": {
   "at": "2026-11-03T06:59:48+07:00",
@@ -3125,39 +3125,39 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "d498a8ad39a52e3263df243d|0.37.0": {
-  "at": "2026-11-06T16:30:20+07:00",
+  "at": "2026-11-06T17:03:03+07:00",
   "n": 1,
   "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d498a8ad39a52e3263df243d|0.38.2": {
-  "at": "2026-11-06T16:30:20+07:00",
+  "at": "2026-11-06T17:03:03+07:00",
   "n": 1,
   "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d498a8ad39a52e3263df243d|0.38.3": {
-  "at": "2026-11-06T16:30:20+07:00",
+  "at": "2026-11-06T17:03:03+07:00",
   "n": 1,
   "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d498a8ad39a52e3263df243d|0.38.4": {
-  "at": "2026-11-06T16:30:20+07:00",
+  "at": "2026-11-06T17:03:03+07:00",
   "n": 1,
   "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d498a8ad39a52e3263df243d|0.42.0": {
-  "at": "2026-11-06T16:30:20+07:00",
+  "at": "2026-11-06T17:03:03+07:00",
   "n": 1,
   "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d498a8ad39a52e3263df243d|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:03+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d498a8ad39a52e3263df243d|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:03+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d6434b998952d4ab9cc3cb26|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -3190,14 +3190,14 @@
   "note": "setup report, not a crash: ADB refused (debugging off) on TV Setup 0.26.2"
  },
  "d8b23f67ace7d1ad4be28a63|0.26.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 4,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "d8b23f67ace7d1ad4be28a63|0.29.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "d8b23f67ace7d1ad4be28a63|0.31.0": {
   "at": "2026-10-30T09:46:31+07:00",
@@ -3205,9 +3205,9 @@
   "note": "setup report, not a crash: ADB refused (debugging off) on TV Setup 0.26.2"
  },
  "d8b23f67ace7d1ad4be28a63|0.33.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "d8b23f67ace7d1ad4be28a63|0.36.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -3230,9 +3230,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "da40de8404c38b5a96c57331|0.13.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "da6214721e9abe7601758e7a|0.26.3": {
   "at": "2026-11-01T20:54:31+07:00",
@@ -3265,24 +3265,24 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "decee121efc0fe71ad60b7df|0.26.3": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "decee121efc0fe71ad60b7df|0.32.1": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "defef3515cb89aabff4263f5|0.26.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "defef3515cb89aabff4263f5|0.26.3": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "dfc28007278d921d44ba5c2f|0.32.1": {
   "at": "2026-10-29T17:19:51+07:00",
@@ -3315,9 +3315,9 @@
   "note": "old version only, fixed in later releases"
  },
  "e19ee5e76f316f2911d2f996|0.32.7": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 6,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "e22d1d1548eb881e2fbb8bc3|0.30.0": {
   "at": "2026-11-04T06:24:41+07:00",
@@ -3355,9 +3355,9 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "e2f8d5a2501a256d93afb738|0.42.2": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T10:40:32+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "e3535283ab456e068ad89a4b|0.30.0": {
   "at": "2026-10-28T14:05:18+07:00",
@@ -3375,14 +3375,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
  "e3cda4c81f00053653368fc9|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "e4ac11c3f89584f4f97dbdfa|0.40.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-03T23:36:34+07:00",
   "n": 3,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "fixed in 9831be93, shipped in v0.44.0 (phone 0.41.0); these are 0.40.0 installs"
  },
  "e79672e1ff8459fb2088df18|0.32.1": {
   "at": "2026-10-29T17:20:22+07:00",
@@ -3420,14 +3420,14 @@
   "note": "ADB health report: TV refused 5555 (ADB off on the box); self-check covers it"
  },
  "e854671036bc5c993fe48c57|0.44.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T18:53:04+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB health report: TV refused 5555 (ADB off on the box); self-check covers it"
  },
  "e854671036bc5c993fe48c57|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "e94dd9684f447e3743727f48|0.33.1": {
   "at": "2026-10-29T18:31:22+07:00",
@@ -3460,9 +3460,9 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "ee16781ca31682bbe27f8af8|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "ee57e878f33619a603accc6d|0.25.0": {
   "at": "2026-11-04T08:19:13+07:00",
@@ -3495,14 +3495,14 @@
   "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "ee5e9be7f57e6b14ec6a79d4|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:56+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "ee5e9be7f57e6b14ec6a79d4|0.44.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:56+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "efa52b83207b258b74e55757|0.34.1": {
   "at": "2026-10-30T09:08:30+07:00",
@@ -3520,9 +3520,9 @@
   "note": "TV Setup ADB health report (the box refused / not paired), not a code fault"
  },
  "f03fa6b922541471343a37b2|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "f06451f1a74341f0f8a8e503|0.43.0": {
   "at": "2026-11-05T10:40:33+07:00",
@@ -3630,9 +3630,9 @@
   "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "f577d1fc6dd6c2b3c4b8c4fe|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T21:24:11+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
  },
  "f5b6a36b3b74666633f80133|0.34.1": {
   "at": "2026-10-30T09:08:31+07:00",
@@ -3660,19 +3660,19 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
  "f66384510cb173df0bc6ffbb|0.45.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "f7603636f486b4138e3c7f29|0.38.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "f7cda9e6cf22482c891e3214|0.44.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T13:17:39+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "ADB setup report on the FPT test box (the user's own), not a crash"
  },
  "f88af3fa3bb194b7d0cf5ed3|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -3680,9 +3680,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "fa5d02d9f13f6121886b7727|0.37.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:57+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "fa5d02d9f13f6121886b7727|0.38.2": {
   "at": "2026-11-05T17:16:57+07:00",
@@ -3700,9 +3700,9 @@
   "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "fa5d02d9f13f6121886b7727|0.43.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-05T17:16:57+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "fad2a14ed1bb2056883cbfb5|0.28.0": {
   "at": "2026-10-27T09:37:25+07:00",
@@ -3710,9 +3710,9 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "fb819a31cc30c81e4fc3629f|0.34.0": {
-  "at": "2026-11-06T17:02:23+07:00",
+  "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused (debugging off / Wireless debugging port closed) / allow unanswered, not a code fault"
+  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "fbceab7d03188e5e17141936|0.28.0": {
   "at": "2026-10-27T09:37:25+07:00",
