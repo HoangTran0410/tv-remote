@@ -78,7 +78,7 @@ class Tailscale(private val adb: Adb, private val dir: File?) {
         if (ip().isNotEmpty()) return ""
         adb.shell("am broadcast -a com.tailscale.ipn.CONNECT_VPN -n $PKG/.IPNReceiver")   // signed in but switched off: this is enough
         for (i in 0 until 6) { Thread.sleep(1000); if (ip().isNotEmpty()) return "" }
-        adb.shell("am start -n $PKG/.MainActivity")
+        AppRestore.run({ adb.shell(it) }, PKG, "am start -n $PKG/.MainActivity 2>&1") { !it.contains("Error") }   // turned off on the TV: brought back once
         busy(true)                                                    // from here keys are pressed on its screen: hands off the TV's remote
         try { return signIn() } finally { busy(false) }
     }
