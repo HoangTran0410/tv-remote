@@ -522,10 +522,32 @@ const foldText = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f
 const foldHas = (q, ...texts) => !q || texts.some((t) => foldText(t).includes(q));
 // What the TVs said and the errors shown (WireLog.kt): what a real TV did is what tells a bug apart. Copied, then the site's
 // page where it is pasted and sent on (a GitHub issue or a message): no log in the link, it leaves only when the person sends it.
+// "What went wrong?" before anything is sent to support (census 2026-11: 34 of 50 reports came with no words): chips + a few words,
+// both optional. → { problem, text } (both '' when skipped), or null when closed. Same ids as SupportRelay.PROBLEMS (Kotlin).
+const SAID_PROBLEMS = ['connect', 'key', 'app', 'media', 'other'];
+const SAID_WORDS = { connect: 'said.connect', key: 'said.key', app: 'said.app', media: 'said.media', other: 'said.other' };   // ids named whole, so a missing word is found
+function askSaid() {
+  return new Promise((done) => {
+    let problem = '';
+    const chips = SAID_PROBLEMS.map((id) => el('button', { type: 'button', textContent: T(SAID_WORDS[id]), onclick: () => {
+      problem = problem === id ? '' : id;
+      chips.forEach((c, i) => c.classList.toggle('on', SAID_PROBLEMS[i] === problem));
+    } }));
+    const box = el('input', { maxLength: 280, spellcheck: false, placeholder: T('said.text') });
+    const d = el('dialog', { className: 'ask' }, el('form', { className: 'card', onsubmit: (e) => { e.preventDefault(); d.returnValue = 'yes'; d.close(); } },
+      el('p', { textContent: T('said.title') }), el('div', { className: 'fchips', role: 'group' }, ...chips), box,
+      el('div', { className: 'acts' }, el('button', { type: 'button', textContent: T('common.cancel'), onclick: () => d.close() }),
+        el('button', { type: 'submit', className: 'primary', textContent: T('said.send') }))));
+    d.addEventListener('close', () => { d.remove(); done(d.returnValue === 'yes' ? { problem, text: box.value.trim() } : null); });
+    document.body.append(d); d.showModal(); chips[0].focus();
+  });
+}
+const saidHeader = (s) => (s && s.problem ? '[said] problem: ' + s.problem + '\n' : '') + (s && s.text ? '[said] text: ' + s.text.replace(/\s+/g, ' ') + '\n' : '');
 async function sendWireLog() {
+  const said = await askSaid(); if (!said) return;
   let text;
   try { const r = await fetch('/api/wirelog'); if (!r.ok) throw 0; text = await r.text(); } catch { toast(T('core.log_unreadable')); return; }
-  const ok = await clipCopy(text);
+  const ok = await clipCopy(saidHeader(said) + text);
   window.open(LOG_PAGE, '_blank');
   toast(ok ? T('core.log_copied') : T('core.log_copy_failed'));
 }

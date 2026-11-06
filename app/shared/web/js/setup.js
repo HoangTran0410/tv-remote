@@ -255,7 +255,9 @@ function supMark(what, s) {                                           // the but
 }
 for (const what of ['app', 'tv']) $(what === 'app' ? '#supapp' : '#suptv').addEventListener('click', async () => {
   const now = await api(supPath(what), null, true);
-  supShow(what, now && now.open ? now : await api(supPath(what), { act: 'start' }));
+  if (now && now.open) return supShow(what, now);
+  const said = await askSaid(); if (!said) return;
+  supShow(what, await api(supPath(what), { act: 'start', problem: said.problem, text: said.text }));
 });
 $('#aboutbtn').addEventListener('click', async () => {             // the phone's own row is native (InfoScreens), the TV's is in the TV card
   if (CORE === 'pc') supMark('app', await api('/api/support/app', null, true));

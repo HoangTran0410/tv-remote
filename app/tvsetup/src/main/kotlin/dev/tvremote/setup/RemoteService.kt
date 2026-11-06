@@ -708,7 +708,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
             }
             "/api/hook/config" -> return hook.config(r)               // Scope.allows keeps everyone but the owner out
             "/api/telegram" -> return telegram.config(r)              // the same: the token is never sent back, only masked
-            "/api/support/tv" -> return HttpServer.Response.json(Support.act(this, if (post) r.json().optString("act") else "state"))   // the page's "let support look" (Manage does it over ADB for the other apps)
+            "/api/support/tv" -> return HttpServer.Response.json(Support.act(this, if (post) r.json().optString("act") else "state", if (post) dev.tvremote.core.SupportRelay.Said.of(r.json()) else dev.tvremote.core.SupportRelay.Said.NONE))   // the page's "let support look" (Manage does it over ADB for the other apps)
             "/api/state" -> return HttpServer.Response.json(state(host).put("scope", me.scope))
             "/api/share" -> if (post) return HttpServer.Response.json(if (!enabled(this)) JSONObject().put("off", true)   // the web remote off: only 127.0.0.1 is served, no phone could open it (Manage on the TV asks)
                 else Invite.link(lanIp(), newInvite(r.json().optString("scope")), host))   // a paired page shares the TV it is on

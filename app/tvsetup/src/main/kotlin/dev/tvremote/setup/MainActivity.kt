@@ -898,10 +898,10 @@ class MainActivity : Activity() {
             TvUi.Item(R.drawable.ic_power, T("tv_main.turn_back_on"), on = { KeepAdb.on(this) && KeepAdb.can(this) }) { KeepAdb.set(this, !KeepAdb.on(this)); log(keepText()) },
             TvUi.Item(R.drawable.ic_globe, "Tailscale", tsStatus) { if (adb == null) log(T("tv_main.needs_adb_turn_on")) else tailscale() },
             TvUi.Item(R.drawable.ic_unlink, T("tv_main.forget_adb_keys")) { forgetAdbKeys() },
-            TvUi.Item(R.drawable.ic_send, T("support.send"), T("support.send_sub")) { supportSend() },
+            TvUi.Item(R.drawable.ic_send, T("support.send"), T("support.send_sub")) { askSaid { supportSend(it) } },
             if (Support.open()) TvUi.Item(R.drawable.ic_stop, T("support.stop"), T("support.stop_sub", "code" to spaced(Support.code), "min" to supportLeft())) {
                 Support.stop(this); log(T("support.stopped")) }
-            else TvUi.Item(R.drawable.ic_eye, T("support.open", "min" to Support.MINUTES), T("support.open_sub")) { supportOpen() }))
+            else TvUi.Item(R.drawable.ic_eye, T("support.open", "min" to Support.MINUTES), T("support.open_sub")) { askSaid { supportOpen(it) } }))
     }
 
     // Support (Support.kt): a code to read out to whoever helps, and for a while their reading of this app's own state
@@ -1036,17 +1036,44 @@ class MainActivity : Activity() {
     /** Nothing sent: no sends left today (the worker said so), or no Internet. */
     private fun notSent() = log(T(if (Support.left == 0) "support.none_left" else "support.no_net"))
 
-    private fun supportSend() {
+    /**
+     * "What went wrong?" before a send (the page's askSaid): pills the D-pad walks, a field for a few words, Send. Both optional;
+     * Back sends nothing. The Send button has the focus, so one OK is a send with nothing said.
+     */
+    private fun askSaid(go: (dev.tvremote.core.SupportRelay.Said) -> Unit) {
+        val (dlg, box) = TvUi.sheet(this, R.style.TvSheet)
+        TvUi.sheetTitle(box, T("said.title"))
+        var picked = ""
+        val list = android.widget.LinearLayout(this).apply { orientation = android.widget.LinearLayout.VERTICAL }
+        fun fill(focus: String) {                                    // a pill is drawn once: the chosen one is made again
+            list.removeAllViews()
+            dev.tvremote.core.SupportRelay.PROBLEMS.forEach { id ->
+                val pill = TvUi.pill(this, T("said.$id"), id == picked) { picked = if (picked == id) "" else id; fill(id) }
+                list.addView(pill, android.widget.LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = TvUi.dp(this@MainActivity, 6).toInt() })
+                if (id == focus) pill.requestFocus()
+            }
+        }
+        fill("")
+        box.addView(list)
+        val field = TvUi.field(this, T("said.text"), 16f, android.view.inputmethod.EditorInfo.IME_ACTION_DONE, TvUi.FIELD_REST, TvUi.R_FIELD, 14, 8)
+        box.addView(field, android.widget.LinearLayout.LayoutParams(-1, -2).apply { topMargin = TvUi.dp(this@MainActivity, 6).toInt() })
+        val send = TvUi.button(this, T("said.send"), 0, ACCENT) { dlg.dismiss(); go(dev.tvremote.core.SupportRelay.Said(picked, field.text.toString())) }
+        box.addView(send, android.widget.LinearLayout.LayoutParams(-1, -2).apply { topMargin = TvUi.dp(this@MainActivity, 10).toInt() })
+        dlg.setOnShowListener { send.requestFocus() }
+        dlg.show()
+    }
+
+    private fun supportSend(said: dev.tvremote.core.SupportRelay.Said) {
         log(T("support.sending"))
         Thread({
-            val code = Support.send(this)
+            val code = Support.send(this, said)
             ui { if (code == null) notSent() else { log(T("support.sent", "code" to spaced(code))); showCode(code, T("support.read_out")) } }
         }, "support-send").apply { isDaemon = true }.start()
     }
 
-    private fun supportOpen() {
+    private fun supportOpen(said: dev.tvremote.core.SupportRelay.Said) {
         log(T("support.sending"))
-        Support.start(this) { code -> ui {
+        Support.start(this, said) { code -> ui {
             if (code == null) notSent()
             else { log(T("support.opened", "code" to spaced(code), "min" to Support.MINUTES)); showCode(code, T("support.opened_sub", "min" to Support.MINUTES)) }
         } }

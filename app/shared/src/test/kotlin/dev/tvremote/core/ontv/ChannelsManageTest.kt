@@ -53,7 +53,7 @@ http://e""".lineSequence()
         var cmd = ""
         assertTrue(Channels.play({ cmd = it; "Starting: Intent { dat=tvchannels://url... }" }, "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8?a=b&c='d'"))
         assertTrue(cmd.contains("-d 'tvchannels://url?u=https%3A%2F%2Ftest-streams.mux.dev%2Fx36xhzz%2Fx36xhzz.m3u8%3Fa%3Db%26c%3D%27d%27' dev.tvremote.channels"))
-        assertFalse(Channels.play({ "Error: Activity not started, unable to resolve Intent" }, "http://a.b/c.m3u8"))
+        assertFalse(Channels.play({ if (it.startsWith("pm ")) "" else "Error: Activity not started, unable to resolve Intent" }, "http://a.b/c.m3u8"))   // not on the TV: pm answers nothing
     }
 
     @Test fun refusesWhatIsNotAPlainWebAddressBeforeAnyShell() {

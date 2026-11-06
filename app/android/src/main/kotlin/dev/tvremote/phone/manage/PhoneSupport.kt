@@ -9,6 +9,15 @@ import dev.tvremote.phone.remote.kind
 import dev.tvremote.phone.remote.kindOf
 
 import android.content.Context
+import android.widget.LinearLayout
+import dev.tvremote.core.T
+import dev.tvremote.phone.ui.BTN
+import dev.tvremote.phone.ui.Popup
+import dev.tvremote.phone.ui.button
+import dev.tvremote.phone.ui.col
+import dev.tvremote.phone.ui.dp
+import dev.tvremote.phone.ui.input
+import dev.tvremote.phone.ui.setOn
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import dev.tvremote.core.Diagnose
@@ -43,10 +52,10 @@ internal object PhoneSupport {
     }
 
     /** "start", "stop" or "state" (the page's About, and the native row): `{open, code, min, left}` or `{failed: no_net | none_left}`. Blocks. */
-    fun act(c: Context, act: String): JSONObject {
+    fun act(c: Context, act: String, said: SupportRelay.Said = SupportRelay.Said.NONE): JSONObject {
         val r = relay(c)
         return when (act) {
-            "start" -> if (r.start() == null) JSONObject().put("failed", if (r.left == 0) "none_left" else "no_net") else r.state()
+            "start" -> if (r.start(said) == null) JSONObject().put("failed", if (r.left == 0) "none_left" else "no_net") else r.state()
             "stop" -> { r.stop(); r.state() }
             else -> r.state()
         }
@@ -111,4 +120,26 @@ internal object PhoneSupport {
             .put("route", a.route[ip]).put("reach", a.reach[ip]).put("trying", ip in a.trying))
         return JSONObject().put("connected_to", a.host).put("keys_only", a.basic?.kind).put("tvs", out)
     }
+}
+
+/**
+ * "What went wrong?" before the log or a support code leaves (the page's askSaid, js/core.js): choices that look like buttons and a
+ * few words, both optional; Send works with nothing chosen, Cancel sends nothing. [go] gets the answer on the main thread.
+ */
+internal fun MainActivity.askSaid(go: (SupportRelay.Said) -> Unit) {
+    var picked = ""
+    val box = col()
+    val btns = SupportRelay.PROBLEMS.map { id -> button(T("said.$id"), BTN) }
+    btns.forEachIndexed { i, b ->
+        b.setOnClickListener {
+            picked = if (picked == SupportRelay.PROBLEMS[i]) "" else SupportRelay.PROBLEMS[i]
+            btns.forEachIndexed { j, o -> o.setOn(SupportRelay.PROBLEMS[j] == picked) }
+        }
+        box.addView(b, LinearLayout.LayoutParams(-1, dp(44)).apply { if (i > 0) topMargin = dp(6) })
+    }
+    val said = input(T("said.text"))
+    box.addView(said, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(10) })
+    Popup.Builder(this).setTitle(T("said.title")).setView(box)
+        .setPositiveButton(T("said.send")) { _, _ -> go(SupportRelay.Said(picked, said.text.toString())) }
+        .setNegativeButton(T("common.cancel"), null).show()
 }

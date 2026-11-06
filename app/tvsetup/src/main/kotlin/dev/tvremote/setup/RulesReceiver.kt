@@ -96,7 +96,7 @@ class RulesReceiver : BroadcastReceiver() {
             if (change.optString("do") == "support") {              // the phone, the computer (Manage "/api/support/tv"): let support look at this TV
                 val pending = goAsync()
                 Thread({
-                    val out = Support.act(c, change.optString("act"))
+                    val out = Support.act(c, change.optString("act"), dev.tvremote.core.SupportRelay.Said.of(change))
                     pending.resultCode = Activity.RESULT_OK
                     pending.resultData = Base64.encodeToString(out.toString().toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
                     pending.finish()

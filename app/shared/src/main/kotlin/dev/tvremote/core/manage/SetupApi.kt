@@ -59,7 +59,7 @@ internal class SetupApi(core: ManageCore, private val copy: TvCopy) : ManagePart
                 if (k == "home") homeSet(v, r.lang) else text(TvShell.tvset(k, v), 60000) }
             "rules" -> HttpServer.Response.json(rules(r.json()))
             "telegram" -> HttpServer.Response.json(telegram(r))
-            "support/tv" -> HttpServer.Response.json(supportTv(r.json().optString("act")))
+            "support/tv" -> HttpServer.Response.json(supportTv(r.json().optString("act"), r.json()))
             "welcome" -> HttpServer.Response.json(Welcome.call({ sh(it) }, r.json()))
             "setup" -> { val d = r.json(); HttpServer.Response.json(setup(d.optString("mode") == "undo", d.optString("lang").takeIf { it.isNotEmpty() }?.let(Words::pick) ?: r.lang, choice(d))) }
             "setup/update" -> HttpServer.Response.json(setupUpdate())
@@ -272,8 +272,9 @@ internal class SetupApi(core: ManageCore, private val copy: TvCopy) : ManagePart
      * Let support look at the TV (TV Setup's Support, RulesReceiver "support"): [act] "start", "stop" or "state". The answer is
      * `{open, code, min, left}`, or `{failed: "no_net" | "none_left" | why}`; the browser of the TV has its own route (RemoteService).
      */
-    private fun supportTv(act: String): JSONObject {
+    private fun supportTv(act: String, said: JSONObject? = null): JSONObject {
         val ask = JSONObject().put("do", "support").put("act", act)
+        said?.let { ask.put("problem", it.optString("problem")).put("text", it.optString("text")) }   // an older TV Setup ignores them
         var out = RulesClient.call({ sh(it) }, ask)
         if (out.optString("setup") == "busy") { sh(RulesClient.START); Thread.sleep(2500); out = RulesClient.call({ sh(it) }, ask) }
         val setup = out.optString("setup")
