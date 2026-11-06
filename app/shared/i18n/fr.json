@@ -1145,6 +1145,13 @@
     "other": "{n} applications optimisées"
   },
   "health.night_none": "rien à faire",
+  "health.susp_title": "🔒 Applis verrouillées",
+  "health.susp_say": "Verrouillées par {by} : {apps}",
+  "health.susp_note": "Elles affichent « Appli indisponible » à l’ouverture.",
+  "health.susp_fix": "Déverrouiller",
+  "health.susp_ask": "Déverrouiller {apps} ? {by} sera réinitialisé sur la TV (réglages, écran d’accueil et profils repartent de zéro).",
+  "health.susp_ok": "Déverrouillées",
+  "health.susp_still": "{by} les a verrouillées de nouveau. Sur la TV, ouvrez les réglages du profil ou du temps d’écran et désactivez la limite.",
   "health.k_heat": "Niveau de chaleur",
   "health.k_down": "Téléchargement en cours",
   "health.k_up": "Envoi en cours",

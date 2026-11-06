@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV health shows "Locked apps" when another package (usually the Google TV launcher) has suspended apps ("App isn't available... managed by Google TV"): who locked which apps, and an Unlock button that asks first, then resets the locking app (clearing it makes Android lift all its locks; `pm unsuspend` only lifts the shell's own). One filtered `dumpsys package` read a minute while Health is open; nothing shows or runs more when no app is locked.
+
 - Scenes can start by themselves: the scene editor has an optional "Start at" (a time plus weekdays to repeat, or one date). TV Setup keeps and starts them on the TV, so the phone and computer need not be on; with no timed scene nothing runs for it. A run missed while the TV was off or its clock jumped is skipped, not made up. Needs a newer TV Setup (the page offers the update).
 
 - ADB on a port other than 5555 (BeeCube Extreme2 uses 5877): TV Setup dials the TV's own port, the phone and computer apps try 5877 too; any other port can be typed with the address (`192.168.1.5:5877`, or a comma on a phone's number pad) and is kept for that TV

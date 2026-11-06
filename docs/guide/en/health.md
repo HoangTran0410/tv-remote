@@ -17,3 +17,5 @@ The **🩺 Health** tab shows how the TV is doing.
 Slow network? Tap **⚡ Speed test** in **Now → 📶 Network**: the TV measures its own ping, download and upload (about 15 s) and says whether that is enough for 4K, Full HD or HD.
 
 TV low on memory? In **Now → 🧠 RAM**, tap **🧹 Free up RAM**, or **⏹ Stop** an app in the list.
+
+Every app says “App isn't available… managed by Google TV”? Another app (usually Google TV) locked them. **Now → This TV** shows a **🔒 Locked apps** card with who locked which. Tap **Unlock**: it resets the locking app.

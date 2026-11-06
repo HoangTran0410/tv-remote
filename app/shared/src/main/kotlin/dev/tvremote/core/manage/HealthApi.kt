@@ -6,6 +6,7 @@ import dev.tvremote.core.ontv.Power
 import dev.tvremote.core.ontv.Sensors
 import dev.tvremote.core.ontv.SetupFiles
 import dev.tvremote.core.ontv.SetupNeed
+import dev.tvremote.core.ontv.Suspended
 import dev.tvremote.core.web.HttpServer
 import java.util.regex.Pattern
 import org.json.JSONArray
@@ -18,10 +19,35 @@ internal class HealthApi(core: ManageCore) : ManagePart(core) {
             "health" -> return HttpServer.Response.json(health(r.q("apps") == "1"))
             "health/live" -> return HttpServer.Response.json(live(r.q("net") == "1"))
             "power" -> return HttpServer.Response.json(Power.parse(link.get().shell(Power.CMD, 20000)) { try { SetupFiles.read({ sh(it) }, "stats/power.jsonl", 3000) } catch (e: SetupNeed.Missing) { "" } }.let { if (it.has("now")) it else it.put("now", System.currentTimeMillis() / 1000) })
+            "health/suspended" -> return HttpServer.Response.json(if (post) unsuspend(r.json().optString("by")) else suspended())
             "crashes" -> return HttpServer.Response.json(JSONObject().put("text", sh(CRASHES).replace("\r\n", "\n").takeLast(500000)))
             "stats" -> return HttpServer.Response.json(stats(r.q("days").toIntOrNull() ?: 7))
         }
         return null
+    }
+
+    // ---------------------------------------------------------------- suspended apps
+    /** {apps: [{pkg, name, by: [{pkg, name, shell}]}]}: the apps another package locked ("managed by Google TV"). One filtered dumpsys, read when the Health tab opens, never on its 5 s tick. */
+    private fun suspended(): JSONObject {
+        val apps = JSONArray()
+        val name = { p: String -> labels?.label(p) ?: p }
+        for ((pkg, by) in Suspended.parse(sh(Suspended.CMD)))
+            apps.put(JSONObject().put("pkg", pkg).put("name", name(pkg)).put("by", JSONArray(by.map { JSONObject().put("pkg", it).put("name", name(it)).put("shell", it in Suspended.SHELL) })))
+        return JSONObject().put("apps", apps)
+    }
+
+    /** Lifts what [by] suspended: the shell's own with `pm unsuspend`, any other package by clearing its data (Android then lifts all of its suspensions; it also resets that app). Then reads again. */
+    private fun unsuspend(by: String): JSONObject {
+        require(PKG.matcher(by).matches() || by in Suspended.SHELL) { "bad package" }
+        val mine = Suspended.of(Suspended.parse(sh(Suspended.CMD)), by).filter { PKG.matcher(it).matches() }
+        if (mine.isEmpty()) return suspended()
+        if (by in Suspended.SHELL) for (p in mine) sh("pm unsuspend $p 2>&1")
+        else sh("pm clear $by 2>&1")
+        for (i in 0 until 4) {                                         // Android lifts them a moment after the clear returns
+            if (Suspended.of(Suspended.parse(sh(Suspended.CMD)), by).isEmpty()) break
+            Thread.sleep(600)
+        }
+        return suspended()
     }
 
     // ---------------------------------------------------------------- history
