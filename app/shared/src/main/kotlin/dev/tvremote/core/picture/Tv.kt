@@ -1129,9 +1129,8 @@ class Tv(
     fun apps(): List<String> {
         val out = ArrayList<String>()
         val a = adb ?: return out
-        val m = Pattern.compile("(?m)^\\s+([\\w.]+/[\\w.\$]+)\\s*\$").matcher(
-                a.shell("cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.LEANBACK_LAUNCHER"))
-        while (m.find()) if (!out.contains(m.group(1)!!)) out.add(m.group(1)!!)
+        for (c in dev.tvremote.core.adb.Activities { a.shell(it) }.query("android.intent.action.MAIN", "LEANBACK_LAUNCHER") ?: emptyList())
+            if (!out.contains(c)) out.add(c)
         out.sort()
         return out
     }

@@ -16,6 +16,7 @@ import org.json.JSONObject
 
 /** The Apps tab and the task manager: the TV's apps listed, opened, stopped, turned off, removed, backed up; the privacy check's actions. */
 internal class AppsApi(core: ManageCore) : ManagePart(core) {
+    private val activities get() = dev.tvremote.core.adb.Activities(::sh)
     override fun route(what: String, post: Boolean, r: HttpServer.Request): HttpServer.Response? {
         when (what) {
             "apps" -> return HttpServer.Response.json(apps(r.q("system") == "1"))
@@ -120,8 +121,9 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
             "dumpsys package packages | grep -E '^  Package \\[|^    versionName='" +   // every version in one go: ~0.2 s
             (if (!system) "; echo '#~#'; for c in LEANBACK_LAUNCHER LAUNCHER; do cmd package query-activities --brief -a android.intent.action.MAIN" +
                 " -c android.intent.category.\$c 2>/dev/null; done" else "")).split("#~#")
-        for (line in listing.getOrElse(3) { "" }.jsplit("\n"))
-            if (line.contains('/')) line.trim().substringBefore('/').let { if (it !in pkgs) pkgs.add(it) }
+        val screens = dev.tvremote.core.adb.Activities.brief(listing.getOrElse(3) { "" }).map { it.substringBefore('/') }
+            .ifEmpty { if (system) emptyList() else activities.let { a -> listOf("LEANBACK_LAUNCHER", "LAUNCHER").flatMap { a.packages("android.intent.action.MAIN", it) ?: emptySet() } } }   // Android 8 and older
+        for (p in screens) if (p !in pkgs) pkgs.add(p)
         val versions = HashMap<String, String>()
         var at: String? = null
         for (line in listing.getOrElse(2) { "" }.jsplit("\n")) {

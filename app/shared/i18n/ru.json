@@ -2611,6 +2611,7 @@
   "other": "Подождите {n} сек. и попробуйте снова."
  },
  "optimize.device_not_tv_optimize": "Это устройство — не ТВ. Optimize TV меняет домашний экран и отключает системные приложения, поэтому только для телевизоров.",
+ "optimize.cant_check_apps": "ТВ не сообщил, какие приложения — Настройки и входы, поэтому ничего не отключено. Обновите TV Setup и повторите.",
  "optimize.tailscale_starts_again_by": "✓ Tailscale: снова запускается сам после ожидания или перезагрузки",
  "optimize.transition_animations_off": "✓ Анимации переходов: выкл.",
  "optimize.turned_off_apps": {

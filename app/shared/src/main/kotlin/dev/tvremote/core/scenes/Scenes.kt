@@ -283,6 +283,9 @@ object Scenes {
             if (!component.matches(Regex("[\\w.]+/[\\w.\$]+")) || !component.startsWith("$pkg/")) continue
             if (!sh("am start -n " + Adb.q(component) + " 2>&1").contains("Error")) return true
         }
+        // Android 6 and older have no `cmd package resolve-activity`: am resolves the screen itself (-p), nothing to look up
+        for (cat in arrayOf("LEANBACK_LAUNCHER", "LAUNCHER"))
+            if (!sh("am start -a android.intent.action.MAIN -c android.intent.category.$cat -p $pkg 2>&1").let { it.contains("Error") || it.contains("not found") || it.contains("Exception") }) return true
         return false
     }
 

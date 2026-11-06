@@ -2564,6 +2564,7 @@
   "other": "Wait {n} seconds, then try again."
  },
  "optimize.device_not_tv_optimize": "This device is not a TV. Optimize TV swaps the home screen and turns system apps off, so it is for TVs only.",
+ "optimize.cant_check_apps": "This TV did not say which apps are Settings or inputs, so nothing was turned off. Update TV Setup and try again.",
  "optimize.tailscale_starts_again_by": "✓ Tailscale: starts again by itself after standby or a restart",
  "optimize.transition_animations_off": "✓ Transition animations: off",
  "optimize.turned_off_apps": {
