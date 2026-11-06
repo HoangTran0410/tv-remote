@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "updated": "2026-11-02",
+  "updated": "2026-11-06",
   "about": "Optimize TV's additions to Bloat.kt, read from the site: suggest (package -> name, ticked by default), drop (no longer suggested), keep and factory (Java regexes, only added). Edit, run dev/sign/sign_bloat.py, commit both files.",
   "suggest": {
     "android.autoinstalls.config.askey.tvbox": "Askey app installer",
@@ -121,7 +121,16 @@
     "com.hisense.hotelmenu": "Hisense hotel mode menu",
     "com.vision.aibook": "Hisense AI picture book",
     "com.ju.miguvideoTV.cmcc": "Migu Video (carrier preload)",
-    "com.homwee.store": "Changhong retail demo"
+    "com.homwee.store": "Changhong retail demo",
+    "com.cvte.tv.infoprovider": "CVTE device info reports",
+    "com.cvte.tv.remotedebug": "CVTE support screen recorder",
+    "com.kgzn.inforeport": "KTC usage reports",
+    "com.zeasn.deviceportal.asdprovider.ktc": "Zeasn ads (KTC)",
+    "com.jio.stbadservice": "Jio box ads",
+    "com.jio.systemstats": "Jio box stats",
+    "com.rjil.podlogservice": "Jio box logs upload",
+    "com.haier.apps.evoSmart": "Haier promo",
+    "com.sony.dtv.kenhchonloc": "Sony shop promo"
   },
   "drop": [
     "com.xm.webcontent"
@@ -168,7 +177,8 @@
     "com\\.airoha\\.ble\\.ota",
     "com\\.(hispeech\\.ai\\.area|iflytek\\.xiri|intelligent\\.speech|vt\\.permission\\.manager)",
     "com\\.keylab\\.speech\\..*",
-    "com\\.hisense\\.(aiot|aiod|raycodereceiver|hiservice|msvoicetome|vidaaassistant|widget\\.pro|tv\\.globalui)"
+    "com\\.hisense\\.(aiot|aiod|raycodereceiver|hiservice|msvoicetome|vidaaassistant|widget\\.pro|tv\\.globalui)",
+    "com\\.tcl\\.assistant"
   ],
   "factory": [
     "com\\.skyworth\\.testtime",
@@ -180,6 +190,7 @@
     "com\\.mediatek\\.testpq",
     "com\\.xgimi\\.minitvfactory",
     "com\\.skyworthdigital\\.remotedebug",
-    "com\\.arcelik\\.tv\\.rctest"
+    "com\\.arcelik\\.tv\\.rctest",
+    "com\\.hx\\.(projectortest|videotest|hxdevicetest)"
   ]
 }

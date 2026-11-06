@@ -5,7 +5,16 @@ before launcherx, check Home, roll back) come from these. Read them again now an
 `dev/sign/sign_bloat.py`, commit, push: every app reads it from the site when Optimize TV opens, no release needed), and now and
 then fold that list into Bloat.kt and empty it. The site's list can add suggestions, drop them, and only add to keep / factory.
 
-Last read: **2026-11-02 (evening)**, upstream main still `3cd274f866`; read the open PRs since 06:00 (3020, 3023-3026, 3035, 3039, 3041, 3043,
+Last read: **2026-11-06**, upstream `3c122bc073` (573 commits after `3cd274f866`; 82 `debloat.txt` changed, 69 packages no list had,
+all on one list each). Into bloat.json: SUGGEST CVTE `tv.infoprovider` (device info reports) / `tv.remotedebug` (a support screen
+recorder), KTC `kgzn.inforeport`, `zeasn.deviceportal.asdprovider.ktc` (ads), Jio `stbadservice` / `systemstats` / `rjil.podlogservice`,
+`haier.apps.evoSmart`, `sony.dtv.kenhchonloc` (a shop promo, Vietnamese); KEEP `com.tcl.assistant` (TCL BeyondTV's remote mic, from
+vgscity/vgs-cleantv 3.5.15); FACTORY Chihi `com.hx.*test`. Not taken: `jp.sony.mybravia` (a home row: a choice), Jio store, Yandex Alice,
+LocalCast, DLNA servers, `mk.tv.booster`, KTC launcher / cast, Sony browser / DIAL, AOSP stubs. Issues noted, no code change: 3313 / 3367 /
+3304 (key helper enabled but unbound after a reboot: KeyFix already reads the short form Android writes once bound), 3287 (KTC m7332: the
+remote is dead after boot until `com.ktc.tvplayer/.activity.RootActivity` opened once; no KTC to try), 3330 (`pm enable` launcherx can
+hold Home for good), 3085 (`mitv.service` off: picture menu 30-40 s; not suggested).
+Before that: **2026-11-02 (evening)**, upstream main still `3cd274f866`; read the open PRs since 06:00 (3020, 3023-3026, 3035, 3039, 3041, 3043,
 3050, 3054, 3062-3065, 3070 and the SHOWCASE ones, which have no lists) and issues 2831, 2853, 2856, 2870, 2925, 2948, 2950, 2973, 2991, 3001, 3037
 (2930 has no comments). Into bloat.json: SUGGEST Hisense China `hotelmenu`, `vision.aibook`, Migu `ju.miguvideoTV.cmcc` (preloads, one list
 each), Changhong `homwee.store` (a retail-demo receiver, not a store). KEEP Philips `io.mimi.sdk.service` / `tvapp` (HBO Max dropped 33-46 % of
