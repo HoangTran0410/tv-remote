@@ -4,13 +4,16 @@ The **🩺 Health** tab shows how the TV is doing.
 
 | Sub-tab | Shows |
 | --- | --- |
-| Now | Overview (with the night maintenance result, 02:00-05:00: cache trimmed, most-used apps optimised), system load, temperature, network, Bluetooth, hardware. |
+| Now → This TV | Updated every 2 seconds: CPU, RAM and storage rings, the last 60 s of network, Wi-Fi, MAC (📋 copies it), night maintenance (02:00-05:00), temperature, Bluetooth, hardware. |
+| Now → CPU | Each core, the apps / system split, the apps running. |
+| Now → RAM | In use / cached / free, apps by memory (with Stop), Free up RAM. |
+| Now → Network | The speed now, totals since start, open connections, apps by traffic, Speed test. |
 | History | Charts over time, and which apps crash. |
 | Sleep | When the TV was on or off. |
 | Capabilities | What the TV supports. |
 
 > 💡 History empty (“No data yet”) on a TV that will not let ADB read TV Setup's folder, such as a TCL on Android 11? Update to the newest TV Setup: the app shows an **Update** button.
 
-Slow network? Tap **⚡ Speed test** on the **📶 Network** card: the TV measures its own ping, download and upload (about 15 s) and says whether that is enough for 4K, Full HD or HD.
+Slow network? Tap **⚡ Speed test** in **Now → 📶 Network**: the TV measures its own ping, download and upload (about 15 s) and says whether that is enough for 4K, Full HD or HD.
 
-TV low on memory? Tap **🧹 Free up RAM**, or **⏹ Stop** a running app in the list.
+TV low on memory? In **Now → 🧠 RAM**, tap **🧹 Free up RAM**, or **⏹ Stop** an app in the list.

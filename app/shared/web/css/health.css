@@ -2,33 +2,78 @@
 .capsplain { list-style:none; margin:0; padding:0; display:grid; gap:6px; font-size:14px; }
 .capsplain .no { color:var(--muted); }
 .two-up { display:grid; gap:14px; grid-template-columns:minmax(0,1fr); }   /* minmax: a card never grows past the screen for a long word or select */
-#hnow, #hcaps, #hsleep { display:grid; gap:14px; grid-template-columns:1fr; }
+#hnow, .hpane, #hcaps, #hsleep { display:grid; gap:14px; grid-template-columns:1fr; }
 #hcaps > section, #hsleep > * { min-width:0; }
 /* wide screens: cards stack in columns like a gallery, each under the one above it, instead of rows as tall as their
    tallest card leaving holes; up to 3 where there are many (Health, Automation), 2 elsewhere */
 @media (min-width:900px) {
-  .two-up, #hnow, #hcaps, #hsleep { display:block; columns:2; column-gap:14px; orphans:1; widows:1; }   /* the cards are lines (inline, below): two of them may part */
-  #hnow, #hcaps, #hsleep, #rulecards { columns:3 380px; }
+  .two-up, .hpane, #hcaps, #hsleep { display:block; columns:2; column-gap:14px; orphans:1; widows:1; }   /* the cards are lines (inline, below): two of them may part */
+  .hpane, #hcaps, #hsleep, #rulecards { columns:3 380px; }
   /* inline boxes, each with the gap below it: a block's margin is moved across a column break by WebKit (Safari, the Mac
      window: a column's first card sat 14px low), an inline box's stays its own; at a column's foot it is out of sight */
-  .two-up > *, #hnow > *, #hcaps > *, #hsleep > * { break-inside:avoid; display:inline-block; width:100%; vertical-align:top; margin:0 0 14px; }
-  :is(.two-up, #hnow, #hcaps, #hsleep) > section.card:not(.rc):not(.playing) { display:inline-flex; }
-  .health:not(.ready) #hnow > #hwait { display:block; }
+  .two-up > *, .hpane > *, #hcaps > *, #hsleep > * { break-inside:avoid; display:inline-block; width:100%; vertical-align:top; margin:0 0 14px; }
+  :is(.two-up, .hpane, #hcaps, #hsleep) > section.card:not(.rc):not(.playing) { display:inline-flex; }
   .two-up > .stack { display:inline-flex; }
 }
-.ptable { display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:6px 16px; font-size:14px; }
-.ptable .h { color:var(--muted); font-size:12px; font-weight:600; }
-.ptable .k { color:var(--muted); overflow-wrap:anywhere; min-width:0; }
-.ptable .v { font-weight:600; }
-.ptable .n { text-align:right; font-variant-numeric:tabular-nums; }
-#hnow > section { min-width:0; }
-.meter { margin:10px 0 0; font-size:14px; }
-.meter .top { display:flex; justify-content:space-between; gap:8px; }
-.meter b { font-variant-numeric:tabular-nums; }
-.meter .bar { height:10px; border-radius:5px; }
-.meter .bar i { border-radius:5px; }
-.meter.warn .bar i { background:var(--warn); }
-.meter.bad .bar i { background:var(--bad); }
+.hpane[hidden] { display:none !important; }                        /* over the columns' display */
+.hpane > section { min-width:0; }
+/* Health › Now: the rings (CPU, RAM, storage); amber from 75 %, red from 90 %, and the number says it too */
+.rings { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; text-align:center; }
+.ring { display:flex; flex-direction:column; align-items:center; min-width:0; }
+.ring .rg { position:relative; width:min(100%, 104px); aspect-ratio:1; }
+.ring svg { display:block; width:100%; height:100%; transform:rotate(-90deg); }
+.ring circle { fill:none; stroke-width:3.4; }
+.rg-bg { stroke:var(--btn); }
+.rg-v { stroke:var(--accent); stroke-linecap:round; transition:stroke-dasharray .4s; }
+.ring.warn .rg-v { stroke:var(--warn); }
+.ring.bad .rg-v { stroke:var(--bad); }
+.ring .rg > b { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:20px; font-variant-numeric:tabular-nums; }
+.rg-l { font-size:14px; margin-top:4px; }
+.ring small { color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
+/* the last 60 s: lines of 2px over a base line; the row above says the values (now, or where the pointer is) */
+.lchart { margin-top:12px; }
+.lc-top { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; font-size:13px; color:var(--muted); }
+.lc-top b { color:var(--ink); font-variant-numeric:tabular-nums; }
+.lc-top small { margin-inline-start:auto; font-size:12px; }
+.lc-v i { display:inline-block; width:10px; height:3px; border-radius:2px; margin-right:5px; vertical-align:3px; }
+.lc svg { display:block; width:100%; height:72px; margin-top:4px; touch-action:pan-y; }
+.lc path { fill:none; stroke-width:2; stroke-linejoin:round; stroke-linecap:round; vector-effect:non-scaling-stroke; }
+.lc-base { stroke:var(--line); stroke-width:1; vector-effect:non-scaling-stroke; }
+.lc-cur { stroke:var(--muted); stroke-width:1; stroke-dasharray:3 3; vector-effect:non-scaling-stroke; }
+path.lc-a { stroke:var(--accent); }
+path.lc-b { stroke:var(--boot); }
+i.lc-a, i.p-a { background:var(--accent); color:var(--accent-ink); }
+i.lc-b, i.p-b { background:var(--boot); }
+i.p-c { background:var(--muted); }
+i.p-f { background:var(--btn); }
+/* the facts: two columns of an icon, its name and its value */
+.facts { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px 14px; }
+.fact { display:flex; align-items:center; gap:10px; min-width:0; }
+.fact > .ui-ic { margin:0; padding:7px; border-radius:9px; background:var(--btn); color:var(--muted); }
+.fact > div { min-width:0; flex:1; }
+.fact small { display:block; color:var(--muted); font-size:12px; }
+.fact b { display:block; font-size:14px; overflow-wrap:anywhere; }
+.fact .iconbtn { flex:none; }
+/* CPU, RAM, Network: the big number, the bar split in parts, each core */
+.hlive { display:grid; gap:12px; }
+.bignum { display:flex; align-items:baseline; flex-wrap:wrap; gap:2px 6px; }
+.bignum b { font-size:32px; line-height:1.1; font-variant-numeric:tabular-nums; }
+.bignum > span { font-size:16px; color:var(--muted); }
+.bignum small { flex-basis:100%; color:var(--muted); font-size:13px; }
+.updown { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.updown .bignum b { font-size:26px; }
+.sbar { display:flex; gap:2px; height:12px; border-radius:6px; overflow:hidden; background:var(--btn); }
+.sbar i { display:block; height:100%; min-width:2px; }
+.cores { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:6px 16px; font-size:13px; }
+.core { display:grid; grid-template-columns:auto minmax(0,1fr) 3.2em; align-items:center; gap:8px; }
+.core .bar { margin:0; }
+.core b { text-align:right; font-variant-numeric:tabular-nums; }
+.core span { color:var(--muted); }
+.core.off { opacity:.5; }
+/* the lists of apps: what each uses, and a bar of its share against the first */
+.urow .nameline { justify-content:space-between; }
+.urow .nameline b, .proc .name small { font-variant-numeric:tabular-nums; }
+.ubar { height:4px; margin-top:5px; }
 /* Health › Sleep: a strip per day, 24 h wide, the screen's on stretches and Tailscale's drops */
 .sl-day + .sl-day { margin-top:10px; }
 .sl-top { display:flex; justify-content:space-between; gap:8px; font-size:14px; }
@@ -56,7 +101,7 @@ i.sl-ts { background:var(--bad); }
 /* health: one line of text until the first snapshot arrives, so the tab never looks empty or broken */
 #hwait, .waiting { text-align:center; padding:18px 0; grid-column:1/-1; column-span:all; }
 :is(#hsleep, #hcaps) > .waiting { display:block; }
-.health.ready #hwait, .health:not(.ready) #hnow > section { display:none !important; }   /* over the columns' inline-flex */
+.health.ready #hwait, .health:not(.ready) #hnow > :not(#hwait) { display:none !important; }   /* over the columns' inline-flex */
 .crash .crashcopy { margin:0 0 12px; }
 /* Health › Privacy (js/privacy.js): a row's tags, coloured by how much they say; a revoked permission is struck out */
 .ptags { display:flex; flex-wrap:wrap; gap:4px; margin:3px 0 2px; }

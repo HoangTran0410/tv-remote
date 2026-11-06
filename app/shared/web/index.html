@@ -290,12 +290,27 @@
       <div id="hpriv" class="stack" hidden></div>
       <div id="hnow">
       <div class="muted" id="hwait" data-i18n="health.reading_from_the_tv">Đang đọc từ TV...</div>
-      <section class="card"><div class="card-head"><h2 data-i18n="health.overview">📊 Tổng quan</h2><span class="muted" id="hwhen"></span></div><div class="kv" id="hsum"></div><p class="note" id="hnight" hidden></p></section>
-      <section class="card"><div class="card-head"><h2 data-i18n="health.system_load">⚙️ Mức dùng của máy</h2><button type="button" class="small" id="freeram" data-i18n="health.free_up_ram">🧹 Dọn RAM</button></div><div id="hload"></div><h3 data-i18n="health.top_cpu_processes">🔥 Tiến trình tốn CPU nhất</h3><div class="ptable" id="htop"></div></section>
+      <div id="hsub" class="places" role="tablist"><button type="button" class="on" data-v="tv" data-i18n="health.sub_tv">📺 TV này</button><button type="button" data-v="cpu">🧩 CPU</button><button type="button" data-v="ram">🧠 RAM</button><button type="button" data-v="net" data-i18n="health.sub_net">📶 Mạng</button></div>
+      <div class="hpane" data-v="tv">
+      <section class="card"><div class="card-head"><h2 data-i18n="health.overview">📊 Tổng quan</h2><span class="muted" id="hwhen"></span></div><div class="rings" id="hrings"></div><div class="lchart" id="hnetchart"></div></section>
+      <section class="card"><h2 data-i18n="health.facts">ℹ️ Tình trạng</h2><div class="facts" id="hfacts"></div><p class="note" id="hnight" hidden></p></section>
       <section class="card" id="htempc" hidden><h2 data-i18n="health.temperature">🌡️ Nhiệt độ</h2><div class="kv" id="htemp"></div></section>
-      <section class="card"><div class="card-head"><h2 data-i18n="health.network">📶 Mạng</h2><button type="button" class="small" id="speedgo" data-i18n="speed.go">⚡ Đo tốc độ</button></div><div class="kv" id="hspeed" hidden></div><div class="kv" id="hrate"></div><div class="kv" id="hnet"></div></section>
       <section class="card" id="hbtc" hidden><h2>🔵 Bluetooth</h2><div class="kv" id="hbt"></div></section>
       <section class="card"><h2 data-i18n="health.hardware">🧩 Phần cứng</h2><div class="kv" id="hhw"></div></section>
+      </div>
+      <div class="hpane" data-v="cpu" hidden>
+      <section class="card"><h2>🧩 CPU</h2><div class="hlive" id="hcpu"></div></section>
+      <section class="card"><h2 data-i18n="health.cpu_apps">📱 App đang chạy</h2><div id="hcpuapps"></div></section>
+      </div>
+      <div class="hpane" data-v="ram" hidden>
+      <section class="card"><div class="card-head"><h2>🧠 RAM</h2><button type="button" class="small" id="freeram" data-i18n="health.free_up_ram">🧹 Dọn RAM</button></div><div class="hlive" id="hram"></div></section>
+      <section class="card"><h2 data-i18n="health.ram_apps">📱 App giữ bộ nhớ</h2><div id="hramapps"></div></section>
+      </div>
+      <div class="hpane" data-v="net" hidden>
+      <section class="card"><div class="card-head"><h2 data-i18n="health.network">📶 Mạng</h2><button type="button" class="small" id="speedgo" data-i18n="speed.go">⚡ Đo tốc độ</button></div><div class="kv" id="hspeed" hidden></div><div class="hlive" id="hnetlive"></div></section>
+      <section class="card"><h2>📡 Wi-Fi</h2><div class="kv" id="hnet"></div></section>
+      <section class="card"><h2 data-i18n="health.net_apps">📱 App dùng mạng</h2><div id="hnetapps"></div></section>
+      </div>
       </div>
     </div>
   </div>

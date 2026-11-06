@@ -263,7 +263,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         /** Needs the input session (`tv`) or is a hand on the remote: wakes it when resting and keeps it from resting. */
         private val SESSION = setOf("/api/key", "/api/type", "/api/touch", "/api/clip", "/api/screen", "/api/adb/connect", "/api/warm")
         /** What a page asks by itself every few seconds: says nothing about anyone using the remote. */
-        private val PASSIVE = setOf("/api/state", "/api/watchers", "/api/about", "/api/playing", "/api/health", "/api/stats", "/api/paired", "/api/app/icon", "/api/app/meta", "/api/setup/need", "/api/wirelog")
+        private val PASSIVE = setOf("/api/state", "/api/watchers", "/api/about", "/api/playing", "/api/health", "/api/health/live", "/api/stats", "/api/paired", "/api/app/icon", "/api/app/meta", "/api/setup/need", "/api/wirelog")
         private fun ok(): HttpServer.Response = HttpServer.Response.ok()
     }
 

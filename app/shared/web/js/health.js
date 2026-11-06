@@ -7,12 +7,6 @@ function redrawIfChanged(sel, pairs) {
   const sig = JSON.stringify(pairs) + window.LANG; if (drawn.get(sel) === sig) return;
   drawn.set(sel, sig); $(sel).replaceChildren(...kv(pairs));
 }
-function meter(label, pct, detail) {
-  const m = el('div', { className: 'meter' + (pct >= 90 ? ' bad' : pct >= 75 ? ' warn' : '') },
-    el('div', { className: 'top' }, el('span', { textContent: label }), el('b', { textContent: detail })), el('div', { className: 'bar' }, el('i')));
-  m.querySelector('i').style.width = Math.max(0, Math.min(100, pct)) + '%';
-  return m;
-}
 // the thermal service's status: from 3 on, Android slows the TV down to cool it
 const heat = () => [T('health.heat_normal'), T('health.heat_warmish'), T('health.heat_warm'), T('health.heat_hot'), T('health.heat_very_hot'), T('health.heat_too_hot'), T('health.heat_shutdown')];
 function fmtUptime(s) {
@@ -29,7 +23,7 @@ function wifiTip(w) {
 function signal(rssi) { return rssi >= -55 ? T('health.signal_excellent') : rssi >= -67 ? T('health.signal_good') : rssi >= -75 ? T('health.signal_fair') : T('health.signal_weak'); }
 $('#freeram').addEventListener('click', async () => {
   const b = $('#freeram'); b.disabled = true; const r = await api('/api/free', {}); b.disabled = false;
-  if (r) { toast(T('health.ram_freed', { freed: r.freed, after: r.after })); loadHealth(); recentsNow(true); }
+  if (r) { toast(T('health.ram_freed', { freed: r.freed, after: r.after })); loadHealth(); recentsNow(true); loadRamApps(true); }
 });
 // The task manager: the apps holding memory, what each is doing, and Stop where stopping cannot hurt the TV (the server
 // decides which: Procs.keepWhy). dumpsys meminfo is slow on a TV, so at most every 45 s while the tab is open.
@@ -387,60 +381,205 @@ async function loadErrors() {
   }
   box.replaceChildren(card);
 }
+// Now: four views (This TV, CPU, RAM, Network). /api/health every 10 s (the facts, temperature, apps by CPU in that view);
+// /api/health/live every 2 s for the gauges and the 60 s charts, only while Now is on screen: nothing runs once it is left.
+let hsub = 'tv', hlast = null, hliveT = 0, hliveBusy = false, hramAt = 0;
+const HLIVE_MS = 2000, HKEEP = 31;                                    // 31 readings: the last 60 s
+let hhist = [];                                                       // [{t, cpu, mem, rx, tx}], oldest first
+onTvChange(() => { hhist = []; hlast = null; hramAt = 0; $('#hramapps').replaceChildren(); $('#hcpuapps').replaceChildren(); $('#hnetapps').replaceChildren(); });
+document.querySelectorAll('#hsub button').forEach((b) => b.addEventListener('click', () => {
+  hsub = b.dataset.v;
+  document.querySelectorAll('#hsub button').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); });
+  document.querySelectorAll('#hnow .hpane').forEach((p) => { p.hidden = p.dataset.v !== hsub; });
+  if (hlast) drawLive(hlast);
+  if (hsub === 'ram') loadRamApps(true);
+  if (hsub === 'cpu' || hsub === 'net') loadHealth();   // apps by CPU / the Wi-Fi card at once
+  hliveGo(true);
+}));
+const hliveOn = () => currentTab === 'health' && hmode === 'now' && !document.hidden && !stopped && ADB.state === 'ready';
+// one reading, then the next 2 s after it came back (never two at once on a slow link); stops by itself when Now is left
+function hliveGo(now) {
+  clearTimeout(hliveT);
+  if (!hliveOn()) { hliveT = 0; return; }                          // 0: loadHealth() starts it again
+  hliveT = setTimeout(async () => {
+    if (hliveBusy) return;                                            // the reading in flight goes on from here
+    if (!hliveOn()) { hliveT = 0; return; }
+    hliveBusy = true;
+    const r = await api('/api/health/live' + (hsub === 'net' ? '?net=1' : ''), null, true);
+    hliveBusy = false;
+    if (r && hliveOn()) {
+      const m = r.mem || {};
+      hhist.push({ t: Date.now(), cpu: r.cpu, mem: m.total ? (m.total - m.avail) * 100 / m.total : null, rx: r.net && r.net.rx, tx: r.net && r.net.tx });
+      while (hhist.length > HKEEP || (hhist.length && Date.now() - hhist[0].t > 62000)) hhist.shift();
+      hlast = r; drawLive(r);
+    }
+    hliveGo();
+  }, now ? 0 : HLIVE_MS);
+}
+document.addEventListener('visibilitychange', () => hliveGo(true));
+
+// a ring: the share used, its words under it; amber from 75 %, red from 90 % (and the words say it too: the number)
+function ring(label, pct, sub) {
+  const ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'), c = (cls) => {
+    const k = document.createElementNS(ns, 'circle'); k.setAttribute('cx', 18); k.setAttribute('cy', 18); k.setAttribute('r', 15.9); k.setAttribute('class', cls); svg.append(k); return k; };
+  svg.setAttribute('viewBox', '0 0 36 36'); svg.setAttribute('aria-hidden', 'true');
+  c('rg-bg'); const v = c('rg-v'), p = pct == null ? 0 : Math.max(0, Math.min(100, pct));
+  v.setAttribute('stroke-dasharray', p.toFixed(1) + ' 100');
+  return el('div', { className: 'ring' + (p >= 90 ? ' bad' : p >= 75 ? ' warn' : '') },
+    el('div', { className: 'rg' }, svg, el('b', { textContent: pct == null ? '—' : Math.round(pct) + '%' })),
+    el('b', { className: 'rg-l', textContent: label }), el('small', { textContent: sub || '' }));
+}
+// the last 60 s as lines (2 at most, one scale, no second axis); hovering a point shows its values in the row above
+function liveChart(series, fmt, max0) {
+  const W = 300, H = 60, n = HKEEP - 1, t1 = Date.now(), at = (t) => W - (t1 - t) / 2000 * (W / n);
+  const max = Math.max(max0, ...hhist.flatMap((h) => series.map((s) => h[s.k] || 0))) * 1.1;
+  const y = (v) => (H - 2 - (v / max) * (H - 4)).toFixed(1);
+  const paths = series.map((s) => { const pts = hhist.filter((h) => h[s.k] != null);
+    return pts.length < 2 ? '' : '<path class="' + s.cls + '" d="' + pts.map((h, i) => (i ? 'L' : 'M') + at(h.t).toFixed(1) + ' ' + y(h[s.k])).join('') + '"/>'; }).join('');
+  const box = el('div', { className: 'lc', innerHTML: '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true"><line class="lc-base" x1="0" x2="' + W + '" y1="' + (H - 1) + '" y2="' + (H - 1) + '"/>' + paths + '<line class="lc-cur" x1="0" x2="0" y1="0" y2="' + H + '" hidden/></svg>' });
+  const head = el('div', { className: 'lc-top' }), now = hhist[hhist.length - 1] || {};
+  const say = (h, ago) => head.replaceChildren(...series.map((s) => el('span', { className: 'lc-v' }, el('i', { className: s.cls }), s.label + ' ', el('b', { textContent: h[s.k] == null ? '—' : fmt(h[s.k]) }))),
+    ...(ago ? [el('small', { textContent: T('health.secs_ago', { n: ago }) })] : []));
+  say(now);
+  const svg = box.firstChild, cur = svg.querySelector('.lc-cur');
+  const show = (e) => { if (!hhist.length) return; const b = svg.getBoundingClientRect(), x = (e.clientX - b.left) * W / b.width;
+    const h = hhist.reduce((a, q) => Math.abs(at(q.t) - x) < Math.abs(at(a.t) - x) ? q : a);
+    cur.setAttribute('x1', at(h.t)); cur.setAttribute('x2', at(h.t)); cur.hidden = false; say(h, Math.round((t1 - h.t) / 1000)); };
+  svg.addEventListener('pointermove', show); svg.addEventListener('pointerdown', show);
+  svg.addEventListener('pointerleave', () => { cur.hidden = true; say(now); });
+  return el('div', { className: 'lchart' }, head, box, el('div', { className: 'sl-axis' }, el('span', { textContent: T('health.secs_ago', { n: 60 }) }), el('span', { textContent: T('health.now_word') })));
+}
+const rate = (v) => fmtSize(v || 0) + '/s';
+// a bar split in parts [[share, cls, words]], then its legend
+function split(parts) {
+  const bar = el('div', { className: 'sbar' }, ...parts.filter((p) => p[0] > 0).map(([v, cls]) => { const i = el('i', { className: cls }); i.style.width = v + '%'; return i; }));
+  return [bar, el('div', { className: 'sl-leg' }, ...parts.map(([, cls, words]) => el('span', {}, el('i', { className: cls }), words)))];
+}
+const big = (v, unit, words) => el('div', { className: 'bignum' }, el('b', { textContent: v == null ? '—' : v }), unit ? el('span', { textContent: unit }) : null, words ? el('small', { textContent: words }) : null);
+// a row of a list of apps: icon, name, what it uses, and a bar of its share
+function urow(pkg, name, value, sub, share, acts) {
+  const icon = pkg === '-' || pkg === 'android' ? el('div', { className: 'appicon placeholder', textContent: '⚙️' }) : appIcon(pkg), title = el('span', { textContent: name });
+  if (pkg !== '-' && pkg !== 'android') onMeta(pkg, (m) => { icon.fill(m); if (m.label) put(title, 'textContent', m.label); });
+  const bar = el('div', { className: 'bar ubar' }, el('i')); bar.firstChild.style.width = Math.max(1, Math.min(100, share)) + '%';
+  return el('div', { className: 'item urow' }, icon, el('div', { className: 'name' }, el('div', { className: 'nameline' }, title, el('b', { textContent: value })), sub ? el('small', { textContent: sub }) : null, bar), acts || null);
+}
+function drawLive(r) {
+  const m = r.mem || {};
+  const memPct = m.total ? (m.total - m.avail) * 100 / m.total : null;
+  if (hsub === 'tv' && hfull) {
+    const f = hfull, disk = f.disk_total ? (f.disk_total - f.disk_free) * 100 / f.disk_total : null;
+    $('#hrings').replaceChildren(
+      ring('CPU', r.cpu, [f.chip, f.cores ? T('health.cores_n', { n: f.cores }) : ''].filter(Boolean).join(' · ')),
+      ring('RAM', memPct, m.total ? fmtSize(m.total - m.avail) + ' / ' + fmtSize(m.total) : ''),
+      ring(T('health.ring_storage'), disk, f.disk_total ? fmtSize(f.disk_total - f.disk_free) + ' / ' + fmtSize(f.disk_total) : ''));
+    $('#hnetchart').replaceChildren(liveChart([{ k: 'rx', cls: 'lc-a', label: '↓' }, { k: 'tx', cls: 'lc-b', label: '↑' }], rate, 10240));
+  } else if (hsub === 'cpu') {
+    const cores = (r.cores || []).map((v, i) => el('div', { className: 'core' + (v == null ? ' off' : '') }, el('span', { textContent: T('health.core_n', { n: i + 1 }) }),
+      el('div', { className: 'bar' }, (() => { const b = el('i'); b.style.width = (v || 0) + '%'; return b; })()), el('b', { textContent: v == null ? '—' : v + '%' })));
+    const mhz = r.mhz || [], lo = Math.min(...mhz), hi = Math.max(...mhz), ghz = (v) => (v / 1000).toFixed(1);
+    $('#hcpu').replaceChildren(big(r.cpu, '%', hfull && hfull.cores ? T('health.cores_n', { n: hfull.cores }) : ''),
+      ...split([[r.apps || 0, 'p-a', T('health.cpu_part_apps') + ' ' + (r.apps ?? '—') + '%'], [r.system || 0, 'p-b', T('health.cpu_part_system') + ' ' + (r.system ?? '—') + '%'], [r.io || 0, 'p-c', T('health.cpu_part_io') + ' ' + (r.io ?? '—') + '%']]),
+      liveChart([{ k: 'cpu', cls: 'lc-a', label: 'CPU' }], (v) => Math.round(v) + '%', 100),
+      cores.length ? el('div', { className: 'cores' }, ...cores) : null,
+      el('div', { className: 'kv' }, ...kv([mhz.length ? [T('health.clock'), (lo === hi ? ghz(hi) : ghz(lo) + '–' + ghz(hi)) + ' GHz'] : null, hfull && hfull.gpu != null ? ['GPU', hfull.gpu + '%'] : null, hfull ? ['Chip', hfull.chip] : null])));
+  } else if (hsub === 'ram') {
+    const free = m.free || 0, cache = Math.max(0, (m.avail || 0) - free), used = (m.total || 0) - (m.avail || 0), pc = (v) => m.total ? v * 100 / m.total : 0;
+    $('#hram').replaceChildren(big(memPct == null ? null : Math.round(memPct), '%', m.total ? fmtSize(used) + ' / ' + fmtSize(m.total) : ''),
+      ...split([[pc(used), 'p-a', T('health.ram_in_use') + ' ' + fmtSize(used)], [pc(cache), 'p-b', T('health.ram_cache') + ' ' + fmtSize(cache)], [pc(free), 'p-f', T('health.ram_free') + ' ' + fmtSize(free)]]),
+      liveChart([{ k: 'mem', cls: 'lc-a', label: 'RAM' }], (v) => Math.round(v) + '%', 100),
+      el('div', { className: 'kv' }, ...kv([m.swap_total ? [T('health.swap'), fmtSize(m.swap_total - m.swap_free) + ' / ' + fmtSize(m.swap_total)] : null])));
+  } else if (hsub === 'net') {
+    const n = r.net || {};
+    $('#hnetlive').replaceChildren(
+      el('div', { className: 'updown' }, big(n.rx == null ? null : fmtSize(n.rx), '/s', '↓ ' + T('health.k_down')), big(n.tx == null ? null : fmtSize(n.tx), '/s', '↑ ' + T('health.k_up'))),
+      liveChart([{ k: 'rx', cls: 'lc-a', label: '↓' }, { k: 'tx', cls: 'lc-b', label: '↑' }], rate, 10240),
+      el('p', { className: 'note', textContent: [n.rx_total != null ? T('health.since_boot', { rx: fmtSize(n.rx_total), tx: fmtSize(n.tx_total) }) : '', r.conns != null ? T('health.conns_n', { n: r.conns }) : ''].filter(Boolean).join(' · ') }));
+    if (r.apps) {
+      const top = Math.max(1, ...r.apps.map((a) => a.rx + a.tx));
+      $('#hnetapps').replaceChildren(UI.list(r.apps.map((a) => urow(a.pkg, a.pkg === 'android' ? T('health.android_system') : a.label || a.pkg, fmtSize(a.rx + a.tx),
+        '↓ ' + fmtSize(a.rx) + ' ↑ ' + fmtSize(a.tx) + (a.conns ? ' · ' + T('health.conns_n', { n: a.conns }) : ''), (a.rx + a.tx) * 100 / top)), T('health.net_apps_none')),
+        UI.note(T('health.net_apps_note')));
+    }
+  }
+}
+// RAM → the apps holding memory, with Stop where it cannot hurt the TV (procRow, the Apps tab's): dumpsys meminfo is slow on a
+// TV, so at most every 45 s while this view is open, and again after a Stop
+async function loadRamApps(now) {
+  if (!now && Date.now() - hramAt < 45000) return;
+  hramAt = Date.now();
+  const box = $('#hramapps');
+  if (!box.childElementCount) box.replaceChildren(el('p', { className: 'muted', textContent: T('health.reading_from_the_tv') }));
+  const r = await api('/api/procs', null, true);
+  if (!r || hsub !== 'ram') return;
+  const top = Math.max(1, ...r.apps.map((a) => a.mb));
+  box.replaceChildren(UI.list(r.apps.slice(0, 15).map((a) => { const row = procRow(a), bar = el('div', { className: 'bar ubar' }, el('i'));
+    bar.firstChild.style.width = Math.max(1, a.mb * 100 / top) + '%'; row.querySelector('.name').append(bar); return row; }), T('health.cpu_idle')));
+}
+$('#hramapps').addEventListener('click', (e) => { if (e.target.closest('.acts button')) setTimeout(() => loadRamApps(true), 1500); });
+
+let hfull = null;
 async function loadHealth() {
   if (hmode !== 'now') return;
   if (healthBusy || ADB.state !== 'ready') return;
   healthBusy = true;
+  if (!hliveT) hliveGo(true);                                         // not again while it runs: one reading every 2 s
   // a picture shown outside this page (the phone app's own remote screen, its PiP, another device): the TV's own count
-  const t0 = performance.now(), [h, seen] = await Promise.all([api('/api/health', null, true), screenOn ? {} : watchersNow()]);
+  const [h, seen] = await Promise.all([api('/api/health' + (hsub === 'cpu' ? '?apps=1' : ''), null, true), screenOn ? {} : watchersNow()]);
   healthBusy = false;
   if (!h || currentTab !== 'health') return;
   if (!$('.health').classList.contains('ready')) $('.health').classList.add('ready');
   speedLoad();   // add() writes the attribute even when it is there
-  const r = h.remote || {}, vol = r.volume || {};
-  put($('#hwhen'), 'textContent', T('health.refresh_5s'));
-  $('#hsum').replaceChildren(...kv([
-    [T('health.k_power'), !r.connected ? T('health.power_unknown') : r.is_on ? T('health.state_on') : T('health.screen_off')],
-    [T('health.k_app'), r.app ? ((typeof appName === 'function' && appName(r.app)) || r.app) : ''],
-    [T('health.k_volume'), vol.max ? vol.level + ' / ' + vol.max + (vol.muted ? ' · ' + T('health.muted') : '') : ''],
-    [T('health.k_latency'), h.ping_ms + ' ms'],
-    [T('health.k_stream'), screenOn ? ($('#screenmode').value === 'snap' ? T('health.stream_snap') : T('health.stream_live', { fps: streamFps }) + ($('#screenmode').value === 'hd' ? ' · ' + T('health.stream_sharpest') : ' · ' + $('#screenmode').value + 'p')) : seen.watch > 0 ? T('health.stream_other', { n: seen.watch }) : T('health.stream_none')],
-    [T('health.k_uptime'), h.uptime != null ? fmtUptime(h.uptime) : ''],
-  ]));
+  hfull = h;
+  if (hsub === 'ram') loadRamApps();
+  const r = h.remote || {}, vol = r.volume || {}, w = h.wifi;
+  put($('#hwhen'), 'textContent', T('health.updates_2s'));
+  const patch = /^\d{4}-\d\d/.test(h.patch || '') ? new Date(h.patch.slice(0, 7) + '-15').toLocaleDateString(window.LOCALE, { month: 'short', year: 'numeric' }) : h.patch;
+  const fact = (icon, k, v, tool) => v == null || v === '' ? null : el('div', { className: 'fact' }, UI.icon(icon), el('div', {}, el('small', { textContent: k }), el('b', { textContent: String(v) })), tool || null);
+  const mac = w && w.mac ? el('button', { type: 'button', className: 'small iconbtn', textContent: '📋', title: T('tv.copy'), 'aria-label': T('tv.copy'), onclick: () => copyText(w.mac) }) : null;
+  const facts = [
+    fact('clock', T('health.f_on_for'), h.uptime != null ? fmtUptime(h.uptime) : ''),
+    fact('power', T('health.k_screen'), !r.connected ? T('health.power_unknown') : r.is_on ? T('health.state_on') : T('health.state_off')),
+    fact('apps', T('health.k_app'), r.app ? ((typeof appName === 'function' && appName(r.app)) || r.app) : ''),
+    fact('vol_up', T('health.k_volume'), vol.max ? vol.level + ' / ' + vol.max + (vol.muted ? ' · ' + T('health.muted') : '') : ''),
+    fact('bot', 'Android', h.android), fact('shield_ok', T('health.k_patch'), patch),
+    fact('wifi', 'Wi-Fi', w ? w.ssid : T('health.wifi_off')),
+    fact('gauge', T('health.k_signal'), w && w.rssi != null ? signal(w.rssi) + (w.speed ? ' · ' + w.speed + ' Mbps' : '') : ''),
+    fact('link', 'MAC', w && w.mac, mac),
+    fact('zap', T('health.f_latency'), h.ping_ms + ' ms'),
+    fact('camera', T('health.k_stream'), screenOn ? ($('#screenmode').value === 'snap' ? T('health.stream_snap') : T('health.stream_live', { fps: streamFps }) + ($('#screenmode').value === 'hd' ? ' · ' + T('health.stream_sharpest') : ' · ' + $('#screenmode').value + 'p')) : seen.watch > 0 ? T('health.stream_other', { n: seen.watch }) : T('health.stream_none')),
+  ];
+  const fsig = JSON.stringify(facts.map((f) => f && f.textContent)) + window.LANG;   // redrawn only when a figure changed: a MAC can be selected
+  if (drawn.get('#hfacts') !== fsig) { drawn.set('#hfacts', fsig); $('#hfacts').replaceChildren(...facts.filter(Boolean)); }
   const nt = h.nightly, nd = nt && new Date(nt.day + 'T12:00:00'), ago = nd && Math.round((Date.now() - nd) / 864e5);
   put('#hnight', 'hidden', !nt || nt.freed == null);
   if (nt && nt.freed != null) {                                       // only what it did: "freed 0 B" said nothing
     const did = [nt.freed > 0 && T('health.night_freed', { freed: fmtSize(nt.freed) }), nt.compiled > 0 && T('health.night_opt', { n: nt.compiled })].filter(Boolean);
     put('#hnight', 'textContent', T(ago <= 1 ? 'health.night_last' : 'health.night_on', { date: nt.day }) + ': ' + (did.length ? did.join(', ') : T('health.night_none')));
   }
-  const load = [];
-  if (h.cpu != null) load.push(meter(h.cores ? T('health.cpu_cores', { n: h.cores }) : 'CPU', h.cpu, h.cpu + '%'));
-  if (h.gpu != null) load.push(meter('GPU', h.gpu, h.gpu + '%'));
-  if (h.mem_total) { const used = h.mem_total - h.mem_free; load.push(meter('RAM', used * 100 / h.mem_total, T('health.used_of', { used: fmtSize(used), total: fmtSize(h.mem_total) }))); }
-  if (h.disk_total) { const used = h.disk_total - h.disk_free; load.push(meter(T('health.internal_storage'), used * 100 / h.disk_total, T('health.used_of', { used: fmtSize(used), total: fmtSize(h.disk_total) }))); }
-  $('#hload').replaceChildren(...load);
-  const cell = (cls, text) => el('div', { className: cls, textContent: text });   // CPU and RAM said once, as column heads
-  $('#htop').replaceChildren(...(h.top.length ? [cell('h', T('health.k_process')), cell('h n', 'CPU'), cell('h n', 'RAM')] : []),
-    ...h.top.flatMap((p) => [cell('k', (typeof appName === 'function' && META.has(p.name) && appName(p.name)) || p.name), cell('v n', p.cpu + '%'), cell('v n', p.mem + '%')]));
+  if (h.apps) {                                                       // CPU → apps: top's figure is of one core; shown of the whole TV
+    const per = h.cores || 1, apps = h.apps.filter((a) => a.pkg !== '-'), sys = h.apps.find((a) => a.pkg === '-'), top = Math.max(1, ...h.apps.map((a) => a.cpu));
+    const row = (a) => urow(a.pkg, a.pkg === '-' ? T('health.android_system') : a.name || a.pkg, Math.round(a.cpu / per) + '%', T('health.procs_n', { n: a.procs }), a.cpu * 100 / top);
+    $('#hcpuapps').replaceChildren(UI.state(T('health.apps_running', { n: apps.length })),
+      UI.list([...apps.slice(0, 10), ...(sys ? [sys] : [])].sort((a, b) => b.cpu - a.cpu).map(row), T('health.cpu_idle')));
+  }
   const t = h.thermal;
   put('#htempc', 'hidden', !t);
   if (t) redrawIfChanged('#htemp', [
     t.status != null ? [T('health.k_heat'), heat()[t.status] || String(t.status)] : null,
     ...t.temps.map((s) => [s.name, Math.round(s.c) + ' °C']),
   ]);
-  $('#hrate').replaceChildren(...kv(h.net && h.net.rx != null ? [[T('health.k_down'), fmtSize(h.net.rx) + '/s'], [T('health.k_up'), fmtSize(h.net.tx) + '/s']] : []));
   const bt = h.bt;
   put('#hbtc', 'hidden', !bt);
   if (bt) redrawIfChanged('#hbt', [
     ['Bluetooth', bt.on ? T('health.state_on') : T('health.state_off')],
     ...(bt.devices.length ? bt.devices.map((d) => [d.name, d.connected ? T('health.bt_connected') : T('health.bt_paired')]) : [[T('health.k_devices'), T('health.bt_none')]]),
   ]);
-  const w = h.wifi;
   redrawIfChanged('#hnet', [
     w ? ['Wi-Fi', w.ssid] : ['Wi-Fi', T('health.wifi_off')],
     w && w.rssi != null ? [T('health.k_signal'), w.rssi + ' dBm · ' + signal(w.rssi)] : null,
     w && w.speed ? [T('health.k_link'), w.speed + ' Mbps'] : null,
     w && w.freq ? [T('health.k_band'), (w.freq > 4000 ? '5 GHz' : '2.4 GHz') + ' · ' + w.freq + ' MHz'] : null,
+    w && w.mac ? ['MAC', w.mac] : null,
     ...h.ips.map((i) => [i.if.startsWith('tun') ? T('health.ip_tailscale') : i.if.startsWith('eth') ? T('health.ip_ethernet') : T('health.ip_home'), i.ip]),
     w && w.rssi != null ? [T('health.k_advice'), wifiTip(w)] : null,
   ]);
@@ -449,5 +588,6 @@ async function loadHealth() {
     ['Chip', h.chip], [T('health.k_arch'), h.abi], [T('health.k_cores'), h.cores], ['RAM', h.mem_total ? fmtSize(h.mem_total) : ''],
     [T('health.k_screen'), h.screen + (h.fps ? ' · ' + h.fps + ' Hz' : '')], [T('health.k_density'), h.density ? h.density + ' dpi' : ''],
   ]);
+  if (!hlast) drawLive({ cpu: h.cpu, mem: h.mem_total ? { total: h.mem_total, avail: h.mem_free } : {} });   // before the first live reading
 }
 setInterval(() => { if (currentTab === 'health' && !document.hidden && !stopped) { loadHealth(); loadSleep(); } }, 10000);   // each is top + 3 dumpsys on the TV

@@ -11,7 +11,7 @@
 /* text that starts or ends a line */
 [dir=rtl] button.appchoice, [dir=rtl] .choice, [dir=rtl] .mitem, [dir=rtl] .pop button, [dir=rtl] .askpick .item.pick,
 [dir=rtl] .setlist .setrow.full .setval, [dir=rtl] .allowbox ol { text-align:right; }
-[dir=rtl] .ptable .n, [dir=rtl] .sl-top small, [dir=rtl] .setval, [dir=rtl] .kv .v, [dir=rtl] .vol output { text-align:left; }
+[dir=rtl] .core b, [dir=rtl] .sl-top small, [dir=rtl] .setval, [dir=rtl] .kv .v, [dir=rtl] .vol output { text-align:left; }
 
 /* lists */
 [dir=rtl] details.help ul { padding-left:0; padding-right:18px; }

@@ -99,6 +99,10 @@ the same classes.
 | A filter/sort row above a list | `div.fchips` of buttons, current `.on` + `aria-pressed` | |
 | A colour to pick | `input[type=color]` in a `.ownstop` (`--ctl` tall, 44 wide, the colour fills it, `--line` edge; `.small.iconbtn` beside it to remove); several in `.ownstops`, which wraps | a hand-made palette; a hex field alone |
 | Key/value facts | `.kv` (dt muted, `.v` bold right) | |
+| Facts at a glance (Health → Now) | `.facts` > `.fact`: `UI.icon(name)` on a `--btn` tile, muted name over a bold value; 2 columns at every width | `.kv` when each fact needs its icon |
+| A share of a whole, live | `.ring` (`ring()` in `js/health.js`): `--accent` arc on a `--btn` track, `.warn` ≥75 %, `.bad` ≥90 %, the number inside, words under | a pie |
+| A figure over the last 60 s | `liveChart()`: 2px lines (`path.lc-a` `--accent`, `path.lc-b` `--boot`), one scale, the values in the row above (hover moves them) | a second y-axis |
+| Parts of a whole | `.sbar` > `i.p-a / .p-b / .p-c / .p-f` (2px gaps) + a `.sl-leg` legend with the figures | colour alone |
 | A small tag | `.badge` (`.badge.ok`) | coloured spans; on a theme's tile (`.homewalls small.badge`): ▶ Video, 🖼 ×N, 🖼 Slideshow (`homeMediaBadges`) |
 
 ```js

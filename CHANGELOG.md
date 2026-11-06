@@ -4,6 +4,10 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- Health → Now: four views, updated every 2 seconds while open (nothing runs once it is left). This TV: CPU, RAM and storage rings, a 60 s network chart and the facts in two columns (on for, screen, Android, patch, Wi-Fi, signal, MAC with copy); CPU: the apps / system / storage-wait split, each core, the apps running; RAM: in use / cached / free, swap, apps by memory with Stop; Network: the speed now, totals since start, open connections and each app's traffic
+
 ## 0.47.1 - 2026-11-06
 
 Web 0.47.1 · Phone app 0.44.1 · TV app 0.45.1 · TV Home 0.29.1 · TV Channels 0.20.0 · TV Games 0.22.0 · TV Apps 0.6.0
