@@ -56,11 +56,9 @@ Mã nhập trong app **Downloader** trên TV, luôn trỏ tới bản mới nh�
 
 ## Bắt đầu nhanh
 
-1. **Bật ADB trên TV** (một lần): Cài đặt → Giới thiệu → bấm OK vào **Bản dựng** 7 lần → Tùy chọn nhà phát triển → **Gỡ lỗi ADB**. [Từng bước](https://tvremote.pages.dev/guide#prep-tv) · box nhà mạng (FPT, Viettel…): [đọc trước](https://tvremote.pages.dev/guide#prep-tv).
-2. **Mở app** và chọn TV ([điện thoại](https://tvremote.pages.dev/guide#install-phone) · [máy tính](https://tvremote.pages.dev/guide#install-pc) · [iPhone / trình duyệt](https://tvremote.pages.dev/guide#web-iphone): cài [TV Setup](https://tvremote.pages.dev/guide#install-tv), quét mã QR).
-3. **Trên TV chọn "Luôn cho phép"** khi TV hỏi [Cho phép gỡ lỗi USB?](https://tvremote.pages.dev/guide#allow-usb)
-
-Chưa có ADB? App điện thoại và app máy tính vẫn bấm phím được sau khi ghép bằng mã TV hiện.
+1. **Mở app** và chọn TV ([điện thoại](https://tvremote.pages.dev/guide#install-phone) · [máy tính](https://tvremote.pages.dev/guide#install-pc) · [iPhone / trình duyệt](https://tvremote.pages.dev/guide#web-iphone): cài [TV Setup](https://tvremote.pages.dev/guide#install-tv), quét mã QR).
+2. **Nhập mã TV hiện ra**: phím dùng được ngay, không cần ADB ([phím khi chưa có ADB](https://tvremote.pages.dev/guide#nokeys)).
+3. **Sau đó, để xem màn hình, mở app, quản lý file: bật ADB** (không bắt buộc). Dễ nhất: [cài TV Setup](https://tvremote.pages.dev/guide#install-tv) rồi bấm "Bật ADB giúp tôi". Làm tay: Cài đặt → Giới thiệu → bấm OK vào **Bản dựng** 7 lần → Tùy chọn nhà phát triển → **Gỡ lỗi ADB** ([từng bước](https://tvremote.pages.dev/guide#prep-tv)); box nhà mạng (FPT, Viettel…) thì không làm vậy, box có thể đòi mật khẩu hoặc khóa máy. Rồi chọn "Luôn cho phép" ở [Cho phép gỡ lỗi USB?](https://tvremote.pages.dev/guide#allow-usb)
 
 ## Tính năng
 

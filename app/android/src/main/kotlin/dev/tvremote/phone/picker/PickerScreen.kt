@@ -421,7 +421,7 @@ internal fun MainActivity.buildPicker() {
 
 /**
  * How to connect, as numbered steps: the words are blocks split by a blank line, a block of several lines opens a step (its
- * first line the title, "1. ..." giving the badge), a one-line block goes on in the step before. [firstNote] sits in step 1,
+ * first line the title, "1. ..." giving the badge), a one-line block goes on in the step before. [firstNote] sits in step 3 (turn on ADB),
  * set apart (TCL China's hidden switch).
  */
 private fun MainActivity.howSteps(words: String, firstNote: String): View {
@@ -443,7 +443,7 @@ private fun MainActivity.howSteps(words: String, firstNote: String): View {
         val c = col()
         c.addView(label(m?.groupValues?.get(2) ?: lines[0], 15, TEXT).apply { typeface = Typeface.DEFAULT_BOLD })
         if (lines.size > 1) c.addView(label(lines.drop(1).joinToString("\n"), 14, MUTED).apply { setLineSpacing(dp(2).toFloat(), 1f) }, gap(4))
-        if (list.childCount == 0) c.addView(label(firstNote, 13, TEXT).apply {
+        if (m?.groupValues?.get(1) == "3") c.addView(label(firstNote, 13, TEXT).apply {
             background = box(SEL, 10); setPadding(dp(10), dp(8), dp(10), dp(8))
         }, gap(8))
         step.addView(c, LinearLayout.LayoutParams(0, -2, 1f).apply { leftMargin = dp(12) })
