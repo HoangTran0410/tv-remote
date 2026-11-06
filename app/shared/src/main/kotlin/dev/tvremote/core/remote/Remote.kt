@@ -121,7 +121,7 @@ interface Remote : Closeable {
          * Samsung's (8001 / 8002), Roku's (8060), Hisense VIDAA's (36669). Null: none answer (off, or not a TV). Asked when an address is typed in with no kind.
          */
         fun detect(host: String, timeoutMs: Int = 800, wireless: (String) -> Boolean = ::wirelessOn): String? {
-            val ports = listOf(6466 to ANDROID, 5555 to ANDROID, 3000 to LG, 3001 to LG, 8002 to SAMSUNG, 8001 to SAMSUNG, 8060 to ROKU, 36669 to VIDAA)
+            val ports = listOf(6466 to ANDROID, 5555 to ANDROID) + dev.tvremote.core.adb.AdbPort.OTHERS.map { it to ANDROID } + listOf(3000 to LG, 3001 to LG, 8002 to SAMSUNG, 8001 to SAMSUNG, 8060 to ROKU, 36669 to VIDAA)
             val open = java.util.concurrent.ConcurrentHashMap<Int, Boolean>()
             ports.map { (p, _) -> Thread { if (open(host, p, timeoutMs)) open[p] = true }.apply { isDaemon = true; start() } }.forEach { it.join(timeoutMs + 300L) }
             ports.firstOrNull { open[it.first] == true }?.second?.let { return it }
