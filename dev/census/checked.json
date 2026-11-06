@@ -2685,19 +2685,19 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "c2ce1b1434df896de8fd1d70|0.23.0": {
-  "at": "2026-10-26T21:47:34+07:00",
+  "at": "2026-11-06T12:32:24+07:00",
   "n": 1,
-  "note": "fixed in 5d4096ec"
+  "note": "TV Setup 0.26.3 only; fixed long ago (RemoteService.foreground() first in onStartCommand, comment cites c2ce1b14)"
  },
  "c2ce1b1434df896de8fd1d70|0.26.3": {
-  "at": "2026-11-02T22:17:48+07:00",
-  "n": 3,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "at": "2026-11-06T12:32:24+07:00",
+  "n": 4,
+  "note": "TV Setup 0.26.3 only; fixed long ago (RemoteService.foreground() first in onStartCommand, comment cites c2ce1b14)"
  },
  "c2ce1b1434df896de8fd1d70|0.27.0": {
-  "at": "2026-10-26T21:47:34+07:00",
+  "at": "2026-11-06T12:32:24+07:00",
   "n": 1,
-  "note": "fixed in 5d4096ec"
+  "note": "TV Setup 0.26.3 only; fixed long ago (RemoteService.foreground() first in onStartCommand, comment cites c2ce1b14)"
  },
  "c312b6737adb0c365df6eb6a|0.32.1": {
   "at": "2026-10-29T17:20:17+07:00",
