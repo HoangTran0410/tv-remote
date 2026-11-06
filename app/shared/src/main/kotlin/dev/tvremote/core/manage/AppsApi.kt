@@ -227,9 +227,14 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
         } ?: JSONObject.NULL)
     }
 
+    /** Off Optimize TV's way and on its Undo list (the privacy check, and Move to a new TV's restore). Refuses what the TV needs (IllegalArgumentException). */
+    fun turnOff(pkg: String) {
+        app(pkg, "disable")
+        sh("grep -qx '$pkg' ${Setup.OFF_LIST} 2>/dev/null || echo '$pkg' >> ${Setup.OFF_LIST}")
+    }
+
     private fun privacyOff(pkg: String, off: Boolean): JSONObject {
-        app(pkg, if (off) "disable" else "enable")
-        if (off) sh("grep -qx '$pkg' ${Setup.OFF_LIST} 2>/dev/null || echo '$pkg' >> ${Setup.OFF_LIST}")
+        if (off) turnOff(pkg) else app(pkg, "enable")
         return JSONObject().put("ok", true).put("row", privacy.change(pkg) { it.put("off", off) } ?: JSONObject.NULL)
     }
 

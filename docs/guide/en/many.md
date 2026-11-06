@@ -11,3 +11,5 @@
 > 💡 **📋 Copy settings to another TV** (Setup tab): tick groups, **Take from this TV**, switch TV, **Show what changes**, **Apply**. Save a file to carry it to another TV's web page.
 
 > 💡 Apps the other TV lacks are left out; own photo walls and QR codes are not copied. App locks need a PIN: type a new one for the other TV, the old one cannot be read back.
+
+> 💡 **📦 Move to a new TV** (Setup tab): **Save backup file** on the old TV, then on the new one **Open backup file**, tick items, **Restore**. PINs are not in the file.

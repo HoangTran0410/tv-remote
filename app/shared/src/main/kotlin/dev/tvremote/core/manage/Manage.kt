@@ -61,7 +61,7 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
     private val files by lazy { FilesApi(core, copy, installs, setupApi) }
     private val apps by lazy { AppsApi(core) }
     private val healthApi by lazy { HealthApi(core) }
-    private val parts by lazy { listOf(apps, files, installs, healthApi, setupApi, HomeApi(core), copy, AdbApi(core)) }
+    private val parts by lazy { listOf(apps, files, installs, healthApi, setupApi, HomeApi(core), copy, AdbApi(core), BackupApi(core, apps)) }
 
     private val playing = helper?.let { NowPlaying({ link.get() }, it) }      // the now playing bar: null where tvr-helper.jar is not at hand
     private val kbdReader = dev.tvremote.core.adb.TvKeyboard.Reader()   // /api/tvkbd: the proto, or the text dump on a TV without it

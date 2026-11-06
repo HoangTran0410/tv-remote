@@ -1233,6 +1233,8 @@ Home Assistant gửi mã qua header `x-tvr-hook`, không lộ trong log.
 
 > 💡 App TV kia không có thì bị bỏ qua; ảnh nền riêng và mã QR không chép. Khoá app cần PIN: gõ PIN mới cho TV kia, vì PIN cũ không đọc ngược được.
 
+> 💡 **📦 Chuyển sang TV mới** (tab Thiết lập): **Lưu file sao lưu** trên TV cũ, rồi trên TV mới **Mở file sao lưu**, tích mục cần, **Khôi phục**. PIN không nằm trong file.
+
 ## Xem tình trạng mọi TV
 
 Mỗi TV đã thử có một dòng: **Đang bật**, **Chế độ chờ** hoặc **Không thấy TV**, kèm kiểu máy và app đang mở. Tự làm mới 10 giây một lần.
