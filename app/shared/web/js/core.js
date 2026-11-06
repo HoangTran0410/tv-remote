@@ -590,7 +590,10 @@ function applyAdb() {
   if (bannerKey !== ADB.state) {                                      // rebuild only on change so buttons are not replaced mid-click
     bannerKey = ADB.state;
     document.querySelectorAll('[data-adb-banner]').forEach((b) => b.replaceChildren(...(ready ? [] : [buildBanner()])));
-    if (ready && currentTab === 'tv' && typeof tsState === 'function') { tsState(); restoreState(); loadTvset(); loadHold(); homeCard(); chanCard(); gameCard(); }   // the cards that ask over ADB: opened before it was up, they had stayed empty
+    if (currentTab === 'tv' && typeof tsState === 'function') {
+      if (ready) { tsState(); restoreState(); loadTvset(); loadHold(); }
+      homeCard(); chanCard(); gameCard();                               // ADB gone too: their Open / Installed lines are hidden, not left from before (support 11223000: Open said "no ADB")
+    }   // the cards that ask over ADB: opened before it was up, they had stayed empty
   }
   // a tab already shown with its data keeps it, scroll and all, under a veil that says ADB is coming back (or why not, with Retry);
   // the banner in place of the tab only when nothing was shown yet
