@@ -80,6 +80,9 @@ class AdbLink(val keyDir: File, val host: String) {
 
     fun waitingForUser(): Boolean = waiting
 
+    /** A connection that still works (after a failed step): the failure was the step's, not ADB's. Never dials. */
+    fun up(): Boolean = adb?.isDead() == false
+
     /** The last dial did not get through: "unknown" is then a TV without ADB being asked again, not a link coming up. */
     fun failing(): Boolean = failed
 

@@ -236,6 +236,7 @@ class Adb(private val dir: File) : Closeable {
         }, "adb-after-tcpip").apply { isDaemon = true }.start()
         if (saved > 0) {
             var failure: Exception? = null
+            var gone = true                                           // every TLS port refused (or the key is no longer trusted)
             for (round in 0..1) {
                 val port = if (round == 0) saved else AdbTls.discoverConnect(host)
                 if (port <= 0 || (round == 1 && port == saved)) continue
@@ -245,11 +246,16 @@ class Adb(private val dir: File) : Closeable {
                     return
                 } catch (e: Exception) {
                     if (failure == null) failure = e
+                    if (e !is java.net.ConnectException && e.message?.contains("not paired") != true) gone = false
                     WireLog.all.add("·", "adb $host tls port $port: $e")
                     close0()
                 }
             }
-            if (!AdbTls.plainOpen(host)) throw failure ?: IOException("adb tls: no port")   // nothing on 5555 to fall back to: say what the TLS port said
+            // the saved port is dead (Wireless debugging was switched off or moved, and mDNS finds no new one): forget it, so the
+            // tries below say what is really missing (5555 / pairing) instead of dialling a stale port forever (census: a TX5 with
+            // Wireless debugging off still dialled port 42203 on every try). Wireless debugging on again is found by wirelessOnly().
+            if (gone) AdbTls.save(dir, host, 0)
+            else if (!AdbTls.plainOpen(host)) throw failure ?: IOException("adb tls: no port")   // nothing on 5555 to fall back to: say what the TLS port said
         }
         try {
             AdbPort.load(dir)
@@ -351,7 +357,11 @@ class Adb(private val dir: File) : Closeable {
             sock = ssl
             input = DataInputStream(ssl.inputStream)
             output = ssl.outputStream
-            m = try { read() } catch (quiet: SocketTimeoutException) { send(CNXN, 0x01000001, 1 shl 18, BANNER); read() }
+            // TLS 1.3: our side ends the handshake before the TV checks the key, so a key it no longer trusts (pairing forgotten
+            // on the TV) comes back as an alert on this first read, "Read error: ssl=…" (census Chromecast 3f685f9c): unpaired
+            m = try {
+                try { read() } catch (quiet: SocketTimeoutException) { send(CNXN, 0x01000001, 1 shl 18, BANNER); read() }
+            } catch (e: javax.net.ssl.SSLException) { throw IOException("adb tls: this device is not paired", e) }
         }
         if (m.cmd == AUTH) throw IOException("adb tls: this device is not paired")
         if (m.cmd != CNXN) throw IOException("adb tls: unexpected answer")

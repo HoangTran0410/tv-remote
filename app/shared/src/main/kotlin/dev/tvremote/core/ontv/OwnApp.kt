@@ -16,7 +16,7 @@ import java.io.IOException
 class OwnApp(val pkg: String, val apk: String, private val versionKey: String, private val none: String,
              /** Run on the TV after an install and, by the caller, before opening it (e.g. "display over other apps"). */
              val afterInstall: String = "") {
-    private class Seen(val at: Long, val version: String, val release: Release?, val ok: Boolean)
+    private class Seen(val at: Long, val version: String, val release: Release?, val ok: Boolean, val err: Exception? = null)
     @Volatile private var seen: Seen? = null
 
     @Throws(IOException::class)
@@ -35,7 +35,7 @@ class OwnApp(val pkg: String, val apk: String, private val versionKey: String, p
     private fun look(version: String): Seen {
         seen?.let { if (it.version == version && System.currentTimeMillis() - it.at < (if (it.ok) 6 * 3600_000L else 60_000L)) return it }   // offline: asked again in a minute, not hidden for 6 hours
         val s = try { Seen(System.currentTimeMillis(), version, Release.newer(version, versionKey, apk), true) }
-                catch (e: Exception) { Seen(System.currentTimeMillis(), version, null, false) }   // offline: not "soon", just unknown
+                catch (e: Exception) { Seen(System.currentTimeMillis(), version, null, false, e) }   // offline: not "soon", just unknown
         seen = s
         return s
     }
@@ -66,6 +66,8 @@ class OwnApp(val pkg: String, val apk: String, private val versionKey: String, p
         val sh: (String) -> String = { adb.shell(it) }
         seen = null
         val now = state(sh)
+        // GitHub out of reach is not "in the next release" (support 33220301: a TCL with broken DNS was told TV Apps comes later)
+        if (now.optBoolean("offline") && !now.optBoolean("installed")) throw seen?.err?.let { it as? IOException ?: IOException(it) } ?: IOException("net: offline")
         val r = (if (now.has("latest")) seen?.release else null) ?: return now.also { if (!it.optBoolean("installed")) throw IOException(none) }
         val file = File(dir ?: File(System.getProperty("java.io.tmpdir")), apk.removeSuffix(".apk") + "-${r.version}.apk")
         PlayProtect.check(dir, r.sha256)                              // refused before: no new "Harmful app blocked" on the TV

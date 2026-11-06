@@ -264,8 +264,12 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
             if (dev.tvremote.core.Errors.fromInternet(e)) return HttpServer.Response.error(502, "net: " + e.javaClass.simpleName + ": " + e.message)
             // a step's own code ("games:missing", "home:frame_full"): the TV answered, so not ADB either; friendly() has its words
             // (as "adb: games:missing" the page said "no ADB connection to the TV yet", support 11223000)
-            if (APP_CODE.containsMatchIn(e.message.orEmpty())) return HttpServer.Response.error(422, e.message.toString())
-            return HttpServer.Response.error(503, if (link.waitingForUser()) "adb:allow" else "adb: " + e.message)
+            val why = e.message ?: e.javaClass.simpleName                 // never "adb: null"
+            if (APP_CODE.containsMatchIn(why)) return HttpServer.Response.error(422, why)
+            // the link still works: the TV answered, the step failed ("pin_bad_link", "the TV did not answer", a full disk on
+            // this side); a regex of codes missed every one without a colon, and each one read "no ADB connection to the TV yet"
+            if (link.up() && !link.waitingForUser()) return HttpServer.Response.error(422, why)
+            return HttpServer.Response.error(503, if (link.waitingForUser()) "adb:allow" else "adb: $why")
         }
     }
 
