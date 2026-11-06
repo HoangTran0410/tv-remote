@@ -4803,7 +4803,7 @@
   "backup.apps_note": "Ouvre la boutique ou TV Apps pour chaque appli ; rien d’inconnu n’est installé tout seul.",
   "backup.apps_none": "Toutes les applis du fichier sont déjà sur cette TV.",
   "backup.apps_tvapps": "Installer depuis TV Apps",
-  "backup.apps_store": "Ouvrir dans la boutique"
+  "backup.apps_store": "Ouvrir dans la boutique",
   "auto.idle_title": "📺 Éteindre quand personne ne s’en sert",
   "auto.idle_note": "Aucune touche pendant ce temps : la TV demande « Vous regardez encore ? » et s’éteint une minute après. Un film sans touche compte aussi.",
   "auto.idle_hours_label": "Heures sans touche",

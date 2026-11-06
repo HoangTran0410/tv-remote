@@ -4632,7 +4632,7 @@
  "backup.apps_note": "Mở cửa hàng hoặc TV Apps cho từng app, không tự cài file lạ.",
  "backup.apps_none": "Mọi app trong file đã có trên TV này.",
  "backup.apps_tvapps": "Cài từ TV Apps",
- "backup.apps_store": "Mở trong cửa hàng"
+ "backup.apps_store": "Mở trong cửa hàng",
  "auto.idle_title": "📺 Tự tắt khi không ai dùng",
  "auto.idle_note": "Quá số giờ này không bấm phím, TV hỏi “Còn xem không?” rồi tắt sau 1 phút. Xem phim mà không bấm phím cũng tính.",
  "auto.idle_hours_label": "Số giờ không bấm phím",

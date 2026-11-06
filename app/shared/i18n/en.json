@@ -4770,7 +4770,7 @@
  "backup.apps_note": "Opens the store or TV Apps for each app; nothing unknown is installed by itself.",
  "backup.apps_none": "Every app in the file is already on this TV.",
  "backup.apps_tvapps": "Install from TV Apps",
- "backup.apps_store": "Open in the store"
+ "backup.apps_store": "Open in the store",
  "auto.idle_title": "📺 Turn off when nobody uses it",
  "auto.idle_note": "No key for this long: the TV asks “Still watching?” and turns off a minute later. A film with no key pressed counts too.",
  "auto.idle_hours_label": "Hours without a key",
