@@ -230,7 +230,8 @@ internal class HealthApi(core: ManageCore) : ManagePart(core) {
     companion object {
         private const val TOP = "top -n 1 -b -m 7 -o %CPU,%MEM,ARGS -s 1 | tail -7"
         /** Health → Now → CPU: every process's load summed per app on the TV (~1.4 KB): "cpu processes package", "-" for the rest. */
-        private const val TOP_APPS = "top -n 1 -b -o %CPU,ARGS -s 1 | awk '\$1~/^[0-9.]+\$/{n=\$2; if (n~/^[a-z][a-z0-9_]*(\\.[A-Za-z0-9_]+)+(:|\$)/) sub(/:.*/,\"\",n); else n=\"-\"; c[n]+=\$1; k[n]++} END{for(x in c) print c[x], k[x], x}'"
+        // the reading itself (top, its shell and awk, adbd carrying it: 20-35 % on the FPT box) is not the TV's load: left out
+        private const val TOP_APPS = "top -n 1 -b -o %CPU,ARGS -s 1 | awk '\$2==\"top\"||\$2==\"sh\"||\$2==\"awk\"||\$2==\"adbd\"{next} \$1~/^[0-9.]+\$/{n=\$2; if (n~/^[a-z][a-z0-9_]*(\\.[A-Za-z0-9_]+)+(:|\$)/) sub(/:.*/,\"\",n); else n=\"-\"; c[n]+=\$1; k[n]++} END{for(x in c) print c[x], k[x], x}'"
         /** The separator is printed from octal codes, so it does not appear in this command's own line in the `top` output. */
         private const val HEALTH_STATIC = "getprop ro.product.manufacturer; getprop ro.product.model; getprop ro.build.version.release; getprop ro.build.version.sdk; " +
                 "getprop ro.build.version.security_patch; getprop ro.board.platform; getprop ro.product.cpu.abi; cat /sys/devices/system/cpu/present; " +

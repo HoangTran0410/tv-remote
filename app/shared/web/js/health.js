@@ -496,7 +496,7 @@ function drawLive(r) {
       el('div', { className: 'updown' }, big(n.rx == null ? null : fmtSize(n.rx), '/s', '↓ ' + T('health.k_down')), big(n.tx == null ? null : fmtSize(n.tx), '/s', '↑ ' + T('health.k_up'))),
       liveChart([{ k: 'rx', cls: 'lc-a', label: '↓' }, { k: 'tx', cls: 'lc-b', label: '↑' }], rate, 10240),
       el('p', { className: 'note', textContent: [n.rx_total != null ? T('health.since_boot', { rx: fmtSize(n.rx_total), tx: fmtSize(n.tx_total) }) : '', r.conns != null ? T('health.conns_n', { n: r.conns }) : ''].filter(Boolean).join(' · ') }));
-    if (r.apps) {
+    if (Array.isArray(r.apps)) {                                     // a reading from another view says only how many (FPT: TypeError on switching to Network)
       const top = Math.max(1, ...r.apps.map((a) => a.rx + a.tx));
       $('#hnetapps').replaceChildren(UI.list(r.apps.map((a) => urow(a.pkg, a.pkg === 'android' ? T('health.android_system') : a.label || a.pkg, fmtSize(a.rx + a.tx),
         '↓ ' + fmtSize(a.rx) + ' ↑ ' + fmtSize(a.tx) + (a.conns ? ' · ' + T('health.conns_n', { n: a.conns }) : ''), (a.rx + a.tx) * 100 / top)), T('health.net_apps_none')),
