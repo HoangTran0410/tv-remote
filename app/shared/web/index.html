@@ -162,7 +162,7 @@
         </section>
         <div data-adb-banner></div>
         <section class="card wide-only" data-needs="control">
-          <h2 data-i18n="remote.open_an_app">🚀 Mở ứng dụng <span class="muted adbnote lower" data-for="pc" data-i18n="remote.needs_adb">· cần ADB</span></h2>
+          <h2 data-i18n="remote.open_an_app">🚀 Mở app <span class="muted adbnote lower" data-for="pc" data-i18n="remote.needs_adb">· cần ADB</span></h2>
           <input id="quickq" type="search" placeholder="Tìm theo tên app" autocomplete="off" data-i18n-placeholder="common.search_by_app_name">
           <div class="tiles" id="quick"><div class="muted" data-i18n="remote.apps_appear_when_adb">Danh sách app hiện khi ADB sẵn sàng.</div></div>
         </section>
@@ -216,7 +216,7 @@
   <div class="panel" data-panel="kind" hidden><div id="kindtab"></div></div>
   <div class="panel" data-panel="apps" hidden>
     <div data-adb-banner></div>
-    <section class="card" id="appssusp" hidden><h2 data-i18n="health.susp_title">🔒 App bị khóa</h2><div id="appssuspl"></div></section>   <!-- the same card as Health's: a locked app is looked for here first -->
+    <section class="card" id="appssusp" hidden><h2 data-i18n="health.susp_title">🔒 App bị chặn</h2><div id="appssuspl"></div></section>   <!-- the same card as Health's: a locked app is looked for here first -->
     <section class="card" data-adb-gated id="tvappscard">
       <h2 data-i18n="tvapps.title">📦 Kho app</h2>
       <p class="note" data-i18n="tvapps.note">App miễn phí, mã nguồn mở cho TV. Tải thẳng từ nhà làm app, cài một chạm.</p>
@@ -253,17 +253,17 @@
         </div>
         <p class="note" id="space"></p>
         <div class="list" id="fileslist"></div>
-        <label class="drop"><input type="file" id="upfile" multiple><span data-i18n="files.choose_files_to_send">＋ Chọn file gửi lên thư mục này<span class="fine" data-i18n="files.or_drop_them_here"> (hoặc kéo thả vào đây)</span></span></label>
+        <label class="drop"><input type="file" id="upfile" multiple><span data-i18n="files.choose_files_to_send">＋ Chọn tệp gửi lên thư mục này<span class="fine" data-i18n="files.or_drop_them_here"> (hoặc kéo thả vào đây)</span></span></label>
       </section>
       <div class="stack">   <!-- one column: opening the terminal does not send cards to the other one -->
         <section class="card">
-          <h2 data-i18n="files.download_to_the_tv">⬇️ Tải file về TV</h2>
+          <h2 data-i18n="files.download_to_the_tv">⬇️ Tải tệp về TV</h2>
           <form class="line" id="fetchf"><input id="fetchurl" placeholder="https://.../file.zip" inputmode="url" autocomplete="off"><button class="primary" data-i18n="files.download">⬇️ Tải</button></form>
         </section>
         <section class="card">
           <h2 data-i18n="files.install_an_apk">📦 Cài APK</h2>
-          <form class="line" id="instf"><input id="insturl" placeholder="Link tới file .apk, .apks, .xapk hoặc .apkm" inputmode="url" autocomplete="off" data-i18n-placeholder="files.link_to_an_apk"><button class="primary" data-i18n="files.install">📦 Cài</button></form>
-          <label class="drop" data-i18n="files.or_choose_an_apk"><input type="file" id="apkfile" accept=".apk,.apks,.xapk,.apkm,application/vnd.android.package-archive,application/zip,application/octet-stream">Hoặc chọn file .apk, .apks, .xapk, .apkm từ máy này</label>
+          <form class="line" id="instf"><input id="insturl" placeholder="Link tới tệp .apk, .apks, .xapk hoặc .apkm" inputmode="url" autocomplete="off" data-i18n-placeholder="files.link_to_an_apk"><button class="primary" data-i18n="files.install">📦 Cài</button></form>
+          <label class="drop" data-i18n="files.or_choose_an_apk"><input type="file" id="apkfile" accept=".apk,.apks,.xapk,.apkm,application/vnd.android.package-archive,application/zip,application/octet-stream">Hoặc chọn tệp .apk, .apks, .xapk, .apkm từ máy này</label>
         </section>
         <!-- Terminal: for people who know shell commands, so folded away -->
         <details class="card" id="termcard">
@@ -296,7 +296,7 @@
       <div class="hpane" data-v="tv">
       <section class="card"><div class="card-head"><h2 data-i18n="health.overview">📊 Tổng quan</h2><span class="muted" id="hwhen"></span></div><div class="rings" id="hrings"></div><div class="lchart" id="hnetchart"></div></section>
       <section class="card"><h2 data-i18n="health.facts">ℹ️ Tình trạng</h2><div class="facts" id="hfacts"></div><p class="note" id="hnight" hidden></p></section>
-      <section class="card" id="hsusp" hidden><h2 data-i18n="health.susp_title">🔒 App bị khóa</h2><div id="hsuspl"></div></section>
+      <section class="card" id="hsusp" hidden><h2 data-i18n="health.susp_title">🔒 App bị chặn</h2><div id="hsuspl"></div></section>
       <section class="card" id="htempc" hidden><h2 data-i18n="health.temperature">🌡️ Nhiệt độ</h2><div class="kv" id="htemp"></div></section>
       <section class="card" id="hbtc" hidden><h2>🔵 Bluetooth</h2><div class="kv" id="hbt"></div></section>
       <section class="card"><h2 data-i18n="health.hardware">🧩 Phần cứng</h2><div class="kv" id="hhw"></div></section>
