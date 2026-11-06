@@ -143,6 +143,15 @@ class KeyFixTest {
         assertTrue(KeyFix.plan(withSettings, { true }, { true }).isEmpty())                    // nothing given: Settings keeps its way
     }
 
+    @Test fun voiceOnAKeyIsAnActionTakenOnlyWhereTheTvCanListen() {
+        val V = dev.tvremote.home.Target.VOICE
+        val p = KeyFix.plan(emptyMap(), { true }, { it == V }, mapOf(183 to V))
+        assertEquals(KeyFix.VOICE, p[183]?.act); assertTrue(p[183]!!.mine)
+        assertTrue(KeyFix.plan(emptyMap(), { true }, { false }, mapOf(183 to V)).isEmpty())   // no recognizer: the key keeps its way
+        assertTrue(KeyFix.plan(emptyMap(), { true }, { it == V }, mapOf(21 to V)).isEmpty())   // a D-pad key is never offered
+        assertEquals(KeyFix.APP, KeyFix.userRule("a.b").act)                                  // an app is still an app
+    }
+
     @Test fun aWorkingKeyIsNeverTakenForAnApp() {
         // 170 still has its handler, 7 is a number: both named by the person, neither taken
         val p = KeyFix.plan(mapped, { true }, { true }, mapOf(170 to "a.b", 7 to "a.b", 999 to "a.b"))

@@ -6,6 +6,7 @@
   { "t": "pin:com.x.y/a-b.c_1", "kind": "pin", "pkg": "com.x.y", "id": "a-b.c_1" },
   { "t": "tile:dev.tvremote.setup/ram", "kind": "tile", "pkg": "dev.tvremote.setup", "id": "ram" },
   { "t": "do:controlcenter", "kind": "action", "pkg": "dev.tvremote.home", "id": "controlcenter" },
+  { "t": "do:voice", "kind": "action", "pkg": "dev.tvremote.setup", "id": "voice" },
   { "t": "do:other", "kind": "", "pkg": "", "id": "" },
   { "t": "", "kind": "", "pkg": "", "id": "" },
   { "t": "x", "kind": "", "pkg": "", "id": "" },
