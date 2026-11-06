@@ -44,6 +44,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - TV Home: a Photo frame widget shows your own photos one after another with a fade (up to 10, added and removed from the phone, 30 s each by default).
 - Simple remote (Tools → Simple remote), for older people: only big keys with words under them (Power, arrows + OK, Back, Home, volume, Mute, channel, Speak), everything else hidden; leaving takes a 2-second hold on a small button. Remembered per device (the page in the browser, the phone app in its settings). The keys are one list in remote.json the page and the phone app both draw. Share → Share the TV can make a link that opens straight in it (`?simple=1`).
 - The Setup tab's TV Home, TV Channels and TV Games cards hide Open and "installed" when ADB goes away, instead of leaving a button that answers "no ADB connection".
+- Open on the TV Games / TV Channels card brings the app back when the TV had it turned off or kept it for another profile (no icon on the TV, yet "installed"), then opens it; an app's own error ("TV Games is not on this TV", a full photo frame …) is no longer shown as "no ADB connection to the TV yet".
 
 ## 0.48.0 - 2026-11-07
 

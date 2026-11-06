@@ -127,10 +127,8 @@ object Channels {
 
     /** Opens [words] on the TV; false when TV Channels is not there (the link would open nothing, or a chooser). */
     @Throws(IOException::class)
-    fun open(sh: (String) -> String, words: String): Boolean {
-        val out = sh("$ALLOW_OVERLAY; am start -a android.intent.action.VIEW -d '${link(words)}' $PKG 2>&1")   // URL-encoded: no quote can get in
-        return !out.contains("Error") && !out.contains("unable to resolve", true)
-    }
+    fun open(sh: (String) -> String, words: String): Boolean =
+        app.open(sh, "am start -a android.intent.action.VIEW -d '${link(words)}' $PKG")   // URL-encoded: no quote can get in
 
     /** The link that plays one stream address in TV Channels: percent-encoded, so only [A-Za-z0-9.*_%-] can reach the shell. */
     fun streamLink(url: String): String = "tvchannels://url?u=" + URLEncoder.encode(url, "UTF-8").replace("+", "%20")

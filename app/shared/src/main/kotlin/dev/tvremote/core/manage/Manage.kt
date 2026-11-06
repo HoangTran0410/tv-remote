@@ -262,6 +262,9 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
         } catch (e: IOException) {
             // GitHub or the site out of reach is not the TV's ADB: 503 "adb: …" made the page say ADB was not on yet
             if (dev.tvremote.core.Errors.fromInternet(e)) return HttpServer.Response.error(502, "net: " + e.javaClass.simpleName + ": " + e.message)
+            // a step's own code ("games:missing", "home:frame_full"): the TV answered, so not ADB either; friendly() has its words
+            // (as "adb: games:missing" the page said "no ADB connection to the TV yet", support 11223000)
+            if (APP_CODE.containsMatchIn(e.message.orEmpty())) return HttpServer.Response.error(422, e.message.toString())
             return HttpServer.Response.error(503, if (link.waitingForUser()) "adb:allow" else "adb: " + e.message)
         }
     }
@@ -326,6 +329,9 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
     }
 
     companion object {
+        /** A step's own error code ("games:missing", "home:frame_full", "launcher:install:…"), not ADB's words ("refused: shell:…", "adb pair: …"). */
+        val APP_CODE = Regex("^(?!adb)[a-z]+:[a-z_]+")
+
         /** `/api/app/meta` and each app of `/api/apps`: its name (the package's last part without one), whether it has a picture, and [Labels.stamp] as "iv". */
         fun meta(labels: Labels?, pkg: String): JSONObject {
             val label = try { labels?.label(pkg) } catch (e: Exception) { null }

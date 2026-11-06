@@ -38,8 +38,5 @@ object Games {
 
     /** Opens its library on the TV; false when TV Games is not there. */
     @Throws(IOException::class)
-    fun open(sh: (String) -> String): Boolean {
-        val out = sh("$ALLOW_OVERLAY; am start -n $PKG/.LibraryActivity 2>&1")
-        return !out.contains("Error") && !out.contains("does not exist", true) && !out.contains("unable to resolve", true)
-    }
+    fun open(sh: (String) -> String): Boolean = app.open(sh, "am start -n $PKG/.LibraryActivity")
 }

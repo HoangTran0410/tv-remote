@@ -42,6 +42,20 @@ class OwnApp(val pkg: String, val apk: String, private val versionKey: String, p
 
     fun latest(version: String): Release? = look(version).release
 
+    /**
+     * Runs [start] (an `am start`); when the TV says the app is not there, brings it back for the user in front and tries once more.
+     * The package can be on the TV yet closed to that user: turned off (Settings → Apps → Disable, a cleaner app) or installed for
+     * another Google TV profile. [state] still finds its version, so the page said installed while the TV showed no icon and
+     * Open failed (support 11223000). `install-existing` and `pm enable` change nothing on a TV where it was fine.
+     */
+    @Throws(IOException::class)
+    fun open(sh: (String) -> String, start: String): Boolean {
+        fun ok(out: String) = !out.contains("Error") && !out.contains("does not exist", true) && !out.contains("unable to resolve", true)
+        if (ok(sh((if (afterInstall.isEmpty()) "" else "$afterInstall; ") + "$start 2>&1"))) return true
+        sh("cmd package install-existing --user current $pkg >/dev/null 2>&1; pm enable --user current $pkg >/dev/null 2>&1")
+        return ok(sh("$start 2>&1"))
+    }
+
     /** Forget what GitHub said, so the next [state] asks again (TV Setup's own timer, which wants the news within hours, not 6). */
     fun refresh() { seen = null }
 
