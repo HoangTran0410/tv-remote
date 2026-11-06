@@ -894,6 +894,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
+ "3df75f21109cfe64c6abe060|0.45.0": {
+  "at": "2026-11-06T17:35:01+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / Wireless debugging not paired; 'Failure in SSL library' on read = adbd dropped the TLS link of an unpaired key (Skyworth SWTV Android 14, like Chromecast 3f685f9c)"
+ },
  "3e2e54bac9ca5b483b94307f|0.24.3": {
   "at": "2026-11-03T03:42:49+07:00",
   "n": 4,
@@ -1518,6 +1523,11 @@
   "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
+ },
+ "66117b3e1febeea1e420d98a|0.45.1": {
+  "at": "2026-11-06T17:35:01+07:00",
+  "n": 1,
+  "note": "TV Setup ADB link report: refused / Wireless debugging not paired; 'Failure in SSL library' on read = adbd dropped the TLS link of an unpaired key (Skyworth SWTV Android 14, like Chromecast 3f685f9c)"
  },
  "6643ac5ba371539b73349499|0.26.3": {
   "at": "2026-10-26T21:47:45+07:00",
