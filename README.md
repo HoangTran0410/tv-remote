@@ -35,6 +35,8 @@
 
 Everything goes straight from your device to the TV: no cloud, no sign-up. Every feature with screenshots: [tvremote.pages.dev](https://tvremote.pages.dev/?lang=en).
 
+> **Also by the author:** [KidGuard](https://github.com/HoangTran0410/kidguard) manages your child's Android phone from any browser: time limits, app blocking, bedtime, location. One APK, no account, free. [kid-guard.pages.dev](https://kid-guard.pages.dev/en/)
+
 ## Get it
 
 | You have | Use | Download | Downloader code |
