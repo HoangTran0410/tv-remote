@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- A TV that drops the ADB link (`adb connection lost: EOFException`; TCL, Skyworth, Xiaomi) no longer fails the page's request: Manage redials once and runs the command again when it never reached the TV, or when it only reads (dumpsys, pm list, getprop, settings get ...); installs, keys and launches are never repeated.
+
 - A step that fails while ADB still works (a bad link to pin, the TV not answering one command, a full disk on the phone) now says what failed, not "no ADB connection to the TV yet".
 - Wireless debugging: a pairing the TV forgot now says "pair again" instead of a raw "Failure in SSL library", and a TLS port that went away is forgotten instead of being dialled on every try.
 - Installing TV Games / TV Channels / TV Apps while GitHub cannot be reached says so, instead of "it comes in the next release".
