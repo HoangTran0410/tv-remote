@@ -7,6 +7,7 @@ const Scrub = (() => {
   const TYPED = /("(?:text|Cmd)"\s*:\s*")([^"]*)(")/g;
   const KEEP = ['Click', 'Press', 'Release'];
   const MAC = /\b[0-9A-Fa-f]{2}(?:[:-][0-9A-Fa-f]{2}){5}\b/g;
+  const TVPASS = /("(?:setup_pass|relay_\w+)"\s*:\s*")(?:[^"\\]|\\.)*(")/g;   // a saved TV's web-page pass and SSH relay (tvs.json)
   const WIFI = /WIFI:(?:[^\\\n]|\\[^\n])*?;;|("pass"\s*:\s*")(?:[^"\\]|\\.)*(")/g;
   const KEYQ = /([?&](?:k|key|pass|password|pwd|token)=)[^&\s"')]*/g;
   const BEARER = /(Bearer\s+)[A-Za-z0-9._~+/=-]+/g;
@@ -20,7 +21,8 @@ const Scrub = (() => {
     .replace(SECRET, (m, a, b, c, d) => (c ? c + '…' : d ? d + '…' : a + '…' + b))
     .replace(TYPED, (m, a, t, c) => (KEEP.includes(t) ? m : a + '…(' + t.length + ')' + c))
     .replace(MAC, 'xx:xx:xx:xx:xx:xx')
-    .replace(WIFI, (m, a, b) => (a ? a + '…' + b : 'WIFI:…'));
+    .replace(WIFI, (m, a, b) => (a ? a + '…' + b : 'WIFI:…'))
+    .replace(TVPASS, '$1…$2');
 
   const text = (s) => blank(String(s == null ? '' : s))
     .replace(KEYQ, '$1…').replace(BEARER, '$1…').replace(EMAIL, 'email@x')

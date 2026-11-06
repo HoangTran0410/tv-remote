@@ -1,6 +1,7 @@
 {
   "note": "text -> Scrub.text (Scrub.kt, js/scrub.js). Both must give `out` for every `in`; running it on `out` again changes nothing, except where again is false (typed text keeps only its length).",
   "cases": [
+    {"name": "a saved TV's pass and relay", "in": "{\"host\":\"tv\",\"setup_pass\":\"Ab3xYz\",\"relay_key\":\"k\\\"q\"}", "out": "{\"host\":\"tv\",\"setup_pass\":\"…\",\"relay_key\":\"…\"}"},
     {"name": "plain text stays", "in": "TypeError: x is not a function at show (/js/errbox.js:12:5)", "out": "TypeError: x is not a function at show (/js/errbox.js:12:5)"},
     {"name": "ipv4", "in": "failed to connect to /192.168.1.23:5555 and 10.0.2.2", "out": "failed to connect to /x.x.x.x:5555 and x.x.x.x"},
     {"name": "ipv4 in a url", "in": "GET http://192.168.0.7:8765/api/state?k=abc123", "out": "GET http://x.x.x.x:8765/api/state?k=…"},

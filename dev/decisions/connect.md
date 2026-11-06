@@ -91,7 +91,7 @@ Why some code looks odd ([the list](../DECISIONS.md)).
 
 ## Browsers
 
-- **The page needs Chrome 80 / Safari 14** (`?.`, `catch {}`, object spread: hundreds of uses). An Android 8 WebView never
+- **The page needs Chrome 80 / Safari 15.4** (`<dialog>`'s showModal: `js/old.js` checks it) (`?.`, `catch {}`, object spread: hundreds of uses). An Android 8 WebView never
   updated (Chrome 58) showed empty tabs. `js/old.js`, in ES5, shows "update Android System WebView" instead.
 
 ## The TV's "Allow USB debugging?"

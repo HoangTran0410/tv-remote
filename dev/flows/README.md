@@ -19,4 +19,4 @@ The gate (`node dev/flows/check.js`, in the pre-push hook and `app/shared/tests/
 | [home-tiles.md](home-tiles.md) | TV Home's grid: tile kinds, their menu, hide / remove / folders, and the checks (fuzz test, `home_tiles.sh` on a TV) |
 | [voice.md](voice.md) | the remote's mic button: the two switches, who listens (the TV's recognizer or TV Setup Voice) per TV, network and stall |
 | [scene-timer.md](scene-timer.md) | a scene with a start time, run by TV Setup: standby, deep sleep, no ADB, clock jumps, time zones |
-| [locked-apps.md](locked-apps.md) | apps another package suspended ("App isn't available"): who locked them, per Android version and user, and what Unlock does |
+| [blocked-apps.md](blocked-apps.md) | apps another package suspended ("App isn't available"): who blocked them, per Android version and user, and what Unblock does |

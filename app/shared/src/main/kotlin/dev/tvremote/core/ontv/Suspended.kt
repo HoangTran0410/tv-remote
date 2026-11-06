@@ -7,7 +7,7 @@ package dev.tvremote.core.ontv
  * block with one `suspendingPackage=X` line per suspender. `pm unsuspend` only lifts the shell's own suspension; clearing
  * the data of the suspender (it holds SUSPEND_APPS) lifts all of its suspensions (PackageManagerService.clearApplicationUserData).
  * Each suspension belongs to an Android user (a Google TV profile is one: a TCL G10 had 0, 10 and 11), and both commands act on
- * user 0 unless told `--user N`: [users] says which users a suspender's apps are locked under. Cases: dev/flows/locked-apps.md.
+ * user 0 unless told `--user N`: [users] says which users a suspender's apps are blocked under. Cases: dev/flows/blocked-apps.md.
  */
 object Suspended {
     /** One cheap read: the whole dump (over 1 MB) is filtered on the TV, so only the suspended apps (tens of bytes) come back. */
