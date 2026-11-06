@@ -78,6 +78,31 @@ class AdbLink(val keyDir: File, val host: String) {
         return get()
     }
 
+    /**
+     * [Adb.shell] that survives a link the TV dropped (support: TCL, Skyworth, Xiaomi: "adb connection lost: EOFException", the
+     * page failed and a redial 5-20 s later worked by itself). One redial and one more try when the command never reached the TV
+     * ([NotSent]) or the link died mid-answer and the command only reads ([readOnly]); never for installs, keys, am start ...
+     */
+    @Throws(IOException::class)
+    fun shell(cmd: String, quietMs: Long = 120000): String {
+        val a = get()
+        try { return a.shell(cmd, quietMs) } catch (e: IOException) {
+            if (!retryable(e, a.isDead(), cmd)) throw e
+            WireLog.all.add("·", "adb $host lost ($e): redial, once more: ${cmd.take(60)}")
+            return get().shell(cmd, quietMs)
+        }
+    }
+
+    /** [Adb.open] with the same rule: a retry only when nothing was sent (a stream cannot be replayed). */
+    @Throws(IOException::class)
+    fun open(service: String, answerMs: Long = 10000): Adb.Stream {
+        val a = get()
+        try { return a.open(service, answerMs) } catch (e: NotSent) {
+            WireLog.all.add("·", "adb $host lost ($e): redial, once more: ${service.take(60)}")
+            return get().open(service, answerMs)
+        }
+    }
+
     fun waitingForUser(): Boolean = waiting
 
     /** A connection that still works (after a failed step): the failure was the step's, not ADB's. Never dials. */
@@ -132,6 +157,24 @@ class AdbLink(val keyDir: File, val host: String) {
     }
 
     companion object {
+        /** Whether a failed command may run again: never sent, or the link is dead and the command only reads. */
+        fun retryable(e: IOException, linkDead: Boolean, cmd: String): Boolean =
+            e is NotSent || (linkDead && e.message != ASKING && e.message != STILL && readOnly(cmd))
+
+        private val READS = setOf("dumpsys", "getprop", "cat", "ls", "stat", "echo", "id", "df", "ps", "grep", "head", "tail", "wc", "md5sum",
+            "pm list", "pm path", "pm dump", "settings get", "settings list", "cmd package list", "cmd package resolve-activity", "wm size", "wm density")
+
+        /** A command that changes nothing: every `|` part starts with a reading verb; no `;`, `&`, `<`, `>`, backtick or `$(` left after `2>&1` / `>/dev/null`. */
+        fun readOnly(cmd: String): Boolean {
+            val c = cmd.replace("2>&1", " ").replace("2>/dev/null", " ").replace(">/dev/null", " ").trim()
+            if (c.isEmpty() || c.any { it in ";&<>`" } || c.contains("$(")) return false
+            return c.split('|').all { part ->
+                val w = part.trim().split(Regex("\\s+"))
+                val one = w[0]; val two = if (w.size > 1) one + " " + w[1] else one
+                one in READS || two in READS || (w.size > 2 && (two + " " + w[2]) in READS)
+            }
+        }
+
         const val ASKING = "the TV is asking to allow USB debugging"   // Errors.say
         const val STILL = "adb still connecting"
         const val QUIET_MS = 60000L                                   // getQuiet(): a refused or failed dial is not tried again sooner

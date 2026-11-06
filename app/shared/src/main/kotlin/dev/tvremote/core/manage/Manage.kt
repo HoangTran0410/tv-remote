@@ -307,13 +307,13 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
     fun adbState(): String = link.state()
 
     @Throws(IOException::class)
-    private fun sh(cmd: String): String = link.get().shell(cmd)
+    private fun sh(cmd: String): String = link.shell(cmd)   // one redial when the TV dropped the link (AdbLink.shell)
 
     // ---------------------------------------------------------------- terminal
     /** Runs one command as the TV's shell user and returns what it printed (at most 30 s and 200 KB). */
     private fun shell(cmd: String): HttpServer.Response {
         if (cmd.trim().isEmpty()) throw IllegalArgumentException("empty command")
-        val s = link.get().open("shell:$cmd 2>&1")
+        val s = link.open("shell:$cmd 2>&1")
         val out = ByteArrayOutputStream()
         val b = ByteArray(16384)
         val until = System.nanoTime() / 1_000_000 + 30000

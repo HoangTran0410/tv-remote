@@ -29,6 +29,9 @@ import dev.tvremote.core.WireLog
  * A small ADB client over TCP: authenticates with this app's own RSA key and multiplexes several streams (shell
  * commands, sockets on the TV) over the one connection. The first connection makes the TV ask "Allow USB debugging?".
  */
+/** The link was already gone, or the write failed, before the TV got the command: it never ran, so asking again is always safe. */
+class NotSent(msg: String) : IOException(msg)
+
 class Adb(private val dir: File) : Closeable {
     fun interface Prompt { fun waitingForUser() }
 
@@ -491,10 +494,10 @@ class Adb(private val dir: File) : Closeable {
     /** Opens an ADB service, e.g. "shell:ls" or "localabstract:name". Throws if the TV refuses it. */
     @Throws(IOException::class)
     fun open(service: String, answerMs: Long = 10000): Stream {
-        if (dead) throw IOException("adb connection lost")
+        if (dead) throw NotSent("adb connection lost")
         val s = synchronized(this) { Stream(nextId++) }
         streams[s.local] = s
-        try { send(OPEN, s.local, if (s.delayed) RECV_WINDOW else 0, (service + "\u0000").toByteArray()) } catch (e: IOException) { streams.remove(s.local); throw e }
+        try { send(OPEN, s.local, if (s.delayed) RECV_WINDOW else 0, (service + "\u0000").toByteArray()) } catch (e: IOException) { streams.remove(s.local); throw NotSent(e.message ?: "adb write failed") }
         try {
             // no answer at all: the connection died quietly (the phone slept, Wi-Fi or VPN changed); drop it so the next call dials
             // again. A TV still sending on other streams is only slow: a weak box writing two APKs at once took over 10 s to open a
