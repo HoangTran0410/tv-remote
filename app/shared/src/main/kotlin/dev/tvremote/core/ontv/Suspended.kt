@@ -1,0 +1,35 @@
+package dev.tvremote.core.ontv
+
+/**
+ * Apps another package has suspended ("App isn't available ... managed by Google TV"): Android shows that dialog for
+ * every app the Google TV launcher (kids profile, screen time) suspended. Read from `dumpsys package`, which names the
+ * suspending package: Android 9-10 print `suspended=true suspendingPackage=X` on the user line, 11+ a `Suspend params:`
+ * block with one `suspendingPackage=X` line per suspender. `pm unsuspend` only lifts the shell's own suspension; clearing
+ * the data of the suspender (it holds SUSPEND_APPS) lifts all of its suspensions (PackageManagerService.clearApplicationUserData).
+ */
+object Suspended {
+    /** One cheap read: the whole dump (over 1 MB) is filtered on the TV, so only the suspended apps (tens of bytes) come back. */
+    const val CMD = "dumpsys package packages | awk '/^  Package \\[/{p=\$2} /suspended=true|suspendingPackage=/{print p \"|\" \$0}'"
+
+    /** The suspenders that are the shell itself or the system: nothing to clear, `pm unsuspend` is what lifts theirs. */
+    val SHELL = setOf("root", "com.android.shell", "android", "system")
+
+    private val BY = Regex("suspendingPackage=(\\S+)")
+
+    /** {app: its suspenders} in the order the TV printed them; an app whose suspender the TV did not print has an empty set. */
+    fun parse(out: String): Map<String, Set<String>> {
+        val apps = LinkedHashMap<String, MutableSet<String>>()
+        for (line in out.lineSequence()) {
+            val bar = line.indexOf('|')
+            if (bar < 1) continue
+            val pkg = line.substring(0, bar).trim().removePrefix("[").removeSuffix("]")
+            if (pkg.isEmpty()) continue
+            val set = apps.getOrPut(pkg) { LinkedHashSet() }
+            BY.find(line, bar)?.let { set.add(it.groupValues[1]) }
+        }
+        return apps
+    }
+
+    /** The apps [by] suspended. */
+    fun of(apps: Map<String, Set<String>>, by: String): List<String> = apps.filter { by in it.value }.keys.toList()
+}

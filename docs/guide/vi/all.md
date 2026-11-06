@@ -874,6 +874,8 @@ Mạng chậm? Bấm **⚡ Đo tốc độ** ở **Hiện tại → 📶 Mạng*
 
 TV đầy bộ nhớ? Ở **Hiện tại → 🧠 RAM**, bấm **🧹 Dọn RAM**, hoặc **⏹ Dừng** một app trong danh sách.
 
+App nào cũng báo “Ứng dụng không sử dụng được”? Có app (thường là Google TV) đã khóa chúng. Xem thẻ **🔒 App bị khóa** ở **Hiện tại → TV này**, bấm **Mở khóa**.
+
 ## Kiểm tra quyền riêng tư
 
 Mở **Sức khỏe → Riêng tư**, chọn **Kiểm tra**. App đọc nền trên TV, nhẹ, không làm chậm app khác; app hiện dần khi tìm thấy.

@@ -524,6 +524,39 @@ async function loadRamApps(now) {
 $('#hramapps').addEventListener('click', (e) => { if (e.target.closest('.acts button')) setTimeout(() => loadRamApps(true), 1500); });
 
 let hfull = null;
+// Apps another package locked ("App isn't available ... managed by Google TV"): one filtered dumpsys on the TV, at most once
+// a minute while Health → Now is open; the card exists only while some app is locked.
+let suspAt = 0, suspBusy = false;
+const GOOGLE_TV = 'com.google.android.apps.tv.launcherx';
+onTvChange(() => { suspAt = 0; put('#hsusp', 'hidden', true); $('#hsuspl').replaceChildren(); });
+function drawSusp(r) {
+  const groups = new Map();                                           // suspender → its apps
+  for (const a of r.apps) for (const b of (a.by.length ? a.by : [{ pkg: '', name: '', shell: true }])) {
+    if (!groups.has(b.pkg)) groups.set(b.pkg, { b, apps: [] });
+    groups.get(b.pkg).apps.push(a.name);
+  }
+  put('#hsusp', 'hidden', !groups.size);
+  $('#hsuspl').replaceChildren(...[...groups.values()].map(({ b, apps }) => {
+    const by = b.pkg === GOOGLE_TV ? 'Google TV' : b.name || b.pkg, list = apps.join(', ');
+    const fix = el('button', { type: 'button', className: 'small primary', textContent: T('health.susp_fix'), disabled: !b.pkg });
+    fix.onclick = async () => {
+      if (!b.shell && !await ask(T('health.susp_ask', { apps: list, by }), { ok: T('health.susp_fix'), danger: true })) return;
+      fix.disabled = true;
+      const r2 = await api('/api/health/suspended', { by: b.pkg });
+      if (!r2) { fix.disabled = false; return; }
+      drawSusp(r2);
+      toast(r2.apps.some((a) => a.by.some((x) => x.pkg === b.pkg)) ? T('health.susp_still', { by }) : T('health.susp_ok'));
+    };
+    return el('div', { className: 'item' }, el('div', { className: 'name' }, el('div', { className: 'nameline' }, el('b', { textContent: T('health.susp_say', { by, apps: list }) })), el('small', { textContent: T('health.susp_note') })), fix);
+  }));
+}
+async function suspCheck() {
+  if (suspBusy || Date.now() - suspAt < 60000) return;
+  suspBusy = true; suspAt = Date.now();
+  const r = await api('/api/health/suspended', null, true);
+  suspBusy = false;
+  if (r && r.apps && currentTab === 'health') drawSusp(r);
+}
 async function loadHealth() {
   if (hmode !== 'now') return;
   if (healthBusy || ADB.state !== 'ready') return;
@@ -536,6 +569,7 @@ async function loadHealth() {
   if (!$('.health').classList.contains('ready')) $('.health').classList.add('ready');
   speedLoad();   // add() writes the attribute even when it is there
   hfull = h;
+  suspCheck();
   if (hsub === 'ram') loadRamApps();
   const r = h.remote || {}, vol = r.volume || {}, w = h.wifi;
   put($('#hwhen'), 'textContent', T('health.updates_2s'));
