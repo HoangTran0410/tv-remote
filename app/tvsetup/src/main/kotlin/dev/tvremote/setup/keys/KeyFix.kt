@@ -39,8 +39,14 @@ object KeyFix {
     const val INPUT = "input"; const val APP = "app"; const val HOME = "home"; const val SETTINGS = "settings"; const val LAUNCHER = "launcher"; const val BAR = "homebar"
     /** [CONTROL]: TV Home's Control Center over the app in front (the person gave the key [Target.CONTROL]). */
     const val CONTROL = "controlcenter"
+    /** [VOICE]: TV Setup's own voice command screen ([dev.tvremote.setup.MicActivity]), for a key given [Target.VOICE]. Works with the "mic" rule off: the key is the person's own choice. */
+    const val VOICE = "voice"
     /** A key the person gave [target] (TV Home's map): an app, or TV Home's action. */
-    fun userRule(target: String) = if (target == Target.CONTROL) Rule(CONTROL, listOf(target), true) else Rule(APP, listOf(target), true)
+    fun userRule(target: String) = when (target) {
+        Target.CONTROL -> Rule(CONTROL, listOf(target), true)
+        Target.VOICE -> Rule(VOICE, listOf(target), true)
+        else -> Rule(APP, listOf(target), true)
+    }
 
     /** By key code, as the stock launcher would answer them (cleanyourtv's list, checked on Google TV and Xiaomi remotes). */
     val RULES: Map<Int, Rule> = mapOf(
@@ -108,6 +114,7 @@ object KeyFix {
                 LAUNCHER -> start(HomeKey.intent(c, r.pkgs[0]))
                 BAR -> start(Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.DockBarActivity").putExtra("front", r.pkgs.firstOrNull()))   // the app under the bar: not offered again (it would only restart)
                 CONTROL -> start(Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.ControlCenterActivity"))
+                VOICE -> dev.tvremote.setup.MicActivity.open(c)           // from the key filter's service: exempt from the background-start block (SYSTEM_ALERT_WINDOW appop, prepare)
             }
         } catch (e: Exception) { }
     }
@@ -191,7 +198,7 @@ object KeyFix {
         } catch (e: PackageManager.NameNotFoundException) { false } catch (e: Exception) { true }
     }
 
-    fun launchable(c: Context, pkg: String): Boolean = if (pkg == Target.CONTROL) homeThere(c) else c.packageManager.getLeanbackLaunchIntentForPackage(pkg) != null
+    fun launchable(c: Context, pkg: String): Boolean = if (pkg == Target.CONTROL) homeThere(c) else if (pkg == Target.VOICE) MicVoice.available(c) else c.packageManager.getLeanbackLaunchIntentForPackage(pkg) != null
         || c.packageManager.getLaunchIntentForPackage(pkg) != null
 
     /** The Control Center is TV Home's: no key is taken for it where TV Home is not installed. */
@@ -200,7 +207,7 @@ object KeyFix {
     fun current(c: Context): Map<Int, Rule> = plan(keyMap(c), { alive(c, it) }, { launchable(c, it) }, HomeKeys.keys(c), forDevice(Build.MODEL, Build.DEVICE), HomeKey.pkg(c))
 
     /** The numbers the person gave an app (TV Home's map): outside TV Home a hold opens it ([HomeKey.DIGITS]). */
-    fun digits(c: Context): Map<Int, String> = HomeKeys.keys(c).filter { (k, p) -> k in HomeKey.DIGITS && p != Target.CONTROL && launchable(c, p) }
+    fun digits(c: Context): Map<Int, String> = HomeKeys.keys(c).filter { (k, p) -> k in HomeKey.DIGITS && p != Target.CONTROL && p != Target.VOICE && launchable(c, p) }
 
     // ---- on or off -------------------------------------------------------------------------------------------------
 

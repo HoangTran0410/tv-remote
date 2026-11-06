@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Remote keys: a colour or app key can now open TV Remote's voice command ("Voice command" next to the apps in Quick keys), for TVs like the Xiaomi Mi TV A2 where the Assistant button belongs to the system (issue #18). Needs TV Setup 0.46.1; works with "Mic button opens TV Remote voice" off.
 - A step that fails while ADB still works (a bad link to pin, the TV not answering one command, a full disk on the phone) now says what failed, not "no ADB connection to the TV yet".
 - Wireless debugging: a pairing the TV forgot now says "pair again" instead of a raw "Failure in SSL library", and a TLS port that went away is forgotten instead of being dialled on every try.
 - Installing TV Games / TV Channels / TV Apps while GitHub cannot be reached says so, instead of "it comes in the next release".

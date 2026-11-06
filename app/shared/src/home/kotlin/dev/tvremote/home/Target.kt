@@ -7,6 +7,7 @@ package dev.tvremote.home
  *   pin:com.example.app/id     a launcher shortcut of that app (LauncherApps: static, dynamic or pinned), [HomeConfig] "pin" keys
  *   tile:dev.tvremote.setup/id a live widget from a provider ([LiveWidgets]); its press runs the provider's action
  *   do:controlcenter           an action of TV Home itself ([ACTIONS]): the Control Center (Quick settings) over any app; for a remote key only
+ *   do:voice                   an action of TV Setup: its voice command screen (MicActivity); for a remote key only
  * Why a prefix and not a JSON object: configs already hold plain strings in dock / hidden / order / keyapps / autoapp, and a
  * plain package name must stay valid in all of them (no migration, an old TV Home still understands what it knew).
  */
@@ -18,8 +19,10 @@ object Target {
     private val LIVE = Regex("tile:([A-Za-z][\\w]*(?:\\.[\\w]+)+)/([a-z][a-z0-9_]{0,15})")
     const val MAX = 200
     const val CONTROL = "do:controlcenter"
-    val ACTIONS = setOf(CONTROL)
+    const val VOICE = "do:voice"
+    val ACTIONS = setOf(CONTROL, VOICE)
     private const val HOME = "dev.tvremote.home"
+    private const val SETUP = "dev.tvremote.setup"
 
     /** What [t] points at, or null when it is not a good target (empty, too long, another shape). */
     fun kind(t: String): Kind? = when {
@@ -39,7 +42,7 @@ object Target {
         Kind.APP -> t
         Kind.PIN -> t.removePrefix("pin:").substringBefore('/')
         Kind.TILE -> HomeConfig.liveProvider(t)
-        Kind.ACTION -> HOME
+        Kind.ACTION -> if (t == VOICE) SETUP else HOME
         null -> ""
     }
 

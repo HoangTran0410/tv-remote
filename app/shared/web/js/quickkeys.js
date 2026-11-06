@@ -11,7 +11,7 @@ const QK_POWER = 0;                                                // the power-
 function qkLabel(c, apps, t) {
   if (t === QK_LAST) return T('home.qk_last');
   const k = Target.kind(t);
-  if (k === 'action') return T('home.qk_cc');
+  if (k === 'action') return t === 'do:voice' ? T('home.qk_voice') : T('home.qk_cc');
   if (k === 'tile') { const x = (c.tilesAvail || []).find((y) => y.key === t); return (x && x.title) || Target.id(t); }
   if (k === 'pin') { const x = (c.pinned || []).find((y) => y.key === t) || (c.pinsAvail || []).find((y) => y.key === t); return (x && x.title) || Target.id(t); }   // pinned: what is on the grid now (TV Home's own links too)
   const a = (apps || []).find((y) => y.pkg === t);
@@ -23,7 +23,7 @@ function qkLogo(c, t) {
   if (t === QK_LAST) return el('div', { className: 'appicon placeholder qklive', textContent: '⏻' });
   const k = Target.kind(t);
   if (k === 'tile' || k === 'action') {
-    const x = (c.tilesAvail || []).find((y) => y.key === t), word = k === 'action' ? T('home.qk_cc') : (x && x.title) || Target.id(t);
+    const x = (c.tilesAvail || []).find((y) => y.key === t), word = k === 'action' ? (t === 'do:voice' ? T('home.qk_voice') : T('home.qk_cc')) : (x && x.title) || Target.id(t);
     return el('div', { className: 'appicon placeholder qklive', textContent: (word.match(/\p{L}|\p{N}/u) || ['?'])[0].toUpperCase() });
   }
   const own = k === 'pin' && ((c.pinned || []).find((y) => y.key === t) || {}).app;   // TV Home's own link: the app that opens it, not TV Home
@@ -46,6 +46,7 @@ function pickTarget(title, now, c, apps, opts = {}) {
     const add = (t, label, owner, section) => items.push({ t, label, owner, section });
     for (const a of apps) add(a.pkg, a.label || appName(a.pkg), '', 'apps');
     if (opts.actions) add('do:controlcenter', T('home.qk_cc'), T('home.qk_over'), 'apps');   // a key's action (TV Home's Quick settings over any app), not for the power-on slot
+    if (opts.actions) add('do:voice', T('home.qk_voice'), T('home.qk_voice_sub'), 'apps');   // TV Setup's voice command (needs TV Setup 0.46.1: choosing it asks, see quickKeysDraw)
     for (const p of c.pinsAvail || []) add(p.key, p.title, p.app ? appName(p.app) : '', 'pins');
     for (const x of c.tilesAvail || []) add(x.key, x.title, T('home.qk_live'), 'tiles');
     items.sort((a, b) => a.label.localeCompare(b.label));
@@ -96,6 +97,7 @@ function quickKeysDraw(host, c, apps, send) {
   const choose = async (code, words) => {
     const p = await pickTarget(words, target(code), c, apps, { none: true, actions: code !== QK_POWER, last: code === QK_POWER && !!c.keysLast && c.autolast !== undefined });
     if (p === null) return;
+    if (p === 'do:voice' && !await setupFor('voicekey')) return;     // an older TV Setup would drop the key's target
     if (code === QK_POWER) { send(p === QK_LAST ? { autolast: true, autoapp: '', autoon: true } : { autoapp: p, autoon: !!p, autolast: false }); return; }   // the slot alone decides: a target switches it on, none switches it off
     const n = { ...ka }; if (p) n[code] = p; else delete n[code];
     send({ keyapps: n, ...(p ? { keyon: true } : {}) });            // the first one chosen switches the keys on: nobody asks twice

@@ -23,7 +23,7 @@ object Targets {
         Target.Kind.APP -> if (HomeLock.needsPin(HomeLock.locked(c), t, cleared)) false else Apps.launch(c, t, o)   // a lock of TV Home's own: only the PIN pad ([cleared]) opens it
         Target.Kind.PIN -> Pins.start(c, t, o)
         Target.Kind.TILE -> { val app = c.applicationContext; bg.execute { LiveWidgets.press(app, t) { } }; true }
-        Target.Kind.ACTION -> try { c.startActivity(android.content.Intent(c, dev.tvremote.home.ControlCenterActivity::class.java).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)); true } catch (e: Exception) { false }
+        Target.Kind.ACTION -> if (t == Target.VOICE) false else try { c.startActivity(android.content.Intent(c, dev.tvremote.home.ControlCenterActivity::class.java).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)); true } catch (e: Exception) { false }
         null -> false
     }
 
@@ -40,7 +40,7 @@ object Targets {
         Target.Kind.APP -> Apps.one(c, t)?.also { it.load(c) }
         Target.Kind.PIN -> Pins.app(c, t)
         Target.Kind.TILE -> App(t, LiveWidgets.title(c, t), null)
-        Target.Kind.ACTION -> App(t, c.getString(R.string.cc_title), null)
+        Target.Kind.ACTION -> App(t, label(c, t), null)
         null -> null
     }
 
@@ -49,7 +49,7 @@ object Targets {
         Target.Kind.APP -> Apps.one(c, t)?.label ?: t
         Target.Kind.PIN -> Pins.label(c, t) ?: Target.id(t)
         Target.Kind.TILE -> LiveWidgets.title(c, t)
-        Target.Kind.ACTION -> c.getString(R.string.cc_title)
+        Target.Kind.ACTION -> c.getString(if (t == Target.VOICE) R.string.voice_title else R.string.cc_title)
         null -> "—"
     }
 }

@@ -47,6 +47,7 @@ object SetupNeed {
         "family" to "0.38.5",                                          // 🛡️ Family mode's record kept on the TV (Rules "family"; the release after 0.38.4)
         "video" to "0.42.0",                                           // 🎬 a video or a camera in a box over the screen (VideoLayer; the release after 0.41.0)
         "speak" to "0.42.3",                                           // 🔊 a message read aloud (NotifyReceiver "speak"; the release after 0.42.2)
+        "voicekey" to "0.46.1",                                        // 🎙️ a remote key that opens the voice command (Target "do:voice", KeyFix.VOICE; the release after 0.46.0)
         "homebar" to "0.42.3",                                         // 🏠 the bar over an app on Home (HomeBar; the release after 0.42.2)
         "scenetime" to "0.45.2",                                       // 🕗 a scene that starts at a time or date by itself (SceneTimer, RulesReceiver "scenes" answers timed; the release after 0.45.1)
         "home_usage" to "0.14.1",                                      // 📊 TV Home's card of app use and limits (HomeInfo)
@@ -95,6 +96,7 @@ object SetupNeed {
             "family" -> t("core.need_family")
             "video" -> t("core.need_video")
             "speak" -> t("core.need_speak")
+            "voicekey" -> t("core.need_voicekey")
             "homebar" -> t("core.need_homebar")
             "scenetime" -> t("core.need_scenetime")
             else -> feature

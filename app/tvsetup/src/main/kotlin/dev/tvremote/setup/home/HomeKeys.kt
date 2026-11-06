@@ -14,6 +14,7 @@ import android.util.Log
 import dev.tvremote.home.HomeConfig
 import dev.tvremote.home.Target
 import dev.tvremote.setup.HomeInfo
+import dev.tvremote.setup.MicVoice
 import dev.tvremote.setup.WelcomeState
 import dev.tvremote.setup.rules.Usage
 import org.json.JSONObject
@@ -52,7 +53,8 @@ internal object HomeKeys {
             Target.Kind.APP -> pm.getLeanbackLaunchIntentForPackage(t) ?: pm.getLaunchIntentForPackage(t)
             Target.Kind.PIN, Target.Kind.TILE ->
                 Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.OpenActivity").putExtra("t", t).takeIf { launchable(c, "dev.tvremote.home") }
-            Target.Kind.ACTION -> Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.ControlCenterActivity").takeIf { launchable(c, "dev.tvremote.home") }
+            Target.Kind.ACTION -> if (t == Target.VOICE) Intent(c, dev.tvremote.setup.MicActivity::class.java).takeIf { MicVoice.available(c) }
+                else Intent().setClassName("dev.tvremote.home", "dev.tvremote.home.ControlCenterActivity").takeIf { launchable(c, "dev.tvremote.home") }
             null -> null
         } ?: return false
         return try { c.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); true } catch (e: Exception) { false }
@@ -62,6 +64,7 @@ internal object HomeKeys {
     fun can(c: Context, t: String): Boolean = if (t.isEmpty()) true else when (Target.kind(t)) {
         null -> false
         Target.Kind.APP -> c.packageManager.getLeanbackLaunchIntentForPackage(t) != null || c.packageManager.getLaunchIntentForPackage(t) != null
+        Target.Kind.ACTION -> if (t == Target.VOICE) MicVoice.available(c) else launchable(c, "dev.tvremote.home")
         else -> launchable(c, "dev.tvremote.home")
     }
 
