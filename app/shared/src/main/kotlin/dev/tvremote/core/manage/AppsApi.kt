@@ -279,7 +279,6 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
         if (keepWhy(pkg, keep) != null) throw IllegalArgumentException("protected: the TV needs this app")
     }
 
-    /** Closes the apps that are only waiting in the background (what is on screen stays); says how much memory came back, in MB. */
     /** An install did not fit: {free, need, ok, apps}: the TV's free bytes, what [size] (an APK) needs, the biggest apps to trim ([dev.tvremote.core.ontv.Space]). */
     private fun storage(size: Long): JSONObject {
         val out = sh(dev.tvremote.core.ontv.Space.READ)
@@ -295,6 +294,7 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
         return o.put("apps", apps)
     }
 
+    /** Closes the apps that are only waiting in the background (what is on screen stays); says how much memory came back, in MB. */
     private fun free(): JSONObject {
         val avail = { (Meminfo.kb(sh("cat /proc/meminfo"), "MemAvailable") ?: 0L) / 1024 }
         val before = avail()
