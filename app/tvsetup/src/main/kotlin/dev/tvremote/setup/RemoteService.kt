@@ -454,6 +454,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
 
     override fun onStartCommand(i: Intent?, flags: Int, id: Int): Int {
         foreground()                                                  // every startForegroundService() wants its own answer, not only the first
+        if (askStopped) { askAgain(); ui.post { if (tv == null) { ui.removeCallbacks(retry); connect() } } }   // TV Setup's screen opened (RemoteService.start): one more question
         if (saidAlive) afterUpdate()                                  // started again by an update's script that missed the first word
         return START_STICKY
     }
@@ -527,6 +528,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
     private fun inUse(wait: Boolean = true) {
         lastUse = System.currentTimeMillis()
         lastSeen = lastUse
+        askAgain()
         if (tv == null) { ui.removeCallbacks(retry); connect() }         // resting, or waiting out a failure: someone wants it now
         if (wait && adbState == "connecting") for (i in 0 until 40) { // up to 4 s, usually about a second
             if (adbState != "connecting") break
@@ -553,7 +555,11 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
     private var retryMs = 5000L
     private var failSince = 0L                                        // the failed tries since ADB last worked (AdbReport)
     private var fails = 0
+    private var asked = 0                                             // "Allow USB debugging?" questions left unanswered in a row (LinkFailure.ASK_LIMIT)
+    @Volatile private var askStopped = false                          // the timed retries are off until someone uses it
     private val retry = Runnable { connect() }
+    /** Somebody wants ADB: the next unanswered question counts as the last one allowed, not a fresh three. */
+    private fun askAgain() { askStopped = false; asked = minOf(asked, LinkFailure.ASK_LIMIT - 1) }
 
     private val rest = object : Runnable {
         override fun run() {
@@ -581,22 +587,26 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
                 adbState = "ready"
                 adbDetail = ""
                 retryMs = 5000
-                failSince = 0L; fails = 0
+                failSince = 0L; fails = 0; asked = 0; askStopped = false
                 if (!saidAlive && serving) { saidAlive = true; afterUpdate() }
                 if (!KeepAdb.can(this) || !KeyFix.prepared) Thread({ try { link?.getQuiet()?.let { KeepAdb.grant(this, it); KeyFix.prepare(this, it); WebViewFix.repair(it); if (MicVoice.on(this)) MicVoice.grant(this, it); MicVoice.takeAssist(this); MicVoice.syncOffline(this); KeyFix.sync(this) } } catch (e: Exception) { } }, "grant").apply { isDaemon = true }.start()
             }
             "closed", "error" -> {                                    // ADB off, TV just booted, session dropped: keep trying
                 if (resting) return                                   // we closed it ourselves
                 val o = LinkFailure.of(key, detail, retryMs, { dev.tvremote.core.Errors.say(java.io.IOException(it), dev.tvremote.core.Words.lang) },
-                    android.os.Build.MANUFACTURER) { T("tv_main.fire_adb_blocked") + " " + T("tv_main.fire_adb_use_phone") }
+                    android.os.Build.MANUFACTURER, { T("tv_main.fire_adb_blocked") + " " + T("tv_main.fire_adb_use_phone") }, { T("tv_main.adb_not_answering") })
                 adbDetail = o.detail
                 adbState = o.state
                 tv = null
-                ui.removeCallbacks(retry); ui.postDelayed(retry, o.retryMs)
+                ui.removeCallbacks(retry)
+                if (o.state == "allow" && ++asked >= LinkFailure.ASK_LIMIT) {   // nobody answers: the question pops over what is playing again and again (census Haier, Skyworth)
+                    askStopped = true
+                    adbDetail = T("tv_main.adb_stopped_asking")
+                } else ui.postDelayed(retry, o.retryMs)
                 if (o.backoff) retryMs = minOf(retryMs * 2, 5 * 60_000L)   // ADB off for good: every 5 min at most, not a session every 5 s forever; a use tries at once
                 if (failSince == 0L) failSince = android.os.SystemClock.elapsedRealtime()
                 fails++
-                AdbReport.failing(this, adbState, detail, failSince, fails, version)   // never through for minutes: the census hears it once
+                if (!LinkFailure.fireBlocked(android.os.Build.MANUFACTURER, detail)) AdbReport.failing(this, adbState, detail, failSince, fails, version)   // never through for minutes: the census hears it once
             }
         }
     }

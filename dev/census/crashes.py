@@ -40,6 +40,7 @@ def call(base, path, params, method="GET"):
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
+ADB_KIND = "TV Setup ADB "   # AdbReport's kind: expected states of a TV that cannot be reached; --new skips them unless --adb
 CHECKED = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checked.json")
 
 
@@ -135,6 +136,7 @@ def main():
     a.add_argument("--json", action="store_true")
     a.add_argument("--since", default="", metavar="YYYY-MM-DD")
     a.add_argument("--new", action="store_true")
+    a.add_argument("--adb", action="store_true", help="--new also lists 'TV Setup ADB ...' (a TV whose own ADB is off: a state, not a crash)")
     a.add_argument("--frames", action="store_true")
     a.add_argument("--mark", metavar="SIG|all")
     a.add_argument("--note", default="")
@@ -154,7 +156,7 @@ def main():
         return
     if o.json or o.since or o.new:
         rows = call(o.url, "/v1/crashes", {"sig": full(o, o.sig) if o.sig else "", "v": o.v, "app": o.app})["crashes"]
-        rows = [r for r in rows if r["first"] >= o.since and (not o.new or unseen(r, marks) > 0)]
+        rows = [r for r in rows if r["first"] >= o.since and (not o.new or (unseen(r, marks) > 0 and (o.adb or not r["kind"].startswith(ADB_KIND))))]
         if o.json:
             out = [normal(r, marks) for r in rows]
             if o.frames:

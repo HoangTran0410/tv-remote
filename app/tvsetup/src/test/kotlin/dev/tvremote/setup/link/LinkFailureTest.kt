@@ -25,6 +25,15 @@ class LinkFailureTest {
         assertTrue(o.backoff)
     }
 
+    @Test fun aTimeoutOnTheOwnLinkIsTheTvsAdbNotTheNetwork() {
+        for (d in listOf("java.net.SocketTimeoutException: Read timed out", "timed out")) {
+            val o = LinkFailure.of("error", d, 5000, { Errors.say(IOException(it), "en") }, silent = { "tv adb silent" })
+            assertEquals("error", o.state)
+            assertEquals("tv adb silent", o.detail)                     // not Errors.say's "network is slow"
+        }
+        assertEquals(3, LinkFailure.ASK_LIMIT)
+    }
+
     @Test fun refusedAndClosedKeepTheirStates() {
         assertEquals("refused", LinkFailure.of("error", "failed to connect: ECONNREFUSED (Connection refused)", 5000, raw).state)
         assertEquals("connecting", LinkFailure.of("closed", "", 5000, raw).state)
@@ -54,11 +63,11 @@ class LinkFailureTest {
     }
 
     @Test fun fireTvsOwnAdbBlockedSaysSo() {
-        val o = LinkFailure.of("error", "EOFException", 20_000L, raw, "Amazon") { "blocked" }
+        val o = LinkFailure.of("error", "EOFException", 20_000L, raw, "Amazon", fire = { "blocked" })
         assertEquals("error", o.state)
         assertEquals("blocked", o.detail)
         assertTrue(LinkFailure.fireBlocked("Amazon", "java.io.EOFException: stream closed"))
         assertTrue(!LinkFailure.fireBlocked("Xiaomi", "EOFException"))                // elsewhere an EOF is not Amazon's block
-        assertEquals("EOFException", LinkFailure.of("error", "EOFException", 20_000L, raw, "Xiaomi") { "blocked" }.detail)
+        assertEquals("EOFException", LinkFailure.of("error", "EOFException", 20_000L, raw, "Xiaomi", fire = { "blocked" }).detail)
     }
 }

@@ -11,6 +11,11 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - Installing TV Games / TV Channels / TV Apps while GitHub cannot be reached says so, instead of "it comes in the next release".
 - Phone app: the address box checks what is typed (IPv4, "192 168 1 5" read as dots, a host name, [IPv6]) and says what an address looks like instead of dialing "42" or a Downloader code; an empty address no longer dials localhost on resume (support: `failed to connect to ip6-localhost/::1`).
 - Playing a link in TV Channels, opening a pin and Tailscale bring back an app that is turned off (or kept for another profile) and try once more, as Open does; TV Channels turned off is no longer called "too old". TVs before Android 7 fall back to plainer commands.
+- TV Setup: an unanswered "Allow USB debugging?" is asked 3 times, not every few minutes forever over what is playing; then it says it stopped and asks again when TV Setup is opened or a button on the page is used.
+- TV Setup: a timed-out link to the TV's own ADB says the TV's ADB is not answering (switch debugging off and on, or restart), not "the network is slow".
+- Census: "TV Setup ADB ..." reports are no longer sent from Fire TV (blocked by Amazon), and `crashes.py --new` hides them unless `--adb`.
+- The TV's web page no longer posts the Computer-app-only `/api/assist` stop (a 404) when the ADB help closes.
+
 - First setup with ADB off: the Setup tab's steps and the phone app's How to connect put the remote buttons first (they work at once, no ADB) and ADB after them as an optional "more"; README Quick start has the same order.
 - Computer app: a scan that finds no TV now offers three buttons: Install on the TV (the Downloader code, then the step-by-step guide), Type the IP and Scan again.
 - The "can't reach the TV" banner has a Send the log button next to its fix, for the cases the self-check cannot solve.
