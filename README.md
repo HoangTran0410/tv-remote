@@ -54,11 +54,9 @@ Codes go in the **Downloader** app on the TV and always point at the latest rele
 
 ## Quick start
 
-1. **Turn on ADB on the TV** (once): Settings → About → press OK on **Build** 7 times → Developer options → **ADB debugging**. [Step by step](https://tvremote.pages.dev/guide?lang=en#prep-tv) · provider boxes (FPT, Viettel…): [read this first](https://tvremote.pages.dev/guide?lang=en#prep-tv).
-2. **Open the app** and pick the TV ([phone](https://tvremote.pages.dev/guide?lang=en#install-phone) · [computer](https://tvremote.pages.dev/guide?lang=en#install-pc) · [iPhone / browser](https://tvremote.pages.dev/guide?lang=en#web-iphone): install [TV Setup](https://tvremote.pages.dev/guide?lang=en#install-tv), scan its QR).
-3. **On the TV choose "Always allow"** when it asks [Allow USB debugging?](https://tvremote.pages.dev/guide?lang=en#allow-usb)
-
-No ADB? The Phone and Computer apps still send keys after pairing with the code the TV shows.
+1. **Open the app** and pick the TV ([phone](https://tvremote.pages.dev/guide?lang=en#install-phone) · [computer](https://tvremote.pages.dev/guide?lang=en#install-pc) · [iPhone / browser](https://tvremote.pages.dev/guide?lang=en#web-iphone): install [TV Setup](https://tvremote.pages.dev/guide?lang=en#install-tv), scan its QR).
+2. **Type the code the TV shows**: the keys work at once, with ADB off ([keys before ADB](https://tvremote.pages.dev/guide?lang=en#nokeys)).
+3. **Later, for the screen, apps and files: turn on ADB** (optional). Easiest: [install TV Setup](https://tvremote.pages.dev/guide?lang=en#install-tv) and press "Turn ADB on for me". By hand: Settings → About → press OK on **Build** 7 times → Developer options → **ADB debugging** ([step by step](https://tvremote.pages.dev/guide?lang=en#prep-tv)); never on a provider box (FPT, Viettel…): it may ask for a password or lock up. Then choose "Always allow" on [Allow USB debugging?](https://tvremote.pages.dev/guide?lang=en#allow-usb)
 
 ## Features
 

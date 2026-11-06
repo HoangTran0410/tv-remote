@@ -604,10 +604,11 @@ async function loadSteps() {
   if (!s.host) { $('#steps').replaceChildren(el('p', { className: 'muted', textContent: T('setup.pick_a_tv') })); return; }
   if (s.kind && s.kind !== 'android') { showSteps(nativeSteps(s)); return; }
   const adb = s.adb.state, ready = adb === 'ready', out = [];
-  // 1. ADB
+  // ADB. Not connected: it is "more" (apps, picture, files), the keys come first (they need no ADB)
+  const keysFirst = !ready;
   out.push(ready ? step(1, 'ok', T('setup.adb_connected'), T('setup.allowed_by_tv'))
     : adb === 'unauthorized' ? step(1, 'wait', T('setup.tv_waiting_allow'), T('setup.tv_waiting_allow_note'), act(T('setup.pressed_retry'), async () => { await api('/api/adb/connect', {}); await loadSteps(); }, 'primary'))
-    : step(1, 'todo', T('setup.turn_on_adb_title'), T('setup.turn_on_adb_note'),
+    : step(1, 'todo', T('setup.turn_on_adb_title'), keysFirst ? T('setup.turn_on_adb_more') : T('setup.turn_on_adb_note'),
         act(T('setup.turn_on_adb_help'), async () => adbHelp(), 'primary'), act(T('setup.connect_now'), async () => { await api('/api/adb/connect', {}); await loadSteps(); })));
   // 2. Tailscale
   if (!ready) out.push(step(2, 'todo', T('setup.ts_step_title'), T('setup.ts_step_later')));
@@ -616,12 +617,12 @@ async function loadSteps() {
   out[out.length - 1].classList.add('optional');                     // only for away from home: the steps count as done without it
   // 3. remote pairing
   const r = s.remote;
-  if (r.connected) out.push(step(3, 'ok', T('setup.remote_paired'), T('setup.keys_work')));
+  if (r.connected) out.push(step(3, 'ok', T('setup.remote_paired'), keysFirst ? T('setup.keys_no_adb') : T('setup.keys_work')));
   else if (ready && !pairing) out.push(step(3, 'ok', T('setup.remote_via_adb'), T('setup.pair_spare'),   // keys already work: pairing is only a spare way in
     act(T('setup.pair'), async () => { if (await api('/api/pair/start', {})) { pairing = true; await loadSteps(); } })));
   else if (r.paired === false || pairing) {
     const code = el('input', { placeholder: T('setup.ph_code6c'), maxLength: 6, autocomplete: 'off' });
-    out.push(step(3, 'wait', T('setup.pair_remote'), pairing ? T('setup.tv_showing_code6') : T('setup.press_pair_code6'),
+    out.push(step(3, 'wait', T('setup.pair_remote'), (keysFirst && !pairing ? T('setup.keys_first') + ' ' : '') + (pairing ? T('setup.tv_showing_code6') : T('setup.press_pair_code6')),
       pairing ? code : null,
       pairing ? act(T('setup.confirm'), async () => { const x = await api('/api/pair/finish', { code: code.value.trim() }); if (x) { pairing = false; toast(T('setup.paired')); await refresh(); await loadSteps(); } }, 'primary') : null,
       act(pairing ? T('setup.new_code') : T('setup.pair'), async () => { if (await api('/api/pair/start', {})) { pairing = true; await loadSteps(); } }, pairing ? '' : 'primary')));
@@ -634,6 +635,8 @@ async function loadSteps() {
     out.push(step(4, 'todo', move ? T('setup.save_move') : T('setup.save_tv'), move ? T('setup.save_move_note', { ip: s.tailscale_ip }) : T('setup.save_note'),
       UI.line(name, act(T('scenedlg.save'), async () => { const x = await api('/api/tv/save', { name: name.value }); if (x) { toast(x.moved ? T('setup.saved_moved', { host: x.tv.host }) : T('setup.saved')); await refresh(); await loadSteps(); } }, 'primary'))));
   }
+  if (keysFirst) out.unshift(out.splice(2, 1)[0]);                   // pairing is out[2] here: first
+  out.forEach((n, i) => { const m = n.querySelector('.mark'); if (m.textContent !== '✓') m.textContent = i + 1; });
   showSteps(out);
 }
 let stepsSig = '', stepsHost = '';
