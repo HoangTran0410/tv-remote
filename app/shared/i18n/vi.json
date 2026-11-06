@@ -4587,5 +4587,16 @@
  "core.fr_video_noanswer": "TV không trả lời nữa. Thử lại; nếu vẫn bị, khởi động lại TV.",
  "core.fr_copy_not_stored": "Tệp chưa được lưu trên TV. Kiểm tra TV còn dung lượng trống rồi thử lại.",
  "core.fr_tv_noanswer": "TV không trả lời. Kiểm tra TV đang bật và cùng Wi-Fi, rồi thử lại.",
- "core.fr_no_scene": "Kịch bản này không còn nữa. Có thể đã bị đổi tên hoặc xóa."
+ "core.fr_no_scene": "Kịch bản này không còn nữa. Có thể đã bị đổi tên hoặc xóa.",
+ "auto.idle_title": "📺 Tự tắt khi không ai dùng",
+ "auto.idle_note": "Quá số giờ này không bấm phím, TV hỏi “Còn xem không?” rồi tắt sau 1 phút. Xem phim mà không bấm phím cũng tính.",
+ "auto.idle_hours_label": "Số giờ không bấm phím",
+ "auto.idle_h": "{n} giờ",
+ "auto.idle_off": "Tắt",
+ "auto.idle_on": "Sau {n} giờ không bấm phím, TV hỏi rồi tự tắt.",
+ "core.need_idleoff": "tự tắt khi không ai dùng",
+ "warn.idle_title": "Còn xem không?",
+ "warn.idle_body": "Lâu rồi không ai bấm phím nào. Bấm một phím để TV không tắt.",
+ "warn.idle_keep": "Còn xem",
+ "guard.idle_the_tv_turns": "Không ai dùng TV: TV sẽ tắt sau 1 phút"
 }

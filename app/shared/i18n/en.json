@@ -4725,5 +4725,16 @@
  "core.fr_video_noanswer": "The TV stopped answering. Try again; if it keeps happening, restart the TV.",
  "core.fr_copy_not_stored": "The file did not get saved on the TV. Check that the TV has free storage, then try again.",
  "core.fr_tv_noanswer": "The TV did not answer. Check that it is on and on the same Wi-Fi, then try again.",
- "core.fr_no_scene": "That scene is not there any more. It may have been renamed or deleted."
+ "core.fr_no_scene": "That scene is not there any more. It may have been renamed or deleted.",
+ "auto.idle_title": "📺 Turn off when nobody uses it",
+ "auto.idle_note": "No key for this long: the TV asks “Still watching?” and turns off a minute later. A film with no key pressed counts too.",
+ "auto.idle_hours_label": "Hours without a key",
+ "auto.idle_h": "{n} h",
+ "auto.idle_off": "Off",
+ "auto.idle_on": "After {n} h without a key, the TV asks, then turns off.",
+ "core.need_idleoff": "turning off when nobody uses the TV",
+ "warn.idle_title": "Still watching?",
+ "warn.idle_body": "No key has been pressed for a long time. Press any key to keep the TV on.",
+ "warn.idle_keep": "Still watching",
+ "guard.idle_the_tv_turns": "Nobody is using the TV: it turns off in 1 minute"
 }

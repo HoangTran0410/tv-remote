@@ -4758,5 +4758,16 @@
   "core.fr_video_noanswer": "La TV a cessé de répondre. Réessayez ; si cela continue, redémarrez la TV.",
   "core.fr_copy_not_stored": "Le fichier n’a pas été enregistré sur la TV. Vérifiez qu’il reste de la place sur la TV, puis réessayez.",
   "core.fr_tv_noanswer": "La TV ne répond pas. Vérifiez qu’elle est allumée et sur le même Wi-Fi, puis réessayez.",
-  "core.fr_no_scene": "Cette scène n’existe plus. Elle a peut-être été renommée ou supprimée."
+  "core.fr_no_scene": "Cette scène n’existe plus. Elle a peut-être été renommée ou supprimée.",
+  "auto.idle_title": "📺 Éteindre quand personne ne s’en sert",
+  "auto.idle_note": "Aucune touche pendant ce temps : la TV demande « Vous regardez encore ? » et s’éteint une minute après. Un film sans touche compte aussi.",
+  "auto.idle_hours_label": "Heures sans touche",
+  "auto.idle_h": "{n} h",
+  "auto.idle_off": "Non",
+  "auto.idle_on": "Après {n} h sans touche, la TV demande puis s’éteint.",
+  "core.need_idleoff": "l’arrêt quand personne ne regarde",
+  "warn.idle_title": "Vous regardez encore ?",
+  "warn.idle_body": "Aucune touche n’a été pressée depuis longtemps. Appuyez sur une touche pour garder la TV allumée.",
+  "warn.idle_keep": "Je regarde encore",
+  "guard.idle_the_tv_turns": "Personne ne se sert de la TV : elle s’éteint dans 1 minute"
 }

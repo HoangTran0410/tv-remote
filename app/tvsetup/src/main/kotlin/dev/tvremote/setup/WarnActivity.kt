@@ -49,7 +49,7 @@ class WarnActivity : Activity() {
         card.gravity = Gravity.CENTER_HORIZONTAL
         card.background = GradientDrawable().apply { setColor(Color.rgb(25, 29, 35)); cornerRadius = dp(20).toFloat() }
         card.setPadding(dp(40), dp(32), dp(40), dp(28))
-        val icon = when (kind) { "sleep" -> "😴"; "bed" -> "🌙"; "ram" -> "🧠"; "sched" -> "📅"; "total" -> "⏰"; else -> "⏳" }
+        val icon = when (kind) { "sleep" -> "😴"; "bed" -> "🌙"; "ram" -> "🧠"; "sched" -> "📅"; "total" -> "⏰"; "idle" -> "📺"; else -> "⏳" }
         val (total, avail) = Guard.memory()
         card.addView(text(icon, 48, false))
         card.addView(text(when (kind) {
@@ -58,6 +58,7 @@ class WarnActivity : Activity() {
             "ram" -> T("warn.the_tv_s_memory")
             "sched" -> T("warn.sched_title", "name" to name)
             "total" -> T("kids.total_title")
+            "idle" -> T("warn.idle_title")
             else -> T("warn.time_is_up_for", "name" to name)
         }, 28, true), LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(8) })
         val sched = Rules.load(this).optJSONObject("sched")?.optJSONObject(pkg)
@@ -69,6 +70,7 @@ class WarnActivity : Activity() {
             "sched" -> if (sched == null || sched.optBoolean("block")) T("warn.sched_never")
                 else T("warn.sched_body", "when" to Rules.windowsText(sched))
             "total" -> T("kids.total_body")
+            "idle" -> T("warn.idle_body")
             else -> T("warn.the_app_was_closed")
         }, 16, false).apply { setTextColor(Color.rgb(170, 178, 189)); maxWidth = dp(560) }, LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(10) })
         count = text("", 22, true)
@@ -81,6 +83,9 @@ class WarnActivity : Activity() {
             buttons.add(button(T("auto.plus_15")) { Rules.change(this, JSONObject().put("do", "sleep_add").put("minutes", 15)); finish() })
             buttons.add(button(T("warn.turn_off_now")) { Rules.change(this, JSONObject().put("do", "sleep").put("minutes", 0)); standby(); finish() })
             buttons.add(button(T("warn.cancel_the_timer")) { Rules.change(this, JSONObject().put("do", "sleep").put("minutes", 0)); finish() })
+        } else if (kind == "idle") {
+            buttons.add(button(T("warn.idle_keep")) { finish() })
+            buttons.add(button(T("warn.turn_off_now")) { standby(); finish() })
         } else if (kind == "ram") {
             buttons.add(button(T("warn.free_ram")) { freeRam(buttons) })
             buttons.add(button(T("warn.see_the_apps")) {
@@ -116,6 +121,7 @@ class WarnActivity : Activity() {
             val left = until - System.currentTimeMillis()
             val o = Rules.load(this@WarnActivity)
             if (kind == "total" && (Rules.unlockUntil(o, System.currentTimeMillis()) > 0 || totalLeft(o) > 0)) { finish(); return }   // a code, a parent's "open", or more minutes granted
+            if (kind == "idle" && Rules.load(this@WarnActivity).optInt("idle_h") == 0) { finish(); return }   // turned off meanwhile
             val off = kind == "sleep" && o.optLong("sleep_at") != until
                 || kind == "bed" && !(Rules.inBedtime(o, System.currentTimeMillis()) && System.currentTimeMillis() >= o.optLong("snooze_until"))   // more time granted, bedtime off or moved: the Guard's own test
             if (left <= 0 || off) { finish(); return }
@@ -168,6 +174,12 @@ class WarnActivity : Activity() {
                 ui.postDelayed({ finish() }, if (got == null) 4000 else 2500)
             }
         }.start()
+    }
+
+    /** "Still watching?": any key but the ones that choose a button is the answer. */
+    override fun dispatchKeyEvent(e: android.view.KeyEvent): Boolean {
+        if (kind == "idle" && e.action == android.view.KeyEvent.ACTION_DOWN && e.keyCode !in setOf(android.view.KeyEvent.KEYCODE_DPAD_CENTER, android.view.KeyEvent.KEYCODE_ENTER, android.view.KeyEvent.KEYCODE_DPAD_RIGHT, android.view.KeyEvent.KEYCODE_DPAD_LEFT)) { finish(); return true }
+        return super.dispatchKeyEvent(e)
     }
 
     override fun onDestroy() { ui.removeCallbacks(tick); super.onDestroy() }

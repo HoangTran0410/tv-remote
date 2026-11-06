@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Turn off when nobody uses it (Automation tab, next to Sleep timer): after 1, 2, 3 or 4 hours with no key pressed the TV asks "Still watching?" for a minute, then goes to standby; any key keeps it on. Off by default (nothing runs, nothing is read). TV Setup reads the TV's own last-key time once, when the deadline could first have come; Android's attentive timeout is not used (measured on the Google TV emulator: no warning, and it depends on the stay-awake flag). Playing video is not skipped. Needs TV Setup 0.46.1.
 - TV Home customize page (phone app, TV web page, Computer app): a TV Home that answers a read or a change without its settings no longer throws "Cannot read properties of undefined (themesBuiltin)"; the page keeps what it shows.
 - A TV that drops the ADB link (`adb connection lost: EOFException`; TCL, Skyworth, Xiaomi) no longer fails the page's request: Manage redials once and runs the command again when it never reached the TV, or when it only reads (dumpsys, pm list, getprop, settings get ...); installs, keys and launches are never repeated.
 

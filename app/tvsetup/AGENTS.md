@@ -30,7 +30,7 @@ dev.tvremote.setup/.X`, `HomeInfo`'s authority, appops): the Application, activi
 
 | Folder | Files |
 |---|---|
-| `rules/` | `Rules`, `Guard`, `Clock`, `Kids` (+ `Lockout`), `Totp`, `Usage`: sleep timer, bedtime, limits, the PIN lock |
+| `rules/` | `Rules`, `Guard`, `IdleOff`, `Clock`, `Kids` (+ `Lockout`), `Totp`, `Usage`: sleep timer, bedtime, limits, the PIN lock, "turn off when nobody uses it" |
 | `home/` | `HomeApp`, `HomeCompile`, `HomeControl`, `HomeKey`, `HomeKeys` (+ `AutoOpen`), `HomePower`, `LiveWidgets`, `LauncherGuard`, `Reoptimize`: what TV Home asks of TV Setup, the home screen swap |
 | `keys/` | `KeyFix`, `KeyList`, `KeyLog`, `KeysAddon`, `HoldKeys`: the key filter and its add-on |
 | `link/` | `Paired`, `PairBackoff`, `Scope`, `Tls`, `LinkFailure`, `OnPhone`, `DnsWatch`, `KeepAdb`, `KeepAwake`, `TailscaleWatch`: who may reach the TV and keeping the link up |
@@ -51,3 +51,4 @@ screen and eats them. Reached from Optimize TV, TV Home's Quick keys ("keytest" 
   the receiver needs the shell's DUMP permission, so apps cannot call it. No receiver = TV Setup missing or older than the timer.
 - A scene with `at` (a time + weekdays, or a date) is kept by `rules/SceneTimer.kt` (prefs `scenetimer`, filled by RulesReceiver "scenes" / the TV page's save) and started by `Guard.check` through `runNow` (ScenePin.kt); no alarm: `Rules.active` is true only while one exists. A cursor per scene, grace 5 min, so a boot clock jump never replays a backlog. A TV Setup older than `SetupNeed` "scenetime" answers "scenes" without `timed`: the save is refused with the update question.
 - Scenes are kept per client (computer: `tvs.json` "scenes"; TV Setup: prefs; phone: `SceneStore`), cleaned by `Scenes.clean`; `GET /api/scenes?download=1` is the backup file the page imports back.
+- **Turn off when nobody uses it** (`rules/IdleOff.kt`, rule `idle_h` 0-4, `SetupNeed` "idleoff"): Guard reads the TV's last-key time (`dumpsys power`, one line) only while the option is on and only when the deadline could have come (key presses can only move it later), warns with `WarnActivity` "idle" for a minute, then keyevent 223. Android's own attentive timeout is not used (measured: no warning on the API 34 emulator, tied to the stay-awake flag). Playing video is deliberately not skipped.

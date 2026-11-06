@@ -32,7 +32,7 @@ import org.json.JSONObject
  *   kids mode     the lock turned round: EVERY app asks for the PIN (or an Authenticator code, or a parent over Telegram) except the ones allowed and the
  *                 always-free ones ([Kids.free]: the home screen, the keyboard, TV Setup...); a total of minutes a day on the TV, apps and all
  *
- * Stored as one JSON object: { sleep_at, bedtime: {on, ranges: [{from, to}], from, to (the first range, for
+ * Stored as one JSON object: { sleep_at, idle_h (0-4 hours without a key before standby, [IdleOff]), bedtime: {on, ranges: [{from, to}], from, to (the first range, for
  * remotes older than ranges)}, snooze_until, limits: {pkg: minutes}, extra: {day: {pkg: minutes}},
  * volume: [{from, to, max (percent)}], ram: {on, pct (used, percent), auto (close background apps itself, at most once per 10 min)}, lock: {apps: [pkg], salt, hash (of the PIN), len (its digits)},
  * sched: {pkg: {days: [1..7, Monday = 1], from, to, max (minutes inside the window, 0 = no cap), block (never: days and window ignored)}},
@@ -56,7 +56,7 @@ internal object Rules {
     /** Something here needs the TV Setup service to keep running, even with the web remote off. */
     fun active(c: Context): Boolean {
         val o = load(c)
-        return o.optLong("sleep_at") > System.currentTimeMillis() || o.optJSONObject("bedtime")?.optBoolean("on") == true || (o.optJSONObject("limits")?.length() ?: 0) > 0
+        return o.optLong("sleep_at") > System.currentTimeMillis() || o.optJSONObject("bedtime")?.optBoolean("on") == true || IdleOff.hours(o) > 0 || (o.optJSONObject("limits")?.length() ?: 0) > 0
             || (o.optJSONArray("volume")?.length() ?: 0) > 0 || ram(o).let { it.optBoolean("on") || it.optBoolean("auto") }
             || locked(o).isNotEmpty() || kidsMode(o) || totalMin(o, System.currentTimeMillis()) != null
             || SceneTimer.any(c)                                       // a scene that starts at a time (Guard's check starts it)
@@ -125,6 +125,7 @@ internal object Rules {
                 o.put("bedtime", bedtime(d.optBoolean("on") && list.length() > 0, list))
             }
             "volume" -> o.put("volume", ranges(d.optJSONArray("ranges") ?: JSONArray(), true))
+            "idle" -> o.put("idle_h", d.optInt("hours").takeIf { it in IdleOff.HOURS } ?: throw IllegalArgumentException("bad hours"))   // 0 = off; Guard reads nothing then
             "ram" -> o.put("ram", JSONObject().put("on", d.optBoolean("on")).put("pct", d.optInt("pct", ram(o).optInt("pct")).coerceIn(RAM_MIN, RAM_MAX))
                 .put("auto", if (d.has("auto")) d.optBoolean("auto") else ram(o).optBoolean("auto")))   // "auto" absent (an older client): kept as it is
             "holdkeys" -> o.put("holdkeys", d.optBoolean("on"))             // HoldKeys: a short press of Input / Settings does nothing, 2 s does
@@ -563,7 +564,7 @@ internal object Rules {
             .put("bedtime", bedtime(o))
             .put("in_bedtime", inBedtime(o, now)).put("snooze_until", o.optLong("snooze_until").let { if (it > now) it else 0L })
             .put("limits", limits).put("volume", o.optJSONArray("volume") ?: JSONArray()).put("volume_now", volumeCap(o, now) ?: JSONObject.NULL)
-            .put("ram", ram(o)).put("volume_fixed", Guard.volumeFixed(c)).put("running", RemoteService.isRunning()).put("wanted", active(c))
+            .put("idle_h", IdleOff.hours(o)).put("ram", ram(o)).put("volume_fixed", Guard.volumeFixed(c)).put("running", RemoteService.isRunning()).put("wanted", active(c))
             .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("mic_offline", o.optBoolean("mic_offline")).put("mic_secure", dev.tvremote.setup.keys.KeyFix.can(c)).put("mic_engine", o.optString("mic_engine").ifEmpty { "auto" }).put("mic_freespeech", o.optBoolean("mic_freespeech")).put("voice", MicVoice.offlineState(c)).put("mic_lang", MicVoice.lang(c)).put("mic_active", MicVoice.active(c) ?: "").put("mic_langs", JSONArray(MicVoice.installed(c))).put("voice_search", o.optString("voice_search")).put("voice_youtube", o.optString("voice_youtube")).put("voice_tubes", MicVoice.tubes(c)).put("homekey", o.optString("homekey"))
             .put("family", o.optJSONObject("family") ?: JSONObject.NULL)
             .put("keys", KeysBridge.bound())                           // the key filter is up: LauncherSwap.byKey keeps Home only then (issue #9)
