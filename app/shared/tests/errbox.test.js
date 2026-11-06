@@ -50,6 +50,7 @@ test('an error whose every frame is the page itself (a script the browser put in
   const inj = Object.assign(new Error('Ma'), { stack: 'Error: Ma\n@http://x/:518:344\nNi@http://x/:198:221\n@http://x/:199:338' });
   p.listeners.error({ message: 'Ma', error: inj, lineno: 518 });
   p.listeners.unhandledrejection({ reason: Object.assign(new Error('Ma'), { stack: 'Error: Ma\n    at Ni (http://x/:198:221)' }) });
+  p.listeners.error({ message: 'Uncaught ReferenceError: zaloJSV2 is not defined', error: Object.assign(new ReferenceError('zaloJSV2 is not defined'), { stack: 'ReferenceError: zaloJSV2 is not defined\n    at <anonymous>:1:2' }), lineno: 1 });
   assert.equal(p.body.children.length, 0);
   p.listeners.error({ message: 'boom', error: Object.assign(new Error('boom'), { stack: 'Error: boom\n    at go (http://x/js/core.js?v=1:3:4)\n    at http://x/:1:1' }), lineno: 3 });
   assert.equal(p.body.children.length, 1);

@@ -14,11 +14,11 @@
 
   /** Resource errors (img/script onerror), the cross-origin "Script error." (no message, no line: nothing to read) and the
    *  ResizeObserver notice (harmless, every browser sends it) are not worth a box. Neither is a stack whose every frame is the
-   *  page itself: index.html has no script of its own, so that is one a browser or an add-on put in (census 52ad8714). */
+   *  page itself or an evaluated string: index.html has no script of its own and js/ evaluates none, so that is one a browser or an add-on put in (census 52ad8714). */
   const injected = (stack) => {
     const doc = typeof location !== 'undefined' ? String(location.href).split('#')[0] : '';
     const files = String(stack || '').split('\n').map((l) => (/(\S+?):\d+:\d+\)?\s*$/.exec(l.replace(/^.*?[@(]/, '')) || [])[1]).filter(Boolean);
-    return !!doc && files.length > 0 && files.every((f) => f === doc);
+    return !!doc && files.length > 0 && files.every((f) => f === doc || f === '<anonymous>');   // <anonymous>: evaluated by the app hosting the page (Zalo's zaloJSV2, census 11e6a1d8)
   };
   const ignored = (e) => {
     if (e.target && e.target !== window && e.target.nodeType) return true;       // an element failed to load: its own onerror handles it

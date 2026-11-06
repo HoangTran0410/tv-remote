@@ -204,15 +204,20 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
- "11e6a1d8790c4769373b5dbb|0.27.0": {
-  "at": "2026-10-29T17:19:39+07:00",
+ "11e6a1d8790c4769373b5dbb|0.26.3": {
+  "at": "2026-11-06T12:38:08+07:00",
   "n": 1,
-  "note": "zaloJSV2 injected by a TV browser, not ours"
+  "note": "Zalo in-app browser's own zaloJSV2 eval (<anonymous>:1:2); errbox now ignores <anonymous>-only stacks"
+ },
+ "11e6a1d8790c4769373b5dbb|0.27.0": {
+  "at": "2026-11-06T12:38:08+07:00",
+  "n": 1,
+  "note": "Zalo in-app browser's own zaloJSV2 eval (<anonymous>:1:2); errbox now ignores <anonymous>-only stacks"
  },
  "11e6a1d8790c4769373b5dbb|0.32.1": {
-  "at": "2026-10-29T17:19:39+07:00",
+  "at": "2026-11-06T12:38:08+07:00",
   "n": 1,
-  "note": "zaloJSV2 injected by a TV browser, not ours"
+  "note": "Zalo in-app browser's own zaloJSV2 eval (<anonymous>:1:2); errbox now ignores <anonymous>-only stacks"
  },
  "11f560fd63eab6e7d75a2f82|0.34.1": {
   "at": "2026-10-30T09:08:05+07:00",
