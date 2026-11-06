@@ -35,6 +35,7 @@ under the file of its part (one `## ` heading each), and a line here. Code point
 - Live widgets in TV Home's app grid (TV Setup provides them)
 - Telegram bot in TV Setup (issue #4: `core/web/Telegram.kt`, `TelegramHttp.kt`, `web/js/telegram.js`, `/api/telegram`)
 - Kids mode (`Kids.kt`, `Totp.kt`, `Clock.kt`, `PinActivity.kt`, `Guard.kt`, `web/js/kids.js`, 2026-10-24)
+- Profiles: which user a command acts on (`core/ontv/TvUser.kt`, 2026-11-07)
 
 ## [TV Home](decisions/tv-home.md)
 
