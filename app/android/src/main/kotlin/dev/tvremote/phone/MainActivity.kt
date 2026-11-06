@@ -313,6 +313,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
 
     // ---------------------------------------------------------------- lifecycle
     override fun onCreate(b: Bundle?) {
+        dev.tvremote.core.adb.AdbPort.load(filesDir)                 // ports typed with an address ("ip:5877") before
         applyPalette(this)                                        // before the theme and every view: they read the colours
         setTheme(if (LIGHT) R.style.AppLight else R.style.AppDark)   // dialogs and the keyboard's look follow
         super.onCreate(b)

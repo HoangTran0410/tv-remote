@@ -48,6 +48,7 @@ fun main(args: Array<String>) {
     }
     val keys = File(System.getenv("TVR_KEYS") ?: (if (packaged) File(data, "keys") else File(repo, ".cache/keys")).path)
     Keys.prepare(keys, if (packaged) null else repo)
+    dev.tvremote.core.adb.AdbPort.load(keys)                       // ports typed with an address ("ip:5877") before
     val saved = Saved(File(System.getenv("TVS_FILE") ?: File(data, "tvs.json").path))
     val first = opt["tv"]?.trim()?.also { if (!Server.IP.matches(it)) { System.err.println("--tv: not an IPv4 address: $it"); kotlin.system.exitProcess(2) } }
     val done = CountDownLatch(1)

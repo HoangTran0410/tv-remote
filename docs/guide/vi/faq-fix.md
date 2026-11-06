@@ -3,6 +3,7 @@
 | Gặp | Thử |
 | --- | --- |
 | Không kết nối được | Xem [Tự kiểm tra](selfcheck.md). Cùng Wi-Fi? TV bật? |
+| ADB của TV không ở cổng 5555 | Gõ IP kèm cổng: `192.168.1.5:5877` (bàn phím số của điện thoại: dấu phẩy thay dấu hai chấm). App nhớ cổng cho TV đó. Cổng 5877 (BeeCube) app tự thử. |
 | Phím không phản ứng | [Bật lại ADB](prep-tv.md), hoặc khởi động lại TV. |
 | Trang web của TV hỏi mã lại | Ghép lại một lần; đừng dùng cửa sổ riêng tư. |
 | Hình giật | Giảm cỡ hình và bitrate ([Chất lượng hình](quality.md)). |

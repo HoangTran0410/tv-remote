@@ -282,6 +282,7 @@ $('#concancel').addEventListener('click', () => { pickCancel(); $('#connecting')
 $('#connecting').addEventListener('cancel', (e) => { e.preventDefault(); $('#concancel').click(); });   // Esc: the same as Cancel
 async function selectTv(host, name, kind) {
   const r = await api('/api/tv/select', kind ? { host, kind } : { host }); if (!r) return;
+  if (r.host) host = r.host;                                         // "ip:5877" typed: the TV is the address, the port is kept for ADB
   connecting(name || host, host); pickGo(host); showTab('remote'); await sleep(1200); await refresh(); loadSteps();
 }
 $('#switchtv').addEventListener('click', () => { pickOpen(); refresh(); });

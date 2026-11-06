@@ -110,6 +110,13 @@ internal fun MainActivity.wake(ip: String) {
 }
 
 /** The port that answers while the TV is on: ADB's on an Android TV, the remote link's on an LG or Samsung TV. */
+/** The address typed in, without a port typed after it ("192.168.1.5:5877", or "192.168.1.5 5877" on the number pad): that port is kept for ADB. */
+internal fun MainActivity.typedIp(text: String): String {
+    val (ip, port) = dev.tvremote.core.adb.AdbPort.split(text)
+    if (port > 0) dev.tvremote.core.adb.AdbPort.remember(filesDir, ip, port)
+    return ip
+}
+
 internal fun MainActivity.upPort(ip: String): Int = kindOf(ip).let { if (it == Remote.Kind.ANDROID) dev.tvremote.core.adb.AdbPort.of(ip) else Remote.Kind.ports(it).first() }
 
 // ---------------------------------------------------------------- saved TVs
@@ -391,11 +398,11 @@ internal fun MainActivity.buildPicker() {
     ipBox.inputType = InputType.TYPE_CLASS_PHONE
     ipBox.imeOptions = EditorInfo.IME_ACTION_GO
     ipBox.setOnEditorActionListener { _, _, _ ->
-        connect(ipBox.text.toString())
+        connect(typedIp(ipBox.text.toString()))
         true
     }
     val go = icon("@right", T("page.connect"), ACCENT)
-    go.setOnClickListener { connect(ipBox.text.toString()) }
+    go.setOnClickListener { connect(typedIp(ipBox.text.toString())) }
     line.addView(ipBox, LinearLayout.LayoutParams(0, dp(48), 1f))
     val lp = LinearLayout.LayoutParams(-2, dp(48))
     lp.leftMargin = dp(8)

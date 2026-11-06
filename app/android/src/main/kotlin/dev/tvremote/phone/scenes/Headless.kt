@@ -47,6 +47,7 @@ internal class Headless(private val c: Context) {
             } catch (e: Remote.Refused) { T("headless.the_tv_said_no", "name" to name)
             } catch (e: Exception) { name + ": " + (e.message ?: e.javaClass.simpleName) } finally { a.close() }
         }
+        dev.tvremote.core.adb.AdbPort.load(c.filesDir)                // a port typed with the address, also when the app is not open
         via.firstOrNull { adbPortUp(it, 2000) > 0 }?.let { host ->
             val link = AdbLink(c.filesDir, host)
             var err: String? = null

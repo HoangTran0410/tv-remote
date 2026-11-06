@@ -337,12 +337,13 @@ class Server(private val repo: File, private val keys: File, private val pass: P
             "/api/clip" -> if (native(s)) Response.error(400, "unsupported: " + Remote.Kind.name(s.kind)) else { s.control().setClipboard(d.optString("text").take(100000), d.optBoolean("paste")); Response.ok() }
             "/api/wake" -> wake(s, d.optString("host").ifEmpty { s.host })
             "/api/tv/select" -> {
-                val host = d.optString("host").trim()
+                val (host, port) = dev.tvremote.core.adb.AdbPort.split(d.optString("host"))   // "ip:5877": ADB on that port from now on
                 if (!IP.matches(host)) throw IllegalArgumentException("not an IP address")
+                if (port > 0) dev.tvremote.core.adb.AdbPort.remember(keys, host, port)
                 if (d.has("kind")) kinds[host] = Remote.Kind.of(d.optString("kind"))   // from the scan: no need to look at its ports
                 if (saved.find(host) != null) { saved.setCurrent(host); saved.save() }
                 if (host != s.host) switch(host)                      // the TV in use again: keep its connections
-                Response.ok()
+                Response.json(JSONObject().put("ok", true).put("host", host))   // the address without the port typed
             }
             "/api/tv/save" -> tvSave(s, d)
             "/api/tv/remove" -> {

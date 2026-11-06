@@ -1374,6 +1374,7 @@ The phone app's Manage screen uses Android's own browser (WebView). If it is too
 | Problem | Try |
 | --- | --- |
 | Cannot connect | See [The self-check](#selfcheck). Same Wi-Fi? TV on? |
+| The TV's ADB is not on port 5555 | Type the IP with the port: `192.168.1.5:5877` (on a phone's number pad, a comma instead of the colon). The app keeps the port for that TV. Port 5877 (BeeCube) is tried by itself. |
 | Buttons do nothing | [Turn ADB on again](#prep-tv), or restart the TV. |
 | The TV's page asks for the code again | Pair again once; avoid private windows. |
 | Choppy picture | Lower size and bitrate ([Picture quality](#quality)). |
