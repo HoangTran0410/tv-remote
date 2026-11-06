@@ -1,4 +1,4 @@
-# Flow: a scene that starts at a time (on the TV, by TV Setup)
+# Flow: a scene that starts at a time or on an event (on the TV, by TV Setup)
 
 Read [README.md](README.md) first: change the row a fault belongs to, and this file in the same commit.
 
@@ -11,6 +11,8 @@ Read [README.md](README.md) first: change the row a fault belongs to, and this f
 
 A scene with "Start at" (a time + weekdays, or one date; the page's Scenes card, guide topic `scenes`) runs on the TV at that time with
 the phone and the computer off. It never runs late in a pile: a run more than 5 minutes late (`SceneTimer.GRACE_MS`) is skipped.
+
+A scene can also have "Start when" (`on`): an app comes to the front, or the TV turns on from standby (rows 16-22).
 
 ## How it runs
 
@@ -40,6 +42,14 @@ the scene's next time after it (`Scenes.nextAt`, in the TV's time zone of that m
 | 13 | TV Setup older than `SetupNeed` "scenetime" | the client's save is refused with the update question; nothing timed on the TV | |
 | 14 | no timed scene | `SceneTimer.any` false: Guard does not run for it, nothing is read | |
 | 15 | an "open app" step: the app turned off, or Android 6 and older (no `cmd package resolve-activity`) | `Scenes.launch`: resolve its TV / phone screen; else `am start -p` by category; still nothing: `AppRestore` brings it back for the user in front and tries once more; then "no launcher screen" | |
+| 16 | scene with `on.app`, screen on | each `Guard.check` (every <= 10 s while such a scene exists) reads `Usage.events` since its cursor; an app coming to the front (not another screen of the app already in front) runs the scene once | `anAppComingToTheFrontStartsItsSceneOnce` |
+| 17 | the app stays in front, or the person leaves and comes back | stays: nothing again; comes back: a new run | `anAppComingToTheFrontStartsItsSceneOnce` |
+| 18 | the scene itself opens that app | events inside its run (+ 5 s) are ignored: it does not start itself | `aSceneThatOpensItsOwnAppDoesNotStartItself` |
+| 19 | an event older than 5 min (TV was off, deep sleep) or another app | skipped, no backlog | `anotherAppOrAnOldEventStartsNothing` |
+| 20 | first look after TV Setup starts / the clock went back | the cursor starts at now and the app in front (`Usage.front`) is no start | |
+| 21 | `on.power`: the TV turns on from standby | the screen-on receiver of `WelcomeWatch` calls `SceneTimer.onPower`; not while that scene runs. A cold boot is not covered (BootReceiver) | `twoScenesOnTheSameAppBothStartAndPowerSkipsARunningOne` |
+| 22 | no scene with `on`; screen off | no events are read, no receiver work (`onPower` returns at once); TV Setup older than `SetupNeed` "sceneon": the save is refused with the update question | |
+| 23 | no ADB at an event run | `runNow` says "no ADB" once; no retry (an event is gone) | |
 
 ## Checking it
 

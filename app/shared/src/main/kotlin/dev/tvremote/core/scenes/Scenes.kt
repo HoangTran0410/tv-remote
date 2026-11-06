@@ -23,6 +23,8 @@ import dev.tvremote.core.ontv.SetupNeed
  *
  * Optional "at" (start at a time, run by TV Setup on the TV itself): {time: "20:30", days: [1..7]} every week on those days (Monday = 1),
  * or {time, date: "2026-11-20"} once. No "at" = only when someone runs it (see [nextAt], [clean]).
+ * Optional "on" (start on an event, also run by TV Setup): {app: pkg} when that app comes to the front, or {power: "on"} when the TV
+ * is turned on from standby. May sit next to "at" (see [cleanOn]).
  */
 object Scenes {
     /** What the steps need from the TV. ADB does all of it ([Shell]); the keys-only connection some. */
@@ -156,9 +158,12 @@ object Scenes {
      */
     fun publishThroughSetup(sh: (String) -> String, saved: JSONArray) {
         val timed = (0 until saved.length()).any { saved.optJSONObject(it)?.has("at") == true }
+        val onEvent = (0 until saved.length()).any { saved.optJSONObject(it)?.has("on") == true }
         val r = try { RulesClient.call(sh, JSONObject().put("do", "scenes").put("scenes", saved)) } catch (e: Exception) { return }
         // A scene with a time is useless unless the TV keeps it: a TV Setup that answers without "timed" is too old (or missing), and the client says so
         if (timed && !r.optBoolean("timed")) throw SetupNeed.Missing("scenetime", if (r.has("setup")) r.optString("have") else SetupNeed.have(sh))
+        // same for a scene that starts on an event: a TV Setup between "scenetime" and "sceneon" keeps it but never starts it (it answers without "events")
+        if (onEvent && !r.optBoolean("events")) throw SetupNeed.Missing("sceneon", if (r.has("setup")) r.optString("have") else SetupNeed.have(sh))
     }
 
     private val HHMM = Regex("([01]?\\d|2[0-3]):([0-5]\\d)")
@@ -179,6 +184,14 @@ object Scenes {
         val set = java.util.TreeSet<Int>()
         for (i in 0 until (days?.length() ?: 0)) days!!.optInt(i).let { if (it in 1..7) set.add(it) }
         return out.put("days", JSONArray(if (set.isEmpty()) (1..7).toList() else set.toList()))
+    }
+
+    /** A scene's "start on" as stored: {app: pkg} or {power: "on"}; null when it is neither. */
+    fun cleanOn(o: JSONObject?): JSONObject? {
+        o ?: return null
+        if (o.optString("power") == "on") return JSONObject().put("power", "on")
+        val p = o.optString("app")
+        return if (APP_ID.matcher(p).matches()) JSONObject().put("app", p) else null
     }
 
     /**
@@ -241,6 +254,7 @@ object Scenes {
             val o = JSONObject().put("id", id).put("name", name).put("icon", sc.optString("icon").take(8)).put("steps", steps)
             val say = phrases(sc.optJSONArray("say"))
             cleanAt(sc.optJSONObject("at"))?.let { o.put("at", it) }        // absent = only when run by hand
+            cleanOn(sc.optJSONObject("on"))?.let { o.put("on", it) }        // absent = no event starts it
             if (say.isNotEmpty()) o.put("say", JSONArray(say))             // absent = none: scenes saved before stay byte-for-byte the same
             out.put(o)
         }

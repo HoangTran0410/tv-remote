@@ -16,6 +16,11 @@ import org.json.JSONObject
  * [GRACE_MS] old. Whatever is older (the TV was off, or its clock jumped forward after a boot with a wrong year) is skipped, never
  * run late in a pile; a clock that jumps back moves the cursor back with it, so the scene is not stuck waiting for the old time.
  * A run that finds no ADB puts its cursor back ([retry]), so a later check tries again while still inside the grace.
+ *
+ * A scene with "on" ({app} / {power}) starts on an event instead of a time. An app coming to the front is read by the same [tick] from
+ * the usage events since its last look ([Usage.events]: the one reader that survives a wrong clock), only while such a scene exists
+ * and the screen is on; the TV turning on is [onPower], called from the screen-on receiver TV Setup already has. [decideApps] is the
+ * pure part: one run per coming to the front, never for events inside the scene's own run (a scene that opens its own app).
  */
 internal object SceneTimer {
     private const val PREFS = "scenetimer"
@@ -59,6 +64,37 @@ internal object SceneTimer {
         return cursors + (id to (sig to minOf(c.second, due - 1)))
     }
 
+    /** An app that came to the front ([ts] ms). */
+    class Open(val pkg: String, val ts: Long)
+
+    /** [fire]: scenes to run; [front]: the app in front after the events. */
+    class Decision(val fire: List<String>, val front: String)
+
+    /**
+     * Pure: [apps] scene id to the app that starts it, [opens] the foreground events in order, [front] the app in front before them.
+     * An event of the app already in front (another screen of it) is no new start; one older than [GRACE_MS] is skipped (the TV was off);
+     * one inside [quiet] (the scene's own run, ms range) never starts that scene again. A scene runs at most once per call.
+     */
+    fun decideApps(apps: Map<String, String>, opens: List<Open>, front: String, quiet: Map<String, LongRange>, now: Long): Decision {
+        val fire = ArrayList<String>()
+        var f = front
+        for (e in opens) {
+            if (e.pkg == f) continue
+            f = e.pkg
+            if (now - e.ts > GRACE_MS) continue
+            for ((id, pkg) in apps) if (pkg == e.pkg && id !in fire && quiet[id]?.contains(e.ts) != true) fire.add(id)
+        }
+        return Decision(fire, f)
+    }
+
+    /** Pure: of the scenes that start when the TV turns on, those not inside their own run ([quiet]). */
+    fun decidePower(ids: Collection<String>, quiet: Map<String, LongRange>, now: Long): List<String> = ids.filter { quiet[it]?.contains(now) != true }
+
+    private const val QUIET_AFTER_MS = 5_000L                          // a scene's own events can be a moment behind its last step
+    private val quiet = HashMap<String, LongRange>()                   // scene id to when its own run is going on (wall ms; open-ended while it runs)
+    private var evTo = 0L                                              // usage events up to here are read (0: not yet looked)
+    private var front = ""
+
     @Synchronized
     private fun scenes(c: Context): JSONArray = try { JSONArray(c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("scenes", "[]")) } catch (e: Exception) { JSONArray() }
 
@@ -80,28 +116,31 @@ internal object SceneTimer {
     /** Something here needs [Guard] to keep running. */
     fun any(c: Context): Boolean = scenes(c).length() > 0
 
-    /** Keeps the scenes with a time out of [list] (cleaned) and drops the rest; the scenes that are gone lose their cursors. Answers whether any is timed. */
+    /** Keeps the scenes with a time or an event out of [list] (cleaned) and drops the rest; the scenes that are gone lose their cursors. Answers whether any is kept. */
     @Synchronized
     fun set(c: Context, list: JSONArray): Boolean {
         val timed = JSONArray()
-        for (i in 0 until list.length()) list.optJSONObject(i)?.takeIf { it.has("at") }?.let { timed.put(it) }
+        for (i in 0 until list.length()) list.optJSONObject(i)?.takeIf { it.has("at") || it.has("on") }?.let { timed.put(it) }
         val p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val e = p.edit().putString("scenes", timed.toString())
-        if (timed.length() == 0) e.remove("cursors")
+        if (timed.length() == 0) { e.remove("cursors"); evTo = 0L }
         e.commit()
         Guard.poke()
         return timed.length() > 0
     }
 
-    /** Called by [Guard]'s check: starts the scenes that are due and says in how many ms to look again (null: nothing timed). */
+    /**
+     * Called by [Guard]'s check: starts the scenes that are due (a time) or whose app came to the front, and says in how many ms to
+     * look again (null: nothing to wait for). [screenOn] false: the events are not read (the screen is off); they are, when it is on again.
+     */
     @Synchronized
-    fun tick(c: Context, now: Long): Long? {
+    fun tick(c: Context, now: Long, screenOn: Boolean = true): Long? {
         val list = scenes(c)
         if (list.length() == 0) return null
         val byId = LinkedHashMap<String, JSONObject>()
         for (i in 0 until list.length()) list.optJSONObject(i)?.let { byId[it.optString("id")] = it }
         val p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        val s = step(byId.mapValues { it.value.getJSONObject("at") }, load(p), now)
+        val s = step(byId.filter { it.value.has("at") }.mapValues { it.value.getJSONObject("at") }, load(p), now)
         val out = text(s.cursors)
         if (out != p.getString("cursors", "{}")) p.edit().putString("cursors", out).commit()
         for (id in s.fire) {
@@ -111,8 +150,53 @@ internal object SceneTimer {
             if (!starting.add(id)) continue
             runNow(c, scene, started = { done(id) }) { noAdb(c, id, sig, due) }
         }
-        return s.wait
+        var wait = s.wait
+        val apps = byId.mapNotNull { (id, sc) -> sc.optJSONObject("on")?.optString("app")?.takeIf { it.isNotEmpty() }?.let { id to it } }.toMap()
+        if (apps.isEmpty()) { evTo = 0L; return wait }                  // off: forgets where it was reading
+        if (!screenOn) return wait
+        wait = minOf(wait ?: Long.MAX_VALUE, EVENTS_EVERY_MS)
+        try {
+            if (evTo > now) evTo = 0L                                  // the clock went back: start again from now
+            if (evTo == 0L) { evTo = now; front = Usage.front(c); return wait }   // what is open now is no start
+            val opens = ArrayList<Open>()
+            var last = evTo
+            Usage.events(c, evTo + 1, now) { e ->
+                if (e.eventType == android.app.usage.UsageEvents.Event.MOVE_TO_FOREGROUND) opens.add(Open(e.packageName ?: "", e.timeStamp))
+                last = maxOf(last, e.timeStamp)
+            }
+            evTo = maxOf(last, evTo)
+            val d = decideApps(apps, opens, front, quiet, now)
+            front = d.front
+            for (id in d.fire) byId[id]?.let { launch(c, it, now) }
+        } catch (e: Exception) { android.util.Log.w("tvr-guard", "scene events: $e") }
+        return wait
     }
+
+    /** The TV was turned on from standby (the screen-on receiver of [dev.tvremote.setup.WelcomeWatch]). With no such scene it returns at once. */
+    fun onPower(c: Context) {
+        val list = scenes(c)
+        if (list.length() == 0) return
+        val byId = LinkedHashMap<String, JSONObject>()
+        for (i in 0 until list.length()) list.optJSONObject(i)?.takeIf { it.optJSONObject("on")?.optString("power") == "on" }?.let { byId[it.optString("id")] = it }
+        if (byId.isEmpty()) return
+        val now = System.currentTimeMillis()
+        synchronized(this) {
+            for (id in decidePower(byId.keys, quiet, now)) launch(c, byId[id]!!, now)
+        }
+        Guard.poke()                                                   // an app scene reads its events soon, not after standby's slow look
+    }
+
+    /** Runs [scene] for an event; its own events are ignored while it runs and a moment after ([quiet]). */
+    private fun launch(c: Context, scene: JSONObject, now: Long) {
+        val id = scene.optString("id")
+        if (!starting.add(id)) return
+        quiet[id] = now..Long.MAX_VALUE
+        runNow(c, scene, started = { done(id) }, finished = {
+            synchronized(this) { starting.remove(id); quiet[id] = now..(System.currentTimeMillis() + QUIET_AFTER_MS) }
+        })
+    }
+
+    private const val EVENTS_EVERY_MS = 10_000L
 
     @Synchronized
     private fun done(id: String) { starting.remove(id) }

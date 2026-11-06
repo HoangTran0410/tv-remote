@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- A scene can start by itself on an event, next to "Start at": **Start when** an app opens (e.g. YouTube opens, volume 15) or the TV turns on from standby. TV Setup 0.46.1 and later runs it on the TV; one run per opening, a scene that opens its own app does not start itself again, and with no such scene nothing extra runs.
 - TV Home customize page (phone app, TV web page, Computer app): a TV Home that answers a read or a change without its settings no longer throws "Cannot read properties of undefined (themesBuiltin)"; the page keeps what it shows.
 - A TV that drops the ADB link (`adb connection lost: EOFException`; TCL, Skyworth, Xiaomi) no longer fails the page's request: Manage redials once and runs the command again when it never reached the TV, or when it only reads (dumpsys, pm list, getprop, settings get ...); installs, keys and launches are never repeated.
 

@@ -71,4 +71,36 @@ class SceneTimerTest {
         val b = SceneTimer.step(once, a.cursors, ms("2026-11-06 12:00:10"), utc)
         assertEquals(listOf("o"), b.fire); assertNull(b.wait)
     }
+
+    // ---- scenes that start on an event (an app coming to the front, the TV turning on)
+    private val yt = "com.google.android.youtube.tv"
+    private val apps = mapOf("v" to yt)
+    private fun open(pkg: String, ts: Long) = SceneTimer.Open(pkg, ts)
+
+    @Test fun anAppComingToTheFrontStartsItsSceneOnce() {
+        val d = SceneTimer.decideApps(apps, listOf(open(yt, 1000), open(yt, 2000), open(yt, 3000)), "home", emptyMap(), 5000)
+        assertEquals(listOf("v"), d.fire); assertEquals(yt, d.front)           // other screens of the same app are no new start
+        assertTrue(SceneTimer.decideApps(apps, listOf(open(yt, 6000)), d.front, emptyMap(), 7000).fire.isEmpty())   // it stays in front: not again
+        val back = SceneTimer.decideApps(apps, listOf(open("home", 8000), open(yt, 9000)), d.front, emptyMap(), 10_000)
+        assertEquals(listOf("v"), back.fire)                                   // left and came back: a new start
+    }
+
+    @Test fun anotherAppOrAnOldEventStartsNothing() {
+        assertTrue(SceneTimer.decideApps(apps, listOf(open("other", 1000)), "", emptyMap(), 2000).fire.isEmpty())
+        assertTrue(SceneTimer.decideApps(apps, listOf(open(yt, 1000)), "", emptyMap(), 1000 + SceneTimer.GRACE_MS + 1).fire.isEmpty())
+    }
+
+    @Test fun aSceneThatOpensItsOwnAppDoesNotStartItself() {
+        val quiet = mapOf("v" to (4000L..Long.MAX_VALUE))                      // running since 4000
+        assertTrue(SceneTimer.decideApps(apps, listOf(open(yt, 4500)), "home", quiet, 5000).fire.isEmpty())
+        val ended = mapOf("v" to (4000L..9000L))                               // over at 9000 (+ the small margin)
+        assertTrue(SceneTimer.decideApps(apps, listOf(open(yt, 8000)), "home", ended, 10_000).fire.isEmpty())
+        assertEquals(listOf("v"), SceneTimer.decideApps(apps, listOf(open(yt, 9500)), "home", ended, 10_000).fire)
+    }
+
+    @Test fun twoScenesOnTheSameAppBothStartAndPowerSkipsARunningOne() {
+        val two = mapOf("a" to yt, "b" to yt)
+        assertEquals(listOf("a", "b"), SceneTimer.decideApps(two, listOf(open(yt, 1)), "", emptyMap(), 2).fire)
+        assertEquals(listOf("p"), SceneTimer.decidePower(listOf("p", "q"), mapOf("q" to (0L..Long.MAX_VALUE)), 100))
+    }
 }

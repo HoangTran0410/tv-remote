@@ -1111,6 +1111,8 @@ Chạy cảnh từ **Thêm phím → Cảnh**, bằng giọng nói (nói tên c�
 
 **Bắt đầu lúc:** chọn giờ, rồi **Lặp lại** (chọn thứ) hoặc **Một lần** (chọn ngày). TV tự chạy cảnh, không cần điện thoại mở. Để trống thì chỉ chạy khi bạn bấm.
 
+**Bắt đầu khi:** **Mở một app** (mở YouTube thì đặt âm lượng 15) hoặc **Bật TV**. Mỗi lần mở hoặc bật chạy một lần. Cần TV Setup mới.
+
 TV tắt hay đồng hồ nhảy qua giờ hẹn thì bỏ lượt đó, không chạy bù. Cần TV Setup mới; không có trên TV LG, Samsung.
 
 Sao lưu: **⬇️ Xuất file sao lưu** và **⬆️ Nhập từ file**.

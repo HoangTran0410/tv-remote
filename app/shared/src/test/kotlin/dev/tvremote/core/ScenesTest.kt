@@ -272,4 +272,14 @@ class ScenesTest {
         try { Scenes.publishThroughSetup(sh, list); org.junit.Assert.fail("an old TV Setup answers without timed") } catch (e: SetupNeed.Missing) { assertEquals("scenetime", e.feature) }
         Scenes.publishThroughSetup(sh, JSONArray())                                  // nothing timed: quiet as before
     }
+
+    @Test fun startOnIsCleanedAndNeedsAnEventAwareTvSetup() {
+        assertEquals("{\"app\":\"com.google.android.youtube.tv\"}", Scenes.cleanOn(JSONObject("{app:'com.google.android.youtube.tv',x:1}"))?.toString())
+        assertEquals("{\"power\":\"on\"}", Scenes.cleanOn(JSONObject("{power:'on'}"))?.toString())
+        assertEquals(null, Scenes.cleanOn(JSONObject("{power:'off'}")))
+        val list = JSONArray().put(JSONObject().put("id", "a").put("name", "x").put("on", JSONObject("{power:'on'}")).put("steps", JSONArray().put(JSONObject().put("do", "wake"))))
+        assertEquals("on", Scenes.clean(list).getJSONObject(0).getJSONObject("on").getString("power"))
+        val sh = { c: String -> if (c.contains("RulesReceiver")) "Broadcast completed: result=0, data=\"" + dev.tvremote.core.B64.encode("{\"ok\":true,\"timed\":true}".toByteArray()) + "\"" else "" }
+        try { Scenes.publishThroughSetup(sh, list); org.junit.Assert.fail("a TV Setup without events") } catch (e: SetupNeed.Missing) { assertEquals("sceneon", e.feature) }
+    }
 }

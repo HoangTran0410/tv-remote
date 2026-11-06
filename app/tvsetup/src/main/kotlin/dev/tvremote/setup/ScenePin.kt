@@ -94,9 +94,9 @@ internal object ScenePin {
  * Runs [scene] over this TV's own ADB link in a thread of its own, with a toast before and after. A tile on TV Home and a timed scene
  * ([dev.tvremote.setup.rules.SceneTimer]) both start it here. Over ADB (the shell), so Android 14's block on a background app opening a screen never applies.
  * A timed run passes [noAdb]: with no ADB after 10 s it answers whether another try will come (then nothing is said yet), and its
- * "running" toast waits for ADB so retries do not repeat it. [started] is called once the wait is over, whatever the outcome.
+ * "running" toast waits for ADB so retries do not repeat it. [started] is called once the wait is over, whatever the outcome; [finished] when the whole run is over (steps done or no ADB).
  */
-internal fun runNow(c: Context, scene: JSONObject, started: (() -> Unit)? = null, noAdb: (() -> Boolean)? = null) {
+internal fun runNow(c: Context, scene: JSONObject, started: (() -> Unit)? = null, noAdb: (() -> Boolean)? = null, finished: (() -> Unit)? = null) {
     val ui = Handler(Looper.getMainLooper())
     fun say(t: String) = ui.post { Toast.makeText(c, t, Toast.LENGTH_LONG).show() }
     val running = Words.get(Words.lang, "auto.running", "name" to scene.optString("name"))
@@ -118,6 +118,7 @@ internal fun runNow(c: Context, scene: JSONObject, started: (() -> Unit)? = null
             say(if (failed == null) Words.get(Words.lang, "auto.done", "name" to scene.optString("name")) else Words.get(Words.lang, "auto.done_but", "why" to failed))
         } finally {
             if (!waited) started?.invoke()                            // died in the wait: the timer must not think it still runs
+            finished?.invoke()
         }
     }, "scene-run").apply { isDaemon = true }.start()
 }

@@ -489,7 +489,7 @@ function renderScenes() {
   foldSum('scenecard', SCENES.length ? T('fold.scenes', { n: SCENES.length }) : T('fold.off'), SCENES.length > 0);
   $('#scenelist').replaceChildren(...(SCENES.length ? SCENES.map((sc) => el('div', { className: 'item' },
     el('div', { className: 'ficon', textContent: sc.icon || '🎬' }),
-    el('div', { className: 'name' }, el('span', { textContent: sc.name }), el('small', { textContent: (sc.at ? '🕗 ' + atText(sc.at) + ' · ' : '') + sc.steps.map(stepText).join(' → ') })),
+    el('div', { className: 'name' }, el('span', { textContent: sc.name }), el('small', { textContent: (sc.at ? '🕗 ' + atText(sc.at) + ' · ' : '') + (sc.on ? '🎯 ' + onText(sc.on) + ' · ' : '') + sc.steps.map(stepText).join(' → ') })),
     el('div', { className: 'acts' }, setLabel(el('button', { className: 'small primary', onclick: () => runScene(sc) }), '▶', T('auto.run')),
       setLabel(el('button', { className: 'small', onclick: () => editScene(sc) }), '✏️', T('auto.edit')))))
     : [UI.empty(T('auto.no_scenes'))]));
@@ -522,18 +522,34 @@ function drawSceneAt() {
   }
   box.replaceChildren(...rows); sceneSums();
 }
+// ---------- "Start when": an app opens, or the TV turns on (Scenes.kt "on", SceneTimer.kt); next to "Start at" ----------
+let onDraft = null;                                                                                   // null | { app } | { power: 'on' }
+const onText = (on) => on.power ? T('scenedlg.on_power') : T('scenedlg.on_app_named', { app: appName(on.app) });
+function drawSceneOn() {
+  const box = $('#sceneon'); if (!box) return;
+  const kind = onDraft ? (onDraft.power ? 'power' : 'app') : 'none';
+  const chip = (k, label, make) => el('button', { type: 'button', className: kind === k ? 'on' : '', textContent: label, 'aria-pressed': kind === k, onclick: () => { onDraft = make(); drawSceneOn(); } });
+  const rows = [el('div', { className: 'fchips' }, chip('none', T('scenedlg.on_none'), () => null), chip('app', T('scenedlg.on_app'), () => ({ app: '' })), chip('power', T('scenedlg.on_power'), () => ({ power: 'on' })))];
+  if (kind === 'app') {
+    const b = el('button', { type: 'button', className: 'appchoice', 'aria-label': T('scenedlg.on_app'), onclick: async () => { const p = await chooseApp(T('scenedlg.on_app'), pickApps.filter((x) => x !== 'dev.tvremote.setup'), onDraft.app); if (p) { onDraft.app = p; drawSceneOn(); } } });
+    appChoice(b, onDraft.app); rows.push(b);
+  }
+  box.replaceChildren(...rows); sceneSums();
+}
+const onOut = () => onDraft && (onDraft.power || onDraft.app) ? (onDraft.power ? { power: 'on' } : { app: onDraft.app }) : null;
 // the line under each folded title: what is set, empty (hidden) when nothing is
 function sceneSums() {
+  const on = onOut(); put('#sceneonsum', 'textContent', on ? onText(on) : '');
   const say = ($('#scenesay').value || '').split(',').map((x) => x.trim()).filter(Boolean);
   put('#scenesaysum', 'textContent', say.length ? '“' + say.join('”, “') + '”' : '');
   const at = atOut(); put('#sceneatsum', 'textContent', at ? atText(at) : '');
 }
 $('#scenesay').addEventListener('input', sceneSums);
 function editScene(sc) {
-  editing = sc; atDraft = atFrom(sc && sc.at); put('#sceneatbox', 'hidden', NATIVE()); drawSceneAt(); draft = sc ? JSON.parse(JSON.stringify(sc.steps)) : [];
+  editing = sc; atDraft = atFrom(sc && sc.at); onDraft = sc && sc.on ? { ...sc.on } : null; put('#sceneatbox', 'hidden', NATIVE()); put('#sceneonbox', 'hidden', NATIVE()); drawSceneAt(); drawSceneOn(); draft = sc ? JSON.parse(JSON.stringify(sc.steps)) : [];
   put('#scenetitle', 'textContent', T(sc ? 'auto.scene_edit_title' : 'auto.scene_new_title'));
   $('#scenename').value = sc ? sc.name : ''; $('#sceneicon').value = sc ? sc.icon || '' : ''; $('#scenesay').value = sc && sc.say ? sc.say.join(', ') : ''; sceneSums();
-  $('#scenesayfold').open = false; $('#sceneatbox').open = false;                   // folded each time: the summary line says what is set
+  $('#scenesayfold').open = false; $('#sceneatbox').open = false; $('#sceneonbox').open = false;                   // folded each time: the summary line says what is set
   put('#scenedel', 'hidden', !sc);
   $('#scenetpl').replaceChildren(...(sc ? [] : [el('span', { className: 'muted', textContent: T('auto.examples') }), ...TEMPLATES.map((t) => el('button', { className: 'small', textContent: t.icon + ' ' + t.name, onclick: () => {
     $('#scenename').value = t.name; $('#sceneicon').value = t.icon; draft = JSON.parse(JSON.stringify(t.steps)); drawSteps();
@@ -610,9 +626,10 @@ function draftScene() {
   if (!name) { toast(T('auto.name_scene')); $('#scenename').focus(); return null; }
   if (!draft.length) { toast(T('auto.add_step')); return null; }
   const say = $('#scenesay').value.split(',').map((x) => x.trim()).filter(Boolean).slice(0, 5);   // "Câu gọi": the server drops empties and repeats (Scenes.phrases)
-  const at = NATIVE() ? null : atOut();
+  const at = NATIVE() ? null : atOut(), on = NATIVE() ? null : onOut();
+  if (!NATIVE() && onDraft && !onDraft.power && !onDraft.app) { toast(T('scenedlg.on_pick_app')); return null; }
   if (atDraft && atDraft.once && !atDraft.date) { toast(T('scenedlg.at_date')); return null; }
-  return { id: editing ? editing.id : 's' + Date.now().toString(36), name, icon: $('#sceneicon').value.trim(), ...(say.length ? { say } : {}), ...(at ? { at } : {}), steps: draft };
+  return { id: editing ? editing.id : 's' + Date.now().toString(36), name, icon: $('#sceneicon').value.trim(), ...(say.length ? { say } : {}), ...(at ? { at } : {}), ...(on ? { on } : {}), steps: draft };
 }
 $('#scenesave').addEventListener('click', async () => {
   const sc = draftScene(); if (!sc) return;

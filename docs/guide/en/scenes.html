@@ -24,6 +24,8 @@ Run a scene from **More keys → Scenes**, by voice (say its name), or from the 
 
 **Start at:** pick a time, then **Repeat** (choose weekdays) or **Once** (choose a date). The TV runs the scene itself, no phone needed. Leave it empty to run only on a tap.
 
+**Start when:** **An app opens** (YouTube opens, set volume 15) or **TV turns on**. Runs once per opening or turn-on. Needs a newer TV Setup.
+
 If the TV was off or its clock jumped past the time, that run is skipped, not made up. Needs a newer TV Setup; not for LG or Samsung TVs.
 
 Back up with **⬇️ Export a backup file** and **⬆️ Import from a file**.

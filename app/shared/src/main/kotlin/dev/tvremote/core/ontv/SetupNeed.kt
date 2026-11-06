@@ -51,6 +51,7 @@ object SetupNeed {
         "voicekey" to "0.46.1",                                        // 🎙️ a remote key that opens the voice command (Target "do:voice", KeyFix.VOICE; the release after 0.46.0)
         "homebar" to "0.42.3",                                         // 🏠 the bar over an app on Home (HomeBar; the release after 0.42.2)
         "scenetime" to "0.45.2",                                       // 🕗 a scene that starts at a time or date by itself (SceneTimer, RulesReceiver "scenes" answers timed; the release after 0.45.1)
+        "sceneon" to "0.46.1",                                         // 🎯 a scene that starts when an app opens or the TV turns on (SceneTimer.onOpen / onPower, RulesReceiver "scenes" answers events; the release after 0.46.0)
         "home_usage" to "0.14.1",                                      // 📊 TV Home's card of app use and limits (HomeInfo)
     )
 
@@ -100,6 +101,7 @@ object SetupNeed {
             "voicekey" -> t("core.need_voicekey")
             "homebar" -> t("core.need_homebar")
             "scenetime" -> t("core.need_scenetime")
+            "sceneon" -> t("core.need_sceneon")
             else -> feature
         }
     }

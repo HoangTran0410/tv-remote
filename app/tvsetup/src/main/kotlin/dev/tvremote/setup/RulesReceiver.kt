@@ -65,7 +65,7 @@ class RulesReceiver : BroadcastReceiver() {
                 val timed = SceneTimer.set(c, clean)                // the ones with a time start here, on the TV; "timed" tells a client this TV Setup knows how
                 if (timed && !RemoteService.isRunning()) try { RemoteService.start(c, true) } catch (e: Exception) { }
                 resultCode = Activity.RESULT_OK
-                resultData = Base64.encodeToString(JSONObject().put("ok", true).put("timed", true).put("wanted", Rules.active(c)).put("running", RemoteService.isRunning()).toString().toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
+                resultData = Base64.encodeToString(JSONObject().put("ok", true).put("timed", true).put("events", true).put("wanted", Rules.active(c)).put("running", RemoteService.isRunning()).toString().toByteArray(Charsets.UTF_8), Base64.NO_WRAP)
                 return
             }
             if (change.optString("do") == "key") {                  // a client's key (RulesClient.key): the real press's decision, else it sends the key itself

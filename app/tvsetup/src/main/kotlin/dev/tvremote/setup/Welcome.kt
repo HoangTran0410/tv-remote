@@ -200,7 +200,7 @@ internal class WelcomeWatch(private val c: Context) {
     private val ui = Handler(Looper.getMainLooper())
     private val screen = object : BroadcastReceiver() {
         // a moment after: the screen is only just up, and the home screen the TV brings up with it must not land on top of the welcome
-        override fun onReceive(ctx: Context, i: Intent) { ui.postDelayed({ WelcomeState.trigger(c, "on") }, 600) }
+        override fun onReceive(ctx: Context, i: Intent) { ui.postDelayed({ WelcomeState.trigger(c, "on") }, 600); dev.tvremote.setup.rules.SceneTimer.onPower(c) }   // a scene that starts when the TV turns on (returns at once with none)
     }
 
     fun start() { c.registerReceiver(screen, IntentFilter(Intent.ACTION_SCREEN_ON)) }
