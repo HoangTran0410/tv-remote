@@ -153,8 +153,9 @@ internal class HealthApi(core: ManageCore) : ManagePart(core) {
             val c = f.getOrNull(0)?.toDoubleOrNull()
             if (f.size == 3 && c != null) Triple(f[2], c, f[1].toIntOrNull() ?: 0) else null
         }
-        // a dotted process name that is no installed app (media.swcodec, android.process.acore) is Android's too
-        val named = rows.map { (p, c, n) -> val l = if (p == "-") null else labels?.label(p); Triple(if (p == "-" || (labels != null && l == null)) "-" else p, c, n) to l }
+        // a process is counted for its app (gms.unstable for Play services, Procs.appOf); one of no installed app is Android's
+        val named = rows.map { (p, c, n) -> val a = if (p == "-") "android" else Procs.appOf(p) { labels?.let { l -> l.label(it) != null } ?: true }
+            val pkg = if (a == "android") "-" else a; Triple(pkg, c, n) to (if (pkg == "-") null else labels?.label(pkg)) }
         val merged = named.groupBy { it.first.first }.map { (p, g) -> Triple(p, g.sumOf { it.first.second }, g.sumOf { it.first.third }) to g.first().second }
         return JSONArray(merged.sortedWith(compareByDescending<Pair<Triple<String, Double, Int>, String?>> { it.first.second }.thenByDescending { it.first.third }).map { (t, l) ->
             JSONObject().put("pkg", t.first).put("name", l ?: JSONObject.NULL).put("cpu", Math.round(t.second * 10) / 10.0).put("procs", t.third)

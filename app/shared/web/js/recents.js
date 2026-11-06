@@ -90,9 +90,13 @@ function procRow(a) {
   const title = el('span', { textContent: name });
   if (a.keep === 'system') icon.fill({ label: name });                   // Android's own: no picture worth asking for
   else onMeta(a.pkg, (m) => { icon.fill(m.label ? m : { ...m, label: name }); if (m.label) title.textContent = m.label; });
-  const stop = async () => { if (await api('/api/procs/kill', { pkg: a.pkg })) { toast(T('health.stopped_app', { name })); recentsBg = recentsBg.filter((b) => b !== a); renderApps(); setTimeout(() => recentsNow(true), 800); } };   // gone at once: a service may start it again, the next read says so
   return el('div', { className: 'item proc' }, icon, el('div', { className: 'name' }, title,
     el('small', { textContent: a.mb + ' MB · ' + (procState()[a.state] || a.state) })),
-    el('div', { className: 'acts' }, a.keep ? el('span', { className: 'tag keep', textContent: T('health.must_keep'), title: procKeep()[a.keep] || '' }) : act(T('health.stop_btn'), stop)));
+    el('div', { className: 'acts' }, a.keep ? el('span', { className: 'tag keep', textContent: T('health.must_keep'), title: procKeep()[a.keep] || '' }) : procStop(a)));
+}
+// Stop for an app that may be stopped (here and Health → Now → RAM)
+function procStop(a) {
+  const name = META.get(a.pkg)?.label || a.label;
+  return act(T('health.stop_btn'), async () => { if (await api('/api/procs/kill', { pkg: a.pkg })) { toast(T('health.stopped_app', { name })); recentsBg = recentsBg.filter((b) => b !== a); renderApps(); setTimeout(() => recentsNow(true), 800); } });   // gone at once: a service may start it again, the next read says so
 }
 onTvChange(() => { recentsOpen = new Map(); recentsMb = new Map(); recentsBg = []; recentsAt = 0; });

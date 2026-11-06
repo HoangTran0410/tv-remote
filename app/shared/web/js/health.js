@@ -409,7 +409,7 @@ function hliveGo(now) {
     hliveBusy = false;
     if (r && hliveOn()) {
       const m = r.mem || {};
-      hhist.push({ t: Date.now(), cpu: r.cpu, mem: m.total ? (m.total - m.avail) * 100 / m.total : null, rx: r.net && r.net.rx, tx: r.net && r.net.tx });
+      hhist.push({ t: Date.now(), cpu: r.cpu, mem: m.total ? memUsed(m) * 100 / m.total : null, rx: r.net && r.net.rx, tx: r.net && r.net.tx });
       while (hhist.length > HKEEP || (hhist.length && Date.now() - hhist[0].t > 62000)) hhist.shift();
       hlast = r; drawLive(r);
     }
@@ -450,6 +450,8 @@ function liveChart(series, fmt, max0) {
   return el('div', { className: 'lchart' }, head, box, el('div', { className: 'sl-axis' }, el('span', { textContent: T('health.secs_ago', { n: 60 }) }), el('span', { textContent: T('health.now_word') })));
 }
 const rate = (v) => fmtSize(v || 0) + '/s';
+// RAM in use as free(1) says it: total less free and the cache (LiveLoad.mem); a reading without the cache lines, Android's own figure
+const memUsed = (m) => m.used ?? (m.total || 0) - (m.avail || 0);
 // a bar split in parts [[share, cls, words]], then its legend
 function split(parts) {
   const bar = el('div', { className: 'sbar' }, ...parts.filter((p) => p[0] > 0).map(([v, cls]) => { const i = el('i', { className: cls }); i.style.width = v + '%'; return i; }));
@@ -465,12 +467,12 @@ function urow(pkg, name, value, sub, share, acts) {
 }
 function drawLive(r) {
   const m = r.mem || {};
-  const memPct = m.total ? (m.total - m.avail) * 100 / m.total : null;
+  const memPct = m.total ? memUsed(m) * 100 / m.total : null;
   if (hsub === 'tv' && hfull) {
     const f = hfull, disk = f.disk_total ? (f.disk_total - f.disk_free) * 100 / f.disk_total : null;
     $('#hrings').replaceChildren(
       ring('CPU', r.cpu, [f.chip, f.cores ? T('health.cores_n', { n: f.cores }) : ''].filter(Boolean).join(' · ')),
-      ring('RAM', memPct, m.total ? fmtSize(m.total - m.avail) + ' / ' + fmtSize(m.total) : ''),
+      ring('RAM', memPct, m.total ? fmtSize(memUsed(m)) + ' / ' + fmtSize(m.total) : ''),
       ring(T('health.ring_storage'), disk, f.disk_total ? fmtSize(f.disk_total - f.disk_free) + ' / ' + fmtSize(f.disk_total) : ''));
     $('#hnetchart').replaceChildren(liveChart([{ k: 'rx', cls: 'lc-a', label: '↓' }, { k: 'tx', cls: 'lc-b', label: '↑' }], rate, 10240));
   } else if (hsub === 'cpu') {
@@ -483,7 +485,7 @@ function drawLive(r) {
       cores.length ? el('div', { className: 'cores' }, ...cores) : null,
       el('div', { className: 'kv' }, ...kv([mhz.length ? [T('health.clock'), (lo === hi ? ghz(hi) : ghz(lo) + '–' + ghz(hi)) + ' GHz'] : null, hfull && hfull.gpu != null ? ['GPU', hfull.gpu + '%'] : null, hfull ? ['Chip', hfull.chip] : null])));
   } else if (hsub === 'ram') {
-    const free = m.free || 0, cache = Math.max(0, (m.avail || 0) - free), used = (m.total || 0) - (m.avail || 0), pc = (v) => m.total ? v * 100 / m.total : 0;
+    const free = m.free || 0, used = memUsed(m), cache = m.cache ?? Math.max(0, (m.avail || 0) - free), pc = (v) => m.total ? v * 100 / m.total : 0;
     $('#hram').replaceChildren(big(memPct == null ? null : Math.round(memPct), '%', m.total ? fmtSize(used) + ' / ' + fmtSize(m.total) : ''),
       ...split([[pc(used), 'p-a', T('health.ram_in_use') + ' ' + fmtSize(used)], [pc(cache), 'p-b', T('health.ram_cache') + ' ' + fmtSize(cache)], [pc(free), 'p-f', T('health.ram_free') + ' ' + fmtSize(free)]]),
       liveChart([{ k: 'mem', cls: 'lc-a', label: 'RAM' }], (v) => Math.round(v) + '%', 100),
@@ -512,8 +514,12 @@ async function loadRamApps(now) {
   const r = await api('/api/procs', null, true);
   if (!r || hsub !== 'ram') return;
   const top = Math.max(1, ...r.apps.map((a) => a.mb));
-  box.replaceChildren(UI.list(r.apps.slice(0, 15).map((a) => { const row = procRow(a), bar = el('div', { className: 'bar ubar' }, el('i'));
-    bar.firstChild.style.width = Math.max(1, a.mb * 100 / top) + '%'; row.querySelector('.name').append(bar); return row; }), T('health.cpu_idle')));
+  box.replaceChildren(UI.list(r.apps.slice(0, 15).map((a) => {
+    const row = urow(a.pkg, a.pkg === 'android' ? T('health.android_system') : a.label, a.mb + ' MB', procState()[a.state] || a.state, a.mb * 100 / top,
+      a.keep ? null : el('div', { className: 'acts' }, procStop(a)));
+    if (a.keep) row.querySelector('.nameline b').prepend(el('span', { className: 'keep', title: T('health.must_keep') + ': ' + (procKeep()[a.keep] || ''), 'aria-label': T('health.must_keep') }, UI.icon('lock')));
+    return row;
+  }), T('health.cpu_idle')));
 }
 $('#hramapps').addEventListener('click', (e) => { if (e.target.closest('.acts button')) setTimeout(() => loadRamApps(true), 1500); });
 

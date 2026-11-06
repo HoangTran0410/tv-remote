@@ -106,7 +106,7 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
             .put("android", head.getOrElse(2) { "" }.trim())
             .put("ram_mb", (Regex("MemTotal:\\s+(\\d+)").find(part(0))?.groupValues?.get(1)?.toLongOrNull() ?: 0L) / 1024)
             .put("user", JSONArray(user)).put("system", JSONArray(list(2))).put("disabled", JSONArray(list(3)))
-            .put("memory", JSONArray(memoryByApp(part(4)).map { JSONObject().put("pkg", it.first).put("mb", it.second) }))
+            .put("memory", JSONArray(memoryByApp(part(4), known).map { JSONObject().put("pkg", it.first).put("mb", it.second) }))
         val names = JSONObject()
         for (p in user) labels?.label(p)?.let { names.put(p, it) }
         return o.put("labels", names)
@@ -251,12 +251,15 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
      * The task manager (Health tab): the apps holding memory now, what each is doing ([Proc.state]) and whether it may be
      * stopped. One shell round trip; meminfo takes a second or more on a slow TV, so the page asks only while it is open.
      */
+    /** An installed app, as the names read from the TV say (all of them when they cannot be read): [Procs.appOf]. */
+    private val known = { p: String -> labels?.let { it.label(p) != null } ?: true }
+
     private fun procs(): JSONObject {
         val p = sh("grep -E '^(MemTotal|MemAvailable):' /proc/meminfo; printf '\\043~\\043\\n'; dumpsys meminfo --oom; printf '\\043~\\043\\n'; " + KEEP_NOW).split("#~#\n")
         val kb = { k: String -> (Meminfo.kb(p[0], k) ?: 0L) * 1024 }
         val list = JSONArray()
-        for (a in procsOf(p.getOrElse(1) { "" }, keepNow(p.getOrElse(2) { "" }))) list.put(JSONObject().put("pkg", a.pkg)
-            .put("label", labels?.label(a.pkg) ?: a.pkg).put("mb", a.mb).put("state", a.state).put("keep", a.keep ?: JSONObject.NULL))
+        for (a in procsOf(p.getOrElse(1) { "" }, keepNow(p.getOrElse(2) { "" }), known)) list.put(JSONObject().put("pkg", a.pkg)
+            .put("label", (if (a.pkg == "android") null else labels?.label(a.pkg)) ?: a.pkg).put("mb", a.mb).put("state", a.state).put("keep", a.keep ?: JSONObject.NULL))
         return JSONObject().put("apps", list).put("mem_total", kb("MemTotal")).put("mem_free", kb("MemAvailable"))
     }
 

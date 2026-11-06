@@ -96,7 +96,7 @@ Total PSS by category:
             Proc("com.google.android.inputmethod.latin", 60, "bg", "keyboard"),
             Proc("com.android.systemui", 46, "system", "system"),
             Proc("com.google.android.youtube.tv", 20, "cached", null),
-            Proc("android.process.acore", 10, "cached", "system"),
+            Proc("android", 10, "cached", "system"),                      // android.process.acore: Android's own
             Proc("com.android.keychain", 8, "cached", "system"),          // a system app with no tile: not for people to stop
             Proc("com.android.se", 4, "system", "system"),
         ), Procs.procsOf(sample, keep))
@@ -107,6 +107,18 @@ Total PSS by category:
         assertEquals("us", Procs.keepWhy("com.tailscale.ipn", keep))
         for (p in listOf("dev.tvremote.channels", "dev.tvremote.games", "dev.tvremote.phone")) assertNotEquals("us", Procs.keepWhy(p, keep), p)   // ordinary apps
         assertEquals(emptyList<Proc>(), Procs.procsOf("nothing", keep))
+    }
+
+    @Test fun processToApp() {
+        val apps = setOf("com.google.android.gms", "com.netflix.ninja", "com.google.android.tvlauncher")
+        val known = { p: String -> p in apps }
+        assertEquals("com.google.android.gms", Procs.appOf("com.google.android.gms.unstable", known))
+        assertEquals("com.google.android.gms", Procs.appOf("com.google.android.gms.persistent", known))
+        assertEquals("com.google.android.gms", Procs.appOf("com.google.process.gapps", known))
+        assertEquals("com.netflix.ninja", Procs.appOf("com.netflix.ninja:service", known))
+        assertEquals("android", Procs.appOf("com.android.networkstack.process", known))   // no installed app of that name or a parent
+        assertEquals("android", Procs.appOf("android.process.media", known))
+        assertEquals("android", Procs.appOf("com.google", known))                         // never up to a bare "com"
     }
 
     @Test fun mimeTypes() {

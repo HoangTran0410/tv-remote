@@ -71,7 +71,15 @@ i.p-f { background:var(--btn); }
 .core span { color:var(--muted); }
 .core.off { opacity:.5; }
 /* the lists of apps: what each uses, and a bar of its share against the first */
-.urow .nameline { justify-content:space-between; }
+.urow { flex-wrap:nowrap; }                                         /* Stop stays on the row's line, even at 400 px */
+.urow .name { flex-basis:0; }
+.urow .name .nameline { justify-content:space-between; flex-wrap:nowrap; }   /* over .item .name .nameline: a long name ends in …, the figure stays beside it */
+.urow .nameline > span:first-child { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.urow .nameline b { flex:none; display:inline-flex; align-items:center; gap:4px; }
+.urow .keep svg { width:13px; height:13px; color:var(--muted); display:block; }
+/* one square box for every app: a TV's wide banner is shown whole inside it, so the names and bars start in one column */
+.urow .appicon.wide { width:44px; border-radius:11px; }
+.urow .appicon.wide img { object-fit:contain; }
 .urow .nameline b, .proc .name small { font-variant-numeric:tabular-nums; }
 .ubar { height:4px; margin-top:5px; }
 /* Health › Sleep: a strip per day, 24 h wide, the screen's on stretches and Tailscale's drops */

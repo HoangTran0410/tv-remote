@@ -3,8 +3,23 @@ import dev.tvremote.core.ontv.Setup
 
 /** The apps in the TV's memory, and which of them may be stopped (the task manager, the open apps, the AI report). */
 internal object Procs {
+    /**
+     * The app a process belongs to, "android" for Android's own. A process is named after its app, "pkg:what" for its others;
+     * some take a name of their own (com.google.android.gms.unstable, com.google.process.gapps, com.android.networkstack.process):
+     * the nearest dotted parent that is an installed app ([known]), else Android's. Shown raw, these names told a person nothing.
+     */
+    internal fun appOf(proc: String, known: (String) -> Boolean = { true }): String {
+        val p = proc.substringBefore(':')
+        if (p.startsWith("com.google.process.")) return "com.google.android.gms"   // Play services' shared processes (gapps, location)
+        if (p.startsWith("android.process.") || p == "system" || !p.contains('.')) return "android"
+        if (known(p)) return p
+        var q = p
+        while (q.count { it == '.' } > 1) { q = q.substringBeforeLast('.'); if (known(q)) return q }
+        return "android"
+    }
+
     /** "Total PSS by process" of dumpsys meminfo, summed per package (":service" processes count for their app), MB, largest first. */
-    internal fun memoryByApp(meminfo: String): List<Pair<String, Int>> {
+    internal fun memoryByApp(meminfo: String, known: (String) -> Boolean = { true }): List<Pair<String, Int>> {
         val start = meminfo.indexOf("Total PSS by process:").takeIf { it >= 0 } ?: meminfo.indexOf("Total PSS by OOM adjustment:")   // --oom: the same lines under group heads (no dot: skipped)
         if (start < 0) return emptyList()
         val by = HashMap<String, Int>()
@@ -12,7 +27,7 @@ internal object Procs {
             if (line.isBlank()) break
             val m = Regex("^\\s*([\\d,]+)K: ([^\\s(]+)").find(line) ?: continue
             if (!m.groupValues[2].contains('.')) continue          // apps only: not "system", native daemons, our own app_process
-            val pkg = m.groupValues[2].substringBefore(':')
+            val pkg = appOf(m.groupValues[2], known)
             by[pkg] = (by[pkg] ?: 0) + (m.groupValues[1].replace(",", "").toInt() / 1024)
         }
         return by.entries.filter { it.value >= 5 }.sortedByDescending { it.value }.take(25).map { it.key to it.value }
@@ -58,7 +73,7 @@ internal object Procs {
      * groups: "front" (on screen), "bg" (working in the background: music, downloads, services), "home", "cached" (kept in
      * memory, doing nothing: Android lets them go first), "system" (Android itself: never stopped). Largest first.
      */
-    internal fun procsOf(meminfo: String, k: Keep): List<Proc> {
+    internal fun procsOf(meminfo: String, k: Keep, known: (String) -> Boolean = { true }): List<Proc> {
         val start = meminfo.indexOf("Total PSS by OOM adjustment:")
         if (start < 0) return emptyList()
         val rank = listOf("system", "front", "home", "bg", "cached")
@@ -80,16 +95,16 @@ internal object Procs {
                 continue
             }
             val m = Regex("^\\s+([\\d,]+)K: ([^\\s(]+)").find(line) ?: continue
-            val pkg = m.groupValues[2].substringBefore(':')
-            if (group == "native" || !pkg.contains('.')) continue   // "system" itself (Android's core) shows in the RAM meter
-            if (pkg == "com.google.android.webview" && m.groupValues[2].contains("sandboxed")) continue   // another app's page renderer: counted nowhere rather than wrongly
+            if (group == "native" || !m.groupValues[2].contains('.')) continue   // "system" itself (Android's core) shows in the RAM meter
+            if (m.groupValues[2].startsWith("com.google.android.webview:sandboxed")) continue   // another app's page renderer: counted nowhere rather than wrongly
+            val pkg = appOf(m.groupValues[2], known)
             mb[pkg] = (mb[pkg] ?: 0) + m.groupValues[1].replace(",", "").toInt() / 1024
             val was = state[pkg]
             if (was == null || rank.indexOf(group) < rank.indexOf(was)) state[pkg] = group   // an app's busiest process says what it is doing
         }
         return mb.entries.filter { it.value >= 1 }.map { (pkg, v) ->
             val st = state[pkg] ?: "cached"
-            Proc(pkg, v, st, if (st == "system") "system" else keepWhy(pkg, k))
+            Proc(pkg, v, st, if (st == "system" || pkg == "android") "system" else keepWhy(pkg, k))
         }.sortedByDescending { it.mb }
     }
 }

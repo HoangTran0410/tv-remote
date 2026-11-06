@@ -12,7 +12,7 @@ object LiveLoad {
 
     /** /proc/stat's cpu lines, the memory lines, the traffic per interface and each core's clock: ~2.5 KB, ~16 ms (emulator). */
     const val FAST = "grep '^cpu' /proc/stat; " + SEP +
-            "grep -E '^(MemTotal|MemFree|MemAvailable|SwapTotal|SwapFree):' /proc/meminfo; " + SEP +
+            "grep -E '^(MemTotal|MemFree|MemAvailable|Buffers|Cached|SReclaimable|SwapTotal|SwapFree):' /proc/meminfo; " + SEP +
             "cat /proc/net/dev; " + SEP + "cat /sys/devices/system/cpu/cpu[0-9]*/cpufreq/scaling_cur_freq 2>/dev/null; "   // ends with "; ": CONNS / TRAFFIC follow
     /** The first reading of a TV: two counts half a second apart, so the first answer already has a CPU figure. */
     const val FIRST = "grep '^cpu' /proc/stat; sleep 0.5; "
@@ -61,11 +61,20 @@ object LiveLoad {
         return if ((mhz.maxOrNull() ?: 0L) < 100) null else JSONArray(mhz)
     }
 
-    /** {total, avail, free, swap_total, swap_free} in bytes. */
+    /**
+     * {total, avail, free, cache, used, swap_total, swap_free} in bytes. cache = Buffers + Cached + SReclaimable, used = the
+     * rest (free(1)'s split): MemAvailable counts only the cache Android would drop at once, on a TV with swap a few MB of
+     * 180, so total - avail - free left "Cache 0 B" beside a full bar.
+     */
     fun mem(text: String): JSONObject {
         val o = JSONObject()
         for ((k, n) in listOf("MemTotal" to "total", "MemAvailable" to "avail", "MemFree" to "free", "SwapTotal" to "swap_total", "SwapFree" to "swap_free"))
             Meminfo.kb(text, k)?.let { o.put(n, it * 1024) }
+        val total = Meminfo.kb(text, "MemTotal"); val free = Meminfo.kb(text, "MemFree"); val cached = Meminfo.kb(text, "Cached")
+        if (total != null && free != null && cached != null) {
+            val cache = cached + (Meminfo.kb(text, "Buffers") ?: 0) + (Meminfo.kb(text, "SReclaimable") ?: 0)
+            o.put("cache", cache * 1024).put("used", (total - free - cache).coerceAtLeast(0) * 1024)
+        }
         return o
     }
 
