@@ -18,6 +18,22 @@ internal fun open(ip: String, port: Int, timeoutMs: Int, via: android.net.Networ
     true
 } catch (e: Exception) { false }
 
+/** ADB's port on [ip] (5555 or a known other, see AdbPort) with the Wi-Fi [via] kept; 0 when none answers. */
+internal fun adbPortUp(ip: String, timeoutMs: Int, via: android.net.Network? = null): Int =
+    dev.tvremote.core.adb.AdbPort.find(ip, timeoutMs) { h, p, ms -> open(h, p, ms, via) }
+
+/** Same for a scan of 254 hosts: other ports only after 5555 was refused (a live host refuses at once, a dead one times out), so the scan takes no longer. */
+internal fun adbPortScan(ip: String, timeoutMs: Int, via: android.net.Network? = null): Int {
+    val c = dev.tvremote.core.adb.AdbPort.CLASSIC
+    try {
+        if (via == null) Lan.connect(ip, c, timeoutMs).close() else via.socketFactory.createSocket().use { it.connect(InetSocketAddress(ip, c), timeoutMs) }
+        return c
+    } catch (e: java.net.ConnectException) {
+        if (e.message?.contains("refused", true) != true) return 0
+    } catch (e: Exception) { return 0 }
+    return dev.tvremote.core.adb.AdbPort.OTHERS.firstOrNull { open(ip, it, timeoutMs, via) } ?: 0
+}
+
 /**
  * Tells the shared core how to go around a VPN or the mobile data (Lan): while either is the way out, a TV at a home address
  * is dialed on the Wi-Fi. Set from every way into the app (the screens, the widget's and tiles' Headless, the services); setting it twice is fine.

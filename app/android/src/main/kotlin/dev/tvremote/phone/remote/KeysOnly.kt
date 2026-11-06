@@ -6,6 +6,7 @@ import dev.tvremote.phone.media.say
 import dev.tvremote.phone.picker.message
 import dev.tvremote.phone.picker.name
 import dev.tvremote.phone.picker.offerWireless
+import dev.tvremote.phone.picker.adbPortUp
 import dev.tvremote.phone.picker.open
 import dev.tvremote.phone.picker.save
 import dev.tvremote.phone.ui.Popup
@@ -45,7 +46,7 @@ internal fun MainActivity.refused(err: String?): Boolean {
  */
 internal fun MainActivity.offerBasic(ip: String, error: String) {
     Thread {
-        val plain = open(ip, 5555, 1500)
+        val plain = adbPortUp(ip, 1500) > 0
         if (plain) adbFailed.add(ip)                               // the port answers, yet ADB did not work (not allowed on the TV, say): do not keep retrying by ourselves
         val wireless = !plain && dev.tvremote.core.adb.AdbTls.available() && dev.tvremote.core.adb.AdbTls.wireless(ip).any   // Android 11+ with only Wireless debugging: pairing, not an error
         val keys = open(ip, 6466, 2500)                            // an Android TV: it takes keys
@@ -149,7 +150,7 @@ internal fun MainActivity.watchAdb(a: Atv, ip: String) {
     Thread {
         while (basic === a && !isFinishing) {
             Thread.sleep(4000)
-            if (basic === a && open(ip, 5555, 1200)) {
+            if (basic === a && adbPortUp(ip, 1200) > 0) {
                 ui.post {
                     if (basic !== a || isFinishing) return@post
                     Toast.makeText(this, T("keys_only.adb_is_on_switching"), Toast.LENGTH_LONG).show()

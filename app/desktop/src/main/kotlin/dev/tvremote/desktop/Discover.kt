@@ -24,6 +24,15 @@ object Discover {
         "/usr/bin/tailscale", "C:\\Program Files\\Tailscale\\tailscale.exe").firstOrNull { File(it).canExecute() } ?: "tailscale"
 
     /** [unknown]: collects hosts the OS gave up on ("Host is down"...) instead of a plain "no": the port refused means the host is there. */
+    /** ADB's port on [ip], or 0. AdbPort.OTHERS are tried only when 5555 was refused: a live host refuses at once, a dead one times out, so the scan takes no longer. */
+    private fun adbPortOf(ip: String, unknown: MutableMap<String, String>): Int {
+        try { Socket().use { it.connect(InetSocketAddress(ip, dev.tvremote.core.adb.AdbPort.CLASSIC), 700) }; return dev.tvremote.core.adb.AdbPort.CLASSIC }
+        catch (e: ConnectException) {
+            if (e.message?.contains("refused", true) != true) { unknown[ip] = e.message ?: "error"; return 0 }
+        } catch (e: Exception) { return 0 }
+        return dev.tvremote.core.adb.AdbPort.OTHERS.firstOrNull { portOpen(ip, it, 700) } ?: 0
+    }
+
     fun portOpen(ip: String, port: Int, timeoutMs: Int = 700, unknown: MutableMap<String, String>? = null): Boolean = try {
         Socket().use { it.connect(InetSocketAddress(ip, port), timeoutMs) }
         true
@@ -107,8 +116,9 @@ object Discover {
         val pool = Executors.newFixedThreadPool(120) { Thread(it, "discover").apply { isDaemon = true } }
         fun probe(ip: String, via: String, name: String) = pool.submit {
             val remote = portOpen(ip, 6466, unknown = unknown)
-            val adb = portOpen(ip, 5555, unknown = unknown)
-            if (remote || adb) found[ip] = JSONObject().put("ip", ip).put("remote", remote).put("adb", adb).put("via", via).put("name", Ssdp.castName(ip).ifEmpty { name })
+            val adbPort = adbPortOf(ip, unknown)
+            val adb = adbPort > 0
+            if (remote || adb) found[ip] = JSONObject().put("ip", ip).put("remote", remote).put("adb", adb).put("adbPort", adbPort).put("via", via).put("name", Ssdp.castName(ip).ifEmpty { name })
                 .put("kind", Remote.Kind.ANDROID)
         }
         try {
