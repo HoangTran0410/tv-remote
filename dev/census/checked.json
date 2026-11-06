@@ -790,14 +790,14 @@
   "note": "fixed in 314c0f33 (IR import capped 1 MB)"
  },
  "3d3fb10724ef308cde567ed9|0.42.0": {
-  "at": "2026-11-06T16:29:50+07:00",
+  "at": "2026-11-06T16:30:21+07:00",
   "n": 1,
-  "note": "watch: scrcpy-server gave no first packet and said nothing (serverSaid empty) on STREAM-SYSTEM ATV R1 Realtek rtd284o, Android 11, same install since 0.42; like ELEXIA 2K"
+  "note": "watch: scrcpy-server gave no first packet and said nothing (serverSaid empty) on STREAM-SYSTEM ATV R1 (Realtek rtd284o, Android 11), same install since 0.42; like ELEXIA 2K"
  },
  "3d3fb10724ef308cde567ed9|0.45.1": {
-  "at": "2026-11-06T16:29:51+07:00",
+  "at": "2026-11-06T16:30:21+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
+  "note": "watch: scrcpy-server gave no first packet and said nothing (serverSaid empty) on STREAM-SYSTEM ATV R1 (Realtek rtd284o, Android 11), same install since 0.42; like ELEXIA 2K"
  },
  "3d5dffd0b165e9e474f753dd|0.38.3": {
   "at": "2026-11-03T03:42:51+07:00",
@@ -2615,9 +2615,9 @@
   "note": "left: NPE inside system_server, platform"
  },
  "b1ccd0d29d66cdd753d27562|0.27.0": {
-  "at": "2026-11-06T16:29:51+07:00",
+  "at": "2026-11-06T16:30:21+07:00",
   "n": 6,
-  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
+  "note": "phone 0.27.0 on a Meizu Android 6 (released 0.44.0): NoClassDefFoundError of an R8 lambda on old ART, no newer version affected; still the one install"
  },
  "b2b52cae0dafc491fb1e1cd6|0.34.0": {
   "at": "2026-10-30T09:08:25+07:00",
@@ -3110,39 +3110,39 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "d498a8ad39a52e3263df243d|0.37.0": {
-  "at": "2026-11-06T16:29:50+07:00",
+  "at": "2026-11-06T16:30:20+07:00",
   "n": 1,
-  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1) same install that gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 now 'Error parsing public key' from platform conscrypt, likely AdbTls.context line 146 after an STLS ask; no stack, 1 install"
+  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d498a8ad39a52e3263df243d|0.38.2": {
-  "at": "2026-11-06T16:29:50+07:00",
+  "at": "2026-11-06T16:30:20+07:00",
   "n": 1,
-  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1) same install that gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 now 'Error parsing public key' from platform conscrypt, likely AdbTls.context line 146 after an STLS ask; no stack, 1 install"
+  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d498a8ad39a52e3263df243d|0.38.3": {
-  "at": "2026-11-06T16:29:50+07:00",
+  "at": "2026-11-06T16:30:20+07:00",
   "n": 1,
-  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1) same install that gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 now 'Error parsing public key' from platform conscrypt, likely AdbTls.context line 146 after an STLS ask; no stack, 1 install"
+  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d498a8ad39a52e3263df243d|0.38.4": {
-  "at": "2026-11-06T16:29:50+07:00",
+  "at": "2026-11-06T16:30:20+07:00",
   "n": 1,
-  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1) same install that gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 now 'Error parsing public key' from platform conscrypt, likely AdbTls.context line 146 after an STLS ask; no stack, 1 install"
+  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d498a8ad39a52e3263df243d|0.42.0": {
-  "at": "2026-11-06T16:29:50+07:00",
+  "at": "2026-11-06T16:30:20+07:00",
   "n": 1,
-  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1) same install that gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 now 'Error parsing public key' from platform conscrypt, likely AdbTls.context line 146 after an STLS ask; no stack, 1 install"
+  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d498a8ad39a52e3263df243d|0.43.0": {
-  "at": "2026-11-06T16:29:51+07:00",
+  "at": "2026-11-06T16:30:20+07:00",
   "n": 2,
-  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
+  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d498a8ad39a52e3263df243d|0.45.0": {
-  "at": "2026-11-06T16:29:51+07:00",
+  "at": "2026-11-06T16:30:20+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
+  "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
  "d6434b998952d4ab9cc3cb26|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
