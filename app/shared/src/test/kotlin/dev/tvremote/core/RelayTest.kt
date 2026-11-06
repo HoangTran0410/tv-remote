@@ -158,6 +158,9 @@ class RelayTest {
     }
 
     @Test fun refusedGoesOnOverAdb() {
+        // needs nothing on 127.0.0.1:5555; a running emulator listens there (emulator-5554), so the case cannot be made then
+        val taken = try { java.net.Socket().use { it.connect(java.net.InetSocketAddress("127.0.0.1", 5555), 300) }; true } catch (e: Exception) { false }
+        org.junit.Assume.assumeFalse("127.0.0.1:5555 is taken (an emulator?)", taken)
         serve { _, s -> s.getOutputStream().write("HTTP/1.1 401 Unauthorized\r\nContent-Length: 2\r\n\r\n{}".toByteArray()) }
         val screen = Seen(); val l = Heard()
         val t = tv(screen, l)
