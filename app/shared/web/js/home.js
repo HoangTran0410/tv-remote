@@ -252,10 +252,11 @@ async function homeOpen() {
     b.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter') return;
       if (e.repeat || held) { e.preventDefault(); return; }
-      t = setTimeout(async () => { held = true; if (!await ask(T('home.photo_del_q'), { ok: T('home.photo_remove'), danger: true })) return;
-        const box = b.closest('.homewalls'), at = [...box.children].findIndex((c) => c.contains(b));
+      t = setTimeout(async () => { held = true;
+        const box = b.closest('.homewalls'), at = box ? [...box.children].findIndex((c) => c.contains(b)) : -1;   // before the question: the list may be drawn again while it is open (a TCL's TV page)
+        if (!await ask(T('home.photo_del_q'), { ok: T('home.photo_remove'), danger: true })) return;
         await dropPhoto(id);
-        const near = box.children[at] || box.children[at - 1];      // its neighbour, not the top of the dialog
+        const near = box && box.isConnected && (box.children[at] || box.children[at - 1]);   // its neighbour, not the top of the dialog
         if (near) (near.querySelector('button') || near).focus();
       }, 600);
     });

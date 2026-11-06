@@ -2719,6 +2719,11 @@
   "n": 1,
   "note": "dev only: 8769, same"
  },
+ "b53c519f744f4ff39bc5177e|0.45.1": {
+  "at": "2026-11-06T23:06:28+07:00",
+  "n": 1,
+  "note": "photo hold-delete: list redrawn while held, box null; fixed home.js"
+ },
  "b6a3b10f364db6b1b1f97649|0.23.0": {
   "at": "2026-10-26T21:47:35+07:00",
   "n": 1,
