@@ -48,7 +48,7 @@ internal object PhoneSupport {
 
     fun relay(c: Context): SupportRelay = relay ?: synchronized(this) {
         relay ?: SupportRelay("phone", (activity.get() ?: c as? MainActivity)?.version() ?: "", android.os.Build.MODEL, SupportAndroid.store(c),
-            { report(c.applicationContext), { answer(c.applicationContext, it) }).also { relay = it }
+            { report(c.applicationContext) }, { answer(c.applicationContext, it) }).also { relay = it }
     }
 
     /** "start", "stop" or "state" (the page's About, and the native row): `{open, code, min, left}` or `{failed: no_net | none_left}`. Blocks. */
