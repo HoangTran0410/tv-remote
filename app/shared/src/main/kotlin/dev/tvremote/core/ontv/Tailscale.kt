@@ -1,5 +1,6 @@
 package dev.tvremote.core.ontv
 import java.io.File
+import dev.tvremote.core.adb.Pkg
 import java.io.IOException
 import java.net.URL
 import dev.tvremote.core.adb.Adb
@@ -33,7 +34,7 @@ class Tailscale(private val adb: Adb, private val dir: File?) {
     }
 
     @Throws(IOException::class)
-    fun installed(): Boolean = adb.shell("pm path $PKG").contains("package:")
+    fun installed(): Boolean = Pkg.installed({ adb.shell(it) }, PKG)
 
     /** "100.x.y.z" once it is signed in and on, else "". */
     @Throws(IOException::class)

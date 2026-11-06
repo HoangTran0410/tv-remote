@@ -7,6 +7,7 @@ import dev.tvremote.home.Target
 import dev.tvremote.update.Release
 import org.json.JSONObject
 import java.io.File
+import dev.tvremote.core.adb.Pkg
 import java.io.IOException
 
 /**
@@ -26,7 +27,7 @@ object Home {
         val grant = if (change?.optBoolean("dream") == true) "pm grant ${HomeConfig.PKG} ${HomeConfig.WRITE_SECURE} 2>&1; " else ""
         val out = sh(grant + (if (change != null) HomeConfig.GRANT_WIFI else "") + "am broadcast --include-stopped-packages -n ${HomeConfig.RECEIVER}$arg 2>&1; echo '#~#'; " + LauncherSwap.RESOLVE_HOME)
         val m = Regex("data=\"([A-Za-z0-9+/=]+)\"").find(out)
-            ?: return JSONObject().put("installed", false)            // no receiver: TV Home is not on this TV
+            ?: if (Pkg.failed(out.substringBefore("#~#"))) throw IOException("pm: could not ask: " + out.substringBefore("#~#").trim().take(120)) else return JSONObject().put("installed", false)            // no receiver: TV Home is not on this TV
         val r = JSONObject(String(B64.decode(m.groupValues[1]), Charsets.UTF_8))
         if (r.has("error")) throw IOException(r.optString("error"))
         r.put("installed", true).put("home", out.substringAfter("#~#").contains(HomeConfig.PKG + "/"))

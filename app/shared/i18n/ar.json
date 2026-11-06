@@ -3043,6 +3043,7 @@
  "launcher.fits": "تعمل على هذا التلفزيون",
  "launcher.nofit": "لا تناسب هذا التلفزيون",
  "launcher.in_use": "مستخدمة",
+ "launcher.disabled": "متوقفة على التلفزيون",
  "launcher.install": "ثبّت واستخدم",
  "launcher.installed": "موجودة على هذا التلفزيون",
  "launcher.use": "استخدم",

@@ -54,7 +54,7 @@ object Fleet {
     @Throws(IOException::class)
     fun uninstall(adb: Adb, pkgs: List<String>): Int {
         pkgs.forEach { p -> canUninstall(p)?.let { throw IOException(it) } }
-        val has = adb.shell("pm list packages 2>/dev/null").lines().map { it.removePrefix("package:").trim() }.toSet()
+        val has = Pkg.list({ adb.shell(it) })
         val bad = ArrayList<String>()
         var n = 0
         for (p in pkgs) if (p in has) try { uninstall(adb, p); n++ } catch (e: IOException) { bad += "$p: ${e.message}" }

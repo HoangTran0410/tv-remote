@@ -5,6 +5,7 @@ import dev.tvremote.core.web.HttpServer
 import dev.tvremote.tvapps.AppList
 import java.io.File
 import java.io.FileInputStream
+import dev.tvremote.core.adb.Pkg
 import java.io.IOException
 import org.json.JSONArray
 import org.json.JSONObject
@@ -19,12 +20,12 @@ internal class TvAppsApi(private val link: AdbLink, private val dir: File?, priv
     private fun sh(c: String) = link.get().shell(c)
 
     // one round trip: sdk, ABIs, the packages on the TV
-    private class Tv(val sdk: Int, val abis: List<String>, val have: Set<String>)
+    private class Tv(val sdk: Int, val abis: List<String>, val have: Set<String>, val off: Set<String>)
     private fun tv(): Tv {
-        val p = sh("getprop ro.build.version.sdk; getprop ro.product.cpu.abilist; echo @@; pm list packages").split("@@")
+        val p = sh("getprop ro.build.version.sdk; getprop ro.product.cpu.abilist; echo @@; pm list packages; echo @@; pm list packages -d").split("@@")
         val head = p[0].trim().lines()
         return Tv(head.getOrNull(0)?.trim()?.toIntOrNull() ?: 0, head.getOrNull(1)?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList(),
-            p.getOrElse(1) { "" }.lines().map { it.removePrefix("package:").trim() }.filter { it.isNotEmpty() }.toSet())
+            Pkg.parse(p.getOrElse(1) { "" }), Pkg.parse(p.getOrElse(2) { "" }, empty = true))   // a failed read throws, it is no empty list
     }
 
     fun list(fresh: Boolean): JSONObject {
@@ -33,7 +34,7 @@ internal class TvAppsApi(private val link: AdbLink, private val dir: File?, priv
         val apps = JSONArray()
         for (a in l.apps) apps.put(JSONObject().put("id", a.id).put("pkg", a.pkg).put("name", a.name).put("cat", a.cat)
             .put("desc", JSONObject(a.desc)).put("notes", JSONObject(a.notes)).put("source", a.source).put("license", a.license)
-            .put("icon", if (a.icon.isNotEmpty()) "/api/tvapps/icon?id=" + a.id else "").put("min_sdk", a.minSdk).put("why", AppList.why(a, t.sdk, t.abis)).put("installed", a.pkgs.any { it in t.have }).put("setup", a.setup))
+            .put("icon", if (a.icon.isNotEmpty()) "/api/tvapps/icon?id=" + a.id else "").put("min_sdk", a.minSdk).put("why", AppList.why(a, t.sdk, t.abis)).put("installed", a.pkgs.any { it in t.have }).put("disabled", a.pkgs.any { it in t.have && it in t.off }).put("setup", a.setup))
         val cats = JSONArray()
         for (c in l.cats) cats.put(JSONObject().put("id", c.id).put("name", JSONObject(c.name)))
         return JSONObject().put("updated", l.updated).put("cats", cats).put("apps", apps).put("has_setup", AppList.SETUP_PKG in t.have)

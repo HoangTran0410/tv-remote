@@ -1,5 +1,6 @@
 package dev.tvremote.core.ontv
 import dev.tvremote.update.Release
+import dev.tvremote.core.adb.Pkg
 import java.io.IOException
 import dev.tvremote.core.Words
 import dev.tvremote.core.adb.Adb
@@ -124,6 +125,14 @@ object SetupNeed {
     }
 
     /** The same from a shell's answer (dumpsys), for callers holding a shell rather than an [Adb]. */
-    fun have(sh: (String) -> String): String =
-        Regex("versionName=(\\S+)").find(sh("dumpsys package ${RulesClient.SETUP} 2>/dev/null | grep -m1 versionName="))?.groupValues?.get(1) ?: ""
+    @Throws(IOException::class)
+    fun have(sh: (String) -> String): String {
+        fun read() = Regex("versionName=(\\S+)").find(sh("dumpsys package ${RulesClient.SETUP} 2>/dev/null | grep -m1 versionName="))?.groupValues?.get(1) ?: ""
+        read().let { if (it.isNotEmpty()) return it }
+        // an empty dumpsys is "not installed" only when pm path says so; a stalled system_server also answers nothing, and that must
+        // never turn into "Install TV Setup": ask once more after 2 s, then say the TV did not answer
+        if (!Pkg.installed(sh, RulesClient.SETUP)) return ""
+        Pkg.pause(2000)
+        return read().ifEmpty { throw IOException("TV Setup: the TV did not answer (no version)") }
+    }
 }

@@ -26,8 +26,8 @@ object SetupUpdate {
     private val VERSION = Regex("[0-9]+(\\.[0-9]+)*")
 
     /** The version of TV Setup on the TV, "" when it has none. */
-    fun installed(adb: Adb): String =
-        Regex("versionName=(\\S+)").find(adb.shell("dumpsys package $PKG 2>/dev/null | grep -m1 versionName="))?.groupValues?.get(1) ?: ""
+    @Throws(IOException::class)
+    fun installed(adb: Adb): String = SetupNeed.have { adb.shell(it) }
 
     /** {state, at (ms), version, from, detail, bad: [versions that failed here]}; state "" when no update ever ran. */
     fun state(adb: Adb): JSONObject = parse(adb.shell("cat $DIR/state 2>/dev/null; echo '|'; cat $DIR/bad 2>/dev/null"))

@@ -1,6 +1,7 @@
 package dev.tvremote.core.ontv
 import java.io.File
 import java.io.FileOutputStream
+import dev.tvremote.core.adb.Pkg
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -152,7 +153,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     }
 
     private fun off(): Set<String> =
-        sh("pm list packages -d 2>/dev/null").split("\n").map { it.removePrefix("package:").trim() }.filter { it.isNotEmpty() }.toSet()
+        Pkg.list(sh, "-d", empty = true)
 
     private fun record(): List<String> = sh("cat $OFF_LIST 2>/dev/null").split("\n").map { it.trim() }.filter { it.isNotEmpty() }   // "" is in no list
 
@@ -170,7 +171,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     }
 
     @Throws(IOException::class)
-    fun has(pkg: String): Boolean = sh("pm path $pkg").contains("package:")
+    fun has(pkg: String): Boolean = Pkg.installed(sh, pkg)
 
     @Throws(IOException::class)
     fun describe(): String =
@@ -199,7 +200,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     fun plan(label: (String) -> String?): org.json.JSONObject {
         tvOnly()
         Bloat.fresh()
-        val enabled = sh("pm list packages -e").split("\n").filter { it.startsWith("package:") }.map { it.substring(8).trim() }.toSet()
+        val enabled = Pkg.list(sh, "-e")
         val guard = handlers() + persistent()
         val suggest = suggested().filter { it in enabled && it !in guard }
         val home = homeNow()
@@ -336,7 +337,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
         log.line(t("optimize.waiting_tv", "pkg" to p))
         repeat(12) {
             pause(8000)
-            try { if (sh("pm path android").contains("package:")) return true } catch (e: IOException) { }
+            try { if (Pkg.installed(sh, "android")) return true } catch (e: IOException) { }
         }
         return false
     }

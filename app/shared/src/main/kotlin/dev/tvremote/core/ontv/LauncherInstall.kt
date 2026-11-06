@@ -2,6 +2,7 @@ package dev.tvremote.core.ontv
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.home.HomeConfig
 import java.io.File
+import dev.tvremote.core.adb.Pkg
 import java.io.IOException
 
 /**
@@ -34,7 +35,8 @@ class LauncherInstall(private val adb: Adb, private val dir: File, private val g
 
     fun facts(): Launchers.Facts = Launchers.facts(sh)
 
-    fun installed(pkg: String): Boolean = sh("pm path $pkg").contains("package:")
+    @Throws(IOException::class)
+    fun installed(pkg: String): Boolean = Pkg.installed(sh, pkg)
 
     /**
      * The launcher on the TV and chosen as its home. With [confirmSec] > 0 the record waits for Keep ([await]); 0 is for a batch, where nobody
@@ -63,6 +65,7 @@ class LauncherInstall(private val adb: Adb, private val dir: File, private val g
             // compiled ahead now, not on first use: a home screen started cold on a slow TV chip took ~1.6 s, 0.4 s compiled (cleanyourtv #40)
             try { adb.shell((if (e.kind == "self") HomeConfig.GRANT_WIFI else "") + "cmd package compile -m speed -f ${e.pkg} >/dev/null 2>&1", 120000) } catch (x: IOException) { }
         }
+        else sh(AppRestore.command(e.pkg))                            // on the TV but turned off (the gallery says "disabled"): back on first
         english(e, f.sdk)
         progress?.at("swap", 85)
         if (cancelled()) throw IOException("stopped")
