@@ -35,6 +35,7 @@ const HOME_THEME_KEYS = ['wall', 'walls', 'wurl', 'wcol', 'wdir', 'wmode', 'wsna
 const HOME_THEME_FILE_MAX = 32768;                                 // a theme file is a few KB; more is not one
 const HOME_THEMES_MAX = 12;                                           // HomeConfig.THEMES_MAX
 const HOME_PHOTO_MAX = 10;                                            // HomeConfig.PHOTO_MAX
+const HOME_FRAME_MAX = 10;                                            // HomeConfig.FRAME_MAX
 let homeShots = { mine: {}, ready: {}, now: null };                  // the theme previews' backgrounds (TV Home's themeshots), by theme id; now: {key, jpg} the wall in use
 const homeFaces = new Map();                                         // a theme's drawn preview, by what it is made of: drawn once, put back on every redraw
 const homeThumbs = {};                                                // a photo's small picture by id + its stamp: asked of the TV once
@@ -42,9 +43,9 @@ const HOME_TSTYLE_WORDS = { banner: 'home.tstyle_banner', icon: 'home.tstyle_ico
 const HOME_ACCENT_WORDS = { '': 'home.accent_none', blue: 'home.accent_blue', teal: 'home.accent_teal', green: 'home.accent_green', amber: 'home.accent_amber',
   orange: 'home.accent_orange', red: 'home.accent_red', pink: 'home.accent_pink', violet: 'home.accent_violet' };
 function swatch(hex) { const s = el('span', { className: 'sw' }); s.style.background = hex; return s; }   // a colour from the palette, not words
-const HOME_WIDGETS = ['system', 'usage', 'calendar', 'lunar', 'timer', 'weather', 'air', 'recent', 'adblock', 'clock', 'market', 'news', 'prayer'];          // HomeConfig.WIDGETS, in the order drawn
+const HOME_WIDGETS = ['system', 'usage', 'calendar', 'lunar', 'timer', 'weather', 'air', 'recent', 'adblock', 'clock', 'market', 'news', 'prayer', 'frame'];   // HomeConfig.WIDGETS, in the order drawn
 // A TV Home with "wsizes" sizes each widget (big / small) and packs them (homePack); one older than that has only the preset layouts below
-const HOME_BIG_KINDS = ['system', 'usage', 'calendar', 'weather', 'air', 'market', 'news', 'prayer', 'qr1', 'qr2', 'qr3', 'qr4'];     // HomeConfig.defaultSize: these are big until chosen otherwise
+const HOME_BIG_KINDS = ['system', 'usage', 'calendar', 'weather', 'air', 'market', 'news', 'prayer', 'frame', 'qr1', 'qr2', 'qr3', 'qr4'];     // HomeConfig.defaultSize: these are big until chosen otherwise
 const HOME_W = { big: 100, cal: 120, small: 90, budget: 415, floor: 190 };   // HomeConfig.W_BIG / W_CAL / W_SMALL / BUDGET / FLOOR
 const homeSize = (c, k) => (c.wsize && (c.wsize[k] === 'big' || c.wsize[k] === 'small')) ? c.wsize[k] : (HOME_BIG_KINDS.includes(k) ? 'big' : 'small');
 // HomeConfig.pack, the same rule (tests/home_pack_cases.json holds the cases both are tested with): walk the widgets in order, a big
@@ -98,7 +99,7 @@ const HOME_COLS = { row: [[33, 1], [33, 1], [34, 2]], big: [[58, 1], [42, 2]], b
 const HOME_OLD_LAYOUTS = ['row', 'big'];                              // a TV Home without "wlayouts" has only these
 const HOME_ROW_CARDS = 3, HOME_LARGE = ['system', 'usage', 'calendar', 'weather'];   // HomeConfig.ROW_CARDS, Widgets.BIG: what "row" shows
 const homeSlots = (k) => k === 'row' || !HOME_COLS[k] ? 0 : HOME_COLS[k].reduce((n, c) => n + c[1], 0);   // HomeConfig.slots: what a fixed layout shows (a pinned note takes one)
-const HOME_WIDGET_WORDS = { system: 'home.w_system', usage: 'home.w_usage', calendar: 'home.w_calendar', lunar: 'home.w_lunar', timer: 'home.w_timer', weather: 'home.w_weather', air: 'home.w_air', recent: 'home.w_recent', adblock: 'home.w_adblock', clock: 'home.w_clock', market: 'home.w_market', news: 'home.w_news', prayer: 'home.w_prayer' };
+const HOME_WIDGET_WORDS = { system: 'home.w_system', usage: 'home.w_usage', calendar: 'home.w_calendar', lunar: 'home.w_lunar', timer: 'home.w_timer', weather: 'home.w_weather', air: 'home.w_air', recent: 'home.w_recent', adblock: 'home.w_adblock', clock: 'home.w_clock', market: 'home.w_market', news: 'home.w_news', prayer: 'home.w_prayer', frame: 'home.w_frame' };
 const HOME_STYLE_WORDS = { classic: 'home.style_classic', light: 'home.style_light', minimal: 'home.style_minimal', roman: 'home.style_roman', glass: 'home.style_glass', tonal: 'home.style_tonal' };   // HomeConfig.STYLES
 
 // The packed layout drawn small: a column per weight, its widgets stacked, big ones filled (sizes in css/remote.css)
@@ -130,7 +131,8 @@ const HOME_OPT_WORDS = ['home.o_size', 'home.o_face', 'home.o_theme', 'home.o_lo
   'home.ov_dark', 'home.ov_light', 'home.ov_glass', 'home.ov_tonal', 'home.ov_solid', 'home.ov_none', 'home.ov_off', 'home.ov_on',
   'home.o_layout', 'home.o_show', 'home.o_btc', 'home.o_fuel', 'home.o_src', 'home.ov_card', 'home.ov_ticker', 'home.ov_all', 'home.ov_gold', 'home.ov_rates', 'home.ov_auto', 'home.ov_mine', 'home.ov_both',
   'home.o_method', 'home.o_asr', 'home.o_hijri', 'home.ov_mwl', 'home.ov_isna', 'home.ov_egypt', 'home.ov_ummalqura', 'home.ov_karachi', 'home.ov_jakim', 'home.ov_kemenag', 'home.ov_singapore',
-  'home.ov_turkey', 'home.ov_tehran', 'home.ov_morocco', 'home.ov_standard', 'home.ov_hanafi', 'home.ov_hijri_m1', 'home.ov_hijri_0', 'home.ov_hijri_p1'];
+  'home.ov_turkey', 'home.ov_tehran', 'home.ov_morocco', 'home.ov_standard', 'home.ov_hanafi', 'home.ov_hijri_m1', 'home.ov_hijri_0', 'home.ov_hijri_p1',
+  'home.o_every', 'home.ov_s10', 'home.ov_s30', 'home.ov_m1', 'home.ov_m5', 'home.ov_m15'];
 // A widget's options, from the schema its TV Home reports ("wschema": HomeConfig.options): what was chosen, else the default
 const homeOpt = (c, k, id) => {
   const o = ((c.wschema || {})[k] || []).find((x) => x.id === id);
@@ -234,7 +236,7 @@ async function homeOpen() {
   if (!homeLink.direct && await needAdbSoon()) return;                // TV Home's own page has no ADB to wait for
   let r = await homeLink.read(true); if (!r) return;
   const keepThumbs = (n) => { if (n.shots) homeShots = { mine: n.shots.mine || {}, ready: n.shots.ready || {}, now: n.shots.now || null };
-    for (const [id, b] of Object.entries(n.thumbs || {})) { const p = (n.photos || []).find((x) => x.id === id) || ((n.video || {}).items || []).map((v) => ({ id: v.id, v: v.added })).find((x) => x.id === id); if (p) homeThumbs[id + ':' + p.v] = b; } };
+    for (const [id, b] of Object.entries(n.thumbs || {})) { const p = (n.photos || []).find((x) => x.id === id) || (n.framePics || []).find((x) => x.id === id) || ((n.video || {}).items || []).map((v) => ({ id: v.id, v: v.added })).find((x) => x.id === id); if (p) homeThumbs[id + ':' + p.v] = b; } };
   keepThumbs(r);
   if (!r.installed) { homeCard(); toast(T('home.missing')); goTo('tv', 'launchcard'); return; }   // from the remote's More: where to get it
   const apps = () => r.apps.map((a) => a.pkg);
@@ -546,6 +548,18 @@ async function homeOpen() {
     feedIn.value = '';
   } });
   feedIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') feedAdd.click(); });
+  // the photo frame's photos (HomeConfig "frame"): own pictures like an app's (a 16:9 JPEG each, the same crop); shown while the widget is on
+  const frameFile = el('input', { type: 'file', accept: 'image/*', multiple: true, hidden: true, onchange: async () => {
+    const picked = [...frameFile.files]; frameFile.value = '';
+    const room = HOME_FRAME_MAX - (r.config.frame || []).length;
+    if (picked.length > room) toast(T('home.photos_full', { n: HOME_FRAME_MAX }));
+    let sent = 0;
+    for (const f of picked.slice(0, Math.max(room, 0))) { if (!await homeAppPic(f, 'frame', take, 'home.frame_done')) break; sent++; }   // one crop each; Cancel stops the rest
+    if (sent) after(r);
+  } });
+  const frameAdd = el('button', { type: 'button', className: 'small', textContent: T('home.frame_add'), onclick: () => (window.ONTV && homeLink.canQr ? homeLink.qr() : frameFile.click()) });   // no file picker on the TV itself: the phone does it
+  const frameHead = el('div', { className: 'card-head' }, el('h3', { textContent: T('home.frame') }), frameAdd, frameFile);
+  const frameList = el('div', { className: 'fchips homewalls' }), frameNote = el('p', { className: 'empty', textContent: T('home.frame_none') });
   const feedHead = el('h3', { textContent: T('home.feeds') }), feedLine = UI.line(feedIn, feedAdd), feedList = el('div', { className: 'list' }), feedNote = el('p', { className: 'note', textContent: T('home.feeds_note') });
   const noteHead = el('h3', { textContent: T('home.note') }), noteLine = UI.line(note, pin, unpin);
   // QR widgets (HomeConfig "qrs", home_qr.js): a code of anything, up to four, each its own widget among the others (order, size, off in the list above)
@@ -754,7 +768,7 @@ async function homeOpen() {
     const w = c.widgets;                                              // absent: a TV Home older than the widgets
     const qrs = c.qrs || {};                                          // the QR widgets' fields, by key (absent: a TV Home older than them)
     const has = (k) => !!w && w.includes(k);
-    wLines.forEach((l, i) => { l.hidden = !w || has(HOME_WIDGETS[i]) || (HOME_WIDGETS[i] === 'weather' && c.place === undefined) || ((HOME_WIDGETS[i] === 'market' || HOME_WIDGETS[i] === 'news') && !c.infoOk) || (HOME_WIDGETS[i] === 'air' && !((c.wschema && c.wschema.air) || (c.wstyles && c.wstyles.air))) || ((HOME_WIDGETS[i] === 'recent' || HOME_WIDGETS[i] === 'adblock' || HOME_WIDGETS[i] === 'prayer') && !(c.wschema && c.wschema[HOME_WIDGETS[i]])); });   // weather, air: a TV Home older than them has no card
+    wLines.forEach((l, i) => { l.hidden = !w || has(HOME_WIDGETS[i]) || (HOME_WIDGETS[i] === 'weather' && c.place === undefined) || ((HOME_WIDGETS[i] === 'market' || HOME_WIDGETS[i] === 'news') && !c.infoOk) || (HOME_WIDGETS[i] === 'air' && !((c.wschema && c.wschema.air) || (c.wstyles && c.wstyles.air))) || ((HOME_WIDGETS[i] === 'recent' || HOME_WIDGETS[i] === 'adblock' || HOME_WIDGETS[i] === 'prayer' || HOME_WIDGETS[i] === 'frame') && !(c.wschema && c.wschema[HOME_WIDGETS[i]])); });   // weather, air: a TV Home older than them has no card
     wHead.hidden = !w;
     const sized = !!c.wsizes;                                         // this TV Home sizes the widgets; an older one has the preset layouts
     const bigs = sized && w ? w.filter((k) => homeSize(c, k) === 'big') : [];
@@ -802,6 +816,16 @@ async function homeOpen() {
     const feeds = c.feeds || [];
     feedHead.hidden = feedLine.hidden = feedNote.hidden = !c.infoOk || !has('news');   // a TV Home older than the News widget; and only while the widget is on
     feedList.hidden = feedHead.hidden || !feeds.length;
+    const frame = c.frame || [];
+    frameHead.hidden = c.frame === undefined || !has('frame');      // a TV Home older than the photo frame; and only while the widget is on
+    frameList.hidden = frameHead.hidden || !frame.length; frameNote.hidden = frameHead.hidden || !!frame.length;
+    frameAdd.disabled = frame.length >= HOME_FRAME_MAX; frameAdd.title = frameAdd.disabled ? T('home.photos_full', { n: HOME_FRAME_MAX }) : '';
+    frameList.replaceChildren(...frame.map((id, i) => {
+      const p = (r.framePics || []).find((x) => x.id === id), t = p && homeThumbs[id + ':' + p.v];
+      const face = el('i', {}, t ? el('img', { src: 'data:image/jpeg;base64,' + t, alt: '' }) : '🖼️');
+      return el('span', { className: 'wallcell' }, el('button', { type: 'button', tabIndex: -1 }, face, el('span', { textContent: T('home.frame_n', { n: i + 1 }) })),
+        el('button', { type: 'button', className: 'small iconbtn wallx', textContent: '✕', title: T('home.frame_remove'), 'aria-label': T('home.frame_remove'), onclick: () => send({ frame: frame.filter((x) => x !== id) }) }));
+    }));
     feedAdd.disabled = feeds.length >= 5; feedAdd.title = feeds.length >= 5 ? T('home.feeds_full') : '';
     feedList.replaceChildren(...feeds.map((u) => el('div', { className: 'item' }, el('div', { className: 'name' }, el('span', { textContent: u })),
       el('div', { className: 'acts' }, tool('✕', T('home.remove'), () => send({ feeds: feeds.filter((x) => x !== u) }))))));
@@ -1113,7 +1137,7 @@ async function homeOpen() {
       sect(null, namesHead, names),
       sect(null, picsHead, pics)]],
     ['widgets', 'chart', 210, 'home.g_widgets', [sect(null, wHead, wList, ...wLines), sect(null, packHead, packBox, packNote), sect(null, layHead, lay, layNote, placeHead, placeLine),
-      sect(null, feedHead, feedLine, feedList, feedNote), sect(null, noteHead, noteLine), sect(null, qrHead, qrList, qrNote)]],
+      sect(null, feedHead, feedLine, feedList, feedNote), sect(null, frameHead, frameList, frameNote), sect(null, noteHead, noteLine), sect(null, qrHead, qrList, qrNote)]],
     ['dream', 'moon', 260, 'home.g_dream', [sect(null, check(dream, 'home.dream'), dfaceHead, dface, check(ddarkOn, 'home.ddark'), ddarkTimes, check(shift, 'home.show_shift'))]],
     ['keys', 'keyboard', 230, 'home.keys', [keysOld, check(keyOn, 'home.keys_on'), keysNote, keysList, autoNote, autoAllBox, autoAllNote, check(homebar, 'home.show_homebar')]],
     ['system', 'power', 200, 'home.g_system', [langHead, langs]],                 // the TV's System page also has the launcher row (TV Setup's picker): TV only
@@ -1339,14 +1363,14 @@ async function homePhoto(f, done) {
 }
 
 // An app's own picture for its tile: cropped 16:9 here (the crop dialog is the photo's), sent small (a 480 x 270 JPEG is ~40 KB; the TV shrinks and limits it again)
-async function homeAppPic(f, pkg, done) {
+async function homeAppPic(f, pkg, done, word) {
   try {
     const img = await photoOpen(f);
     const view = await homeCropAsk(img, 480, 270, null, true);
     if (!view) return false;                                          // cancelled: nothing sent, nothing said
     toast(T('home.pic_sending'));
     done(await homeLink.appPic(pkg, await photoBlob(img, 480, 270, view, 0.8)));
-    toast(T('home.pic_done'));
+    toast(T(word || 'home.pic_done'));
     return true;
   } catch (e) { toast(T('common.error_msg', { msg: friendly(e.message) })); return false; }
 }

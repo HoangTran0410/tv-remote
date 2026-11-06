@@ -221,7 +221,7 @@ class HomeActivity : Activity() {
         shortcutWatch = Pins.watch(this) { r -> bg.execute(r) }
         if (!Pins.listed(this)) bg.execute { Pins.refresh(this) }       // the first Home: + Add has the apps' shortcuts to list
         Store.advance(this, true)                                     // a rotation on "each time Home is shown" (or one that fell due while away): before the first paint, so nothing is drawn twice
-        conf = Store.get(this); readNames(); Pics.ids = picIds(); if (Pics.dir(this).isDirectory) bg.execute { Pics.sweep(this, Pics.ids.values) }; Pins.resize(pinW())
+        conf = Store.get(this); readNames(); Pics.ids = picIds(); if (Pics.dir(this).isDirectory) bg.execute { Pics.sweep(this, Pics.ids.values + Pics.frame) }; Pins.resize(pinW())
         val root = FrameLayout(this)
         backdrop = Backdrop(window.decorView)
 
@@ -381,6 +381,7 @@ class HomeActivity : Activity() {
         bg.execute { forget(null); if (LiveWidgets.refresh(this)) runOnUiThread { if (!isDestroyed) { shownKey = ""; show() } } }   // what TV Setup offers (it may have been installed or updated while away)
         ui.removeCallbacks(liveTick); ui.post(liveTick)
         widgetsDrawn = ""; ui.removeCallbacks(widgetTick); ui.post(widgetTick)        // back on Home: drawn again (language, recent apps)
+        widgets.paused(false)                                         // the photo frame's swap timer, stopped in onPause
         ui.removeCallbacks(clockTick); if (Build.VERSION.SDK_INT < 31) ui.postDelayed(clockTick, 61_000 - System.currentTimeMillis() % 60_000)   // 12+: TextClock keeps its own time
         ui.removeCallbacks(netTick); ui.postDelayed(netTick, Widgets.SAMPLE_MS)
         slideGo()                                                     // a slideshow wall: the slide of this slot, the timer again
@@ -554,6 +555,7 @@ class HomeActivity : Activity() {
         val on = Store.list(this, "widgets")
         val items = ArrayList<TvGlass.Item>()
         if (k == "adblock") items.add(gi(R.drawable.ic_shield_ok, getString(R.string.adb_toggle), on = { dev.tvremote.home.widgets.Adblock.on(this) }) { widgets.adblockToggle() })   // the widget's OK, as a switch
+        if (k == "frame") items.add(gi(R.drawable.ic_image, getString(R.string.frame_add)) { PhotoScreen.show(this) {} })   // the photos come from a phone: the page's Widgets tab
         if ("size" in opts) items.add(gi(R.drawable.ic_expand, getString(R.string.el_big), on = { k in HomeConfig.bigs(Store.get(this)) }) {
             val sizes = JSONObject((Store.get(this).optJSONObject("wsize") ?: JSONObject()).toString())   // the key Customize's gear writes
             Store.change(this, JSONObject().put("wsize", sizes.put(k, if (k in HomeConfig.bigs(Store.get(this))) "small" else "big")))
@@ -669,7 +671,7 @@ class HomeActivity : Activity() {
         }
     }
 
-    override fun onPause() { if (moving != null) endMove(false); zoom.paused(); ui.removeCallbacks(widgetTick); ui.removeCallbacks(clockTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick); ui.removeCallbacks(slideTick); ui.removeCallbacks(liveTick); ui.removeCallbacks(skyTick); ui.removeCallbacks(shiftTick); super.onPause() }
+    override fun onPause() { if (moving != null) endMove(false); zoom.paused(); widgets.paused(true); ui.removeCallbacks(widgetTick); ui.removeCallbacks(clockTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick); ui.removeCallbacks(slideTick); ui.removeCallbacks(liveTick); ui.removeCallbacks(skyTick); ui.removeCallbacks(shiftTick); super.onPause() }
 
     private var cpuAgain = false
 
@@ -1629,20 +1631,22 @@ class HomeActivity : Activity() {
     }
 
     private fun picIds(): Map<String, String> {
+        Pics.frame = HomeConfig.frame(conf.optJSONArray("frame"))     // the photo frame's photos live in the same folder: the sweep keeps them
         val g = conf.optJSONObject("pics") ?: return emptyMap()
         return g.keys().asSequence().associateWith { g.optString(it) }
     }
 
     /** The own pictures ("pics") changed: the tiles they touch read again off the main thread, the files nobody names go. Nothing when there are none and were none. */
     private fun readPics() {
+        val wasFrame = Pics.frame
         val now = picIds(); val was = Pics.ids
-        if (now == was) return
+        if (now == was) { if (Pics.frame != wasFrame && Pics.dir(this).isDirectory) { val keep = now.values + Pics.frame; bg.execute { Pics.sweep(this, keep) } }; return }   // a frame photo removed: its file goes
         Pics.ids = now
         val changed = (now.keys + was.keys).filter { now[it] != was[it] }.toSet()
         val mine = (apps + pins).filter { it.pkg in changed }
         bg.execute {
             mine.forEach { it.load(this) }
-            Pics.sweep(this, now.values)
+            Pics.sweep(this, now.values + Pics.frame)
             runOnUiThread { if (!isDestroyed) { shownKey = ""; show() } }
         }
     }

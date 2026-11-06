@@ -1344,6 +1344,7 @@ object Customize {
         arrayOf<Any>("market", R.drawable.ic_chart, R.string.w_market, R.string.c_market_sub),
         arrayOf<Any>("news", R.drawable.ic_message, R.string.w_news, R.string.c_news_sub),
         arrayOf<Any>("prayer", R.drawable.ic_compass, R.string.w_prayer, R.string.c_prayer_sub),
+        arrayOf<Any>("frame", R.drawable.ic_image, R.string.w_frame, R.string.c_frame_sub),
         arrayOf<Any>("clock", R.drawable.ic_clock, R.string.w_clock, R.string.c_clock_sub),
     )
 

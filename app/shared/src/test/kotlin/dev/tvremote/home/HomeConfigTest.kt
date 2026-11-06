@@ -144,16 +144,31 @@ class HomeConfigTest {
         val none = HomeConfig.clean(JSONObject())
         assertEquals(0, none.getJSONObject("wsize").length())                    // nothing chosen: the defaults apply
         assertFalse(none.has("wlayout"))
-        assertEquals(setOf("system", "usage", "calendar", "weather", "air", "market", "news", "prayer") + HomeQr.KEYS, HomeConfig.bigs(none))   // QR cards are big by default
+        assertEquals(setOf("system", "usage", "calendar", "weather", "air", "market", "news", "prayer", "frame") + HomeQr.KEYS, HomeConfig.bigs(none))   // QR cards are big by default
         val c = HomeConfig.clean(JSONObject().put("wsize", JSONObject().put("system", "small").put("lunar", "big").put("timer", "huge").put("bogus", "big")))
         assertEquals("small", c.getJSONObject("wsize").getString("system"))
         assertEquals("big", c.getJSONObject("wsize").getString("lunar"))
         assertFalse(c.getJSONObject("wsize").has("timer"))                       // an unknown size: dropped
         assertFalse(c.getJSONObject("wsize").has("bogus"))
-        assertEquals(setOf("usage", "calendar", "weather", "air", "market", "news", "lunar", "prayer") + HomeQr.KEYS, HomeConfig.bigs(c))
+        assertEquals(setOf("usage", "calendar", "weather", "air", "market", "news", "lunar", "prayer", "frame") + HomeQr.KEYS, HomeConfig.bigs(c))
         val m = HomeConfig.merge(JSONObject().put("widgets", JSONArray(listOf("weather", "calendar"))), JSONObject().put("wsize", JSONObject().put("weather", "small")))
         assertEquals("small", m.getJSONObject("wsize").getString("weather"))
         assertEquals("weather", m.getJSONArray("widgets").getString(0))          // moving never sorts them back
+    }
+
+    @Test fun frameWidgetPhotosAndInterval() {
+        assertEquals(listOf("size", "every"), HomeConfig.options("frame").map { it.id })
+        assertEquals("s30", HomeConfig.optValue(JSONObject(), "frame", "every"))                  // 30 s until chosen
+        assertEquals("big", HomeConfig.defaultSize("frame"))
+        assertTrue("frame" in HomeConfig.WIDGETS && "frame" in HomeConfig.schema().keys().asSequence().toList())
+        assertEquals(0, HomeConfig.clean(JSONObject()).getJSONArray("frame").length())            // off by default: no photos
+        val ids = JSONArray(listOf("0a1b2c3d", "0a1b2c3d", "../etc/x", "ZZZZZZZZ", 5, "11112222"))
+        assertEquals(listOf("0a1b2c3d", "11112222"), HomeConfig.frame(HomeConfig.clean(JSONObject().put("frame", ids)).getJSONArray("frame")))
+        val many = JSONArray((0 until 30).map { String.format("%08x", it) })
+        assertEquals(HomeConfig.FRAME_MAX, HomeConfig.clean(JSONObject().put("frame", many)).getJSONArray("frame").length())
+        assertEquals("m5", HomeConfig.optValue(HomeConfig.clean(JSONObject().put("wopt", JSONObject().put("frame", JSONObject().put("every", "m5")))), "frame", "every"))
+        assertEquals("s30", HomeConfig.optValue(HomeConfig.clean(JSONObject().put("wopt", JSONObject().put("frame", JSONObject().put("every", "s1")))), "frame", "every"))
+        assertEquals(HomeConfig.FRAME_EVERY.keys.toList(), HomeConfig.options("frame")[1].values)
     }
 
     @Test fun optionsAreKnownOnesOfKnownCards() {
@@ -222,7 +237,8 @@ class HomeConfigTest {
         assertEquals(listOf("classic", "minimal", "roman", "modern", "digital"), List(5) { face.getJSONArray("values").getJSONObject(it).getString("id") })
         assertEquals("home.ov_minimal", face.getJSONArray("values").getJSONObject(1).getString("w"))
         assertEquals(3, s.getJSONArray("calendar").length())                                  // size + look + layout (month / date)
-        for (k in HomeConfig.WIDGETS) assertEquals(k != "clock", HomeConfig.options(k).first { it.id == "look" }.values.contains("tonal"))   // every card has a look, all but the clock a tonal one
+        for (k in HomeConfig.WIDGETS - "frame") assertEquals(k != "clock", HomeConfig.options(k).first { it.id == "look" }.values.contains("tonal"))   // every card has a look, all but the clock a tonal one
+        assertTrue(HomeConfig.options("frame").none { it.id == "look" })                     // the photo frame is the photo: no glass or tonal look
         assertEquals("look", s.getJSONArray("weather").getJSONObject(1).getString("id"))
         for (k in HomeConfig.WIDGETS) for (o in HomeConfig.options(k)) assertTrue(o.default in (if (o.type == "toggle") listOf("off", "on") else o.values))
     }

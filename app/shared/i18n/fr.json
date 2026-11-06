@@ -4701,5 +4701,19 @@
  "space.biggest": "Applications les plus lourdes",
  "space.no_list": "Cette TV n’indique pas quelles applications prennent de la place. Supprimez des applications ou des fichiers dans les onglets Applications et Fichiers.",
  "space.remove_updates": "Supprimer les mises à jour",
- "space.updates_ask": "Supprimer les mises à jour de {name} ? L’application revient à la version d’origine de la TV."
+ "space.updates_ask": "Supprimer les mises à jour de {name} ? L’application revient à la version d’origine de la TV.",
+ "home.w_frame": "Cadre photo : vos photos, l’une après l’autre",
+ "home.frame": "Photos du cadre",
+ "home.frame_add": "＋ Photo",
+ "home.frame_none": "Pas encore de photos. Jusqu’à 10.",
+ "home.frame_n": "Photo {n}",
+ "home.frame_remove": "Retirer la photo",
+ "home.frame_done": "Photo ajoutée",
+ "core.fr_home_frame_old": "Mettez à jour TV Home pour utiliser le cadre photo.",
+ "home.o_every": "Changer toutes les",
+ "home.ov_s10": "10 s",
+ "home.ov_s30": "30 s",
+ "home.ov_m1": "1 min",
+ "home.ov_m5": "5 min",
+ "home.ov_m15": "15 min"
 }

@@ -10,6 +10,7 @@ TV Home has two more widgets that read their data straight from the source, with
 | Recently opened | The last 4-6 apps; Left / Right pick, OK opens |
 | Ad blocking | OK turns an ad-blocking DNS on / off (AdGuard...). Not the ads inside YouTube videos. If the DNS fails, it goes back in ~10 s |
 | Prayer times | The next prayer large with a countdown, the three after it (sunrise too) at the weather's place, the Hijri date as the title. Worked out on the TV, no internet. Pick the method, Asr school, Hijri ±1 day |
+| Photo frame | Your own photos one after another, 30 s each (⚙: 10 s to 15 min). Add up to 10 from the phone: **Widgets** → **Photo frame** |
 
 ### Each widget's settings
 

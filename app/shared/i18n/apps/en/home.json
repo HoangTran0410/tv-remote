@@ -810,5 +810,15 @@
   "folder_delete": "Remove folder",
   "folder_note": "Removing a folder puts everything in it back on the home screen.",
   "folder_full": "No room for another folder",
-  "folder_items": {"one": "%d item", "other": "%d items"}
+  "folder_items": {"one": "%d item", "other": "%d items"},
+  "w_frame": "Photo frame",
+  "c_frame_sub": "your photos, one after another",
+  "frame_empty": "No photos yet. Add some from your phone: Widgets › Photo frame.",
+  "frame_add": "Add photos from your phone",
+  "home_o_every": "Change every",
+  "home_ov_s10": "10 s",
+  "home_ov_s30": "30 s",
+  "home_ov_m1": "1 min",
+  "home_ov_m5": "5 min",
+  "home_ov_m15": "15 min"
 }

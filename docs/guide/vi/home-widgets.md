@@ -10,6 +10,7 @@ TV Home có thêm hai widget lấy số liệu thẳng từ nguồn, không qua 
 | Mở gần đây | 4-6 app vừa mở; Trái / Phải chọn, OK mở |
 | Chặn quảng cáo | OK bật / tắt DNS chặn quảng cáo (AdGuard…). Không chặn quảng cáo trong video YouTube. DNS không chạy thì ~10 giây sau tự trả về |
 | Giờ cầu nguyện | Buổi sắp tới kèm đếm ngược, 3 buổi kế tiếp, ngày Hijri. Theo nơi của widget Thời tiết. Tính ngay trên TV, không cần mạng. Chọn cách tính, giờ Asr, chỉnh ngày Hijri ±1 |
+| Khung ảnh | Ảnh của bạn lần lượt hiện, mỗi tấm 30 giây (⚙ đổi từ 10 giây tới 15 phút). Thêm tối đa 10 ảnh từ điện thoại: **Widget** → **Khung ảnh** |
 
 ### Cài đặt từng widget
 
