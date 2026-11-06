@@ -40,23 +40,10 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - Words sent by the apps (not the page) pick plural forms per language as the page does: Russian 2-4 / 22-24 and Arabic's forms are right.
 - TV Home: the widget row is no longer rebuilt every minute while nothing on it changed (less idle CPU on weak boxes).
 - Site: the TV-only install (Downloader code) shows in the hero, a short link `tvremote.pages.dev/dl/tv-setup.apk` for TVs without Google Play, a one-line note on Android's warning under the download buttons, the live demo has an English address (`/en/demo/`), and the version pill no longer sits at "NEW" when GitHub's API limit is hit.
-- After picking another TV, a slow answer from the old one no longer replaces the new TV's cards, apps, settings or Health figures.
-- The TV's web page: pairing tells a wrong code, too many wrong codes and no network apart, instead of always "the code has expired".
-- Several TVs: one missed progress check no longer freezes the install lines and hides Stop; after ten it says the connection was lost.
-- Copy buttons work on the TV's plain-http web page too (the kids mode backup codes, the app log, the TV's clipboard).
-- Safari 14 to 15.3 (no dialog support) now get "The browser needs an update" instead of questions that silently do nothing.
-- Health, its RAM apps, the Setup tab's TV settings and the Apps list: a first read that fails says so, with Try again, instead of a spinner or a blank list.
-- Searching Apps, Files, Quick launch and Open apps ignores accents ("truyen hinh" finds "Truyền hình").
-- The page loads only its own language's words before it draws; English and Vietnamese only when a word is missing.
-- Computer app: a scan that finds no TV now offers three buttons: Install on the TV (the Downloader code, then the step-by-step guide), Type the IP and Scan again.
-- The "can't reach the TV" banner has a Send the log button next to its fix, for the cases the self-check cannot solve.
-- Phones: the small buttons in lists and card heads (Open / Wake / Delete on a saved TV, ⋯) get a 44 px touch area; they look the same.
-- Telegram history in Settings: a double-tapped More no longer adds the same rows twice, and rows of the chat (or TV) left meanwhile no longer land in the new list.
-- Setup tab steps: switching TV no longer carries over a pairing started on the old one, nor draws the old TV's steps under the new one.
-- Words: Russian counts use the right form for 2-4 (22-24 …) everywhere; Russian has the scene "Add to TV Home" words; the voice settings say the offline commands come in Vietnamese or English (with both sizes, ru/fr); Vietnamese stream errors and the RAM card in plain words; the guest check-out in Russian no longer reads "evict"; Vietnamese says "app" and, in the Files tab, "tệp" throughout.
 - Phone app: a remote in notifications and on the lock screen (Settings → Notifications, off by default): Volume down / up, Play / Pause, Mute and Power for the TV used last, through the same connection as the remote screen when it is open. It closes its connection 2 minutes after a press and goes away after 2 hours unused, when switched off, or when no TV is saved (issue #8).
 - TV Home: a Photo frame widget shows your own photos one after another with a fade (up to 10, added and removed from the phone, 30 s each by default).
 - Simple remote (Tools → Simple remote), for older people: only big keys with words under them (Power, arrows + OK, Back, Home, volume, Mute, channel, Speak), everything else hidden; leaving takes a 2-second hold on a small button. Remembered per device (the page in the browser, the phone app in its settings). The keys are one list in remote.json the page and the phone app both draw. Share → Share the TV can make a link that opens straight in it (`?simple=1`).
+- The Setup tab's TV Home, TV Channels and TV Games cards hide Open and "installed" when ADB goes away, instead of leaving a button that answers "no ADB connection".
 
 ## 0.48.0 - 2026-11-07
 
