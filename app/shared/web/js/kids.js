@@ -166,7 +166,7 @@ async function kidsRaw(body) {
   try {
     const r = await fetch('/api/rules', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     let j = {}; try { j = await r.json(); } catch {}
-    return { ok: r.ok && !j.error, error: j.error || (r.ok ? '' : r.statusText), clock: j.clock, recovery: j.recovery };
+    return { ok: r.ok && !j.error, error: adbWords(r.status, j.error || (r.ok ? '' : r.statusText)), clock: j.clock, recovery: j.recovery };
   } catch { return { ok: false, error: T('core.server_unreachable') }; }
 }
 

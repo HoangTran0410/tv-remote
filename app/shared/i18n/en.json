@@ -4698,5 +4698,15 @@
  "home.ov_s30": "30 s",
  "home.ov_m1": "1 min",
  "home.ov_m5": "5 min",
- "home.ov_m15": "15 min"
+ "home.ov_m15": "15 min",
+ "core.fr_launcher_noplay": "The TV could not open Google Play. Open Google Play on the TV yourself and search for the launcher.",
+ "core.fr_home_pic_full": "Up to {n} app pictures: remove one first.",
+ "core.fr_home_theme_missing": "That theme is no longer there. Pick another one.",
+ "core.fr_nothing_to_restore": "Nothing to undo: Optimize TV has not changed anything on this TV.",
+ "core.fr_no_home": "TV Home is not on screen right now. Open TV Home on the TV, then try again.",
+ "core.fr_themeshare_busy": "Your theme is already being sent. Wait for it to finish.",
+ "core.fr_video_noanswer": "The TV stopped answering. Try again; if it keeps happening, restart the TV.",
+ "core.fr_copy_not_stored": "The file did not get saved on the TV. Check that the TV has free storage, then try again.",
+ "core.fr_tv_noanswer": "The TV did not answer. Check that it is on and on the same Wi-Fi, then try again.",
+ "core.fr_no_scene": "That scene is not there any more. It may have been renamed or deleted."
 }

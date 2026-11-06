@@ -179,7 +179,7 @@ async function upload(file, kind, dest, after, src) {
     if (xhr.status === 410) { row.status = 'cancelled'; showJob(row); mark(src, row); return; }
     if (xhr.status !== 200) {
       const why = r.error || xhr.statusText;
-      row.status = 'error'; row.msg = friendly(why); const jr = showJob(row); mark(src, row); needSetup(why);
+      row.status = 'error'; row.msg = errWords(xhr.status, why); const jr = showJob(row); mark(src, row); needSetup(why);
       if (isApk && NO_SPACE.test(why)) offerSpace(file.size, () => upload(file, kind, dest, after, src));   // pm said no room after the check passed
       const builtin = /builtin app: (\S+)/.exec(why), closed = /copy closed: (\S+)/.exec(why);
       if (builtin && kind === 'install') {                          // a system app of the TV: it cannot be replaced, but it can go beside as another app

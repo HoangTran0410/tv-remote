@@ -6,7 +6,9 @@ window.APP_PATHS = HOME_PATHS.direct.app;                             // the nam
 const CORE = 'tv';
 const ADB = { state: 'ready' };                                       // nothing to wait for: TV Home does the work itself
 const onTvChange = () => {};
-const friendly = (m) => String(m || '');
+// core.js is not loaded here: only the codes TV Home's own server answers (HomeApi.pin) get words; no ADB on this page
+const HW_WORDS = { pin_old: 'errors.pin_old', pin_bad_link: 'errors.pin_bad_link', pin_no_app: 'errors.pin_no_app', pin_failed: 'errors.pin_failed' };
+const friendly = (m) => { m = String(m || ''); return HW_WORDS[m] ? T(HW_WORDS[m]) : m; };
 const lookOffline = () => {};                                         // the update button is the hosts'
 
 // Every call carries X-Tvh (a page of another site cannot send it without a preflight, which TV Home does not answer).
