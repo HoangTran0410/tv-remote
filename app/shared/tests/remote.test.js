@@ -12,7 +12,7 @@ const vm = require('node:vm');
 const root = path.join(__dirname, '../../');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 const spec = JSON.parse(read('shared/web/remote.json'));
-const entries = [...Object.values(spec.rows).flat(2), ...Object.values(spec.menus).flat()];
+const entries = [...Object.values(spec.rows).flat(2), ...Object.values(spec.menus).flat(), ...spec.simple.rows.flat()];
 
 // remote_spec.js on its own, as the page would run it (no other script of the page is needed until a handler runs)
 const book = (l) => JSON.parse(read('shared/i18n/' + l + '.json'));
@@ -140,4 +140,49 @@ test('remote.json "kinds": a known kind, t and icon only, a why; VIDAA reads Men
     assert.equal(words[page('vidaa').t], 'Menu'); assert.equal(page('vidaa').icon, 'menu');
     for (const k of ['android', 'lg', 'samsung', 'roku']) { assert.equal(page(k).t, 'rkey.settings'); assert.equal(page(k).icon, 'settings'); }
   }
+});
+
+test('remote.json "simple": the big keys only, each a key the servers know or an action both sides have, drawn by both', () => {
+  const rows = spec.simple.rows, all = rows.flat();
+  assert.ok(rows.length >= 4 && all.every((e) => e.id.startsWith('simple-')), 'rows of simple-* entries');
+  assert.deepEqual(all.filter((e) => e.expand).map((e) => e.expand), ['pad'], 'one D-pad (arrows + OK), the side\'s own');
+  for (const k of ['POWER', 'BACK', 'HOME', 'VOL_UP', 'VOL_DOWN', 'MUTE']) assert.ok(all.some((e) => e.key === k), k + ' is in the Simple remote');
+  assert.ok(all.every((e) => !e.when || e.when === 'voice'), 'the only condition is "voice" (remote.js, Simple.kt)');
+  assert.ok(all.every((e) => !e.cores), 'the same keys on the page and the phone');
+  assert.ok(spec.menus.tools.some((e) => e.do === 'simple'), 'Tools turns it on');
+  // the page draws it from the file (js/remote.js), no list of its own
+  const js = read('shared/web/js/remote.js'), html = read('shared/web/index.html');
+  assert.match(js, /REMOTE\.simple\.rows/);
+  assert.match(js, /raw\.expand === 'pad'/);
+  assert.ok(/id="simplekeys"/.test(html) && /id="simpleexit"/.test(html), 'its box and its leave button are on the page');
+  const block = js.slice(js.indexOf('// ---------- the Simple remote'), js.indexOf('// ---------- the TV\'s own keyboard came up'));
+  assert.ok(block.length > 200 && !/'[A-Z_]{3,}'/.test(block), 'setSimple names no key by hand');
+  const kt = read('android/src/main/kotlin/dev/tvremote/phone/remote/Simple.kt');
+  assert.match(kt, /remoteSpec\(\)\.simple/);
+  assert.ok(!/"VOL_UP"|"POWER"/.test(kt), 'Simple.kt names no key by hand');
+});
+
+test('the page draws the Simple remote: every row, its keys bound like the others, the D-pad copied, and a 2 s hold to leave', () => {
+  // a tiny DOM, enough for the drawing part of remote.js
+  const made = [];
+  const node = (tag) => { const n = { tag, kids: [], dataset: {}, classList: { add() {}, remove() {}, toggle() {}, contains: () => false }, attrs: {},
+    append(...k) { this.kids.push(...k); }, querySelector: () => node('small'), addEventListener() {}, setAttribute() {}, cloneNode() { return { ...node('div'), cloned: true }; } }; made.push(n); return n; };
+  const box = node('div'), sandbox = { REMOTE: spec, CORE: 'pc', TV_KIND: 'android', T: (id) => book('en')[id] ?? id };
+  sandbox.el = (tag, props, ...kids) => { const n = node(tag); Object.assign(n, props); if (props && props.className) n.className = props.className; n.kids.push(...kids); return n; };
+  sandbox.$ = (q) => q === '#simplekeys' ? box : node('div');
+  sandbox.document = { querySelectorAll: () => [], documentElement: {} };
+  vm.createContext(sandbox);
+  vm.runInContext(read('shared/web/js/remote_spec.js').replace(/^const REMOTE = [\s\S]*?\n\}\)\(\);\n/m, '').replace(/^const (\w+) =/gm, 'var $1 ='), sandbox);
+  const src = read('shared/web/js/remote.js'), start = src.indexOf('const remoteKey'), end = src.indexOf('// A key the connected TV names differently');
+  vm.runInContext(src.slice(start, end).replace(/^const (\w+) =/gm, 'var $1 ='), sandbox);
+  assert.equal(box.kids.length, spec.simple.rows.length, 'one line per row');
+  box.kids.forEach((line, i) => assert.equal(line.kids.length, spec.simple.rows[i].length, 'row ' + i));
+  const keys = box.kids.flatMap((l) => l.kids).filter((b) => !b.cloned);
+  assert.deepEqual(keys.map((b) => b.dataset.k).filter(Boolean), spec.simple.rows.flat().filter((e) => e.key).map((e) => e.key));
+  assert.ok(keys.every((b) => /\brb lab\b/.test(b.className) && b.id.startsWith('r-simple-')));
+  assert.equal(box.kids.flatMap((l) => l.kids).filter((b) => b.cloned).length, 1, 'the D-pad, a copy of the hand-laid one');
+  assert.match(src, /setTimeout\(\(\) => \{ stop\(\); buzz\(\); setSimple\(false\); \}, 2000\)/, 'leaving takes a 2 s hold');
+  assert.match(src, /localStorage\.setItem\('simple'/, 'remembered on this browser');
+  assert.match(src, /q\.has\('simple'\)/, 'the share link\'s ?simple=1');
+  assert.match(read('shared/web/js/setup.js'), /searchParams\.set\('simple', '1'\)/, 'Share can make that link');
 });

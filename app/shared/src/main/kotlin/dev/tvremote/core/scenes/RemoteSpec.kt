@@ -37,7 +37,9 @@ object RemoteSpec {
     /** The hidden screens and the pauses between presses: [gap] ms, [homeGap] between two Home presses. */
     class RokuScreens(val gap: Long, val homeGap: Long, val screens: List<RokuScreen>)
 
-    class Spec(val rows: Map<String, List<List<Entry>>>, val menus: Map<String, List<Entry>>, val roku: RokuScreens = RokuScreens(350, 250, emptyList()))
+    /** [simple]: the Simple remote's rows ("simple" in remote.json): the only keys it shows, big; an "expand": "pad" entry is the D-pad. */
+    class Spec(val rows: Map<String, List<List<Entry>>>, val menus: Map<String, List<Entry>>, val roku: RokuScreens = RokuScreens(350, 250, emptyList()),
+               val simple: List<List<Entry>> = emptyList())
 
     fun parse(json: String, core: String): Spec {
         val root = JSONObject(json)
@@ -55,7 +57,8 @@ object RemoteSpec {
                     x.optBoolean("tvOnly"), x.optString("ask").ifEmpty { null }, x.optString("askOk").ifEmpty { null })
             })
         } ?: RokuScreens(350, 250, emptyList())
-        return Spec(rows, menus, roku)
+        val simple = root.optJSONObject("simple")?.getJSONArray("rows")?.let { a -> (0 until a.length()).map { i -> entries(a.getJSONArray(i), core) } } ?: emptyList()
+        return Spec(rows, menus, roku, simple)
     }
 
     private fun entries(a: JSONArray, core: String): List<Entry> = (0 until a.length()).mapNotNull { entry(a.getJSONObject(it), core) }

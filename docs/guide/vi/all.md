@@ -223,6 +223,8 @@ Trên app điện thoại, nút **Thu nhỏ hình** cạnh toàn màn hình th�
 | Tắt tiếng · Phát/Dừng · Bài trước/sau · Tua | Hàng phím media. |
 | Nói | Nói điều muốn TV làm (vd: mở YouTube). Giữ: mở Trợ lý của TV. |
 | Thêm phím | Mở trên TV, Nguồn vào, Air Mouse, Hẹn giờ, Chụp màn hình, Vẽ, Cảnh, Thông báo, Cài đặt, Phụ đề, Thông tin; **Tiện ích**: TV, Giảm độ sáng, Lịch phát, Chia sẻ, Dừng, TV Home, Hồng ngoại, phím game. |
+| 👵 Remote đơn giản | Thêm phím → **Tiện ích**. Cho ông bà: chỉ phím to có chữ (Nguồn, mũi tên + OK, Quay lại, Home, âm lượng, Tắt tiếng, kênh, Nói). Máy nhớ chế độ này. |
+| Thoát remote đơn giản | Giữ nút nhỏ ở trên 2 giây. Chạm nhầm không thoát. |
 
 **Mở trên TV** (trong Thêm phím): **Mở app đã cài** (chọn app, có ô tìm), **Tải app** (CH Play, YouTube, Kodi…), mở link, **Gửi lên TV** (ảnh, video, nhạc, clipboard).
 
@@ -1244,6 +1246,8 @@ Mỗi TV đã thử có một dòng: **Đang bật**, **Chế độ chờ** ho�
 | 🛡️ Toàn quyền | Mọi thứ, kể cả Quản lý. |
 | 🎮 Chỉ remote | Phím, gõ chữ, hình, mở app, hẹn giờ, chạy cảnh, kênh TV. Không có Quản lý. |
 | 👁️ Chỉ xem | Xem hình và đang phát gì. |
+
+> 👵 Chọn **Remote đơn giản** (thay vì **Remote đầy đủ**) trước khi đưa QR: trang mở thẳng ở remote phím to. Link có thêm `?simple=1`.
 
 > 💡 Đổi hay thu hồi quyền ở **Thiết lập → 📱 Thiết bị đã ghép** (Hủy ghép hoặc Gỡ tất cả).
 

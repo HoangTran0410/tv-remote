@@ -128,6 +128,10 @@
 
   <!-- ============ Remote ============ -->
   <div class="panel" data-panel="remote" data-for="pc tv">
+    <section class="card" id="simple" data-needs="control" hidden aria-label="Remote đơn giản" data-i18n-aria-label="rkey.simple">   <!-- the Simple remote: remote.json "simple", js/remote.js setSimple -->
+      <button class="small" id="simpleexit" title="Giữ nút 2 giây để thoát" data-i18n-title="simple.hold" data-i18n="simple.exit">Thoát remote đơn giản</button>
+      <div class="simplekeys" id="simplekeys"></div>
+    </section>
     <div class="remote-grid">
       <div class="col">
         <section class="card" id="screencard" data-needs="adb" aria-label="Màn hình TV" data-i18n-aria-label="remote.tv_screen">

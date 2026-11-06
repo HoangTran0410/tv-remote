@@ -17,7 +17,7 @@ class RemoteSpecTest {
     private val text = File("web/remote.json").readText()
     private val phone = RemoteSpec.parse(text, "phone")
     private val web = RemoteSpec.parse(text, "web")
-    private fun all(s: RemoteSpec.Spec) = s.rows.values.flatten().flatten() + s.menus.values.flatten()
+    private fun all(s: RemoteSpec.Spec) = s.rows.values.flatten().flatten() + s.menus.values.flatten() + s.simple.flatten()
 
     @Test fun idsAreUniqueAndEveryEntryDoesOneThing() {
         val ids = all(phone).map { it.id } + all(web).map { it.id }.filter { id -> all(phone).none { it.id == id } }   // an entry both sides show counts once
@@ -41,7 +41,8 @@ class RemoteSpecTest {
         val codes = mapOf("SETTINGS" to 176, "INFO" to 165, "GUIDE" to 172, "LIVE" to 170, "SUBTITLE" to 175, "STOP" to 86, "BACK" to 4, "HOME" to 3,
             "MENU" to 82, "MUTE" to 164, "PLAY_PAUSE" to 85, "PREV" to 88, "NEXT" to 87, "REWIND" to 89, "FFWD" to 90,
             "RED" to 183, "GREEN" to 184, "YELLOW" to 185, "BLUE" to 186,       // Tools > TV keys: the codes TV Setup's key filter knows
-            "YOUTUBE" to 190, "NETFLIX" to 191, "PRIME" to 195, "ALL_APPS" to 284)
+            "YOUTUBE" to 190, "NETFLIX" to 191, "PRIME" to 195, "ALL_APPS" to 284,
+            "POWER" to 26, "VOL_UP" to 24, "VOL_DOWN" to 25, "CH_UP" to 166, "CH_DOWN" to 167)   // the Simple remote's, the hand-laid keys' codes
         assertEquals(codes, all(phone).mapNotNull { e -> (e.key ?: e.arg.takeIf { e.action == "key" })?.let { it to Scenes.KEYS[it] } }.toMap())
     }
 
@@ -62,6 +63,17 @@ class RemoteSpecTest {
         assertTrue(all(web).any { it.id == "home-web" } && !all(phone).any { it.id == "home-web" })
         assertTrue(all(phone).any { it.id == "open-cast" })
         assertFalse(all(web).any { it.id == "open-cast" })
+    }
+
+    @Test fun theSimpleRemoteIsTheBigKeysOnlyOnBothSides() {           // remote.json "simple": the same rows for the phone and the page
+        for (s in listOf(phone, web)) {
+            val keys = s.simple.flatten().mapNotNull { it.key }
+            assertEquals(listOf("POWER", "BACK", "HOME", "VOL_DOWN", "MUTE", "VOL_UP", "CH_DOWN", "CH_UP"), keys)
+            assertEquals(listOf("pad"), s.simple.flatten().mapNotNull { it.expand })   // the arrows and OK: the side's own D-pad
+            assertEquals(listOf("voice"), s.simple.flatten().mapNotNull { it.action })
+        }
+        assertEquals(phone.simple.map { r -> r.map { it.id } }, web.simple.map { r -> r.map { it.id } })
+        assertTrue(phone.menus["tools"]!!.any { it.action == "simple" } && web.menus["tools"]!!.any { it.action == "simple" })   // how it is turned on
     }
 
     @Test fun vidaaCallsSettingsMenuOthersUnchanged() {                // issue #8: VIDAA's KEY_MENU is its settings screen

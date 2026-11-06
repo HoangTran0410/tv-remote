@@ -16,7 +16,7 @@ Remote control for Android TV / Google TV (and LG, Samsung, Roku, VIDAA) with no
 - [Connect and “Allow USB debugging?”](allow-usb.md): The first time a device connects, the TV asks whether to trust it. This is Android's safety step; once per device. _(allow usb debugging luon cho phep always allow nhin len tv ket noi)_
 
 ## Control
-- [The remote](remote.md): The 🎮 Remote tab works like a real remote. Tap to press. _(phim nguon power home back menu volume kenh channel more keys them phim)_
+- [The remote](remote.md): The 🎮 Remote tab works like a real remote. Tap to press. _(phim nguon power home back menu volume kenh channel more keys them phim don gian nguoi gia ong ba simple)_
 - [Type on the TV](typing.md): Tap ⌨️ Keyboard on the Remote tab: the box opens right under the top row. _(ban phim keyboard go chu co dau tieng viet enter)_
 - [The TV's clipboard (accents, pasting)](clipboard.md): The clipboard holds the text the TV last copied. Use it to read it, copy it to your device, or send text to the TV. _(clipboard dan chu copy sao chep dan vao o gõ chu co dau paste)_
 - [Voice commands](voice.md): The Ask the TV: open YouTube box (in ⌨️ Keyboard) understands plain sentences: type and tap 🔍, or tap Speak. _(giong noi micro hoi tv mo youtube voice assistant)_
@@ -77,7 +77,7 @@ Remote control for Android TV / Google TV (and LG, Samsung, Roku, VIDAA) with no
 ## More
 - [Several TVs](many.md): Save each TV: connect once and it stays in 💾 Saved TVs. _(nhieu tv fleet cai hang loat danh sach)_
 - [See every TV at a glance](tv-status.md): Each saved TV has a line: On, Standby or No answer, with its model and the app open. It refreshes every 10 seconds. _(tinh trang trang thai bat tat cho man hinh homestay nhieu tv status standby thumbnail)_
-- [Share with others](share.md): More keys → Tools → 📲 Share. _(chia se qr quyen scope toan quyen chi remote chi xem khach)_
+- [Share with others](share.md): More keys → Tools → 📲 Share. _(chia se qr quyen scope toan quyen chi remote chi xem khach don gian ong ba simple)_
 - [Away from home (Tailscale)](away.md): Tailscale is a free private network joining your devices. No ports opened to the Internet. _(tailscale xa nha vpn 100 key expiry wake on lan dem)_
 - [LG, Samsung, Roku, VIDAA TVs](brands.md): Beta. Only in the phone app and the computer app. _(sony bravia xiaomi tcl android tv lg webos samsung tizen roku vidaa hang khac beta)_
 - [Turn off tracking on Samsung, LG, Roku, VIDAA TVs](tracking-other.md): These TVs let no app do it for you: it takes the remote, once. Menu names change between years: if the words differ, look under Privacy. _(theo doi acr quang cao quyen rieng tu samsung lg roku vidaa hisense viewing information live plus tat theo doi dns chan quang cao privacy tracking ads)_

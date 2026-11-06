@@ -16,7 +16,7 @@
 - [Kết nối và “Cho phép gỡ lỗi USB?”](allow-usb.md): Lần đầu một máy nối vào TV, TV hỏi xem có tin máy đó không. Đây là bước an toàn của Android, chỉ làm một lần cho mỗi máy. _(allow usb debugging luon cho phep always allow nhin len tv ket noi)_
 
 ## Điều khiển
-- [Điều khiển từ xa](remote.md): Tab 🎮 Remote giống điều khiển thật. Chạm là bấm. _(phim nguon power home back menu volume kenh channel more keys them phim)_
+- [Điều khiển từ xa](remote.md): Tab 🎮 Remote giống điều khiển thật. Chạm là bấm. _(phim nguon power home back menu volume kenh channel more keys them phim don gian nguoi gia ong ba simple)_
 - [Gõ chữ lên TV](typing.md): Bấm ⌨️ Bàn phím ở tab Remote: ô gõ mở ngay dưới hàng phím đầu. _(ban phim keyboard go chu co dau tieng viet enter)_
 - [Clipboard của TV (chữ có dấu, dán chữ)](clipboard.md): Clipboard là chỗ TV giữ chữ vừa sao chép. Dùng để xem chữ trên TV, lấy về máy, hoặc đưa chữ lên TV. _(clipboard dan chu copy sao chep dan vao o gõ chu co dau paste)_
 - [Ra lệnh bằng giọng nói](voice.md): Ô Hỏi TV: mở YouTube (trong ⌨️ Bàn phím) hiểu câu nói thường: gõ rồi bấm 🔍, hoặc bấm Nói để nói. _(giong noi micro hoi tv mo youtube voice assistant)_
@@ -77,7 +77,7 @@
 ## Thêm nữa
 - [Nhiều TV cùng lúc](many.md): Lưu từng TV: nối vào TV một lần, nó nằm trong 💾 TV đã lưu. _(nhieu tv fleet cai hang loat danh sach)_
 - [Xem tình trạng mọi TV](tv-status.md): Mỗi TV đã thử có một dòng: Đang bật, Chế độ chờ hoặc Không thấy TV, kèm kiểu máy và app đang mở. Tự làm mới 10 giây một lần. _(tinh trang trang thai bat tat cho man hinh homestay nhieu tv status standby thumbnail)_
-- [Chia sẻ cho người khác](share.md): Thêm phím → Tiện ích → 📲 Chia sẻ. _(chia se qr quyen scope toan quyen chi remote chi xem khach)_
+- [Chia sẻ cho người khác](share.md): Thêm phím → Tiện ích → 📲 Chia sẻ. _(chia se qr quyen scope toan quyen chi remote chi xem khach don gian ong ba simple)_
 - [Điều khiển khi không ở nhà (Tailscale)](away.md): Tailscale là mạng riêng miễn phí nối các thiết bị của bạn. Không mở cổng ra Internet. _(tailscale xa nha vpn 100 key expiry wake on lan dem)_
 - [TV LG, Samsung, Roku, VIDAA](brands.md): Thử nghiệm (beta). Chỉ có trong app điện thoại và app máy tính. _(sony bravia xiaomi tcl android tv lg webos samsung tizen roku vidaa hang khac beta)_
 - [Tắt theo dõi trên TV Samsung, LG, Roku, VIDAA](tracking-other.md): Các TV này không cho app tắt hộ: bấm remote một lần. Tên menu đổi theo đời TV: không thấy đúng chữ thì tìm trong Quyền riêng tư. _(theo doi acr quang cao quyen rieng tu samsung lg roku vidaa hisense viewing information live plus tat theo doi dns chan quang cao privacy tracking ads)_

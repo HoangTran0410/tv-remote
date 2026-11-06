@@ -66,7 +66,7 @@ Chưa có ADB? App điện thoại và app máy tính vẫn bấm phím được
 
 | Tính năng | Làm được gì | Hướng dẫn |
 |---|---|---|
-| 🎮 **Remote** | Mũi tên, âm lượng, kênh, app, gõ chữ, giọng nói; giữ phím như remote thật | [→](https://tvremote.pages.dev/guide#remote) |
+| 🎮 **Remote** | Mũi tên, âm lượng, kênh, app, gõ chữ, giọng nói; giữ phím như remote thật; Remote đơn giản phím to cho ông bà | [→](https://tvremote.pages.dev/guide#remote) |
 | 📺 **Hình TV** | Ngay trên máy bạn, có chạm và tiếng; nghe tiếng TV cả khi tắt màn hình điện thoại | [→](https://tvremote.pages.dev/guide#picture) |
 | ✏️ **Lên màn hình TV** | Vẽ, gửi ảnh, video, camera hoặc lời nhắn; đang phát; clipboard của TV; giảm sáng, lọc ánh sáng xanh | [→](https://tvremote.pages.dev/guide#draw) |
 | 🔒 **Cho trẻ em** | Hẹn giờ tắt, giờ đi ngủ, giới hạn app, giới hạn âm lượng, khóa app bằng PIN: chạy ngay trên TV | [→](https://tvremote.pages.dev/guide#limits) |

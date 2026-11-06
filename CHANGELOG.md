@@ -4,6 +4,10 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- Simple remote (Tools → Simple remote), for older people: only big keys with words under them (Power, arrows + OK, Back, Home, volume, Mute, channel, Speak), everything else hidden; leaving takes a 2-second hold on a small button. Remembered per device (the page in the browser, the phone app in its settings). The keys are one list in remote.json the page and the phone app both draw. Share → Share the TV can make a link that opens straight in it (`?simple=1`).
+
 ## 0.48.0 - 2026-11-07
 
 Web 0.48.0 · Phone app 0.45.0 · TV app 0.46.0 · TV Home 0.29.1 · TV Channels 0.20.0 · TV Games 0.22.0 · TV Apps 0.6.0
