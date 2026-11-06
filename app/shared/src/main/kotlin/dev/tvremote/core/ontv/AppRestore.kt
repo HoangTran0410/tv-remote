@@ -1,5 +1,6 @@
 package dev.tvremote.core.ontv
 
+import dev.tvremote.core.adb.Pkg
 import java.io.IOException
 
 /**
@@ -17,7 +18,7 @@ object AppRestore {
     /** True when [pkg] is on the TV and enabled for the current user (`pm path` alone also finds a turned-off one). */
     @Throws(IOException::class)
     fun enabled(sh: (String) -> String, pkg: String): Boolean =
-        sh("pm path $pkg").contains("package:") && sh("pm list packages -e $pkg").contains("package:$pkg")
+        Pkg.installed(sh, pkg) && pkg in Pkg.list(sh, "-e $pkg", empty = true)
 
     /** Runs [start]; when [ok] refuses its words, brings [pkg] back and runs it once more. Answers the last output and whether it was retried. */
     @Throws(IOException::class)

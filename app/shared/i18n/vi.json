@@ -2818,6 +2818,7 @@
  "launcher.fits": "Hợp với TV này",
  "launcher.nofit": "Không hợp TV này",
  "launcher.in_use": "Đang dùng",
+ "launcher.disabled": "Đang tắt trên TV",
  "launcher.install": "Cài và dùng",
  "launcher.installed": "Đã cài trên TV",
  "launcher.use": "Dùng",

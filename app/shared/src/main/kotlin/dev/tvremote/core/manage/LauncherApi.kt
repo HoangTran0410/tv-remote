@@ -9,6 +9,7 @@ import dev.tvremote.core.ontv.Setup
 import dev.tvremote.core.web.Cancel
 import dev.tvremote.core.web.HttpServer
 import java.io.File
+import dev.tvremote.core.adb.Pkg
 import java.io.IOException
 import org.json.JSONArray
 import org.json.JSONObject
@@ -26,7 +27,9 @@ internal class LauncherApi(private val link: AdbLink, private val dir: File?, pr
     fun list(): JSONObject {
         val g = Launchers.fetch()
         val f = Launchers.facts { sh(it) }
-        val have = sh("pm list packages").split("\n").map { it.removePrefix("package:").trim() }.toSet()
+        val both = sh("pm list packages; echo @@; pm list packages -d").split("@@")       // one round trip; a failed read throws, it is no empty gallery
+        val have = Pkg.parse(both[0])
+        val off = Pkg.parse(both.getOrElse(1) { "" }, empty = true)
         val swap = LauncherSwap({ sh(it) })
         val home = swap.homeNow().substringBefore('/')
         val rec = swap.state()
@@ -36,7 +39,7 @@ internal class LauncherApi(private val link: AdbLink, private val dir: File?, pr
             val fit = Launchers.fits(e, f)
             a.put(JSONObject().put("id", e.id).put("pkg", e.pkg).put("name", e.name).put("desc", JSONObject(e.desc)).put("notes", JSONObject(e.notes))
                 .put("thumb", "/api/launcher/thumb?id=" + e.id).put("source", e.source).put("license", e.license).put("kind", e.kind).put("version", e.version)
-                .put("fit", fit.ok).put("why", fit.why).put("min_sdk", e.minSdk).put("installed", e.pkg in have).put("in_use", e.pkg == home)
+                .put("fit", fit.ok).put("why", fit.why).put("min_sdk", e.minSdk).put("installed", e.pkg in have).put("disabled", e.pkg in off).put("in_use", e.pkg == home)
                 .put("shows", Launchers.shows(e, lang, f.sdk)))
         }
         return JSONObject().put("updated", g.updated).put("launchers", a).put("home", home)

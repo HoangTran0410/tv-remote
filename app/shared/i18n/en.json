@@ -2917,6 +2917,7 @@
  "launcher.fits": "Works on this TV",
  "launcher.nofit": "Not for this TV",
  "launcher.in_use": "In use",
+ "launcher.disabled": "Turned off on the TV",
  "launcher.install": "Install and use",
  "launcher.installed": "Already on this TV",
  "launcher.use": "Use",

@@ -270,13 +270,20 @@ object Scenes {
     fun launch(sh: (String) -> String, pkg: String) {
         if (!PKG.matcher(pkg).matches()) throw IllegalArgumentException("bad package name")
         if (dev.tvremote.core.ontv.Bloat.factory(pkg)) throw IllegalArgumentException(FACTORY_APP)
+        if (tryLaunch(sh, pkg)) return
+        sh(dev.tvremote.core.ontv.AppRestore.command(pkg))                      // turned off on the TV answers like one with no screen
+        if (tryLaunch(sh, pkg)) return
+        throw IllegalArgumentException("this app cannot be opened (no launcher screen)")
+    }
+
+    private fun tryLaunch(sh: (String) -> String, pkg: String): Boolean {
         for (cat in arrayOf("LEANBACK_LAUNCHER", "LAUNCHER")) {               // a TV app's own screen first, then a phone-style one
             val lines = sh("cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.$cat $pkg 2>/dev/null").trim().split("\n")
             val component = lines[lines.size - 1].trim()
             if (!component.matches(Regex("[\\w.]+/[\\w.\$]+")) || !component.startsWith("$pkg/")) continue
-            if (!sh("am start -n " + Adb.q(component) + " 2>&1").contains("Error")) return
+            if (!sh("am start -n " + Adb.q(component) + " 2>&1").contains("Error")) return true
         }
-        throw IllegalArgumentException("this app cannot be opened (no launcher screen)")
+        return false
     }
 
     /** Sets the media volume ([stream] 3; the settings list sets the others too). `cmd media_session` is there from Android 10;

@@ -20,7 +20,7 @@ function tvappsRow(a) {
     ['🔗', T('launcher.source'), () => open(a.source, '_blank', 'noopener')],
   ].filter(Boolean)) });
   return UI.item({ icon, name: a.name, sub: tvappsWords(a.desc),
-    extra: [a.installed ? el('small', { className: 'ok', textContent: T('tvapps.on_tv') }) : a.why ? el('small', { className: 'warn', textContent: tvappsWhy(a) }) : null],
+    extra: [a.installed ? (a.disabled ? el('small', { className: 'warn', textContent: T('launcher.disabled') }) : el('small', { className: 'ok', textContent: T('tvapps.on_tv') })) : a.why ? el('small', { className: 'warn', textContent: tvappsWhy(a) }) : null],
     acts: [act, more] });
 }
 

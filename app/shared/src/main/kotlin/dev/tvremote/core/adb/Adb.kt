@@ -283,7 +283,7 @@ class Adb(private val dir: File) : Closeable {
         try {
             Adb(dir).use { t ->
                 t.connectTls(host, port)
-                if (!t.shell("pm path dev.tvremote.setup 2>/dev/null", 10000).contains("package:")) return false
+                if (!Pkg.installed({ t.shell(it, 10000) }, "dev.tvremote.setup")) return false
                 PLAIN_ASKED[host] = now
                 val said = try { t.open("tcpip:5555").use { it.readAll(3000) } } catch (e: IOException) { e.toString() }
                 WireLog.all.add("·", "adb $host tcpip:5555 for TV Setup: " + said.trim().take(120))

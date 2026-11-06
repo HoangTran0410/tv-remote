@@ -2970,6 +2970,7 @@
  "launcher.fits": "Подходит этому ТВ",
  "launcher.nofit": "Не для этого ТВ",
  "launcher.in_use": "Используется",
+ "launcher.disabled": "Отключено на ТВ",
  "launcher.install": "Установить и использовать",
  "launcher.installed": "Уже на этом ТВ",
  "launcher.use": "Использовать",

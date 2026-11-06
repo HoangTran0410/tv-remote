@@ -35,6 +35,7 @@ function launchRow(l, fleet) {
   const tags = el('div', { className: 'ltags' },
     l.kind === 'self' ? launchTag(T('launcher.ours'), 'ours') : null,      // TV Home: made here, set up from here
     !fleet && l.in_use ? launchTag(T('launcher.in_use'), 'use') : null,
+    !fleet && l.disabled && !l.in_use ? launchTag(T('launcher.disabled'), 'warn') : null,   // on the TV but off: Use turns it back on
     fleet || l.in_use ? null : l.fit ? launchTag(T('launcher.fits')) : Object.assign(launchTag(T('launcher.nofit'), 'warn'), { title: launchWhy(l) }),
     l.shows ? Object.assign(launchTag(langName(l.shows), l.shows === 'en' ? '' : 'warn'), { title: launchLang(l) }) : null,   // no words in the TV's language
     l.kind === 'play' ? launchTag('▶ ' + T('launcher.badge_play'), 'play') : null, l.version ? launchTag(l.version) : null);

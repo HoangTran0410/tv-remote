@@ -2923,6 +2923,7 @@
   "launcher.fits": "Fonctionne sur cette TV",
   "launcher.nofit": "Incompatible avec cette TV",
   "launcher.in_use": "Utilisé",
+  "launcher.disabled": "Désactivée sur la TV",
   "launcher.install": "Installer et utiliser",
   "launcher.installed": "Déjà sur cette TV",
   "launcher.use": "Utiliser",
