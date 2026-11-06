@@ -8,7 +8,7 @@ if [ "$1" = arm ]; then                                              # the Sessi
   python3 -c 'import json,sys; print(json.dumps({"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": sys.argv[1]}}))' "$msg"
   exit 0
 fi
-until [ -s "$f" ]; do sleep 30; done
+until [ -s "$f" ]; do sleep 5; done
 cat "$f"; : > "$f"
 echo
 echo "NEWS for the user (crashwatch). Tell them, investigate / fix / answer on GitHub at once, then start dev/admin/news_wait.sh in the background again."
