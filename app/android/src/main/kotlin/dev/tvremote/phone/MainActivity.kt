@@ -565,8 +565,8 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
         entry = from ?: savedOwner(ip.trim())                         // a saved TV's other address: the same row, not a second one
         wasLive = false; retries = 0
         val h = ip.trim()
+        if (h.isEmpty()) return                                       // host stays null: Tv(this, "") would dial localhost (support logs: ::1 port 5555)
         host = h
-        if (h.isEmpty()) return
         hideKeyboard()
         if (kindOf(h) != Remote.Kind.ANDROID) { host = null; startBasic(h, false); return }   // LG / Samsung: their own remote link, no ADB
         status.text = title(h) + " · " + T("page.connecting")
@@ -579,7 +579,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
     /** The keys' session (no picture: keys, text, the clipboard, what the TV plays), then the picture's when it is wanted. */
     internal fun startSession() {
         val h = host
-        if (h == null || basic != null || keysAway || kindOf(entry ?: h) != Remote.Kind.ANDROID) return
+        if (h.isNullOrBlank() || basic != null || keysAway || kindOf(entry ?: h) != Remote.Kind.ANDROID) return
         if (tv == null) { tv = Tv(this, h, null, 0, 0, wakeNext, this); wakeNext = false }
         startPicture()
     }

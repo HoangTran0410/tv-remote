@@ -110,11 +110,13 @@ internal fun MainActivity.wake(ip: String) {
 }
 
 /** The port that answers while the TV is on: ADB's on an Android TV, the remote link's on an LG or Samsung TV. */
-/** The address typed in, without a port typed after it ("192.168.1.5:5877", or "192.168.1.5 5877" on the number pad): that port is kept for ADB. */
-internal fun MainActivity.typedIp(text: String): String {
-    val (ip, port) = dev.tvremote.core.adb.AdbPort.split(text)
-    if (port > 0) dev.tvremote.core.adb.AdbPort.remember(filesDir, ip, port)
-    return ip
+/** The address typed in, checked ([TypedAddress]); a port typed after it ("192.168.1.5:5877", or "192.168.1.5 5877" on the number pad) is kept for ADB.
+ *  Null when it is not an address: the box says what one looks like. */
+internal fun MainActivity.typedIp(text: String): String? = when (val a = TypedAddress.parse(text)) {
+    is TypedAddress.Ok -> { message(null, false); if (a.port > 0) dev.tvremote.core.adb.AdbPort.remember(filesDir, a.host, a.port); a.host }
+    TypedAddress.Empty -> null
+    TypedAddress.DownloaderCode -> { message(T("picker.downloader_code"), true); null }
+    TypedAddress.Bad -> { message(T("picker.bad_address"), true); null }
 }
 
 internal fun MainActivity.upPort(ip: String): Int = kindOf(ip).let { if (it == Remote.Kind.ANDROID) dev.tvremote.core.adb.AdbPort.of(ip) else Remote.Kind.ports(it).first() }
@@ -399,11 +401,11 @@ internal fun MainActivity.buildPicker() {
     ipBox.inputType = InputType.TYPE_CLASS_PHONE
     ipBox.imeOptions = EditorInfo.IME_ACTION_GO
     ipBox.setOnEditorActionListener { _, _, _ ->
-        connect(typedIp(ipBox.text.toString()))
+        typedIp(ipBox.text.toString())?.let { connect(it) }
         true
     }
     val go = icon("@right", T("page.connect"), ACCENT)
-    go.setOnClickListener { connect(typedIp(ipBox.text.toString())) }
+    go.setOnClickListener { typedIp(ipBox.text.toString())?.let { connect(it) } }
     line.addView(ipBox, LinearLayout.LayoutParams(0, dp(48), 1f))
     val lp = LinearLayout.LayoutParams(-2, dp(48))
     lp.leftMargin = dp(8)

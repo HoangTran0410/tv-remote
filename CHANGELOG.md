@@ -9,6 +9,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - A step that fails while ADB still works (a bad link to pin, the TV not answering one command, a full disk on the phone) now says what failed, not "no ADB connection to the TV yet".
 - Wireless debugging: a pairing the TV forgot now says "pair again" instead of a raw "Failure in SSL library", and a TLS port that went away is forgotten instead of being dialled on every try.
 - Installing TV Games / TV Channels / TV Apps while GitHub cannot be reached says so, instead of "it comes in the next release".
+- Phone app: the address box checks what is typed (IPv4, "192 168 1 5" read as dots, a host name, [IPv6]) and says what an address looks like instead of dialing "42" or a Downloader code; an empty address no longer dials localhost on resume (support: `failed to connect to ip6-localhost/::1`).
 - First setup with ADB off: the Setup tab's steps and the phone app's How to connect put the remote buttons first (they work at once, no ADB) and ADB after them as an optional "more"; README Quick start has the same order.
 - Computer app: a scan that finds no TV now offers three buttons: Install on the TV (the Downloader code, then the step-by-step guide), Type the IP and Scan again.
 - The "can't reach the TV" banner has a Send the log button next to its fix, for the cases the self-check cannot solve.

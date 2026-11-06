@@ -2093,6 +2093,8 @@
  "picker.find_on_the_wi": "TÌM TRONG WI-FI",
  "picker.type_the_tv_s": "NHẬP IP CỦA TV",
  "picker.e_g_192_168": "vd 192.168.1.88 hoặc 100.x.x.x",
+ "picker.bad_address": "Đây chưa phải địa chỉ. Địa chỉ trông như 192.168.1.20: xem trên TV ở Cài đặt, Mạng, hoặc trong TV Setup.",
+ "picker.downloader_code": "Đây là mã Downloader. Hãy gõ mã này trên TV, trong app Downloader, không gõ ở đây.",
  "picker.how_to_connect": "Cách kết nối",
  "picker.1_turn_on_adb": "1. CHỌN TV: NÚT BẤM DÙNG NGAY\nKhông cần ADB. Chọn TV, nhập mã TV hiện ra là điều khiển được. ADB là bước làm sau để có thêm (bên dưới).\n\n2A. CÙNG WI-FI VỚI TV\nBấm “Quét Wi-Fi” rồi chọn TV. Hoặc xem IP trên TV: Cài đặt → Mạng và Internet → tên Wi-Fi.\n\n2B. KHÁC MẠNG\nBật Tailscale trên cả điện thoại và TV. TV đã kết nối ở nhà một lần thì app nhớ IP Tailscale của nó, ra ngoài chỉ cần bấm TV trong danh sách. Chưa thì nhập IP 100.x của TV (xem trong app Tailscale).\n\nTV chưa có Tailscale? Lúc đang ở nhà, kết nối TV rồi bấm nút ô lưới → Thiết lập → “Cài và đăng nhập Tailscale”: app tự cài lên TV và mở trang đăng nhập trên điện thoại, bạn chỉ bấm Connect.\n\n3. BẬT ADB TRÊN TV (THÊM, LÀM SAU)\nCài đặt → Tùy chọn thiết bị (Google TV, Chromecast: Hệ thống) → Giới thiệu → bấm OK 7 lần vào “Bản dựng” (“Bản dựng Android TV OS”). Rồi quay lại, cùng mục đó mở Tùy chọn nhà phát triển → bật “Gỡ lỗi ADB”.\nBox nhà mạng (FPT, Viettel…): đừng bấm 7 lần, box có thể đòi mật khẩu hoặc khóa máy. Cài TV Setup trước, app mở thẳng Tùy chọn nhà phát triển.\n\n4. LẦN ĐẦU KẾT NỐI\nTV hỏi cho phép: tích “Luôn cho phép” rồi OK.\n\nMẸO\nNút nguồn cạnh tên TV: bật TV đang tắt. Nút xóa cạnh tên TV: xóa khỏi danh sách.",
  "adb_help.checking_on_the_tv": "Đang kiểm tra trên TV, chờ khoảng nửa phút...",
