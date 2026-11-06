@@ -283,6 +283,7 @@ const FRIENDLY = [
   [/launcher:noplay/, T('core.fr_launcher_noplay')],
   [/launcher:self/, T('core.fr_launcher_self')],
   [/launcher:fit/, T('core.fr_launcher_fit')],
+  [/^launcher:install:removed$/, T('core.fr_removed_after_install')],   // before the general one, which would word the bare 'removed'
   [/launcher:install:(.*)/, (m) => T('core.fr_launcher_install', { msg: friendly(m[1]) })],
   [/home:pic_full/, T('core.fr_home_pic_full', { n: 40 })],       // HomeConfig.PICS_MAX
   [/home:theme_missing|^theme_missing$/, T('core.fr_home_theme_missing')],
@@ -295,7 +296,6 @@ const FRIENDLY = [
   [/the TV did not store the whole file|the TV could not store the file/, T('core.fr_copy_not_stored')],
   [/^the TV did not answer$/, T('core.fr_tv_noanswer')],
   [/^no such scene$/, T('core.fr_no_scene')],
-  [/^launcher:install:removed$/, T('core.fr_removed_after_install')],
   [/home:missing/, T('core.fr_home_missing')],
   [/home:pin_old/, T('errors.pin_old')],
   [/pin_bad_link/, T('errors.pin_bad_link')],
