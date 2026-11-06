@@ -17,4 +17,9 @@ class ScrubTest {
             if (c.optBoolean("again", true)) assertEquals(c.getString("name"), c.getString("out"), Scrub.text(c.getString("out")))
         }
     }
+
+    @Test fun aSavedTvsPassAndRelayAreBlanked() {                   // /api/tvs through a support session (tvs.json fields)
+        val out = Scrub.blank("""{"host":"192.168.1.5","name":"Bedroom","setup_pass":"abc\"def","relay_host":"pi.lan","relay_cmd":"wake 1"}""")
+        assertEquals("""{"host":"192.168.1.5","name":"Bedroom","setup_pass":"…","relay_host":"…","relay_cmd":"…"}""", out)
+    }
 }

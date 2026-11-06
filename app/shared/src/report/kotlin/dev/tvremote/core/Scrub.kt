@@ -16,7 +16,8 @@ object Scrub {
     private val MAC = Regex("\\b[0-9A-Fa-f]{2}(?:[:-][0-9A-Fa-f]{2}){5}\\b")
     // A Wi-Fi code's text and the card that makes it carry the network's password: never into a log
     private val WIFI = Regex("WIFI:.*?(?<!\\\\);;|(\"pass\"\\s*:\\s*\")(?:[^\"\\\\]|\\\\.)*(\")")
-    private val KEYQ = Regex("([?&](?:k|key|pass|password|pwd|token)=)[^&\\s\"')]*")
+    private val TVPASS = Regex("(\"(?:setup_pass|relay_\\w+)\"\\s*:\\s*\")(?:[^\"\\\\]|\\\\.)*(\")")   // a saved TV's web-page pass and SSH relay (tvs.json)
+    private val KEYQ =Regex("([?&](?:k|key|pass|password|pwd|token)=)[^&\\s\"')]*")
     private val BEARER = Regex("(Bearer\\s+)[A-Za-z0-9._~+/=-]+")
     private val EMAIL = Regex("[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}")
     private val WINHOME = Regex("\\b[A-Za-z]:[\\\\/]+Users[\\\\/]+[^\\\\/\\s:*?\"<>|)']+")
@@ -30,6 +31,7 @@ object Scrub {
             .let { TYPED.replace(it) { m -> if (m.groupValues[2] in KEEP) m.value else m.groupValues[1] + "…(" + m.groupValues[2].length + ")" + m.groupValues[3] } }
             .let { MAC.replace(it, "xx:xx:xx:xx:xx:xx") }
             .let { WIFI.replace(it) { m -> if (m.groupValues[1].isNotEmpty()) m.groupValues[1] + "…" + m.groupValues[2] else "WIFI:…" } }
+            .let { TVPASS.replace(it) { m -> m.groupValues[1] + "…" + m.groupValues[2] } }
 
     fun text(s: String): String = blank(s)
         .let { KEYQ.replace(it) { m -> m.groupValues[1] + "…" } }

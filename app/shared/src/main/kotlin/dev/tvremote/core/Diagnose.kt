@@ -71,7 +71,7 @@ object Diagnose {
     const val SETUP_OFF = "setup_off"          // a Fire TV whose setup never finished: Home and Alexa keys do nothing (checked while ADB is up)
     val CODES = listOf(SETUP_OFF, CLOCK, NO_WIFI, OTHER_NET, TAILSCALE, ALLOW, WIRELESS, ADB_OFF, REMOTE_OFF, UP, CLOSED, MOVED, VPN, OFF)
 
-    const val ADB = 5555
+    const val ADB = dev.tvremote.core.adb.AdbPort.CLASSIC
     private const val SETUP = 8765
 
     /** The ports worth asking, by kind: the remote service(s), then what only an Android TV has (ADB and TV Setup). */

@@ -53,6 +53,7 @@ class LauncherTest {
             Regex("^echo '(.*)' > ${LauncherSwap.REC}$").find(cmd)?.let { rec = it.groupValues[1]; return "" }
             return when {
                 cmd == "cat ${LauncherSwap.REC} 2>/dev/null" -> rec
+                cmd == "rm -f ${LauncherSwap.REC}" -> { rec = ""; "" }
                 cmd.startsWith("getprop ro.product.manufacturer") -> maker
                 cmd.contains("DIRECT_BOOT_AWARE") -> bootAware ?: ""
                 cmd.startsWith("input keyevent 3") -> "  mFocusedApp=ActivityRecord{4f1 u0 ${focus ?: home()} t7}"
@@ -402,6 +403,18 @@ class LauncherTest {
         tv.maker = "Google\nGoogle"
         assertTrue(s.take("com.new.home", 30))                        // a real swap now: the old rule goes first
         assertEquals("", tv.homekey); assertEquals("pending", s.state()!!.state); assertEquals("", s.via)
+    }
+
+    @Test fun aFailedPickAfterAKeyWayOneLeavesNoOldRecord() {       // row 1 then row 13: the old record must not say Home opens the old launcher
+        val tv = Tv().apply { maker = "MOKA\nKalley"; keys = true }; val s = LauncherSwap({ tv.sh(it) })
+        assertTrue(s.take("com.new.home", 0))
+        assertEquals(LauncherSwap.KEY, s.state()!!.why)
+        tv.keys = false                                               // the filter does not come up this time
+        assertFalse(s.take("com.new.home", 0))
+        assertEquals(LauncherSwap.KEYS, s.refused)
+        assertEquals("", tv.homekey)
+        assertNull(s.state())                                         // no {old, kept, key} left for homeOpens and the watchdog
+        assertEquals(s.homeNow(), s.homeOpens())
     }
 
     @Test fun anAppHoldingTheTvsInputsIsNeverTurnedOff() {

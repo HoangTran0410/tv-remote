@@ -53,6 +53,9 @@ object AdbPort {
     fun candidates(host: String): List<Int> =
         (listOfNotNull(typed[host], found[host]) + (if (AdbTls.same(host, "127.0.0.1")) props() else emptyList()) + CLASSIC + OTHERS).distinct()
 
+    /** The port [host] was typed with or last answered on, else 5555: what a script made for that TV tells the person to dial. */
+    fun known(host: String): Int = typed[host] ?: found[host] ?: CLASSIC
+
     /** The first candidate that answers on [host], or 0 when none does; [open] dials one port (a test passes its own). */
     fun find(host: String, timeoutMs: Int = 1500, open: (String, Int, Int) -> Boolean = ::dial): Int {
         for (p in candidates(host)) if (open(host, p, timeoutMs)) { if (p != CLASSIC || found[host] != null) found[host] = p; return p }

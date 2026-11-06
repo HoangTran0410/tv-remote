@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * The apps' words by id, from the files the page reads too (app/shared/i18n/<lang>.json, js/i18n.js): vi.json lists every
  * id, each other language the same ids; a missing one falls back to English, then Vietnamese, as on the page. `{name}` in the
- * words is filled from the args; an entry `{ "one": ..., "other": ... }` is picked by the arg `n`.
+ * words is filled from the args; an entry `{ "one": ..., "few": ..., "other": ... }` is picked by the arg `n` ([plural]).
  * A new language is a file there, nothing in the code.
  */
 object Words {
@@ -43,13 +43,42 @@ object Words {
     /** The words of [id] in [lang]. */
     fun get(lang: String, id: String, vararg args: Pair<String, Any?>): String {
         var s: Any? = null
-        for (l in linkedSetOf(lang, "en", "vi")) { s = book(l)[id]; if (s != null) break }
+        var from = lang                                               // the language the words came from: its own plural rule
+        for (l in linkedSetOf(lang, "en", "vi")) { s = book(l)[id]; from = l; if (s != null) break }
         if (s == null) return id
         val n = args.firstOrNull { it.first == "n" }?.second?.toString()?.toDoubleOrNull()
-        val text = if (s is Map<*, *>) (s[if (n == 1.0) "one" else "other"] ?: s["other"]).toString() else s.toString()
+        val text = if (s is Map<*, *>) (s[if (n == null) "other" else plural(from, n)] ?: s["other"]).toString() else s.toString()
         if (args.isEmpty()) return text
         val m = args.toMap()
         return Regex("\\{(\\w+)\\}").replace(text) { r -> if (r.groupValues[1] in m) m[r.groupValues[1]].toString() else r.value }
+    }
+
+    /**
+     * CLDR's plural category of [n] in [lang] (zero, one, two, few, many, other), as Intl.PluralRules gives the page (js/i18n.js):
+     * Android 21 has no PluralRules, so the rules of the languages in langs.json are here. A language not listed: one for 1, else other.
+     */
+    fun plural(lang: String, n: Double): String {
+        val i = n.toLong()
+        val whole = n == i.toDouble()
+        val m10 = i % 10; val m100 = i % 100
+        return when (lang) {
+            "vi" -> "other"
+            "ru" -> when {
+                !whole -> "other"
+                m10 == 1L && m100 != 11L -> "one"
+                m10 in 2..4 && m100 !in 12..14 -> "few"
+                else -> "many"
+            }
+            "ar" -> when {
+                !whole -> "other"
+                i == 0L -> "zero"; i == 1L -> "one"; i == 2L -> "two"
+                m100 in 3..10 -> "few"
+                m100 in 11..99 -> "many"
+                else -> "other"
+            }
+            "fr" -> if (n >= 0 && n < 2) "one" else "other"           // 0 and 1.5 are singular in French
+            else -> if (n == 1.0) "one" else "other"
+        }
     }
 
     /** In the language of the app's own screens. */

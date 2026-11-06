@@ -95,6 +95,15 @@ class Server(private val repo: File, private val keys: File, private val pass: P
         return r.status to dev.tvremote.core.Scrub.blank(r.body.toString(Charsets.UTF_8))
     }
 
+    /** The saved TVs without what pairs with or reaches them (setup_pass: the TV web page's pass; relay_*: an SSH host and command):
+     *  the page never reads them, and a support session sends this answer to the relay. PhoneSupport.tvs() leaves them out too. */
+    private fun shareable(tvs: org.json.JSONArray): org.json.JSONArray = org.json.JSONArray().also { out ->
+        for (i in 0 until tvs.length()) {
+            val t = tvs.optJSONObject(i) ?: continue
+            out.put(JSONObject(t.toString()).also { c -> c.keys().asSequence().toList().filter { it == "setup_pass" || it.startsWith("relay_") }.forEach { c.remove(it) } })
+        }
+    }
+
     private val kinds = java.util.concurrent.ConcurrentHashMap<String, String>()   // before cur, which needs it: what an unsaved TV is (scan, ports)
 
     @Volatile var cur = session(first ?: saved.current)               // --tv: this run only, the saved choice stays
@@ -113,11 +122,14 @@ class Server(private val repo: File, private val keys: File, private val pass: P
     /** Another TV: a whole new session; the old one is closed after (it may be in the middle of a request). */
     @Synchronized private fun switch(host: String) {
         val old = cur
-        cur = session(host)
+        cur = synchronized(side) { side.remove(host)?.first } ?: session(host)   // a hook's session to it: one link per TV, never two
         Thread { old.close() }.start()
     }
 
-    fun close() { cur.close(); fleetView.close(); fleets.close(); timer.shutdownNow(); updater.close(); hookHttp?.stop() }
+    fun close() {
+        cur.close(); fleetView.close(); fleets.close(); timer.shutdownNow(); updater.close(); hookHttp?.stop()
+        synchronized(side) { side.values.forEach { it.first.close() }; side.clear() }
+    }
 
     // ---------------------------------------------------------------- Home Assistant and Shortcuts (Hook.kt)
     // The page's own port listens on 127.0.0.1 only, and must stay so: the TVs' keys are behind it. A hook has to be reached
@@ -127,7 +139,39 @@ class Server(private val repo: File, private val keys: File, private val pass: P
         override var enabled: Boolean get() = saved.hook.optBoolean("on"); set(v) { saved.hook = saved.hook.put("on", v) }
         override var token: String get() = saved.hook.optString("token"); set(v) { saved.hook = saved.hook.put("token", v) }
     }, Hook.Routes(text = "/api/text", wake = "/api/wake"), { dispatch(it) }, { JSONObject(String(state(cur).body)) }, { saved.scenes },
-        { lanIp()?.let { "http://$it:$hookPort" } ?: "" }).also { it.onChange = { saved.save() } }
+        { lanIp()?.let { "http://$it:$hookPort" } ?: "" }, tvs = object : Hook.Tvs {
+            override fun find(tv: String): Hook.Target? {
+                val all = saved.tvs.let { a -> (0 until a.length()).mapNotNull { a.optJSONObject(it) } }
+                val host = (all.firstOrNull { it.optString("host") == tv } ?: all.firstOrNull { it.optString("name").trim().equals(tv, ignoreCase = true) })
+                    ?.optString("host")?.takeIf { it.isNotEmpty() } ?: return null
+                return Hook.Target({ dispatch(it, hookSession(host)) }, { JSONObject(String(state(hookSession(host)).body)) })
+            }
+            override fun names(): List<String> = saved.tvs.let { a -> (0 until a.length()).mapNotNull { a.optJSONObject(it)?.optString("name")?.takeIf { n -> n.isNotEmpty() } } }
+        }).also { it.onChange = { saved.save() } }
+
+    /** Sessions for hook calls that name a saved TV other than the one selected (`tv=`), with their last use; closed after [SIDE_IDLE]. */
+    private val side = HashMap<String, Pair<Session, Long>>()
+
+    /** The session a hook call for [host] runs on: the selected one, else one of its own, given the moment a new link needs. */
+    private fun hookSession(host: String): Session {
+        cur.takeIf { it.host == host }?.let { return it }
+        val now = System.currentTimeMillis()
+        val (s, fresh) = synchronized(side) {
+            val had = side[host]?.first
+            (had ?: session(host)).also { side[host] = it to now } to (had == null)
+        }
+        if (fresh) later(SIDE_IDLE) { sweepSide() }
+        val until = now + 8000                                        // a new session is still dialling: what the page waits on its first key
+        while (!s.available && s.link?.state() != "ready" && System.currentTimeMillis() < until) Thread.sleep(200)
+        return s
+    }
+
+    private fun sweepSide() {
+        val now = System.currentTimeMillis()
+        val idle = synchronized(side) { side.filterValues { now - it.second >= SIDE_IDLE }.keys.mapNotNull { side.remove(it)?.first } }
+        idle.forEach { it.close() }
+        if (synchronized(side) { side.isNotEmpty() }) later(SIDE_IDLE / 4) { sweepSide() }
+    }
     @Volatile private var hookHttp: HttpServer? = null
 
     /** At start: the listener again if the hook was left on. */
@@ -197,8 +241,7 @@ class Server(private val repo: File, private val keys: File, private val pass: P
     }
 
     /** The route of a request that is allowed in, whoever made it: the page (checked by [handle]) or a hook call ([hook]). */
-    private fun dispatch(r: HttpServer.Request): Response {
-        val s = cur
+    private fun dispatch(r: HttpServer.Request, s: Session = cur): Response {
         return try {
             route(r, s) ?: s.manage?.handle(r) ?: if (r.path.startsWith("/api/") && s.host.isEmpty()) Response.error(400, "no TV selected")
                 else Response.error(404, "not found")
@@ -231,7 +274,7 @@ class Server(private val repo: File, private val keys: File, private val pass: P
 
     private fun route(r: HttpServer.Request, s: Session): Response? {
         val post = r.method == "POST"
-        if (post) infoAt.clear()                                      // an action (install, save...) may have changed what the status shows
+        if (post && r.path !in INPUT_ROUTES) infoAt.clear()           // an action (install, save...) may have changed what the status shows; a key press cannot
         if (post && r.path == "/api/support/app") return Response.json(when (r.json().optString("act")) {   // About: let support look at this app
             "start" -> if (support.start() == null) JSONObject().put("failed", if (support.left == 0) "none_left" else "no_net") else support.state()
             "stop" -> { support.stop(); support.state() }
@@ -244,7 +287,7 @@ class Server(private val repo: File, private val keys: File, private val pass: P
             "/api/wirelog" -> return Response.of("text/plain; charset=utf-8", WireLog.all.report(s.atv?.takeIf { native(s) }).toByteArray())
             "/api/update" -> return Response.json(updater.json())
             "/api/downloader" -> return Response.json(dev.tvremote.core.Downloader.json())   // needs no TV: the help for installing TV Setup types it
-            "/api/tvs" -> return Response.json(JSONObject().put("current", s.host).put("tvs", saved.tvs))
+            "/api/tvs" -> return Response.json(JSONObject().put("current", s.host).put("tvs", shareable(saved.tvs)))
             "/api/discover" -> return Response.json(Discover.poll(r.query.containsKey("new")))
             "/api/diagnose" -> return dev.tvremote.core.manage.Manage.diagnose(r, s.link)   // no session needed: a TV that never connected has none (Diagnose.kt)
             "/api/setup/status" -> return setupStatus(s)
@@ -686,6 +729,9 @@ class Server(private val repo: File, private val keys: File, private val pass: P
         val OURS = setOf("/api/key", "/api/app", "/api/volume", "/api/text", "/api/clip", "/api/touch", "/api/type", "/api/wake", "/api/tv/select", "/api/tv/save",
             "/api/tv/remove", "/api/voice", "/api/scenes", "/api/scene/run", "/api/scene/pin", "/api/fleet/do", "/api/assist", "/api/pair/start", "/api/pair/finish", "/api/vidaa/cert", "/api/shutdown", "/api/support/app",
             "/api/update")
+        const val SIDE_IDLE = 120_000L                                // a hook's session to a TV not selected: closed this long after its last call
+        /** POSTs sent many times a second while someone uses the remote: they change nothing tvInfo reads (model, Tailscale, FLauncher, addresses). */
+        val INPUT_ROUTES = setOf("/api/key", "/api/text", "/api/type", "/api/touch", "/api/clip", "/api/volume", "/api/voice", "/api/assist", "/api/search")
         /** What the page reads from an LG or Samsung TV besides [OURS]. */
         /** What support may read of this server (SupportRelay): read-only, what a page shows. */
         val SUPPORT_ROUTES = setOf("/api/state", "/api/about", "/api/tvs", "/api/update", "/api/diagnose", "/api/setup/need", "/api/setup/status", "/api/apps", "/api/fleet", "/api/caps", "/api/playing", "/api/health", "/api/stats", "/api/rules", "/api/setup/version", "/api/tailscale")

@@ -19,7 +19,7 @@ object Sensors {
             "printf '\\043~\\043\\n'; cat /proc/net/dev"
 
     /** Read once a minute (dumpsys bluetooth_manager is long): the adapter, the paired devices, and the Bluetooth ones connected as input. */
-    const val SLOW = "dumpsys bluetooth_manager 2>/dev/null | grep -m1 -E '^ *enabled:'; dumpsys bluetooth_manager 2>/dev/null | sed -n '/Bonded devices:/,/^ *\$/p'; " +
+    const val SLOW = "b=\"\$(dumpsys bluetooth_manager 2>/dev/null)\"; echo \"\$b\" | grep -m1 -E '^ *enabled:'; echo \"\$b\" | sed -n '/Bonded devices:/,/^ *\$/p'; " +   // one dump, read twice
             "echo '#in'; dumpsys input 2>/dev/null | awk '/^    [0-9]+: /{sub(/^    [0-9]+: /,\"\");n=\$0} /Identifier: bus=0x0005/{print n\"|\"\$0}'"
 
     // HAL temperature types that are temperatures (6-8 are battery current, voltage and percent)

@@ -28,6 +28,33 @@ class HookTest {
         return hook.handle(r)
     }
 
+    @Test fun tvNamesASavedTvAndAnUnknownOneListsThem() {
+        val other = ArrayList<String>()
+        val many = Hook(store, Hook.Routes(), { r -> sent.add(r.path to r.json().toString()); HttpServer.Response.ok() }, { JSONObject("{\"is_on\":true}") },
+            { scenes }, { "" }, { now }, object : Hook.Tvs {
+                override fun find(tv: String) = if (tv.equals("bedroom", true) || tv == "192.168.1.7")
+                    Hook.Target({ r -> other.add(r.path); HttpServer.Response.ok() }, { JSONObject("{\"is_on\":false}") }) else null
+                override fun names() = listOf("Living room", "Bedroom")
+            })
+        fun call(path: String, vararg q: Pair<String, String>) = many.handle(HttpServer.Request().apply { method = "GET"; this.path = path; peer = "10.0.0.2"; q.forEach { query[it.first] = it.second } })!!
+        assertEquals(200, call("/api/hook", "k" to "t0ken", "key" to "HOME", "tv" to "Bedroom").status)
+        assertEquals(200, call("/api/hook", "k" to "t0ken", "power" to "off", "tv" to "192.168.1.7").status)
+        assertEquals(listOf("/api/key", "/api/key"), other)
+        assertTrue(sent.isEmpty())                                    // the selected TV was not touched
+        assertEquals(200, call("/api/hook", "k" to "t0ken", "key" to "HOME").status)   // no tv: the selected one, as before
+        assertEquals(1, sent.size)
+        val no = call("/api/hook", "k" to "t0ken", "key" to "HOME", "tv" to "kitchen")
+        assertEquals(404, no.status)
+        assertEquals(listOf("Living room", "Bedroom"), JSONObject(String(no.body)).getJSONArray("tvs").let { a -> (0 until a.length()).map { a.getString(it) } })
+        assertEquals(false, JSONObject(String(call("/api/hook/state", "k" to "t0ken", "tv" to "bedroom").body)).getBoolean("on"))
+        assertEquals(403, call("/api/hook", "k" to "bad", "key" to "HOME", "tv" to "kitchen").status)   // the token first: no names to a stranger
+    }
+
+    @Test fun aHookOnTheTvItselfRefusesATvName() {
+        assertEquals(400, get("/api/hook", "k" to "t0ken", "key" to "HOME", "tv" to "Bedroom")!!.status)
+        assertTrue(sent.isEmpty())
+    }
+
     @Test fun otherPathsAreNotTheHooks() { assertNull(get("/api/key")); assertNull(get("/api/hook/config")) }
 
     @Test fun offIsNotFound() {

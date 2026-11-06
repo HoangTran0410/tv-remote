@@ -9,6 +9,17 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - The 👁️ Support button (let support look at this TV for 30 minutes) sits in the top bar now, not at the bottom of the Setup tab's TV card.
 - Draw on the TV: a 🎞️ Video button beside Picture and Text opens the Video on TV box (a video or a camera in a frame on the TV).
 - TV Home photos on the TV's web page: holding OK to delete a photo no longer throws when the list was drawn again meanwhile.
+- Home Assistant / Shortcuts in the Computer app: `tv=` (a saved TV's name or address) aims a call at that TV instead of the one selected in the window; an unknown name answers 404 with the list of saved TVs. Without `tv=` nothing changes. TV Setup's hook (one TV) refuses `tv=` rather than act on the wrong TV.
+- Android TV remote link (keys without ADB): a TV that vanished without closing the link (plug pulled, router restarted) is noticed after 20 s of no pings and dialled again, instead of showing "connected" for about 15 minutes.
+- App names refresh in the background again (a comment had swallowed the thread's start): an app installed since the last run no longer shows its package name.
+- Computer app: switching TVs while a touch or typing request was under way could leave a picture session (scrcpy) running on the old TV until the app quit.
+- Wake-on-LAN refuses a MAC with letters that are not hex ("bad MAC") instead of a server error.
+- Lighter on the TV: the Setup tab's status no longer re-reads the TV's facts after every key press; Health reads the Bluetooth dump once a minute, not twice, and the model/Android/chip once per connection; See every TV at a glance reads make, model and Android once per connection.
+- Support sessions: the Computer app's saved-TV list leaves out each TV's web-page pass and SSH relay settings, and the log scrubber blanks `setup_pass` and `relay_*`.
+- Optimize TV's restore script names the TV's own ADB port (a BeeCube on 5877), and TV Setup's update report lists every known ADB port.
+- Home screen: a failed pick after a launcher set "through TV Setup" no longer leaves the old launcher's record behind (Settings and the watchdog named a launcher Home no longer opened).
+- Locked apps: Unlock now lifts the lock under the Android user (Google TV profile) it was set for, not only user 0.
+- Words sent by the apps (not the page) pick plural forms per language as the page does: Russian 2-4 / 22-24 and Arabic's forms are right.
 
 - TV health shows "Locked apps" when another package (usually the Google TV launcher) has suspended apps ("App isn't available... managed by Google TV"): who locked which apps, and an Unlock button that asks first, then resets the locking app (clearing it makes Android lift all its locks; `pm unsuspend` only lifts the shell's own). One filtered `dumpsys package` read a minute while Health is open; nothing shows or runs more when no app is locked. The same card sits on top of the Apps tab, and a locked app's ⋯ menu has Unlock (Google TV Home is protected from Clear data there). Proved on a TCL G10 (Android 12): clearing the Google TV launcher lifted all its locks.
 

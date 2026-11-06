@@ -136,7 +136,7 @@ object SetupUpdate {
         facts() { { echo "${'$'}1 ${'$'}V from ${'$'}{old:--}"; for k in ro.product.manufacturer ro.product.brand ro.product.model ro.product.device ro.build.version.release ro.build.version.sdk ro.build.fingerprint ro.adb.secure service.adb.tcp.port persist.adb.tcp.port sys.usb.config; do echo "${'$'}k=${'$'}(getprop ${'$'}k)"; done
           echo "adb_enabled=${'$'}(settings get global adb_enabled) adb_wifi=${'$'}(settings get global adb_wifi_enabled) pid=${'$'}(pidof ${'$'}P) crashes=${'$'}c0->${'$'}(crashes)"
           echo "key: ${'$'}(am broadcast -n ${'$'}P/.TrustReceiver --es want adbkey 2>&1 | grep -o 'data=.*')"
-          echo "listen: ${'$'}( (netstat -ltn 2>/dev/null || ss -ltn 2>/dev/null) | grep -oE ':(5555|5877|5037) ' | sort -u | tr -d '\n')"
+          echo "listen: ${'$'}( (netstat -ltn 2>/dev/null || ss -ltn 2>/dev/null) | grep -oE ':(${(listOf(dev.tvremote.core.adb.AdbPort.CLASSIC) + dev.tvremote.core.adb.AdbPort.OTHERS + 5037).joinToString("|")}) ' | sort -u | tr -d '\n')"
           echo "== crash"; logcat -b crash -d 2>/dev/null | grep -A30 "Process: ${'$'}P," | tail -70
           echo "== log"; logcat -d -t 3000 2>/dev/null | grep -iE "adbd|${'$'}P|tvremote" | grep -iE "adb|auth|key|exception|error|refused|denied" | grep -vE "spawning|Adapter|transport|offline|read failed: Success|terminated" | tail -40
           } 2>&1 | cut -c1-300 | head -170 > ${'$'}D/report; }
