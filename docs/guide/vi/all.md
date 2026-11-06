@@ -23,7 +23,7 @@ Tìm dòng giống bạn, bấm từng mục để xem cách làm. Đa số cầ
 Cách dễ nhất: chưa cần cài gì lên TV, bấm phím được ngay ([xem](#nokeys)). Bật ADB để có thêm hình TV, app, tệp.
 
 1. Trên điện thoại Android, mở trang chủ này, bấm tải **tv-remote.apk** rồi mở file. Android hỏi “ứng dụng không rõ nguồn” thì cho phép trình duyệt cài.
-2. Mở **TV Remote**, bấm **Quét Wi-Fi** rồi chọn TV (hoặc gõ địa chỉ TV).
+2. Mở **TV Remote**, bấm **Quét Wi-Fi** rồi chọn TV (hoặc gõ địa chỉ TV; ADB ở cổng khác 5555 thì gõ `ip:cổng`, ví dụ `192.168.1.5:5877`).
 3. Lần đầu TV hỏi “Cho phép gỡ lỗi USB?”: tích **Luôn cho phép** rồi OK. Xem [phần này](#allow-usb).
 4. Xong: hình TV hiện trên điện thoại. TV chưa bật ADB thì vẫn [bấm phím được](#nokeys).
 
@@ -38,7 +38,7 @@ Cách dễ nhất: chưa cần cài gì lên TV, bấm phím được ngay ([xem
 1. Tải bản cho máy bạn (link bên dưới) rồi giải nén.
 2. Mở app: Mac kéo **TV Remote** vào Applications rồi mở; Windows chạy `TV Remote.exe`; Linux chạy `tv-remote/bin/tv-remote`.
 3. Lần đầu máy chặn? Mac: Cài đặt hệ thống → Quyền riêng tư & Bảo mật → **Vẫn mở**. Windows: **More info → Run anyway**.
-4. App tự quét mạng tìm TV (hoặc gõ địa chỉ rồi **Kết nối**). Rồi làm theo “[Cho phép gỡ lỗi USB?](#allow-usb)”.
+4. App tự quét mạng tìm TV (hoặc gõ địa chỉ, có thể kèm cổng `ip:cổng`, rồi **Kết nối**). Rồi làm theo “[Cho phép gỡ lỗi USB?](#allow-usb)”.
 
 | Máy | Tải |
 | --- | --- |
@@ -390,6 +390,7 @@ Giữ mũi tên, âm lượng hay kênh thì nó lặp lại. Khi đang **xem h�
 
 Tab **📱 Ứng dụng** liệt kê app đã cài. Gõ tên vào ô tìm, hoặc lọc bằng chip: Tất cả, Đang mở, 🚀 Tự chạy, 🔒 Cần giữ, ⏸ Đã tắt.
 
+- **🔒 App bị khóa**: nếu có app bị khóa, thẻ này hiện đầu tab với nút **Mở khóa**.
 - **Đang mở**: app gần đây, mới nhất trước, kèm RAM.
 - **Chuyển** quay lại app, **Đóng** đóng app.
 - **Đóng nhiều app**: tích các app cần đóng (app TV cần giữ, và app đang bật trợ năng như app đổi phím, không đóng được).
@@ -400,6 +401,7 @@ Bấm **⋯** trên một dòng:
 | --- | --- |
 | Mở · Dừng | Chạy hoặc tắt app. |
 | Chi tiết & quyền | Xem quyền app. |
+| Mở khóa | Chỉ hiện với app bị khóa (app khác tạm khóa, ví dụ Google TV). Mở khóa xong app chạy lại. |
 | Sao chép tên gói | Dùng cho phím tắt hay cảnh. |
 | Đổi tên | Tên app trên TV Home (cùng tên khi giữ OK ở TV Home). Chỉ có khi TV có TV Home. |
 | Sao lưu (tải về) | Lưu app thành file. |
@@ -949,7 +951,7 @@ Tắt TV xong, TV có thể ngủ sâu và không trả lời nữa. Tùy chọn
 
 1. Bấm **✏️** cạnh hình TV (hoặc Thêm phím → Vẽ lên TV).
 2. Chọn màu, rồi vẽ ngón tay lên hình. **↩** hoàn tác nét vừa vẽ.
-3. Thêm **💬 Chữ** hoặc **🖼️ Ảnh**. Với ảnh, chỉnh to nhỏ bằng − / + rồi bấm **✓ Đưa lên TV**.
+3. Thêm **💬 Chữ**, **🖼️ Ảnh** hoặc **🎞️ Video** (mở [khung Video trên TV](#video)). Với ảnh, chỉnh to nhỏ bằng − / + rồi bấm **✓ Đưa lên TV**.
 4. Xong bấm **✓ Xong**. Muốn xóa: **🗑 Xóa hết**.
 
 > 💡 Nét vẽ nằm trên mọi app và tự mất sau 10 phút. Cần TV Setup.

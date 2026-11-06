@@ -3,7 +3,7 @@
 1. Download the build for your computer (links below) and unpack it.
 2. Open it: on a Mac drag **TV Remote** to Applications and open it; on Windows run `TV Remote.exe`; on Linux run `tv-remote/bin/tv-remote`.
 3. Blocked the first time? Mac: System Settings → Privacy & Security → **Open Anyway**. Windows: **More info → Run anyway**.
-4. The app scans for TVs (or type an address and **Connect**). Then follow “[Allow USB debugging?](allow-usb.md)”.
+4. The app scans for TVs (or type an address, with a port if needed as `ip:port`, and **Connect**). Then follow “[Allow USB debugging?](allow-usb.md)”.
 
 | System | Download |
 | --- | --- |

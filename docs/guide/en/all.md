@@ -23,7 +23,7 @@ Find the row like you and open each item for the steps. Most need [TV Setup](#in
 The easiest way: nothing to install on the TV, the keys work at once ([see](#nokeys)). Turn on ADB for the picture, apps and files.
 
 1. On the Android phone, open the home page, tap **tv-remote.apk**, then open the file. If Android asks about “unknown apps”, allow the browser.
-2. Open **TV Remote**, tap **Scan Wi-Fi** and pick the TV (or type its address).
+2. Open **TV Remote**, tap **Scan Wi-Fi** and pick the TV (or type its address; if ADB is on a port other than 5555, type `ip:port`, e.g. `192.168.1.5:5877`).
 3. The first time the TV asks “Allow USB debugging?”: tick **Always allow** and OK. See [this part](#allow-usb).
 4. Done: the TV's picture is on the phone. ADB not on yet? [Keys still work](#nokeys).
 
@@ -38,7 +38,7 @@ The easiest way: nothing to install on the TV, the keys work at once ([see](#nok
 1. Download the build for your computer (links below) and unpack it.
 2. Open it: on a Mac drag **TV Remote** to Applications and open it; on Windows run `TV Remote.exe`; on Linux run `tv-remote/bin/tv-remote`.
 3. Blocked the first time? Mac: System Settings → Privacy & Security → **Open Anyway**. Windows: **More info → Run anyway**.
-4. The app scans for TVs (or type an address and **Connect**). Then follow “[Allow USB debugging?](#allow-usb)”.
+4. The app scans for TVs (or type an address, with a port if needed as `ip:port`, and **Connect**). Then follow “[Allow USB debugging?](#allow-usb)”.
 
 | System | Download |
 | --- | --- |
@@ -390,6 +390,7 @@ Hold an arrow, volume or channel and it repeats. While **watching the TV picture
 
 The **📱 Apps** tab lists installed apps. Type in the search box or filter with the chips: All, Open now, 🚀 Autostart, 🔒 Must keep, ⏸ Turned off.
 
+- **🔒 Locked apps**: if an app is locked, this card shows on top of the tab with an **Unlock** button.
 - **Open now**: recent apps, newest first, with their memory.
 - **Switch** goes back to an app, **Close** closes it.
 - **Close in bulk**: tick the apps to close (ones the TV needs, and apps with an accessibility service on such as a key mapper, can't be).
@@ -400,6 +401,7 @@ Tap **⋯** on a row:
 | --- | --- |
 | Open · Stop | Starts or stops the app. |
 | Details & permissions | See the app's permissions. |
+| Unlock | Only on a locked app (another app suspended it, e.g. Google TV). After unlocking, the app runs again. |
 | Copy package name | For shortcuts and scenes. |
 | Rename | The app's name on TV Home (same as holding OK there). Only when the TV has TV Home. |
 | Back up (download) | Saves the app as a file. |
@@ -949,7 +951,7 @@ Reading aloud needs Google Speech Services (or another engine) with that languag
 
 1. Tap **✏️** by the picture (or More keys → Draw on the TV).
 2. Pick a color and draw on the picture. **↩** undoes a stroke.
-3. Add **💬 Text** or a **🖼️ Picture**. For a picture, size it with − / + then tap **✓ Put on TV**.
+3. Add **💬 Text**, a **🖼️ Picture** or a **🎞️ Video** (opens the [Video on TV box](#video)). For a picture, size it with − / + then tap **✓ Put on TV**.
 4. Tap **✓ Done** when finished. To clear: **🗑 Clear all**.
 
 > 💡 The drawing sits over every app and clears after 10 minutes. Needs TV Setup.

@@ -2,6 +2,7 @@
 
 Tab **📱 Ứng dụng** liệt kê app đã cài. Gõ tên vào ô tìm, hoặc lọc bằng chip: Tất cả, Đang mở, 🚀 Tự chạy, 🔒 Cần giữ, ⏸ Đã tắt.
 
+- **🔒 App bị khóa**: nếu có app bị khóa, thẻ này hiện đầu tab với nút **Mở khóa**.
 - **Đang mở**: app gần đây, mới nhất trước, kèm RAM.
 - **Chuyển** quay lại app, **Đóng** đóng app.
 - **Đóng nhiều app**: tích các app cần đóng (app TV cần giữ, và app đang bật trợ năng như app đổi phím, không đóng được).
@@ -12,6 +13,7 @@ Bấm **⋯** trên một dòng:
 | --- | --- |
 | Mở · Dừng | Chạy hoặc tắt app. |
 | Chi tiết & quyền | Xem quyền app. |
+| Mở khóa | Chỉ hiện với app bị khóa (app khác tạm khóa, ví dụ Google TV). Mở khóa xong app chạy lại. |
 | Sao chép tên gói | Dùng cho phím tắt hay cảnh. |
 | Đổi tên | Tên app trên TV Home (cùng tên khi giữ OK ở TV Home). Chỉ có khi TV có TV Home. |
 | Sao lưu (tải về) | Lưu app thành file. |

@@ -3,7 +3,7 @@
 1. Tải bản cho máy bạn (link bên dưới) rồi giải nén.
 2. Mở app: Mac kéo **TV Remote** vào Applications rồi mở; Windows chạy `TV Remote.exe`; Linux chạy `tv-remote/bin/tv-remote`.
 3. Lần đầu máy chặn? Mac: Cài đặt hệ thống → Quyền riêng tư & Bảo mật → **Vẫn mở**. Windows: **More info → Run anyway**.
-4. App tự quét mạng tìm TV (hoặc gõ địa chỉ rồi **Kết nối**). Rồi làm theo “[Cho phép gỡ lỗi USB?](allow-usb.md)”.
+4. App tự quét mạng tìm TV (hoặc gõ địa chỉ, có thể kèm cổng `ip:cổng`, rồi **Kết nối**). Rồi làm theo “[Cho phép gỡ lỗi USB?](allow-usb.md)”.
 
 | Máy | Tải |
 | --- | --- |

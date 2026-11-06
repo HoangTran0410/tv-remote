@@ -2,6 +2,7 @@
 
 The **📱 Apps** tab lists installed apps. Type in the search box or filter with the chips: All, Open now, 🚀 Autostart, 🔒 Must keep, ⏸ Turned off.
 
+- **🔒 Locked apps**: if an app is locked, this card shows on top of the tab with an **Unlock** button.
 - **Open now**: recent apps, newest first, with their memory.
 - **Switch** goes back to an app, **Close** closes it.
 - **Close in bulk**: tick the apps to close (ones the TV needs, and apps with an accessibility service on such as a key mapper, can't be).
@@ -12,6 +13,7 @@ Tap **⋯** on a row:
 | --- | --- |
 | Open · Stop | Starts or stops the app. |
 | Details & permissions | See the app's permissions. |
+| Unlock | Only on a locked app (another app suspended it, e.g. Google TV). After unlocking, the app runs again. |
 | Copy package name | For shortcuts and scenes. |
 | Rename | The app's name on TV Home (same as holding OK there). Only when the TV has TV Home. |
 | Back up (download) | Saves the app as a file. |
