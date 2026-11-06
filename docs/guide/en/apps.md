@@ -2,7 +2,7 @@
 
 The **📱 Apps** tab lists installed apps. Type in the search box or filter with the chips: All, Open now, 🚀 Autostart, 🔒 Must keep, ⏸ Turned off.
 
-- **🔒 Locked apps**: if an app is locked, this card shows on top of the tab with an **Unlock** button.
+- **🔒 Blocked apps**: if another app blocked some apps, this card shows on top of the tab with an **Unblock** button (not the same as [locking apps with a PIN](lock.md)).
 - **Open now**: recent apps, newest first, with their memory.
 - **Switch** goes back to an app, **Close** closes it.
 - **Close in bulk**: tick the apps to close (ones the TV needs, and apps with an accessibility service on such as a key mapper, can't be).

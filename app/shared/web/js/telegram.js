@@ -2,6 +2,7 @@
 // The bot lives in TV Setup on the TV. The TV's own page asks /api/telegram there; the Phone and Computer apps ask the same thing through
 // Manage, which sends it to TV Setup over ADB (the owner's way, as the rules). The token goes to the TV once and is never sent back, only masked.
 let tgNow = null, tgAt = 0, tgWant = false, tgPoll = 0, tgChat = null, tgItems = [], tgTotal = 0;
+let tgGen = 0, tgReads = 0;                                           // the history: a fresh read (another chat, the poll, another TV) drops older answers; More waits for none in flight
 const tgMin = (s) => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 const TG_KINDS = { on: 'telegram_ui.k_on', off: 'telegram_ui.k_off', limit: 'telegram_ui.k_limit', bed: 'telegram_ui.k_bed', sleep: 'telegram_ui.k_sleep', pair: 'telegram_ui.k_pair' };   // Telegram.ALERTS, in the order /alerts lists them
 const tgWhen = (t) => new Date(t).toLocaleString(LOCALE, { dateStyle: 'short', timeStyle: 'short' });
@@ -90,10 +91,13 @@ function tgHistRow(h) {
 }
 
 async function tgHist(fresh) {
-  if (fresh) { tgItems = []; tgTotal = 0; }
-  const q = '/api/telegram?history=1&offset=' + tgItems.length + (tgChat !== null ? '&chat=' + tgChat : '');
-  const j = await api(q, null, true); if (!j) return;
-  tgItems = tgItems.concat(j.items); tgTotal = j.total;
+  if (fresh) tgGen++; else if (tgReads) return;                      // a double-tapped More would ask the same offset twice
+  const gen = tgGen, from = fresh ? 0 : tgItems.length;
+  const q = '/api/telegram?history=1&offset=' + from + (tgChat !== null ? '&chat=' + tgChat : '');
+  tgReads++;
+  const j = await api(q, null, true).finally(() => tgReads--);
+  if (!j || gen !== tgGen) return;                                    // another chat or TV picked meanwhile: its rows are not these
+  tgItems = fresh ? j.items : tgItems.concat(j.items); tgTotal = j.total;
   $('#tghist').replaceChildren(UI.list(tgItems.map(tgHistRow), T('telegram_ui.h_none')));
   put('#tgmore', 'hidden', tgItems.length >= tgTotal);
   put('#tgclear', 'hidden', !tgTotal && !tgItems.length);
@@ -119,7 +123,7 @@ async function tgLoad() {
 }
 
 $('#aboutbtn').addEventListener('click', tgLoad);
-onTvChange(() => { tgNow = null; tgChat = null; tgItems = []; tgTotal = 0; $('#tgqr').replaceChildren(); clearTimeout(tgPoll); if ($('#about').open) tgLoad(); });
+onTvChange(() => { tgNow = null; tgChat = null; tgItems = []; tgGen++; tgTotal = 0; $('#tgqr').replaceChildren(); clearTimeout(tgPoll); if ($('#about').open) tgLoad(); });
 setInterval(() => { if ($('#about').open && tgNow) { tgCodeLine(); if (tgNow.on && tgNow.has_token) tgStatus(tgNow); } }, 1000);
 $('#tgpick').addEventListener('click', async (e) => {
   const b = e.target.closest('button'); if (!b) return;

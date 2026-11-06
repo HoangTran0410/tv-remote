@@ -156,3 +156,11 @@ button.on, .tabs button[aria-selected=true], .mitem.on, .item.pick.on { backgrou
 .pinapp.on { outline:2px solid var(--accent, currentColor); }
 .pinapp:disabled { opacity:1; cursor:default; }
 .pinimg { flex:none; width:96px; aspect-ratio:16/9; object-fit:cover; border-radius:8px; background:var(--btn); display:grid; place-items:center; color:var(--muted); }
+/* a finger (pointer:coarse): .small and .iconbtn keep their drawn 36 px (rows stay as laid out, nothing wraps) and get a 44 px
+   hit area from an ::after, the DESIGN.md way; :where keeps it at no specificity, so a control placed absolute keeps its place,
+   and a button showing its busy spinner or a job's progress keeps its own ::after */
+@media (pointer:coarse) {
+  :where(button.small, button.iconbtn, a.small, label.small):where(:not(.busy):not([data-busy])) { position:relative; }
+  :where(button.small, a.small, label.small):where(:not(.busy):not([data-busy]))::after { content:''; position:absolute; inset:-4px 0; }
+  :where(button.iconbtn):where(:not(.busy):not([data-busy]))::after { content:''; position:absolute; inset:-4px -3px; }
+}

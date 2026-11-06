@@ -61,10 +61,10 @@ test('the conclusion is shown, with the buttons this core has', async () => {
   assert.equal(p.box.hidden, false);
   assert.match(p.box.className, /warn/);
   const labels = (b) => b.children.at(-1).kids.map((k) => k.textContent);
-  assert.deepEqual(labels(p.box), ['🧭 Bật ADB giúp tôi', '🔄 Thử lại']);
+  assert.deepEqual(labels(p.box), ['🧭 Bật ADB giúp tôi', '🔄 Thử lại', '📋 Gửi nhật ký']);   // the log last: a way to get help when the fix does not work
   const q = page('phone');
   q.watch(down); q.watch(down); await tick();
-  assert.deepEqual(labels(q.box), ['🔄 Thử lại']);                    // no ADB help and no scan outside the computer app
+  assert.deepEqual(labels(q.box), ['🔄 Thử lại', '📋 Gửi nhật ký']);  // no ADB help and no scan outside the computer app
 });
 
 test('a TV found at a new address offers to use it', async () => {

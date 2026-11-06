@@ -73,6 +73,8 @@ function diagShow(r, s) {
     use: () => pc && r.found ? el('button', { className: 'small primary', textContent: T('diagnose.use_address', { ip: r.found.ip }), onclick: () => { again(); selectTv(r.found.ip, r.found.name || s.name, r.kind); } }) : null,
   };
   const acts = r.actions.map((a) => ACT[a] && ACT[a]()).filter(Boolean);
+  // a cause the check cannot fix (or Retry keeps failing): the log and the page to ask for help, here, not only in Settings → About
+  if (r.code !== 'up') acts.push(el('button', { className: 'small', textContent: T('about.send_the_log'), onclick: () => sendWireLog() }));
   box.className = 'banner ' + (DIAG_TONE[r.code] || 'bad');
   box.replaceChildren(el('b', { textContent: r.title }), el('p', { textContent: r.fix }),
     el('details', { className: 'checks' }, el('summary', { textContent: T('diagnose.checked') }),

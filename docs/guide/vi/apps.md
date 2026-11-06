@@ -2,7 +2,7 @@
 
 Tab **📱 Ứng dụng** liệt kê app đã cài. Gõ tên vào ô tìm, hoặc lọc bằng chip: Tất cả, Đang mở, 🚀 Tự chạy, 🔒 Cần giữ, ⏸ Đã tắt.
 
-- **🔒 App bị khóa**: nếu có app bị khóa, thẻ này hiện đầu tab với nút **Mở khóa**.
+- **🔒 App bị chặn**: nếu có app bị app khác chặn, thẻ này hiện đầu tab với nút **Bỏ chặn** (khác với [khóa app bằng PIN](lock.md)).
 - **Đang mở**: app gần đây, mới nhất trước, kèm RAM.
 - **Chuyển** quay lại app, **Đóng** đóng app.
 - **Đóng nhiều app**: tích các app cần đóng (app TV cần giữ, và app đang bật trợ năng như app đổi phím, không đóng được).

@@ -31,9 +31,19 @@ test('one file per language in LANGS, each with the ids of vi.json and the same 
       else if (holes(s) !== holes(vi[id])) bad.push(`${l}: ${id} has {${holes(s)}}, vi.json {${holes(vi[id])}}`);
       if (!/^[a-z0-9_]+(\.[a-z0-9_]+)+$/.test(id)) bad.push(`${l}: ${id}: ids are area.words, lower case`);
     }
-    if (l === 'en') for (const id of Object.keys(vi)) if (!(id in b)) bad.push(`en: ${id} missing (English is the fallback of every other language)`);
+    // every language complete: a missing id silently falls back to English (ru lacked the scene-pin ids for a week)
+    for (const id of Object.keys(vi)) if (!(id in b)) bad.push(`${l}: ${id} missing` + (l === 'en' ? ' (English is the fallback of every other language)' : ''));
     assert.deepEqual(bad, []);
   }
+});
+
+// T() picks s[Intl.PluralRules(lang).select(n)] ?? s.other: a Russian plural without few / many read "2 приложений" for 2-4
+// (fr "many" is for 1 000 000 and ar "zero" for 0: other is right for both, so only ru is held to every form)
+test('ru plurals carry one, few, many and other', () => {
+  const bad = [];
+  for (const [id, s] of Object.entries(book('ru'))) if (s && typeof s === 'object')
+    for (const c of new Intl.PluralRules('ru').resolvedOptions().pluralCategories) if (!(c in s)) bad.push(`ru: ${id} lacks "${c}"`);
+  assert.deepEqual(bad, []);
 });
 
 // index.html as a tree, enough to find an element's own words
