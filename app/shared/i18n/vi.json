@@ -3051,6 +3051,7 @@
  "home.pic_done": "Đã đổi ảnh",
  "home.pic_crop_send": "Dùng ảnh này",
  "home.pic_crop_hint": "Kéo để dời ảnh, chụm hai ngón hoặc lăn chuột để phóng to. Khung này là ô của app.",
+ "home.frame_crop_hint": "Kéo để dời ảnh, chụm hai ngón hoặc lăn chuột để phóng to. Khung này là phần hiện trong khung ảnh.",
  "home.pick_rename": "Đổi tên ô nào?",
  "home.rename_q": "Tên mới trên TV Home",
  "home.rename_ok": "Đổi tên",

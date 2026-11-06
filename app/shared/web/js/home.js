@@ -1366,7 +1366,7 @@ async function homePhoto(f, done) {
 async function homeAppPic(f, pkg, done, word) {
   try {
     const img = await photoOpen(f);
-    const view = await homeCropAsk(img, 480, 270, null, true);
+    const view = await homeCropAsk(img, 480, 270, null, pkg === 'frame' ? 'frame' : true);   // the photo frame's crop says so, not "the app's tile"
     if (!view) return false;                                          // cancelled: nothing sent, nothing said
     toast(T('home.pic_sending'));
     done(await homeLink.appPic(pkg, await photoBlob(img, 480, 270, view, 0.8)));
@@ -1424,7 +1424,7 @@ function homeCropAsk(img, W, H, whole, tile) {
     const pick = (w) => {
       pv.whole = !!w; pv.redraw();
       for (const [b, on] of [[bCover, !w], [bWhole, !!w]]) { b.className = on ? 'on' : ''; b.setAttribute('aria-pressed', String(on)); }
-      hint.textContent = T(w ? 'home.fit_note' : tile ? 'home.pic_crop_hint' : 'home.crop_hint');
+      hint.textContent = T(w ? 'home.fit_note' : tile === 'frame' ? 'home.frame_crop_hint' : tile ? 'home.pic_crop_hint' : 'home.crop_hint');
     };
     pick(whole);
     if (whole != null) (whole ? bWhole : bCover).focus();             // the dialog's own first focus would ring the other chip

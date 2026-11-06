@@ -132,7 +132,7 @@ internal class FrameView(c: Context, private val dp: (Number) -> Int) : FrameLay
         settle()
         if (!fade) { front.alpha = 0f; front.setImageDrawable(null); back.setImageBitmap(b); return }
         front.setImageBitmap(b); front.alpha = 0f
-        front.animate().alpha(1f).setDuration(Motion.ms(900)).withEndAction {   // then the new one is the photo shown, the old one let go
+        front.animate().alpha(1f).setDuration(Motion.ms(900)).withLayer().withEndAction {   // a layer: each frame only blends it, the photo is not drawn again; then the new one is the photo shown
             back.setImageBitmap(b); front.alpha = 0f; front.setImageDrawable(null)
         }.start()
     }

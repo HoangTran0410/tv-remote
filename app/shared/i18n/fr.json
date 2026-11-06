@@ -3165,6 +3165,7 @@
   "home.pic_done": "Image changée",
   "home.pic_crop_send": "Utiliser cette image",
   "home.pic_crop_hint": "Faites glisser pour déplacer l’image, pincez ou utilisez la molette pour zoomer. Ce cadre est la vignette de l’app.",
+  "home.frame_crop_hint": "Faites glisser pour déplacer la photo, pincez ou utilisez la molette pour zoomer. Ce cadre est ce qu'affiche le cadre photo.",
   "home.pick_rename": "Renommer quelle tuile ?",
   "home.rename_q": "Nouveau nom dans TV Home",
   "home.rename_ok": "Renommer",
