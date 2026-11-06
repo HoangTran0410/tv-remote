@@ -401,6 +401,7 @@ function showTab(t) {
   if (document.readyState === 'loading') return document.addEventListener('DOMContentLoaded', () => showTab(t), { once: true });   // a jump from the phone app can come before tvset.js etc. are read (crash 5b47665e)
   if ((CORE === 'phone' || window.ONTV) && (t === 'remote' || !document.querySelector('[data-tab="' + t + '"]'))) t = 'apps';   // the phone app has its own remote; the TV itself needs none
   if (SCOPE !== 'full') t = 'remote';                                  // a guest (a shared QR): the other tabs are the owner's
+  if (document.documentElement.hasAttribute('data-simple')) t = 'remote';   // the Simple remote (remote.js setSimple): nothing else until it is left
   currentTab = t; document.querySelector('main').classList.toggle('wide', t === 'remote' && !picking);
   document.querySelectorAll('[data-tab]').forEach((b) => { b.setAttribute('aria-selected', b.dataset.tab === t); b.tabIndex = b.dataset.tab === t ? 0 : -1; });   // roving tabindex: one stop in the bar, arrows move along it
   const off = document.querySelector('[data-tab="' + t + '"]')?.hasAttribute('data-kind-tab');   // this TV cannot: what it would do

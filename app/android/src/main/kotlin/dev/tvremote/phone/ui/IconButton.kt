@@ -12,6 +12,8 @@ internal class IconButton(c: Context) : Button(c) {
     var size = 24f                                                    // dp
     /** A small label under the icon. */
     var caption: String? = null
+    /** Its size in sp (the Simple remote's words are larger). */
+    var captionSize = 10.5f
     private val ink = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = android.graphics.Paint.Align.CENTER
         color = DIM
@@ -54,9 +56,9 @@ internal class IconButton(c: Context) : Button(c) {
         var cy = height / 2
         caption?.let {
             val d = resources.displayMetrics.density
-            cy -= (7 * d).roundToInt()
-            ink.textSize = 10.5f * resources.displayMetrics.scaledDensity
-            c.drawText(it, cx.toFloat(), cy + h + 15 * d, ink)
+            cy -= ((captionSize - 3.5f) * d).roundToInt()            // 7 dp at the usual 10.5 sp: icon and words centred together
+            ink.textSize = captionSize * resources.displayMetrics.scaledDensity
+            c.drawText(it, cx.toFloat(), cy + h + (captionSize + 4.5f) * d, ink)
         }
         if (busy) {
             val r = h * 0.75f

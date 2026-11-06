@@ -23,8 +23,8 @@ test('no style: in scripts building markup', () => {
 });
 
 test('every card starts with its title', () => {
-  // the now playing strip and the D-pad are parts of the remote; the files card opens on its places, which are its title
-  const ok = ['playing', 'rc', 'filescard'];
+  // the now playing strip, the D-pad and the Simple remote are parts of the remote; the files card opens on its places, which are its title
+  const ok = ['playing', 'rc', 'simple', 'filescard'];
   const bad = [...html.matchAll(/<(section|details)\b([^>]*\bclass="card\b[^"]*"[^>]*)>\s*(?:<!--.*?-->\s*)?<(\w+)([^>]*)>/g)]
     .filter(([, , attrs, tag, rest]) => !/^(h1|h2|summary)$/.test(tag) && !/class="card-head"/.test(rest) && !ok.some((k) => attrs.includes(`id="${k}"`) || attrs.includes(`card ${k}`)))
     .map((m) => m[0].slice(0, 90));

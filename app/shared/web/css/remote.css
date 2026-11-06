@@ -53,6 +53,23 @@
 .pill output, .pill span { text-align:center; font-weight:700; font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; }
 #r-mute.on { background:var(--bad-bg); color:var(--bad); }
 .rb.play small { color:inherit; opacity:.7; }
+/* The Simple remote (remote.json "simple", js/remote.js setSimple): big keys with their words in plain case, nothing else on the page */
+html[data-simple] :is(main > .tabs, .remote-grid, #switchtv, #suptv, #aboutbtn), html[data-simple] .panel:not([data-panel=remote]) { display:none !important; }
+#simple { width:100%; max-width:460px; margin:0 auto; }
+#simple[hidden] { display:none; }
+#simpleexit { align-self:flex-end; color:var(--muted); background-image:linear-gradient(var(--sel), var(--sel)); background-repeat:no-repeat; background-size:0 100%; }
+#simpleexit.holding { background-size:100% 100%; transition:background-size 2s linear; color:var(--accent-text); }   /* fills while held: 2 s and it lets go */
+.simplekeys { display:flex; flex-direction:column; gap:14px; }
+.simplerow { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:12px; justify-items:stretch; }
+.simplerow:has(> .dpad) { justify-items:center; }
+.simplerow .rb { min-height:0; height:92px; border-radius:22px; gap:6px; }
+.simplerow .rb[hidden] { display:none; }
+.simplerow .rb .ic { width:36px; height:36px; }
+.simplerow .rb small { font-size:16px; font-weight:600; letter-spacing:0; text-transform:none; color:var(--ink); line-height:1.15; text-align:center; padding:0 4px; }
+.simplerow .rb.power small { color:inherit; }
+.simplerow .dpad { width:min(300px, 78vw); }
+.simplerow .dpad .ic { width:40px; height:40px; }
+.simplerow .dpad .ok { font-size:26px; }
 /* a segmented switch: three short words that fit one line on a phone */
 .seg { display:flex; --gap:2px; gap:var(--gap); padding:3px; margin:0 0 12px; background:var(--card); border:1px solid var(--line); border-radius:12px; }
 .seg button { flex:1 0 auto; min-height:34px; padding:0 8px; font-size:13px; font-weight:600; white-space:nowrap; background:transparent; border-radius:9px; }

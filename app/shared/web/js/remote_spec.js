@@ -75,6 +75,8 @@ const REMOTE_DO = {
   share: () => shareDialog(),
   inputs: () => inputsMenu(),
   homeCustom: () => homeOpen(),
+  simple: () => setSimple(true),                                      // remote.js: the big keys of remote.json "simple" only
+  voice: () => $('#voice').click(),                                   // the Simple remote's Speak: the top row's, its ways and its fallbacks
   rescue: async () => {               // a frozen TV: the app on screen is stopped (never a launcher / TV Setup), then Home
     if (await needAdbSoon()) return;
     const r = await api('/api/rescue', {});

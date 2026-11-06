@@ -13,6 +13,7 @@ import dev.tvremote.phone.media.openLink
 import dev.tvremote.phone.media.pickFile
 import dev.tvremote.phone.media.pickMedia
 import dev.tvremote.phone.media.quickOpen
+import dev.tvremote.phone.media.micTap
 import dev.tvremote.phone.media.say
 import dev.tvremote.phone.media.screenOff
 import dev.tvremote.phone.picker.name
@@ -106,6 +107,8 @@ internal val phoneActions: Map<String, MainActivity.(String?) -> Unit> = mapOf(
     "manage" to act { if (!needsAdb()) managing.open(host) },          // Tiện ích → Quản lý TV: the top-right icon, with its name
     "homeCustom" to act { if (!needsAdb()) managing.open(host, "tv", "fromRemote(homeOpen)") },   // the page's TV Home dialog: one place for it
     "rescue" to act { rescueTv() },
+    "simple" to act { setSimple(true) },                             // Simple.kt: the big keys of remote.json "simple" only
+    "voice" to act { micTap() },                                      // the Simple remote's Speak: the top row's mic
 )
 
 /** Things an action's button needs to know about itself once drawn (the ✏️ is lit while drawing). */
@@ -146,25 +149,29 @@ internal fun MainActivity.greyRows() {
 internal fun MainActivity.remoteRow(name: String, index: Int, height: Int, minKeys: Int = 4): LinearLayout {
     val row = LinearLayout(this)
     row.weightSum = maxOf(minKeys.toFloat(), remoteSpec().rows[name]!![index].size.toFloat())   // a short row keeps the others' key width
-    remoteSpec().rows[name]!![index].forEachIndexed { i, e ->
-        val b = icon("@" + e.icon, e.words(), BTN)
-        val action = e.action
-        if (action != null) {
-            val run = phoneActions[action] ?: error("remote.json: no phone handler for \"$action\"")
-            b.setOnClickListener { if (b.tag === KIND_OFF) kindOff() else run(this, e.arg) }
-            phoneButtonHooks[action]?.invoke(this, b)
-        } else {
-            val code = Scenes.KEYS[e.key] ?: error("remote.json: unknown key ${e.key}")
-            if (code in Tv.OPENERS) {
-                val held = box(HELD, 16)
-                b.setOnClickListener { if (b.tag === KIND_OFF) kindOff() else { flash(b, held); opens(code) } }
-            } else bindKey(b, code, box(HELD, 16))
-        }
-        row.addView(b, cell(height, i > 0))
-        drawn.removeAll { it.second.id == e.id }; drawn.add(b to e)
-    }
+    remoteSpec().rows[name]!![index].forEachIndexed { i, e -> row.addView(remoteKey(e, 16), cell(height, i > 0)) }
     for (i in row.childCount until minKeys) row.addView(android.view.View(this), cell(height, true))   // empty cells: their gaps too, or the short row's keys come out wider
     return captioned(row)
+}
+
+/** One key of remote.json as a button: the key held / tapped like the hand-made ones, or the action run. [radius]: its corners, for the held look. */
+internal fun MainActivity.remoteKey(e: RemoteSpec.Entry, radius: Int): IconButton {
+    val b = icon("@" + e.icon, e.words(), BTN)
+    val action = e.action
+    if (action != null) {
+        val run = phoneActions[action] ?: error("remote.json: no phone handler for \"$action\"")
+        b.setOnClickListener { if (b.tag === KIND_OFF) kindOff() else run(this, e.arg) }
+        phoneButtonHooks[action]?.invoke(this, b)
+    } else {
+        val code = Scenes.KEYS[e.key] ?: error("remote.json: unknown key ${e.key}")
+        if (e.key == "POWER") b.setOnClickListener { if (b.tag === KIND_OFF) kindOff() else powerTap() }   // never held; standby asks first (the top row's)
+        else if (code in Tv.OPENERS) {
+            val held = box(HELD, radius)
+            b.setOnClickListener { if (b.tag === KIND_OFF) kindOff() else { flash(b, held); opens(code) } }
+        } else bindKey(b, code, box(HELD, radius))
+    }
+    drawn.removeAll { it.second.id == e.id }; drawn.add(b to e)
+    return b
 }
 
 /** A menu from remote.json for [menu]: [conditions] says which "when" entries show, [lists] stands in for each "expand" entry. */

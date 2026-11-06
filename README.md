@@ -64,7 +64,7 @@ No ADB? The Phone and Computer apps still send keys after pairing with the code 
 
 | Feature | What it does | Guide |
 |---|---|---|
-| 🎮 **Remote** | Arrows, volume, channels, apps, typing, voice; holds keys like the real remote | [→](https://tvremote.pages.dev/guide?lang=en#remote) |
+| 🎮 **Remote** | Arrows, volume, channels, apps, typing, voice; holds keys like the real remote; a Simple remote of big keys for grandparents | [→](https://tvremote.pages.dev/guide?lang=en#remote) |
 | 📺 **The TV's picture** | On your device, with touch and sound; listen with the phone's screen off | [→](https://tvremote.pages.dev/guide?lang=en#picture) |
 | ✏️ **On the TV's screen** | Draw, send a photo, a video or your camera, or a message; now playing; the TV's clipboard; dim or blue light filter | [→](https://tvremote.pages.dev/guide?lang=en#draw) |
 | 🔒 **For kids** | Sleep timer, bedtime, app limits, volume limits, PIN-locked apps: they run on the TV itself | [→](https://tvremote.pages.dev/guide?lang=en#limits) |

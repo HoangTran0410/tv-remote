@@ -5,6 +5,7 @@ import dev.tvremote.phone.ui.menu
 import dev.tvremote.phone.ui.t
 
 import dev.tvremote.core.scenes.RemoteSpec
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -12,7 +13,7 @@ import java.io.File
 /** Every action remote.json names for the phone has a handler in PhoneRemote.kt (tests/remote.test.js does the same for the page), and every condition / list a menu names is one the menus supply. */
 class RemoteSpecTest {
     private val spec = RemoteSpec.parse(File("../shared/web/remote.json").readText(), "phone")
-    private val entries = spec.rows.values.flatten().flatten() + spec.menus.values.flatten()
+    private val entries = spec.rows.values.flatten().flatten() + spec.menus.values.flatten() + spec.simple.flatten()
 
     @Test fun everyActionHasAPhoneHandler() {
         val missing = entries.mapNotNull { it.action }.filter { it !in phoneActions }
@@ -24,13 +25,26 @@ class RemoteSpecTest {
     }
 
     @Test fun everyConditionAndListIsOneTheMenusSupply() {          // timerMenu / scenesMenu in Automation.kt, quickOpen in Media.kt
-        assertTrue(entries.mapNotNull { it.whenCond }.all { it in setOf("timerOn", "ir", "native", "roku") })   // "ir", "roku", "native": PhoneRemote.kt "menu"
-        assertTrue(entries.mapNotNull { it.expand }.all { it in setOf("lengths", "lengthsMore", "scenes", "tvapps") })
+        val menus = spec.rows.values.flatten().flatten() + spec.menus.values.flatten()
+        assertTrue(menus.mapNotNull { it.whenCond }.all { it in setOf("timerOn", "ir", "native", "roku") })   // "ir", "roku", "native": PhoneRemote.kt "menu"
+        assertTrue(menus.mapNotNull { it.expand }.all { it in setOf("lengths", "lengthsMore", "scenes", "tvapps") })
     }
 
     @Test fun theRowsAndMenusTheScreenAsksFor() {                    // RemoteScreen.kt, Media.kt, Automation.kt
         for (r in listOf("more", "nav", "media")) assertTrue(r, spec.rows.containsKey(r))
         for (m in listOf("open", "timer", "scenes")) assertTrue(m, spec.menus.containsKey(m))
+    }
+
+    @Test fun theSimpleRemoteReadsTheSamePresetAsThePage() {           // Simple.kt draws remote.json "simple"; js/remote.js the same rows
+        val web = RemoteSpec.parse(File("../shared/web/remote.json").readText(), "web")
+        assertTrue("remote.json has no \"simple\" rows", spec.simple.isNotEmpty())
+        assertEquals(web.simple.map { r -> r.map { it.id } }, spec.simple.map { r -> r.map { it.id } })
+        val all = spec.simple.flatten()
+        assertTrue(all.mapNotNull { it.expand }.all { it in simpleLists })   // the D-pad: drawn by simpleRemote
+        assertTrue(all.mapNotNull { it.whenCond }.all { it in simpleWhen })
+        assertTrue(all.all { it.expand != null || it.icon.isNotBlank() && it.t.isNotBlank() })
+        for (k in listOf("POWER", "BACK", "HOME", "VOL_UP", "VOL_DOWN", "MUTE")) assertTrue(k, all.any { it.key == k })
+        assertTrue("Tools turns it on", spec.menus["tools"]!!.any { it.action == "simple" && it.action in phoneActions })
     }
 
     @Test fun vidaaSettingsKeyReadsMenu() {                          // greyRows applies forKind(kind()) to the drawn entries

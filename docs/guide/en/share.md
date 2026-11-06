@@ -11,4 +11,6 @@
 | 🎮 Remote only | Keys, typing, picture, opening apps, sleep timer, saved scenes, TV channels. No Manage. |
 | 👁️ View only | The picture and what is playing. |
 
+> 👵 Pick **Simple remote** (instead of **Full remote**) before showing the QR: the page opens straight in the big-key remote. The link gets `?simple=1`.
+
 > 💡 Change or revoke in **Setup → 📱 Paired devices** (Unpair or Unpair all).

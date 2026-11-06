@@ -17,6 +17,8 @@ While it floats, leaving for Home or another app (Android 8+) puts it in the sys
 | Mute · Play/Pause · Prev/Next · Seek | The media row. |
 | Speak | Say what the TV should do (e.g. open YouTube). Hold: the TV's Assistant. |
 | More keys | Open on the TV, Input, Air Mouse, Timer, Screenshot, Draw, Scenes, Notify, Settings, Subtitles, Info; **Tools**: TV, Dim the screen, Guide, Share, Stop, TV Home, Infrared, game keys. |
+| 👵 Simple remote | More keys → **Tools**. For grandparents: only big keys with words (Power, arrows + OK, Back, Home, volume, Mute, channel, Speak). The device remembers it. |
+| Leave simple remote | Hold the small button on top for 2 seconds. A stray tap does not leave. |
 
 **Open on the TV** (in More keys): **Open an installed app** (pick it, with a search), **Get apps** (Play Store, YouTube, Kodi…), open a link, **Send to the TV** (photos, videos, music, clipboard).
 

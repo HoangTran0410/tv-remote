@@ -95,12 +95,15 @@ import java.io.OutputStream
 
 @Suppress("DEPRECATION")
 internal fun MainActivity.layoutRemote() {
-    val video = video && basic == null                            // keys only: there is no picture to show
+    val simple = simpleOn()                                           // Simple.kt: the big keys only, no picture
+    val video = video && basic == null && !simple                 // keys only: there is no picture to show
     videoBtn.visibility = if (basic == null) View.VISIBLE else View.GONE
     basicBar.visibility = if (basic == null || kind() != dev.tvremote.core.remote.Remote.Kind.ANDROID) View.GONE else View.VISIBLE   // LG / Samsung have no ADB to turn on
     greyRows()
     val full = video && host != null && !floating && (fullscreen || resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)   // landscape: the picture fills the screen
-    (controls.parent as View).visibility = if (full) View.GONE else View.VISIBLE
+    (controls.parent as View).visibility = if (full || simple) View.GONE else View.VISIBLE
+    remote.findViewWithTag<View>(SIMPLE_TAG)?.visibility = if (simple) View.VISIBLE else View.GONE
+    (listenBtn.parent as View).visibility = if (simple) View.GONE else View.VISIBLE   // the top bar's sound, picture and Manage buttons
     if (full) controls.findFocus()?.let { it.clearFocus(); (getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager).hideSoftInputFromWindow(it.windowToken, 0) }   // its box gone, so its keyboard
     topBar.visibility = if (full) View.GONE else View.VISIBLE
     stage.layoutParams = if (full) LinearLayout.LayoutParams(-1, 0, 1f) else LinearLayout.LayoutParams(-1, -2)   // weight: room for the drawing tools under it
@@ -333,23 +336,7 @@ internal fun MainActivity.buildRemote() {
     controls.addView(nowApp.view, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })
     val first = LinearLayout(this)
     val power = icon("@power", T("remote.power"), BTN)
-    power.setOnClickListener {
-        if (basic != null) { press(26); return@setOnClickListener }
-        val tv = tv
-        if (tv == null || !tv.ready()) return@setOnClickListener
-        Thread {
-            val awake = try { !tv.shell("dumpsys power | grep -m1 mWakefulness=").contains("Asleep") } catch (e: Exception) { true }
-            ui.post {
-                if (isFinishing || this.tv !== tv) return@post
-                if (!awake) {
-                    tv.press(224)
-                    Toast.makeText(this, T("remote_screen.waking_the_tv"), Toast.LENGTH_SHORT).show()
-                } else Popup.Builder(this).setMessage(T("remote_screen.put_the_tv_in"))
-                    .setPositiveButton(T("remote_screen.standby")) { _, _ -> if (tv.ready()) tv.press(223) }
-                    .setNegativeButton(T("common.cancel"), null).show()
-            }
-        }.start()
-    }
+    power.setOnClickListener { powerTap() }
     first.addView(power, cell(58, false))
     val mic = icon("@mic", T("remote.speak"), BTN)
     mic.setOnClickListener { micTap() }                         // keys-only too: keys, apps and scenes still work (Automation.kt)
@@ -517,7 +504,27 @@ internal fun MainActivity.buildRemote() {
     val sv = ScrollView(this)
     sv.addView(controls)
     remote.addView(sv, LinearLayout.LayoutParams(-1, 0, 1f))
+    remote.addView(simpleRemote(), LinearLayout.LayoutParams(-1, 0, 1f))   // Simple.kt: shown instead of the controls while on
     layoutRemote()
+}
+
+/** The power key (the top row's, the Simple remote's): wakes a sleeping TV, asks before putting one that is on in standby. */
+internal fun MainActivity.powerTap() {
+    if (basic != null) { press(26); return }
+    val tv = tv
+    if (tv == null || !tv.ready()) return
+    Thread {
+        val awake = try { !tv.shell("dumpsys power | grep -m1 mWakefulness=").contains("Asleep") } catch (e: Exception) { true }
+        ui.post {
+            if (isFinishing || this.tv !== tv) return@post
+            if (!awake) {
+                tv.press(224)
+                Toast.makeText(this, T("remote_screen.waking_the_tv"), Toast.LENGTH_SHORT).show()
+            } else Popup.Builder(this).setMessage(T("remote_screen.put_the_tv_in"))
+                .setPositiveButton(T("remote_screen.standby")) { _, _ -> if (tv.ready()) tv.press(223) }
+                .setNegativeButton(T("common.cancel"), null).show()
+        }
+    }.start()
 }
 
 /** A row of equal-width remote keys: label, Android key code, label, key code... "@icon|words" shows an icon. An empty label leaves a gap. */
@@ -730,7 +737,8 @@ internal fun MainActivity.touchpad(): View {
     return pad
 }
 
-internal fun MainActivity.dpad(): View {
+internal fun MainActivity.dpad(scale: Float = 1f): View {
+    fun z(v: Int) = dp((v * scale).toInt())
     val pad = FrameLayout(this)
     pad.background = oval(CARD)
     val arrows = arrayOf(intArrayOf(19, Gravity.TOP or Gravity.CENTER_HORIZONTAL), intArrayOf(20, Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL),
@@ -740,24 +748,24 @@ internal fun MainActivity.dpad(): View {
     for (i in 0 until 4) {
         val b = icon(names[i], says[i], 0)
         b.setIcon(names[i], MUTED)
-        b.size = 26f
+        b.size = 26f * scale
         b.background = oval(0)
         bindKey(b, arrows[i][0], oval(HELD))
-        val lp = FrameLayout.LayoutParams(dp(72), dp(72), arrows[i][1])
+        val lp = FrameLayout.LayoutParams(z(72), z(72), arrows[i][1])
         lp.setMargins(dp(4), dp(4), dp(4), dp(4))
         pad.addView(b, lp)
     }
     val ok = button("OK", ACCENT)
     ok.typeface = Typeface.DEFAULT_BOLD
-    ok.textSize = 18f
+    ok.textSize = 18f * scale
     ok.setPadding(0, 0, 0, 0)
     ok.background = oval(ACCENT)
     ok.elevation = dp(6).toFloat()
     bindKey(ok, 23, oval(HELD))
-    pad.addView(ok, FrameLayout.LayoutParams(dp(84), dp(84), Gravity.CENTER))
+    pad.addView(ok, FrameLayout.LayoutParams(z(84), z(84), Gravity.CENTER))
     val wrap = LinearLayout(this)
     wrap.gravity = Gravity.CENTER
-    wrap.addView(pad, LinearLayout.LayoutParams(dp(216), dp(216)))
+    wrap.addView(pad, LinearLayout.LayoutParams(z(216), z(216)))
     return wrap
 }
 

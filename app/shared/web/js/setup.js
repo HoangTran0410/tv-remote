@@ -104,14 +104,15 @@ const scopeChips = (now, fn) => UI.chips(Object.keys(SCOPE_WORDS).map((k) => ({ 
 async function shareDialog() {
   let scope = 'remote';                                               // what a guest on the sofa needs; the owner can pick more
   const r = await api('/api/share', { scope }) || {};
-  const qr = el('div', { className: 'qrs' }), pick = el('div');
+  const qr = el('div', { className: 'qrs' }), pick = el('div'), how = el('div');
+  let simple = false, last = r.url;                                   // simple: the link opens straight in the Simple remote (remote.js, ?simple=1)
   const warn = { tailscale: T('setup.warn_tailscale'), tailscale_only: T('setup.warn_tailscale_only') }[r.warn];
   const tv = el('div', { className: 'sharetab' },
     warn ? UI.warn(warn) : null,
     r.setup === 'missing' ? UI.note(T('setup.share_no_setup')) : null,
     r.setup === 'old' ? UI.note(T('setup.share_old_setup')) : null,
     r.setup === 'old' ? UI.actions(UI.btn(T('setup.update_setup'), () => { d.close(); return updateSetup(); }, 'small')) : null,
-    r.url ? UI.note(T('setup.scanner_may')) : null, r.url ? pick : null, qr);
+    r.url ? UI.note(T('setup.scanner_may')) : null, r.url ? pick : null, r.url ? how : null, qr);
   const app = el('div', { className: 'sharetab', hidden: true }, el('div', { className: 'qrs' }, qrBlock(T('setup.qr_app'), T('setup.qr_app_short'), APP_APK)));
   const tabs = el('div', { className: 'seg' });
   const show = (k) => {
@@ -123,8 +124,12 @@ async function shareDialog() {
     UI.head(T('setup.share_title'), el('button', { className: 'small iconbtn', textContent: '✕', title: T('common.close'), 'aria-label': T('common.close'), onclick: () => d.close() })),
     tabs, tv, app));
   const wifi = r.warn !== 'tailscale_only';                           // the link is the TV's Wi-Fi address: say so, unless only Tailscale reaches it (warned above)
-  const draw = (url) => qr.replaceChildren(...[url ? qrBlock(scope === 'view' ? T('setup.qr_view') : T('setup.qr_open'),
-    [wifi ? T('setup.same_wifi') : null, T('setup.one_time')].filter(Boolean), url, true) : null].filter(Boolean));
+  const withSimple = (url) => { if (!simple || scope === 'view') return url; try { const u = new URL(url); u.searchParams.set('simple', '1'); return String(u); } catch { return url; } };
+  const draw = (url) => { last = url; how.hidden = scope === 'view'; qr.replaceChildren(...[url ? qrBlock(scope === 'view' ? T('setup.qr_view') : T('setup.qr_open'),
+    [wifi ? T('setup.same_wifi') : null, T('setup.one_time')].filter(Boolean), withSimple(url), true) : null].filter(Boolean)); };
+  const howChips = () => how.replaceChildren(UI.chips([{ label: T('setup.share_full'), on: !simple, fn: () => { simple = false; howChips(); draw(last); } },
+    { label: T('rkey.simple'), title: T('setup.share_simple_tip'), on: simple, fn: () => { simple = true; howChips(); draw(last); } }]));   // the same one-time invite: only the link's ending changes
+  howChips();
   const choose = async (k) => {
     if (k === scope) return; scope = k; pick.replaceChildren(scopeChips(scope, choose));
     qr.classList.add('stale');                                        // the old QR fades while the TV makes the new invite: never scanned under the wrong choice
