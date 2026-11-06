@@ -7,6 +7,7 @@
 .h-cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:28px 0 10px}
 .h-cta.h-ai{margin-top:0}                                       /* the AI guide on a line of its own, under Download */
 .h-trust{color:var(--dim);font-size:14px}
+.dlnote{color:var(--muted);font-size:13px;margin:10px 0 0}
 .h-stats{color:var(--dim);font-size:13px;margin:6px 0 0;min-height:20px;opacity:0;transition:opacity .4s}   /* height kept so the fade-in moves nothing */
 .h-stats.on{opacity:1}
 .h-stats i{font-style:normal}

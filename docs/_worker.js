@@ -9,9 +9,9 @@
 // link preview never sees a #topic, and a search engine indexes it under its own canonical). guide.js writes ?t= into the address.
 // /sitemap.xml is written here from the pages and the guide's topics, so a new topic is listed without a hand edit.
 const ORIGIN = "https://tvremote.pages.dev";
-const FILES = new Set(["tv-remote.apk", "tv-setup.apk", "tv-home.apk", "tv-channels.apk", "tv-games.apk",
+const FILES = new Set(["tv-remote.apk", "tv-setup.apk", "tv-home.apk", "tv-channels.apk", "tv-games.apk", "tv-apps.apk",
   "TV-Remote-mac.zip", "TV-Remote-windows-x64.zip", "TV-Remote-linux-x64.tar.gz", "TV-Remote-linux-arm64.tar.gz"]);
-const PAGES = { "/": true, "/guide": true, "/tvs": true, "/apps": true, "/themes": true, "/log": false };   // true: in the sitemap (log is noindex)
+const PAGES = { "/": true, "/guide": true, "/tvs": true, "/apps": true, "/themes": true, "/demo/": true, "/log": false };   // true: in the sitemap (log is noindex)
 // Runs at the end of <head>: the address's language wins over what the page's own first script picked; a person whose choice
 // (the VI / EN buttons, nav.js, "langPick") or, on a Vietnamese page reached from elsewhere, whose browser speaks another language
 // is sent to the other address. Never a crawler: it must see each address as it is.
@@ -26,6 +26,7 @@ export default {
     const url = new URL(req.url);
     const dl = /^\/dl\/([A-Za-z0-9.-]+)$/.exec(url.pathname);
     if (dl && FILES.has(dl[1])) return Response.redirect("https://github.com/HoangTran0410/tv-remote/releases/latest/download/" + dl[1], 302);
+    if (dl && dl[1] === "versions.json") return versions();
     if (url.pathname === "/en") return Response.redirect(url.origin + "/en/" + url.search, 301);   // relative links need the slash
     const en = url.pathname.startsWith("/en/"), lang = en ? "en" : "vi";
     const path = en ? url.pathname.slice(3) : url.pathname;
@@ -121,4 +122,12 @@ async function sitemap(env, url) {
   const body = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' +
     pages.flatMap((p) => ["vi", "en"].map((l) => `<url><loc>${at(p, l)}</loc>${alt(p)}</url>`)).join("\n") + "\n</urlset>\n";
   return new Response(body, { headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" } });
+}
+
+// The latest release's versions.json (one number per app; "web" is the release's), fetched here: GitHub's download has no CORS
+// and its API allows 60 calls an hour per address (a shared NAT left the home page's pill at "NEW"). Cached an hour at the edge.
+async function versions() {
+  const r = await fetch("https://github.com/HoangTran0410/tv-remote/releases/latest/download/versions.json", { cf: { cacheTtl: 3600, cacheEverything: true } });
+  if (!r.ok) return new Response("{}", { status: 502, headers: { "content-type": "application/json" } });
+  return new Response(await r.text(), { headers: { "content-type": "application/json; charset=utf-8", "cache-control": "public, max-age=3600" } });
 }

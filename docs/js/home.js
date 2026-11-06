@@ -235,11 +235,14 @@
     f.querySelector(".ba-in").addEventListener("input", function(){ f.style.setProperty("--p", this.value + "%"); });
   });
 
-  // latest release tag in the pill; the page reads fine if GitHub is unreachable
-  fetch("https://api.github.com/repos/HoangTran0410/tv-remote/releases/latest")
+  // latest release in the pill: the release's versions.json through the site's worker (_worker.js, cached; no GitHub API limit),
+  // else GitHub's API; with neither the pill keeps "NEW" and the page reads fine
+  function ver(t){ if (t) document.getElementById("ver").textContent = String(t).replace(/^v?/, "v"); return !!t; }
+  function api(){ return fetch("https://api.github.com/repos/HoangTran0410/tv-remote/releases/latest").then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ ver(j && j.tag_name); }); }
+  fetch("/dl/versions.json")
     .then(function(r){ return r.ok ? r.json() : null; })
-    .then(function(j){ if (j && j.tag_name) document.getElementById("ver").textContent = j.tag_name.replace(/^v?/, "v"); })
-    .catch(function(){});
+    .then(function(j){ if (!ver(j && /^\d+\.\d+\.\d+$/.test(j.web) && j.web)) return api(); })
+    .catch(function(){ return api().catch(function(){}); });
 
   // hero line: downloads (the census worker sums GitHub's .apk / .zip / .tar.gz, the README badge reads it too) and TVs / phones that used it (census); each cached 6 h, a failed part stays hidden
   (function(){

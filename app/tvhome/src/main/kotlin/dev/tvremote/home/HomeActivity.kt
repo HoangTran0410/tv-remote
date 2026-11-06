@@ -177,7 +177,7 @@ class HomeActivity : Activity() {
     private lateinit var body: LinearLayout                         // the widgets and the grid, arranged by "wplace" ([arrange])
     private var arranged = ""
     private val ui = android.os.Handler(android.os.Looper.getMainLooper())
-    private val widgetTick = object : Runnable { override fun run() { widgetsRead(); ui.postDelayed(this, 60_000) } }
+    private val widgetTick = object : Runnable { override fun run() { widgetsRead(tick = true); ui.postDelayed(this, 60_000) } }
     private var ticked = 0L                                           // elapsedRealtime of the last TIME_TICK (the wall clock jumps on these boxes)
     // TextClock before Android 12 moves only on TIME_TICK, which some firmware stops sending after a standby (a TCL on Android 9,
     // cleanyourtv #3044): the clock froze until a reboot. Each minute while Home is in front, redrawn only when no tick came.
@@ -380,7 +380,7 @@ class HomeActivity : Activity() {
         if (Store.chooseDue(this)) ui.postDelayed({ if (!isDestroyed && !away) open = Picker.show(this, Picker.Mode.CHOOSE, getString(R.string.pk_choose_title)) }, 600)   // first run only: nothing is hidden without being shown
         bg.execute { forget(null); if (LiveWidgets.refresh(this)) runOnUiThread { if (!isDestroyed) { shownKey = ""; show() } } }   // what TV Setup offers (it may have been installed or updated while away)
         ui.removeCallbacks(liveTick); ui.post(liveTick)
-        ui.removeCallbacks(widgetTick); ui.post(widgetTick)
+        widgetsDrawn = ""; ui.removeCallbacks(widgetTick); ui.post(widgetTick)        // back on Home: drawn again (language, recent apps)
         ui.removeCallbacks(clockTick); if (Build.VERSION.SDK_INT < 31) ui.postDelayed(clockTick, 61_000 - System.currentTimeMillis() % 60_000)   // 12+: TextClock keeps its own time
         ui.removeCallbacks(netTick); ui.postDelayed(netTick, Widgets.SAMPLE_MS)
         slideGo()                                                     // a slideshow wall: the slide of this slot, the timer again
@@ -784,8 +784,9 @@ class HomeActivity : Activity() {
     /** The top bar's clock and date follow the widgets really placed (a clock widget with no room, or a timer with nothing to show, changes them). */
     private fun placedSet(p: List<String>) { val k = placedKey(conf); if (p != placedNow || k != placedFor) { placedNow = p; placedFor = k; clockAndDay() } }
 
-    /** The widgets' numbers, read off the main thread; none at all while they are off. */
-    private fun widgetsRead() {
+    private var widgetsDrawn = ""                                    // Widgets.drawn of the row on screen: the minute's tick skips an unchanged one
+    /** The widgets' numbers, read off the main thread; none at all while they are off. [tick]: the minute's read, which keeps a row that would draw the same. */
+    private fun widgetsRead(tick: Boolean = false) {
         val want = Store.list(this, "widgets")
         val conf = Store.get(this); val note = conf.optString("note"); val sizes = conf.optJSONObject("wsize") ?: JSONObject()
         val none = want.isEmpty() && note.isEmpty()
@@ -800,6 +801,9 @@ class HomeActivity : Activity() {
             val f = widgets.read(want)
             runOnUiThread {
                 if (isDestroyed) return@runOnUiThread
+                val drawn = Widgets.drawn(want, f, Calendar.getInstance(), listOf(conf, widgets.width, widgets.roomPx, widgets.editing, widgets.visibility, resources.locale0()).toString())
+                if (tick && drawn == widgetsDrawn) return@runOnUiThread
+                widgetsDrawn = drawn
                 widgets.show(want, f, note, { p -> apps.firstOrNull { it.pkg == p }?.label ?: p.substringAfterLast('.') }, sizes, conf.optJSONObject("qrs") ?: JSONObject())
                 // chosen but with nothing to show (the timer with no timer set, a lunar date off): no row, so the grid sits as with none
                 // (FPT, the user 2026-11-03: the timer alone left the grid up under an empty row)

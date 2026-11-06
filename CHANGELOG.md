@@ -9,6 +9,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - The 👁️ Support button (let support look at this TV for 30 minutes) sits in the top bar now, not at the bottom of the Setup tab's TV card.
 - Draw on the TV: a 🎞️ Video button beside Picture and Text opens the Video on TV box (a video or a camera in a frame on the TV).
 - TV Home photos on the TV's web page: holding OK to delete a photo no longer throws when the list was drawn again meanwhile.
+- TV Home: the widget row is no longer rebuilt every minute while nothing on it changed (less idle CPU on weak boxes).
+- Site: the TV-only install (Downloader code) shows in the hero, a short link `tvremote.pages.dev/dl/tv-setup.apk` for TVs without Google Play, a one-line note on Android's warning under the download buttons, the live demo has an English address (`/en/demo/`), and the version pill no longer sits at "NEW" when GitHub's API limit is hit.
 
 - TV health shows "Locked apps" when another package (usually the Google TV launcher) has suspended apps ("App isn't available... managed by Google TV"): who locked which apps, and an Unlock button that asks first, then resets the locking app (clearing it makes Android lift all its locks; `pm unsuspend` only lifts the shell's own). One filtered `dumpsys package` read a minute while Health is open; nothing shows or runs more when no app is locked. The same card sits on top of the Apps tab, and a locked app's ⋯ menu has Unlock (Google TV Home is protected from Clear data there). Proved on a TCL G10 (Android 12): clearing the Google TV launcher lifted all its locks.
 

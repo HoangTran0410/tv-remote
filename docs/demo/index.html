@@ -3,9 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dùng thử TV Remote ngay trên trình duyệt · TV Remote</title>
-<meta name="description" content="Dùng thử TV Remote, TV Home, TV Channels và TV Games ngay trên trình duyệt với một chiếc TV giả. Không cần cài gì.">
+<title data-en="Try TV Remote in your browser · TV Remote">Dùng thử TV Remote ngay trên trình duyệt · TV Remote</title>
+<meta name="description" data-en="Try TV Remote, TV Home, TV Channels and TV Games in your browser with a made-up TV. Nothing to install." content="Dùng thử TV Remote, TV Home, TV Channels và TV Games ngay trên trình duyệt với một chiếc TV giả. Không cần cài gì.">
 <meta name="theme-color" content="#0a0d14">
+<link rel="canonical" href="https://tvremote.pages.dev/demo/">
+<link rel="alternate" hreflang="vi" href="https://tvremote.pages.dev/demo/">
+<link rel="alternate" hreflang="en" href="https://tvremote.pages.dev/en/demo/">
+<link rel="alternate" hreflang="x-default" href="https://tvremote.pages.dev/demo/">
 <link rel="icon" href="../img/icon.png?v=1024">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -174,6 +178,8 @@
     b.addEventListener('click', function () {
       var l = b.dataset.l || b.dataset.set; if (l === lang()) return;
       try { localStorage.setItem('lang', l); } catch (e) {}
+      // served as /demo/ or /en/demo/ (_worker.js): the other language is the other address, as on the other pages (js/nav.js)
+      if (window.langURL) { try { localStorage.setItem('langPick', l); } catch (e) {} location.assign(langURL(l)); return; }
       document.documentElement.dataset.lang = l; document.documentElement.lang = l; pressed();
       Object.keys(frames).forEach(drop); route();
     });

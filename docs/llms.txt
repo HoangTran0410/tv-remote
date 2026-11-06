@@ -8,7 +8,7 @@ Works on TVs that run Android TV / Google TV (Sony, TCL, Xiaomi, Philips, Google
 
 - **Phone app** ("TV Remote", Android): remote, see and touch the TV's screen, widget, Quick Settings tiles, the phone's volume keys control the TV. Download: https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-remote.apk (Downloader code 2973135)
 - **TV app** ("TV Setup", installed on the TV): sleep timer, bedtime, daily app limits, drawing over the TV's screen, usage stats, one-button Tailscale. It also serves the **TV web page** on port 8765, so any browser (iPhone included) controls the TV after typing a 6-digit code shown on the TV. Download: https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-setup.apk (Downloader code 2397346)
-- **Computer app** ("TV Remote" for Mac, Windows, Linux, about 20 MB, nothing else to install): https://github.com/HoangTran0410/tv-remote/releases/latest
+- **Computer app** ("TV Remote" for Mac, Windows, Linux, about 30-35 MB, nothing else to install): https://github.com/HoangTran0410/tv-remote/releases/latest
 
 ## What it does
 
@@ -28,7 +28,7 @@ Works on TVs that run Android TV / Google TV (Sony, TCL, Xiaomi, Philips, Google
 - Draw on the picture: the strokes show on the TV over any app (to guide someone far away).
 - Video on the TV: a video file or the phone's / computer's camera plays in a box over any app; the box is moved and resized from the page while it plays (needs TV Setup 0.42.0).
 - Several TVs at once: install / restart on all; scenes (a list of steps run with one tap).
-- Quick talk (phone app): hold the voice button and speak; the actions the sentence will do show above the finger, let go to send. The TV remote's mic button can open the same voice on the TV (off by default). TV Setup Voice (tv-voice.apk Vietnamese 25 MB, tv-voice-en.apk English 36 MB, each its own app, side by side): speech understood on the TV itself, no Google or Internet; TV Setup installs and removes it.
+- Quick talk (phone app): hold the voice button and speak; the actions the sentence will do show above the finger, let go to send. The TV remote's mic button can open the same voice on the TV (off by default). TV Setup Voice (tv-voice.apk Vietnamese 39 MB, tv-voice-en.apk English 47 MB, each its own app, side by side): speech understood on the TV itself, no Google or Internet; TV Setup installs and removes it.
 - Anonymous stats (on by default, one switch in Settings): once a day brand, model, chip, Android version, app version, whether ADB / picture / Optimize TV worked and a random ID; never IP, serial, TV name, apps or account.
 - Telegram: the TV answers your own bot (made with @BotFather, token pasted in Settings of TV Setup's page, chats paired with a one-time 6-digit code): /status /off /on /vol /key /open /scene /timer /say /shot /remote /apps /usage /now /channel /type /scenes /bedtime /limits /schedule /alerts (alerts: opt-in per chat, 1 per kind per minute; rules changes need Full scope and have Undo). /start <code> pairs like /pair. Managed from the phone/computer apps too. Long polling, no open port. Needs TV Setup 0.21.1.
 - Home Assistant and iPhone Shortcuts (Siri): a home-network link with its own token (off until switched on in Settings) presses keys, opens apps, runs scenes, sets volume / power: `/api/hook?k=<token>&key=HOME`, `/api/hook/state`. In TV Setup's web page and the computer app (which opens one extra port only while on).
@@ -40,11 +40,11 @@ Works on TVs that run Android TV / Google TV (Sony, TCL, Xiaomi, Philips, Google
 
 ## Setup in short
 
-1. On the TV: Settings → Device Preferences (Google TV, Chromecast: System) → About → Build ("Android TV OS build"), press OK 7 times; then Developer options in the same list → ADB debugging on.
-2. Install the app for your device (links above). The first time, the TV asks "Allow USB debugging?": choose Always allow.
-3. Easiest with only the TV remote: install Downloader (AFTVnews) from the Play Store on the TV, type code 2397346, install TV Setup, scan its QR code with the phone and type the 6-digit code.
+1. Install the app for your device (links above), pick the TV and type the code it shows: keys work at once, no ADB (Google's Android TV Remote protocol).
+2. For the screen, apps, files and timers: install TV Setup on the TV (the phone or computer app does it, or Downloader code 2397346, or type tvremote.pages.dev/dl/tv-setup.apk in the TV's browser). It opens Developer options itself: turn on ADB debugging. The TV then asks "Allow USB debugging?": choose Always allow.
+3. Only if TV Setup cannot open it: Settings → Device Preferences (Google TV: System) → About → press OK 7 times on Build. Never on an Internet-provider box (FPT, Viettel…): it may ask for a password or lock up. Guide: https://tvremote.pages.dev/guide?t=prep-tv
 
-Keys work without ADB on the phone and computer apps (Google's Android TV Remote protocol, pairing code); the screen, apps, files and timers need ADB.
+Short download links (any release file): https://tvremote.pages.dev/dl/tv-setup.apk, /dl/tv-remote.apk, /dl/tv-home.apk …
 
 ## FAQ
 
