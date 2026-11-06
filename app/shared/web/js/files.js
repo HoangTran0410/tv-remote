@@ -106,7 +106,7 @@ window.nativeJob = (j) => {
   showJob(j, j.label);
   if (j.status !== 'running') toast(j.msg);
 };
-async function trackJob(j, label, after, src) {
+async function trackJob(j, label, after, src, again) {
   const id = j.id, stop = () => api('/api/cancel', { id }, true);    // the server ends the download / install and removes what it had put on the TV
   showJob(j, label, stop); mark(src, j);
   let misses = 0;                                                     // a blip in the network is not the end of the job; ten in a row are
@@ -118,11 +118,13 @@ async function trackJob(j, label, after, src) {
     if (++misses >= 10) { j = { ...j, status: 'error', msg: T('files.connection_lost') }; showJob(j, label); break; }
   }
   mark(src, j);
+  const noSpace = j.status === 'error' && again && /install/.test(j.title || '') && NO_SPACE.test(j.msg);   // asked below, once the row says why
   if (j.status === 'error') { j.msg = friendly(j.msg); showJob(j, label); }
   toast(j.status === 'done' ? T('files.done_msg', { msg: jobMsg(j) }) : j.status === 'cancelled' ? T('files.stopped') : T('files.error_msg', { msg: j.msg }));
   if (j.status === 'done' && after) after(j);
   if (j.status === 'done' && filesLoaded) loadFiles(cwd);
   if (j.status === 'done') { appsStale(); if (/install/.test(j.title)) loadQuick(); }
+  if (noSpace) offerSpace(0, again);                                  // the size is unknown here (a link): the numbers, the cache clean, the big apps
 }
 // TV Home / Channels / Games from the latest release (HomeApi.ownJob), the route's answer [j]: a job in the Progress card, download % then install,
 // with Stop. Resolves to the app's new state, or null when it did not end well (the card and a toast said why).
@@ -146,7 +148,7 @@ async function ownAppWait(j, name) {
 // What the TV must have free for this file, asked of it before a byte is sent (Manage.space); '' when there is room or the TV did not say.
 async function roomError(size, kind, dest) {
   const r = await api('/api/space?size=' + size + (kind === 'file' || kind === 'welcome' ? '&path=' + encodeURIComponent(dest || '') : '&apk=1'), null, true);
-  return r && r.ok === false ? friendly(r.error) : '';
+  return r && r.ok === false ? r.error : '';                          // the raw code: friendly() words it, offerSpace() reads it
 }
 async function upload(file, kind, dest, after, src) {
   const uid = 'up' + Math.random().toString(36).slice(2);
@@ -158,9 +160,14 @@ async function upload(file, kind, dest, after, src) {
     row.status = 'cancelled'; showJob(row); mark(src, row); toast(T('files.stopped'));
   };
   showJob(row, undefined, stop); mark(src, row);
+  const isApk = kind === 'install' || kind === 'installcopy';
   const full = await roomError(file.size, kind === 'file' || kind === 'welcome' ? kind : 'apk', dest);
   if (stopped) return;
-  if (full) { row.status = 'error'; row.msg = full; showJob(row); mark(src, row); return; }   // refused before a byte leaves
+  if (full) {
+    row.status = 'error'; row.msg = friendly(full); showJob(row); mark(src, row);
+    if (isApk) offerSpace(file.size, () => upload(file, kind, dest, after, src));
+    return;
+  }   // refused before a byte leaves
   row.msg = T('files.sending_to_server'); showJob(row);
   xhr.open('POST', '/api/upload?kind=' + kind + '&uid=' + uid + '&name=' + encodeURIComponent(file.name) + '&dest=' + encodeURIComponent(dest || ''));
   xhr.setRequestHeader('Content-Type', 'application/octet-stream');
@@ -173,6 +180,7 @@ async function upload(file, kind, dest, after, src) {
     if (xhr.status !== 200) {
       const why = r.error || xhr.statusText;
       row.status = 'error'; row.msg = friendly(why); const jr = showJob(row); mark(src, row); needSetup(why);
+      if (isApk && NO_SPACE.test(why)) offerSpace(file.size, () => upload(file, kind, dest, after, src));   // pm said no room after the check passed
       const builtin = /builtin app: (\S+)/.exec(why), closed = /copy closed: (\S+)/.exec(why);
       if (builtin && kind === 'install') {                          // a system app of the TV: it cannot be replaced, but it can go beside as another app
         const go = el('button', { type: 'button', className: 'small primary', textContent: T('files.copy_install'), onclick: () => { go.disabled = true; upload(file, 'installcopy', dest, after, src); } });
@@ -192,7 +200,7 @@ $('#castfile').addEventListener('change', (e) => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
   upload(f, 'file', '/sdcard/Download', async (j) => { const p = /^saved (.+)$/.exec(j.msg || ''); if (await api('/api/file/open', { path: j.dest || (p ? p[1] : '/sdcard/Download/' + f.name) })) toast(T('files.opened_on_tv', { name: f.name })); });
 });
-async function startJob(path, data, label, src) { if (src) src.dataset.busy = '⏳'; const r = await api(path, data); if (r) trackJob(r, label, undefined, src); else mark(src, {}); }
+async function startJob(path, data, label, src) { if (src) src.dataset.busy = '⏳'; const r = await api(path, data); if (r) trackJob(r, label, undefined, src, /^\/api\/(file\/)?install$/.test(path) ?() => startJob(path, data, label, src) : undefined); else mark(src, {}); }
 $('#fetchf').addEventListener('submit', (e) => { e.preventDefault(); const u = $('#fetchurl').value.trim(); if (u) { startJob('/api/fetch', { url: u, dest: '/sdcard/Download' }); $('#fetchurl').value = ''; } });
 $('#instf').addEventListener('submit', async (e) => { e.preventDefault(); const u = $('#insturl').value.trim(); if (u && await ask(T('files.install_link_ask', { url: u }), { ok: T('files.install_button') })) { startJob('/api/install', { url: u }, undefined, $('#instf button')); $('#insturl').value = ''; } });
 $('#apkfile').addEventListener('change', async (e) => { const f = e.target.files[0]; e.target.value = ''; if (f && await ask(T('files.install_name_ask', { name: f.name }), { ok: T('files.install_button') })) upload(f, 'install', '', undefined, e.target.closest('label')); });

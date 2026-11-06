@@ -4631,5 +4631,16 @@
   "core.fr_sound_encoder": "Cette TV n’a pas d’encodeur audio pour envoyer son son.",
   "core.fr_encoders": "La TV n’a pas indiqué ses encodeurs vidéo, donc pas d’image. Réessayez ou choisissez Logiciel.",
   "core.fr_picture_decoder": "Cet appareil n’a pas pu décoder l’image de la TV. Essayez une qualité plus basse.",
-  "core.fr_scrcpy_start": "La TV n’a pas pu démarrer l’envoi. Réessayez ; sinon, redémarrez la TV."
+  "core.fr_scrcpy_start": "La TV n’a pas pu démarrer l’envoi. Réessayez ; sinon, redémarrez la TV.",
+ "space.title": "Pas assez d’espace sur la TV",
+ "space.need": "Il faut {need}, la TV a {free} de libre.",
+ "space.have": "La TV a {free} de libre.",
+ "space.free_cache": "Vider le cache et réessayer",
+ "space.try_again": "Réessayer",
+ "space.cache_done": "{size} libérés.",
+ "space.still_short": "{size} libérés, il manque encore {short}.",
+ "space.biggest": "Applications les plus lourdes",
+ "space.no_list": "Cette TV n’indique pas quelles applications prennent de la place. Supprimez des applications ou des fichiers dans les onglets Applications et Fichiers.",
+ "space.remove_updates": "Supprimer les mises à jour",
+ "space.updates_ask": "Supprimer les mises à jour de {name} ? L’application revient à la version d’origine de la TV."
 }

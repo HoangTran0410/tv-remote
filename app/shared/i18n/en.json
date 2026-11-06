@@ -4598,5 +4598,16 @@
  "core.fr_sound_encoder": "This TV has no sound encoder it can send its sound with.",
  "core.fr_encoders": "The TV did not say which video encoders it has, so there is no picture. Try again or pick Software.",
  "core.fr_picture_decoder": "This device could not decode the TV’s picture. Try a lower picture quality.",
- "core.fr_scrcpy_start": "The TV could not start sending. Try again; if it keeps failing, restart the TV."
+ "core.fr_scrcpy_start": "The TV could not start sending. Try again; if it keeps failing, restart the TV.",
+ "space.title": "Not enough space on the TV",
+ "space.need": "Needs {need}, the TV has {free} free.",
+ "space.have": "The TV has {free} free.",
+ "space.free_cache": "Clear cache and try again",
+ "space.try_again": "Try again",
+ "space.cache_done": "Freed {size}.",
+ "space.still_short": "Freed {size}, still {short} short.",
+ "space.biggest": "Apps using the most space",
+ "space.no_list": "This TV does not say which apps use space. Remove apps or files in the Apps and Files tabs.",
+ "space.remove_updates": "Remove updates",
+ "space.updates_ask": "Remove the updates of {name}? It goes back to the version the TV came with."
 }
