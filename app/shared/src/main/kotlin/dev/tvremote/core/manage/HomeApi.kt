@@ -129,7 +129,7 @@ internal class HomeApi(core: ManageCore) : ManagePart(core) {
             "home/walls" -> if (!post) return HttpServer.Response.json(dev.tvremote.core.ontv.Wallpapers.json(dev.tvremote.core.ontv.Wallpapers.fetch()))   // the wallpaper gallery (signed list)
             "home/walls/thumb" -> {
                 val b = dev.tvremote.core.ontv.Wallpapers.thumb(r.q("id"))
-                return if (b == null) HttpServer.Response.error(404, "not found") else HttpServer.Response.of("image/jpeg", b)
+                return if (b == null) HttpServer.Response.error(404, "no picture") else HttpServer.Response.of("image/jpeg", b)
             }
             "home/wall" -> if (post) return HttpServer.Response.json(dev.tvremote.core.ontv.Wallpapers.apply(link.get(), r.json().optString("id")))
         }

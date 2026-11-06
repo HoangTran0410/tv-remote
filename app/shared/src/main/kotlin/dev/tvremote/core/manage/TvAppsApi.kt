@@ -41,7 +41,7 @@ internal class TvAppsApi(private val link: AdbLink, private val dir: File?, priv
 
     fun icon(id: String): HttpServer.Response {
         val l = AppList.fetch(dir)
-        val a = l[id] ?: return HttpServer.Response.error(404, "not found")
+        val a = l[id] ?: return HttpServer.Response.error(404, "no such app")
         return HttpServer.Response.of("image/png", AppList.icon(l, a, dir))
     }
 

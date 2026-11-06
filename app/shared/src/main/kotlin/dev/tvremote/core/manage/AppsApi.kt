@@ -25,7 +25,7 @@ internal class AppsApi(core: ManageCore) : ManagePart(core) {
             "recents" -> if (!post) return HttpServer.Response.json(recents())
             "app/meta" -> {                                       // a name and whether /api/app/icon has a picture (the computer app answers it first)
                 val pkg = r.q("pkg")
-                if (!PKG.matcher(pkg).matches()) return HttpServer.Response.error(404, "not found")
+                if (!PKG.matcher(pkg).matches()) return HttpServer.Response.error(404, "no such app")
                 return HttpServer.Response.json(Manage.meta(labels, pkg))
             }
             "procs" -> return HttpServer.Response.json(procs())

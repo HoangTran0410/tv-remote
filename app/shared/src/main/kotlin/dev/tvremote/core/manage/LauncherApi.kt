@@ -46,7 +46,7 @@ internal class LauncherApi(private val link: AdbLink, private val dir: File?, pr
 
     fun thumb(id: String): HttpServer.Response {
         val g = Launchers.fetch()
-        val e = g[id] ?: return HttpServer.Response.error(404, "not found")
+        val e = g[id] ?: return HttpServer.Response.error(404, "no such launcher")
         return HttpServer.Response.of("image/jpeg", Launchers.thumb(g, e))
     }
 
