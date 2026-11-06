@@ -42,6 +42,26 @@ class SceneTimerTest {
         assertEquals(listOf("a"), step(back.cursors, "2026-11-06 20:00:05").fire)
     }
 
+    @Test fun aRunWithNoAdbIsTriedAgainInsideTheGraceOnly() {                        // timed-scene-lost-without-adb
+        val first = step(emptyMap(), "2026-11-06 19:00:00")
+        val fired = step(first.cursors, "2026-11-06 20:00:10")
+        assertEquals(listOf("a"), fired.fire)
+        val due = fired.due["a"]!!
+        assertEquals(ms("2026-11-06 20:00:00"), due)
+        val back = SceneTimer.retry(fired.cursors, "a", fired.cursors["a"]!!.first, due)!!
+        assertEquals(listOf("a"), step(back, "2026-11-06 20:01:00").fire)            // ADB came back a minute later: runs then
+        assertEquals(listOf("a"), step(back, "2026-11-06 20:05:00").fire)
+        assertTrue(step(back, "2026-11-06 20:05:01").fire.isEmpty())                 // still none past the grace: skipped, no pile
+        assertNull(SceneTimer.retry(fired.cursors, "a", "{changed}", due))           // edited meanwhile: its new time counts
+        assertNull(SceneTimer.retry(emptyMap(), "a", "x", due))                       // removed meanwhile
+    }
+
+    @Test fun aNewTimezoneCountsFromTheNextLook() {
+        val first = step(emptyMap(), "2026-11-06 18:00:00")
+        val plusOne = java.util.TimeZone.getTimeZone("GMT+01:00")                      // 20:00 there is 19:00 UTC
+        assertEquals(listOf("a"), SceneTimer.step(sc, first.cursors, ms("2026-11-06 19:00:30"), plusOne).fire)
+    }
+
     @Test fun changedTimeStartsAgainAndOnceEndsWithNothingToWaitFor() {
         val first = step(emptyMap(), "2026-11-06 19:00:00")
         val moved = SceneTimer.step(mapOf("a" to JSONObject("{time:'19:30',days:[5]}")), first.cursors, ms("2026-11-06 19:20:00"), utc)   // Friday

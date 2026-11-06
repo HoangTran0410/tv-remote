@@ -176,4 +176,10 @@ class KeyFixTest {
         assertNull(KeyFix.decide(plan, 184))                                               // green, nothing given: the plain key
         assertNull(KeyFix.decide(emptyMap(), 190))
     }
+
+    @Test fun takenOutWithinTheGuardLooksAgainAFewTimesOnly() {                            // keyfix-no-rearm
+        assertEquals(51_000L, KeyFix.rearm(10_000, 0, 0))                                  // just past the 60 s guard
+        assertEquals(1_000L, KeyFix.rearm(70_000, 0, 1))                                   // never a busy loop
+        assertNull(KeyFix.rearm(10_000, 0, KeyFix.REARM))                                 // a policy that always wins: give up
+    }
 }

@@ -22,7 +22,8 @@ import dev.tvremote.core.B64
  * download nor someone who took over the repository or a GitHub token can put an update on anyone's device. A release
  * without them is not offered yet (dev/release/release.sh adds them last, once the computer apps are attached).
  */
-class Release private constructor(val version: String, val url: String, val notes: String, val sha256: String) {
+class Release private constructor(val version: String, val url: String, val notes: String, val sha256: String,
+                                   val published: Long = 0) {     // ms, GitHub's published_at; 0 when unknown (the release page way, [byTag])
     fun interface Progress { fun at(percent: Int) }
 
     /** Downloads this file to [to] and checks it against the signed SHA256SUMS: a file that does not match is deleted. */
@@ -91,7 +92,7 @@ class Release private constructor(val version: String, val url: String, val note
                     }
                 }
                 if (apk == null || sums == null || sig == null) return null   // still being put together (or from before the checksums)
-                return checked(current, app, asset, version, apk, versions, sums, sig, o.optString("body", "").trim())
+                return checked(current, app, asset, version, apk, versions, sums, sig, o.optString("body", "").trim(), time(o.optString("published_at")))
             } finally {
                 c.disconnect()
             }
@@ -122,7 +123,7 @@ class Release private constructor(val version: String, val url: String, val note
         }
 
         private fun checked(current: String, app: String, asset: String, tagVersion: String, apk: String, versions: String?,
-                            sums: String, sig: String, body: String): Release? {
+                            sums: String, sig: String, body: String, published: Long = 0): Release? {
             var version = tagVersion
             if (versions != null) version = JSONObject(get(versions)).optString(app, version)
             if (compare(version, current) <= 0) return null
@@ -131,8 +132,14 @@ class Release private constructor(val version: String, val url: String, val note
             val signedVersion = signedVersion(list, app)
             if (signedVersion != null && signedVersion != version) throw IOException(UNSIGNED)   // an old signed list under a newer version.json
             val sha = sum(list, asset) ?: return null
-            return Release(version, apk, body, sha)
+            return Release(version, apk, body, sha, published)
         }
+
+        /** GitHub's "2026-11-07T10:00:00Z" in ms; 0 when absent or not that shape (java.time is Android 8+, minSdk is 21). */
+        fun time(iso: String?): Long = try {
+            java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
+                .apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }.parse(iso ?: "")?.time ?: 0L
+        } catch (e: Exception) { 0L }
 
         private fun get(url: String): String {
             val c = open(url)

@@ -31,12 +31,17 @@ object Scrub {
             .let { MAC.replace(it, "xx:xx:xx:xx:xx:xx") }
             .let { WIFI.replace(it) { m -> if (m.groupValues[1].isNotEmpty()) m.groupValues[1] + "…" + m.groupValues[2] else "WIFI:…" } }
 
-    fun text(s: String): String = blank(s)
+    /**
+     * [blank], plus links' keys, emails, home folders and addresses. [keepIps]: the support report (only the project's owner reads it,
+     * in a session the person opened) keeps the IP addresses, which are what a network fault is found by; the rest goes as here.
+     * The cases table and js/scrub.js know only the default.
+     */
+    fun text(s: String, keepIps: Boolean = false): String = blank(s)
         .let { KEYQ.replace(it) { m -> m.groupValues[1] + "…" } }
         .let { BEARER.replace(it) { m -> m.groupValues[1] + "…" } }
         .let { EMAIL.replace(it, "email@x") }
         .let { WINHOME.replace(it, "~") }
         .let { UNIXHOME.replace(it) { m -> m.groupValues[1] + "~" } }
-        .let { IPV4.replace(it, "x.x.x.x") }
-        .let { IPV6.replace(it) { m -> m.groupValues[1] + "x.x.x.x" } }
+        .let { if (keepIps) it else IPV4.replace(it, "x.x.x.x") }
+        .let { if (keepIps) it else IPV6.replace(it) { m -> m.groupValues[1] + "x.x.x.x" } }
 }

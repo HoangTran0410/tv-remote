@@ -107,4 +107,14 @@ class MicVoiceTest {
     @Test fun ruleOffMeansNoBlock() {
         assertEquals("", why(mic = false, google = true, ble = true, search = "ai.zalo.kiki.tv"))
     }
+
+    /** dev/flows/voice.md "Who listens": rows 2, 3, 6, 10, and 8 (the add-on's model does not load: the TV's own, not 10 min of nothing). */
+    @Test fun whoListens() {
+        assertFalse(MicVoice.useAddon(offline = false, tvFirst = false, own = true, noModel = false))   // row 2: Google's first
+        assertTrue(MicVoice.useAddon(offline = true, tvFirst = false, own = true, noModel = false))     // row 3: after a network error
+        assertTrue(MicVoice.useAddon(offline = false, tvFirst = false, own = false, noModel = false))   // row 6: no recognizer of its own
+        assertTrue(MicVoice.useAddon(offline = false, tvFirst = true, own = true, noModel = false))     // row 10: picked first
+        assertFalse(MicVoice.useAddon(offline = true, tvFirst = true, own = true, noModel = true))      // row 8: Google's after all
+        assertTrue(MicVoice.useAddon(offline = true, tvFirst = true, own = false, noModel = true))      // row 9: nothing else to ask
+    }
 }

@@ -8,6 +8,12 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 Web 0.48.0 · Phone app 0.45.0 · TV app 0.46.0 · TV Home 0.29.1 · TV Channels 0.20.0 · TV Games 0.22.0 · TV Apps 0.6.0
 
+- TV Setup: a timed scene that finds no ADB at its minute is tried again for 5 minutes instead of being dropped.
+- TV Setup: the sleep timer, bedtime, limits and app locks keep running after an unexpected error in a check.
+- TV Setup: when the system takes the key filter out right after it was turned on, TV Setup looks again a few times instead of giving up until the next reboot.
+- TV Setup updates itself on each TV at its own moment within a day of a release (three days on Android 10 and older), so a bad release can be pulled before it reaches most TVs; Update now still installs at once.
+- Voice: when TV Setup Voice cannot load its speech model, the TV's own recognizer listens instead of the mic giving up for 10 minutes.
+- Support: the report sent to support hides link keys (?k=, pass=), tokens and emails in the log; remote support may only read a fixed list of system dumps.
 - The 👁️ Support button (let support look at this TV for 30 minutes) sits in the top bar now, not at the bottom of the Setup tab's TV card.
 - Draw on the TV: a 🎞️ Video button beside Picture and Text opens the Video on TV box (a video or a camera in a frame on the TV).
 - TV Home photos on the TV's web page: holding OK to delete a photo no longer throws when the list was drawn again meanwhile.

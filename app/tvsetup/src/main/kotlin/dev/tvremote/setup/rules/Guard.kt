@@ -50,6 +50,9 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
         /** "Free RAM" on the notice: the apps waiting in the background closed; the MB that came back, null without ADB. */
         fun freeNow(): Long? = running?.free()
 
+        /** One turn of a Guard loop: any Throwable, an Error too, gives [fallback] (ms to the next look), so the loop never ends. */
+        internal inline fun safe(fallback: Long, on: (Throwable) -> Unit, f: () -> Long): Long = try { f() } catch (e: Throwable) { on(e); fallback }
+
         /** [devices]: the output's device bits; where Android hides them, [recording] asks who records the submix. Never throws. */
         internal fun toListener(devices: () -> Int, recording: () -> Boolean): Boolean = try {
             devices() and 0x8000 != 0                                 // AudioSystem.DEVICE_OUT_REMOTE_SUBMIX
@@ -117,17 +120,23 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
         override fun run() {
             if (stopped) return
             Thread({
-                val next = try { synchronized(checking) { check() } } catch (e: Exception) { 30_000L }
+                val next = safe(30_000L, { died("check", it) }) { synchronized(checking) { check() } }   // an Error (OEM without a hidden API, OOM) must not end the chain
                 ui.removeCallbacks(this)                              // a poke meanwhile: still one chain of checks
                 ui.postDelayed(this, next.coerceIn(3_000L, 60_000L))
             }, "guard").apply { isDaemon = true }.start()
         }
     }
 
+    /** A check threw: logged, and the census hears it once per version, while the loop goes on (Throwable: an Error used to end it). */
+    private fun died(where: String, e: Throwable) {
+        android.util.Log.w("tvr-guard", where, e)
+        try { AdbReport.once(c, "guard_$where", e.toString()) } catch (t: Throwable) { }
+    }
+
     fun start() {
         running = this
         ui.postDelayed(tick, 5_000)
-        Thread({ while (!stopped) Thread.sleep(try { lockCheck() } catch (e: Exception) { android.util.Log.w("tvr-guard", "lockCheck", e); 5_000L }) }, "guard-lock").apply { isDaemon = true }.start()
+        Thread({ while (!stopped) Thread.sleep(safe(5_000L, { died("lockCheck", it) }) { lockCheck() }) }, "guard-lock").apply { isDaemon = true }.start()
         val f = IntentFilter("android.media.VOLUME_CHANGED_ACTION")
         if (android.os.Build.VERSION.SDK_INT >= 33) c.registerReceiver(volume, f, Context.RECEIVER_NOT_EXPORTED) else c.registerReceiver(volume, f)
     }

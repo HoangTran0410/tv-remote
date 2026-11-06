@@ -29,4 +29,12 @@ class GuardClockTest {
         Guard.sane(Marks(0, 0, 0), stops, now)
         assertEquals(setOf("b"), stops.keys)
     }
+
+    @Test fun anErrorInACheckKeepsTheLoopGoing() {                     // guard-chain-dies-on-error: catch Exception let an Error end the chain
+        val seen = ArrayList<Throwable>()
+        assertEquals(30_000L, Guard.safe(30_000L, { seen.add(it) }) { throw NoSuchMethodError("hidden api") })
+        assertEquals(30_000L, Guard.safe(30_000L, { seen.add(it) }) { throw OutOfMemoryError() })
+        assertEquals(7L, Guard.safe(30_000L, { seen.add(it) }) { 7L })
+        assertEquals(2, seen.size)
+    }
 }

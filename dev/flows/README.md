@@ -18,3 +18,4 @@ The gate (`node dev/flows/check.js`, in the pre-push hook and `app/shared/tests/
 | [home-bar.md](home-bar.md) | the option "Home key in an app: show a bar": TV Setup's key filter, TV Home's see-through bar, the cases of a Home press |
 | [home-tiles.md](home-tiles.md) | TV Home's grid: tile kinds, their menu, hide / remove / folders, and the checks (fuzz test, `home_tiles.sh` on a TV) |
 | [voice.md](voice.md) | the remote's mic button: the two switches, who listens (the TV's recognizer or TV Setup Voice) per TV, network and stall |
+| [scene-timer.md](scene-timer.md) | a scene with a start time, run by TV Setup: standby, deep sleep, no ADB, clock jumps, time zones |

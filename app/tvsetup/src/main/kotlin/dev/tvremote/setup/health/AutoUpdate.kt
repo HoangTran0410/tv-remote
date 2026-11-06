@@ -26,6 +26,8 @@ import java.io.File
  * The install is [SetupUpdate]'s: a new version that does not start well is replaced by the old one, data and all, and never
  * tried again. Android 9 and older cannot put the old one back: there a version that fails is only noted, and the phone or
  * computer app, which sees TV Setup missing or broken, offers to install the next one (SetupBanner).
+ * So TVs do not all take a release at once: each waits for its own spot within a day of it ([UpdatePlan.soakLeft]), two more
+ * days on Android 10 and older, and a release pulled meanwhile never reaches the rest. "Update now" (page or TV) does not wait.
  * It also updates TV Home, TV Channels, TV Games and TV Apps when they are on the TV ([ownApps], every [UpdatePlan.CHECK], sooner when one
  * had to wait): those carry SelfUpdate but leave a new release to this for [UpdatePlan.GRACE] when HomeInfo "updates" says it is
  * on and has ADB, so their own Update popup is the exception; a copy from before SelfUpdate never asked at all.
@@ -84,6 +86,8 @@ internal class AutoUpdate(private val c: Context, private val version: String, p
             found = r
         }
         val r = found ?: return 20 * MIN
+        val left = UpdatePlan.soakLeft(r.published, firstSeen(r.version, now), now, installId(), android.os.Build.VERSION.SDK_INT)
+        if (left > 0) return minOf(left, 20 * MIN).coerceAtLeast(MIN)  // its spot in the spread has not come: a release pulled meanwhile never reaches this TV
         val a = adb() ?: return 10 * MIN
         val s = SetupUpdate.state(a)
         if (SetupUpdate.bad(s, r.version)) return 6 * 60 * MIN        // it broke here once: wait for the next version
@@ -102,6 +106,20 @@ internal class AutoUpdate(private val c: Context, private val version: String, p
         if (a.shell("ps -A -o ARGS 2>/dev/null | grep -c '[c]om.genymobile.scrcpy.Server'").trim().let { it != "" && it != "0" }) return 10 * MIN
         SetupUpdate.start(a, file.absolutePath, r.version)
         return 30 * MIN                                               // the install closes this app; this is for a failed one
+    }
+
+    /** When this TV first saw [version] (kept over restarts): the start of the spread when GitHub's published_at was not read. */
+    private fun firstSeen(version: String, now: Long): Long {
+        val p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val kept = p.getString("auto_seen", "") ?: ""
+        if (kept.substringBefore('|') == version) kept.substringAfter('|').toLongOrNull()?.takeIf { it <= now }?.let { return it }   // ahead of the clock: it went back
+        p.edit().putString("auto_seen", "$version|$now").apply()
+        return now
+    }
+
+    /** The census id (random per install, kept even with the stats off and never sent then), else ANDROID_ID: this TV's spot in [UpdatePlan.SPREAD]. */
+    private fun installId(): String = dev.tvremote.core.Census.id().ifEmpty {
+        android.provider.Settings.Secure.getString(c.contentResolver, android.provider.Settings.Secure.ANDROID_ID) ?: ""
     }
 
     /**

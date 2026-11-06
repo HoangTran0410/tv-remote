@@ -48,6 +48,7 @@ class MicActivity : Activity(), RecognitionListener {
     private var binds = 0
     private var retried = false
     private var offline = false                                       // TV Setup Voice is listening, not the TV's own recognizer
+    private var noModel = false                                       // TV Setup Voice could not load its model: the TV's own from now on (flow row 8)
     private val tvFirst by lazy { MicVoice.engineTv(this) }           // TV Setup Voice picked over Google's (rule "mic_engine")
     /** Speech began but no word came back (Google's server stalled: 7 s of nothing, FPT 2026-11-01): a fresh session once, said on the card, then give up. */
     private val stall = Runnable {
@@ -141,7 +142,7 @@ class MicActivity : Activity(), RecognitionListener {
     private fun listen() {
         quiet(true)
         sr?.let { try { it.destroy() } catch (e: Exception) { } }    // the stalled session, on a retry
-        val off = if (offline || tvFirst || !MicVoice.own(this)) MicVoice.offline(this) else null   // the TV's own first, unless TV Setup Voice was picked; it where the TV has none: dev/flows/voice.md
+        val off = if (MicVoice.useAddon(offline, tvFirst, MicVoice.own(this), noModel)) MicVoice.offline(this) else null   // the TV's own first, unless TV Setup Voice was picked; it where the TV has none: dev/flows/voice.md
         offline = off != null
         log(if (off != null) "engine offline" else "engine own")
         val r = try { if (off != null) SpeechRecognizer.createSpeechRecognizer(this, off) else SpeechRecognizer.createSpeechRecognizer(this) } catch (e: Exception) { null }
@@ -245,13 +246,19 @@ class MicActivity : Activity(), RecognitionListener {
             SpeechRecognizer.ERROR_NO_MATCH, SpeechRecognizer.ERROR_SPEECH_TIMEOUT ->
                 if (partial.isNotEmpty()) finish(partial, cut = false) else say(T("mic.nothing"), T("mic.try"), 2000)
             SpeechRecognizer.ERROR_NETWORK, SpeechRecognizer.ERROR_NETWORK_TIMEOUT, SpeechRecognizer.ERROR_SERVER ->
-                if (!offline && MicVoice.offline(this) != null) {     // Google's needs the Internet, TV Setup Voice does not: dev/flows/voice.md row 3
+                if (!offline && !noModel && MicVoice.offline(this) != null) {   // Google's needs the Internet, TV Setup Voice does not: dev/flows/voice.md row 3
                     offline = true; log("network: offline")
                     swap(act, T("mic.again"), TvUi.DIM)
                     ui.removeCallbacks(giveUp); ui.postDelayed(giveUp, 8000)
                     listen()
                 } else { MicVoice.broke(); say(T("mic.no_net"), T("mic.use_phone"), 3500) }
-            VoiceProtocol.ERROR_NO_MODEL -> { MicVoice.broke(); say(T("mic.no_model"), T("mic.use_phone"), 3500) }    // TV Setup Voice could not load its model: not the network (flow row 7)
+            VoiceProtocol.ERROR_NO_MODEL ->                            // TV Setup Voice could not load its model: not the network (flow rows 8, 9)
+                if (!noModel && MicVoice.own(this)) {                 // the TV's own recognizer works: ask it before giving up (flow row 8)
+                    noModel = true; log("no model: own")
+                    swap(act, T("mic.again"), TvUi.DIM)
+                    ui.removeCallbacks(giveUp); ui.postDelayed(giveUp, 8000)
+                    listen()
+                } else { MicVoice.broke(); say(T("mic.no_model"), T("mic.use_phone"), 3500) }
             SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> {
                 if (!MicVoice.granted(this)) ask() else { MicVoice.broke(); say(T("mic.no_perm"), T("mic.use_phone"), 3500) }
             }
