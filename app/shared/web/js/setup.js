@@ -401,7 +401,7 @@ function showAdbGuide(more = '') { assistShow(T('core.tvb_help_btn'), ...adbGuid
 const row = (...kids) => el('div', { className: 'assistrow' }, ...kids.filter(Boolean));
 const assist = (do_, extra) => api('/api/assist', { do: do_, ...extra });
 $('#assistclose').addEventListener('click', () => $('#assist').close());
-$('#assist').addEventListener('close', () => { assistGen++; api('/api/assist', { do: 'stop' }, true); });   // closed any way (button, Esc): nothing keeps running unseen
+$('#assist').addEventListener('close', () => { assistGen++; if (CORE === 'pc') api('/api/assist', { do: 'stop' }, true); });   // only the Computer app has the route: elsewhere a 404 each time   // closed any way (button, Esc): nothing keeps running unseen
 
 let dlCodes = null;                                                   // the Downloader codes (/api/downloader: signed on the site, else packed)
 async function dlTip() { dlCodes = dlCodes || await api('/api/downloader', null, true) || {}; return T('setup.dl_tip', { code: dlCodes.setup || '' }); }

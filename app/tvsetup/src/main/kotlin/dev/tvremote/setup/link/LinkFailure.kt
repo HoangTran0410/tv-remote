@@ -12,13 +12,20 @@ import dev.tvremote.core.adb.Adb
 internal object LinkFailure {
     class Outcome(val state: String, val detail: String, val retryMs: Long, val backoff: Boolean)
 
+    /** Unanswered "Allow USB debugging?" questions in a row before the timed retries stop (RemoteService). */
+    const val ASK_LIMIT = 3
+
+    private val TIMEOUT = Regex("SocketTimeout|timed out", RegexOption.IGNORE_CASE)
     private val REFUSED = Regex("ECONNREFUSED|Connection refused", RegexOption.IGNORE_CASE)
 
     /** [key] "closed" or "error" from the session, its raw [detail], the [wait] now, and [say] turning raw text into words; on a
-     *  [maker]'s TV that blocks its own ADB ([fireBlocked]) the words are [fire]'s. */
-    fun of(key: String, detail: String, wait: Long, say: (String) -> String, maker: String = "", fire: () -> String = { "" }): Outcome {
+     *  [maker]'s TV that blocks its own ADB ([fireBlocked]) the words are [fire]'s; a timeout has [silent]'s. */
+    fun of(key: String, detail: String, wait: Long, say: (String) -> String, maker: String = "", fire: () -> String = { "" },
+           silent: () -> String = { "" }): Outcome {
         if (key == "error" && detail.contains(Adb.UNANSWERED)) return Outcome("allow", "", wait, true)
         if (key == "error" && fireBlocked(maker, detail)) return Outcome("error", fire(), wait, true)
+        // a read timeout on 127.0.0.1 is never "the network is slow": the TV's own adbd did not answer ([silent]'s words)
+        if (key == "error" && TIMEOUT.containsMatchIn(detail)) return Outcome("error", silent(), wait, true)
         val refused = key == "error" && REFUSED.containsMatchIn(detail)
         // refused already has its plain words; the raw socket text only scared. Anything else: words a person can act on
         val words = if (key == "error" && !refused) say(detail.take(200)).take(200) else ""

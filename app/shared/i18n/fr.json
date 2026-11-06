@@ -2548,6 +2548,8 @@
   "setup.tcl_steps": "1. Paramètres → À propos (Local info).\n2. Appuyez sur Haut, Bas, Gauche, Droite de la télécommande, tour après tour, jusqu’à l’apparition d’une fenêtre ADB.\n3. Le commutateur se cache à nouveau ensuite : recommencez la prochaine fois.",
   "tv_main.xiaomi_adb": "TV Xiaomi (version Chine) : Paramètres → Compte et sécurité → Débogage ADB (ADB调试) → Activé, puis revenez ici et choisissez Reconnecter.",
   "tv_main.fire_adb_blocked": "Fire TV n'autorise plus les applications du téléviseur à utiliser son propre ADB (bloqué par Amazon en 2024).",
+  "tv_main.adb_not_answering": "L'ADB du téléviseur ne répond pas. Désactivez puis réactivez le débogage USB ou sans fil, ou redémarrez le téléviseur.",
+  "tv_main.adb_stopped_asking": "La question ne s'affiche plus sur le téléviseur. Ouvrez TV Setup ou appuyez sur un bouton de la page télécommande pour la reposer.",
   "tv_main.fire_adb_use_phone": "Pour les fonctions qui demandent ADB, utilisez l'application téléphone ou ordinateur : elles se connectent par le Wi-Fi.",
   "guard.volume_cap": "🔊 Volume {max} % maximum ({from}–{to}, une limite réglée dans TV Remote)",
   "guard.min_left": "Il reste {n} min aujourd’hui pour {app}",

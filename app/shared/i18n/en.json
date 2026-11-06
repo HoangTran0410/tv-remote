@@ -2542,6 +2542,8 @@
  "setup.tcl_steps": "1. Settings → About (Local info).\n2. Press Up, Down, Left, Right on the remote, round after round, until an ADB window appears.\n3. The switch hides again afterwards: repeat it next time.",
  "tv_main.xiaomi_adb": "Xiaomi TV (China version): Settings → Account & Security → ADB debugging (ADB调试) → On, then come back here and choose Reconnect.",
  "tv_main.fire_adb_blocked": "Fire TV doesn't let apps on the TV use its own ADB (Amazon blocked it in 2024).",
+ "tv_main.adb_not_answering": "The TV's ADB is not answering. Switch USB or Wireless debugging off and on, or restart the TV.",
+ "tv_main.adb_stopped_asking": "Stopped asking on the TV. Open TV Setup, or press a button on the remote page, to ask again.",
  "tv_main.fire_adb_use_phone": "For features that need ADB, use the phone or computer app: they connect over Wi-Fi.",
  "guard.volume_cap": "🔊 Volume at most {max}% ({from}–{to}, a limit set in TV Remote)",
  "guard.min_left": "{n} min left today for {app}",
