@@ -528,27 +528,35 @@ let hfull = null;
 // a minute while Health → Now is open; the card exists only while some app is locked.
 let suspAt = 0, suspBusy = false;
 const GOOGLE_TV = 'com.google.android.apps.tv.launcherx';
-onTvChange(() => { suspAt = 0; put('#hsusp', 'hidden', true); $('#hsuspl').replaceChildren(); });
+let suspBy = new Map();                                              // locked app → its suspenders, from the last read (the Apps tab's ⋯)
+onTvChange(() => { suspAt = 0; suspBy = new Map(); for (const c of ['#hsusp', '#appssusp']) put(c, 'hidden', true); $('#hsuspl').replaceChildren(); $('#appssuspl').replaceChildren(); });
+// Lifts what [b] locked: asks first unless it is the shell's own (nothing is reset then), then draws both cards again
+async function suspUnlock(b, list, btn) {
+  const by = b.pkg === GOOGLE_TV ? 'Google TV' : b.name || b.pkg;
+  if (!b.shell && !await ask(T('health.susp_ask', { apps: list, by }), { ok: T('health.susp_fix'), danger: true })) return;
+  if (btn) btn.disabled = true;
+  const r2 = await api('/api/health/suspended', { by: b.pkg });
+  if (!r2) { if (btn) btn.disabled = false; return; }
+  drawSusp(r2);
+  toast(r2.apps.some((a) => a.by.some((x) => x.pkg === b.pkg)) ? T('health.susp_still', { by }) : T('health.susp_ok'));
+}
+// Health's card and the Apps tab's, the same list
 function drawSusp(r) {
+  suspBy = new Map(r.apps.map((a) => [a.pkg, a.by]));
   const groups = new Map();                                           // suspender → its apps
   for (const a of r.apps) for (const b of (a.by.length ? a.by : [{ pkg: '', name: '', shell: true }])) {
     if (!groups.has(b.pkg)) groups.set(b.pkg, { b, apps: [] });
     groups.get(b.pkg).apps.push(a.name);
   }
-  put('#hsusp', 'hidden', !groups.size);
-  $('#hsuspl').replaceChildren(...[...groups.values()].map(({ b, apps }) => {
-    const by = b.pkg === GOOGLE_TV ? 'Google TV' : b.name || b.pkg, list = apps.join(', ');
-    const fix = el('button', { type: 'button', className: 'small primary', textContent: T('health.susp_fix'), disabled: !b.pkg });
-    fix.onclick = async () => {
-      if (!b.shell && !await ask(T('health.susp_ask', { apps: list, by }), { ok: T('health.susp_fix'), danger: true })) return;
-      fix.disabled = true;
-      const r2 = await api('/api/health/suspended', { by: b.pkg });
-      if (!r2) { fix.disabled = false; return; }
-      drawSusp(r2);
-      toast(r2.apps.some((a) => a.by.some((x) => x.pkg === b.pkg)) ? T('health.susp_still', { by }) : T('health.susp_ok'));
-    };
-    return el('div', { className: 'item' }, el('div', { className: 'name' }, el('div', { className: 'nameline' }, el('b', { textContent: T('health.susp_say', { by, apps: list }) })), el('small', { textContent: T('health.susp_note') })), fix);
-  }));
+  for (const [card, box] of [['#hsusp', '#hsuspl'], ['#appssusp', '#appssuspl']]) {
+    put(card, 'hidden', !groups.size);
+    $(box).replaceChildren(...[...groups.values()].map(({ b, apps }) => {
+      const by = b.pkg === GOOGLE_TV ? 'Google TV' : b.name || b.pkg, list = apps.join(', ');
+      const fix = el('button', { type: 'button', className: 'small primary', textContent: T('health.susp_fix'), disabled: !b.pkg });
+      fix.onclick = () => suspUnlock(b, list, fix);
+      return el('div', { className: 'item' }, el('div', { className: 'name' }, el('div', { className: 'nameline' }, el('b', { textContent: T('health.susp_say', { by, apps: list }) })), el('small', { textContent: T('health.susp_note') })), fix);
+    }));
+  }
 }
 async function suspCheck() {
   if (suspBusy || Date.now() - suspAt < 60000) return;

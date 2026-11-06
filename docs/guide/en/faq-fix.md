@@ -13,4 +13,5 @@
 | Fire TV: TV Setup cannot reach ADB though it is on | Amazon blocks an app on the TV from using its own ADB; use the phone or computer app. |
 | Fire TV: Home / Alexa buttons dead, other keys work | First setup never finished: the app says so at the top, press **Fix** (sets `user_setup_complete` to 1). |
 | TV Settings freezes on the text-to-speech page | Run `pm clear com.google.android.tts` (the Terminal, or `adb shell`); the voice downloads again on first use. |
+| Every app says “App isn't available… managed by Google TV” | Google TV locked them. The **Apps** (or **Health**) tab shows **🔒 Locked apps**: press **Unlock** (resets the Google TV home screen). Locked again at the same hour? Turn off the time limit in the profile. |
 | The TV's page shows no pairing code | A TV with no ADB cannot show it by itself: open TV Setup on the TV, the code is on its main screen (2 minutes). See [Open the TV's web page](web-iphone.md). |

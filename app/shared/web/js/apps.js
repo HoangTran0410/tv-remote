@@ -96,6 +96,8 @@ async function loadApps(quiet) {                                       // quiet:
   appsSys = null; appsLoaded = true; appsAll = r.apps.map((a) => a.pkg); appsInfo = new Map(r.apps.map((a) => [a.pkg, { off: !!a.off, keep: !!a.keep, version: a.version || '' }])); seedMeta(r.apps); renderApps();
   const b = await api('/api/apps/boot', null, true);                 // after the list: a tag is worth no wait
   if (b && gen === appsGen) { appsBoot = bootRead(b.text); renderApps(); }
+  const s = await api('/api/health/suspended', null, true);          // apps another app locked: their Unlock on top, not only in Health
+  if (s && s.apps && gen === appsGen) drawSusp(s);
 }
 // The list is drawn again on every refresh (the open apps every few seconds): each app keeps its icon, so it does not go
 // back to a letter while its picture loads again
@@ -168,7 +170,9 @@ function appMenu(btn, pkg, info, done, skip = []) {
     if (!['launch', 'stop', 'clear'].includes(name)) done(name);
   };
   const no = (name) => skip.includes(name);
+  const lock = (suspBy.get(pkg) || []).find((b) => b.pkg);           // locked: Open would only bring up "App isn't available"
   popover(btn, [
+    lock ? ['🔒', T('health.susp_fix'), () => suspUnlock(lock, appName(pkg))] : null,
     info.off ? (no('enable') ? null : ['↩', T('apps.turn_on'), () => run('enable', T('apps.turn_on'))]) : ['▶', T('apps.open'), () => run('launch', T('apps.open'))],
     ['ℹ️', T('apps.details'), () => appDetails(pkg, info.keep)],
     ['📋', T('apps.copy_package'), () => copyText(pkg)],
