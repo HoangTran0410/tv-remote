@@ -14,4 +14,6 @@ Cần TV Setup trên TV và ADB đang bật. Các việc dưới đây tự ch�
 
 > 💡 Nút lạ của vài đời TV (vd. Xiaomi MiTV-MOOQ0: nút Nguồn vào) được sửa theo danh sách trên site, không cần cập nhật app. Remote của bạn có nút lạ: gửi mã hỗ trợ.
 
+> 💡 TV TCL: nút Netflix, YouTube, Prime, Apple TV mở app đó khi đang ở [TV Home](home.md). Trong app khác thì không: bắt phím mọi nơi làm giữ nút âm lượng chỉ tăng 1 nấc.
+
 > 💡 TV không có ADB: add-on này cũng mở menu nguồn của hệ thống cho nút Tắt TV trên TV Home ([Cài đặt nhanh](home-control.md)).

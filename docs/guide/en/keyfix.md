@@ -14,4 +14,6 @@ These need TV Setup on the TV and ADB switched on. They run by themselves once o
 
 > 💡 Odd buttons on some TV models (e.g. the Xiaomi MiTV-MOOQ0's Input button) are fixed from a list on the site, with no app update. An odd button on your remote: send a support code.
 
+> 💡 TCL TVs: the remote's Netflix, YouTube, Prime and Apple TV buttons open that app while [TV Home](home.md) is on screen. Not inside other apps: catching keys everywhere makes a held volume key move one step on TCL TVs.
+
 > 💡 A TV with no ADB: this add-on also opens the system power menu for TV Home's Power off ([Quick settings](home-control.md)).

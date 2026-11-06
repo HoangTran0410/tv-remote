@@ -72,11 +72,20 @@ object Keys {
     /** A key pressed on TV Home's own screen: opens its app when one is chosen and installed. True = handled. Numbers and colours only. */
     fun onKey(a: Activity, e: KeyEvent): Boolean {
         val code = e.keyCode
+        val tcl = TclKeys.apps(code, android.os.Build.MANUFACTURER, android.os.Build.BRAND)
+        if (tcl.isNotEmpty()) {                                        // a TCL app button nobody else answered (launcherx off)
+            if (e.repeatCount > 0) return true
+            return open(a, tcl.firstOrNull { Targets.there(a, it) } ?: return true)   // none installed: eaten, as the stock home did
+        }
         if (code !in HomeConfig.KEY_COLOURS && code !in HomeConfig.KEY_NUMBERS) return false
         val conf = Store.get(a)
         if (!conf.optBoolean("keyon")) return false
         val target = HomeConfig.keyApps(conf.optJSONObject("keyapps"))[code] ?: return false
         if (e.repeatCount > 0) return true                             // a held key opens it once
+        return open(a, target)
+    }
+
+    private fun open(a: Activity, target: String): Boolean {
         if (dev.tvremote.home.apps.HomeLock.isLocked(a, target)) {      // locked by TV Home itself: the PIN pad first
             (a as? dev.tvremote.home.HomeActivity)?.askPin(Targets.label(a, target)) { Targets.open(a, target, null, true) }
             return true
