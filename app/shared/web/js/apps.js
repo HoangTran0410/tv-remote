@@ -91,7 +91,7 @@ async function loadApps(quiet) {                                       // quiet:
   if (!quiet) $('#appslist').replaceChildren(el('div', { className: 'muted', textContent: T('apps.loading') }));
   const gen = appsGen, r = await api('/api/apps' + ($('#appssys').checked ? '?system=1' : ''));
   if (gen !== appsGen) return;
-  if (!r) { if (!quiet) $('#appslist').replaceChildren(); return; }
+  if (!r) { if (!quiet || !appsLoaded) failed($('#appslist'), () => loadApps()); return; }   // a toast fades: the list says why, with Try again
   appsHome = !!r.home;
   appsSys = null; appsLoaded = true; appsAll = r.apps.map((a) => a.pkg); appsInfo = new Map(r.apps.map((a) => [a.pkg, { off: !!a.off, keep: !!a.keep, version: a.version || '' }])); seedMeta(r.apps); renderApps();
   const b = await api('/api/apps/boot', null, true);                 // after the list: a tag is worth no wait
@@ -108,10 +108,10 @@ function appsIcon(pkg, off) {
   return appsIcons.get(k);
 }
 function renderApps() {
-  const q = $('#appsq').value.trim().toLowerCase();
+  const q = foldText($('#appsq').value.trim());                       // "nhac" finds "Nhạc"
   lazyMeta.disconnect();
   const fit = APPS_FILTERS.find((f) => f[0] === appsFilter) || APPS_FILTERS[0];
-  const found = appsAll.filter((p) => !q || p.toLowerCase().includes(q) || appName(p).toLowerCase().includes(q));
+  const found = appsAll.filter((p) => foldHas(q, p, appName(p)));
   const sys = $('#appssys').checked, open = fit[0] === 'open';
   $('#appsfilter').replaceChildren(...APPS_FILTERS.map(([key, label, ok, why]) => el('button', { className: key + (key === fit[0] ? ' on' : ''), type: 'button', title: why || '',
     onclick: () => { appsFilter = key; renderApps(); if (key === 'open') recentsNow(true); } }, label,
@@ -141,7 +141,7 @@ function renderApps() {
   // a search also looks in the system apps (YouTube itself is one) and lists what it finds apart, folded, with each package shown
   if (q && !sys && !open && appsSys === null) loadAppsSys();
   const have = new Set(appsAll), sysRows = q && !sys && !open && appsSys ? appsSys.map((a) => a.pkg).filter((p) => !have.has(p)
-    && (p.toLowerCase().includes(q) || appName(p).toLowerCase().includes(q)) && fit[2](p, appsInfo.get(p) || {}))
+    && foldHas(q, p, appName(p)) && fit[2](p, appsInfo.get(p) || {}))
     .sort((a, b) => appName(a).localeCompare(appName(b))).map(mk) : [];
   const sysFold = sysRows.length ? [el('details', { className: 'appsoff appssysfound', open: !rows.length },
     el('summary', { textContent: T('apps.system_found', { n: sysRows.length }) }), ...sysRows)] : [];
@@ -287,7 +287,7 @@ async function pollLog() {
 $('#logpause').addEventListener('click', () => { logPaused = !logPaused; setLabel($('#logpause'), logPaused ? '▶' : '⏸', T(logPaused ? 'apps.resume' : 'apps.pause')); });
 $('#logcopy').addEventListener('click', async () => {
   const text = [...$('#logpre').children].map((d) => d.textContent).join('\n');
-  try { await navigator.clipboard.writeText(text); toast(T('apps.log_copied')); } catch { toast(T('playing.copy_failed')); }
+  toast(T(await clipCopy(text) ? 'apps.log_copied' : 'playing.copy_failed'));
 });
 $('#logopen').addEventListener('click', async () => { if (await api('/api/app/launch', { pkg: logPkg })) toast(T('apps.what_name', { what: T('apps.open'), name: appName(logPkg) })); });
 $('#logclose').addEventListener('click', () => $('#logdlg').close());
@@ -295,7 +295,7 @@ $('#logdlg').addEventListener('close', () => clearTimeout(logTimer));
 
 
 // the search box above the quick-launch grid: tiles whose name does not contain the words are hidden
-function filterQuick() { const q = $('#quickq').value.trim().toLowerCase(); document.querySelectorAll('#quick .tile').forEach((b) => { b.hidden = !!q && !b.textContent.toLowerCase().includes(q); }); }
+function filterQuick() { const q = foldText($('#quickq').value.trim()); document.querySelectorAll('#quick .tile').forEach((b) => { b.hidden = !foldHas(q, b.textContent); }); }
 $('#quickq').addEventListener('input', filterQuick);
 
 // 🤖 "which apps can go?": the TV's app lists and memory as a ready question for an AI (or a knowledgeable friend). Nobody can
@@ -324,9 +324,8 @@ $('#aiapps').addEventListener('click', async (e) => {                // the TV's
 });
 $('#aiclose').addEventListener('click', () => $('#aidlg').close());
 $('#aicopy').addEventListener('click', async () => {
-  const t = $('#aitext'); let ok = false;
-  try { await navigator.clipboard.writeText(t.value); ok = true; } catch {}
-  if (!ok) { t.focus(); t.select(); try { ok = document.execCommand('copy'); } catch {} }   // plain-HTTP pages (the TV's) have no clipboard API
+  const t = $('#aitext'), ok = await clipCopy(t.value);
+  if (!ok) { t.focus(); t.select(); }                                // selected: a long-press copies it (apps.ai_copy_failed says so)
   toast(T(ok ? 'apps.ai_copied' : 'apps.ai_copy_failed'));
 });
 

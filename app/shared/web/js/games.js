@@ -7,7 +7,8 @@ onTvChange(() => { gameNow = null; gameCard(); });
 async function gameCard() {
   const line = $('#gamestate'), soon = $('#gamesoon'), open = $('#gameopen'), inst = $('#gameinst');
   if (!line) return;
-  const r = ADB.state === 'ready' ? await api('/api/games', null, true) : null;
+  const gen = tvGen, r = ADB.state === 'ready' ? await api('/api/games', null, true) : null;
+  if (gen !== tvGen) return;                                          // another TV was picked meanwhile: its own gameCard() draws it
   gameNow = r;
   checkSet('game', r && { installed: !!r.installed, latest: r.latest });
   line.hidden = open.hidden = !(r && r.installed);

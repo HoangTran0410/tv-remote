@@ -6,7 +6,8 @@ onTvChange(() => { chanNow = null; chanCard(); });
 async function chanCard() {
   const line = $('#chanstate'), form = $('#chanf'), inst = $('#chaninst');
   if (!line) return;
-  const r = ADB.state === 'ready' ? await api('/api/channels', null, true) : null;
+  const gen = tvGen, r = ADB.state === 'ready' ? await api('/api/channels', null, true) : null;
+  if (gen !== tvGen) return;                                          // another TV was picked meanwhile: its own chanCard() draws it
   chanNow = r;
   checkSet('chan', r && { installed: !!r.installed, latest: r.latest });
   const man = $('#chanmanage');

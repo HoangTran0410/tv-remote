@@ -58,6 +58,7 @@ async function fleetFollow(j) {
   try { await fleetFollowing(j); } finally { fleetStopShow(null); }
 }
 async function fleetFollowing(j) {
+  let misses = 0;                                                     // a blip in the network is not the end of the job; ten in a row are (files.js trackJob)
   while (j && j.tvs) {
     for (const [host, p] of Object.entries(j.tvs)) {
       const s = fleetRow[host]; if (!s) continue;
@@ -73,7 +74,14 @@ async function fleetFollowing(j) {
       return;
     }
     await sleep(1000);
-    j = await api('/api/fleet/job?id=' + j.id, null, true);
+    const r = await api('/api/fleet/job?id=' + j.id, null, true);
+    if (r && r.tvs) { misses = 0; j = r; continue; }
+    if (++misses < 10) continue;
+    for (const [host, p] of Object.entries(j.tvs)) {                  // what had not ended says so, instead of a percent standing still
+      const s = fleetRow[host]; if (!s || /^(done|error|cancelled)$/.test(p.status)) continue;
+      s.className = 'fleetstep error'; s.textContent = '✗ ' + T('files.connection_lost');
+    }
+    toast(T('files.connection_lost')); return;
   }
 }
 

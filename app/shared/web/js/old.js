@@ -16,8 +16,9 @@ if (window.CanvasRenderingContext2D && !CanvasRenderingContext2D.prototype.round
     this.closePath();
   };
 }
+// Safari 14 to 15.3 pass the syntax test but have no <dialog> showModal: every question (ask(), the menus) would throw.
 (function () {
-  try { new Function('var a = { ...{} }; try { a?.b ?? 0 } catch { }'); return; } catch (e) { }
+  try { new Function('var a = { ...{} }; try { a?.b ?? 0 } catch { }'); if (window.HTMLDialogElement && HTMLDialogElement.prototype.showModal) return; } catch (e) { }
   var vi = /[?&]lang=vi(&|$)/.test(location.search) || (!/[?&]lang=/.test(location.search) && /^vi/i.test(navigator.language || ''));
   var webview = /; wv\)/.test(navigator.userAgent);                // an app's web view: updated as "Android System WebView"
   var store = 'https://play.google.com/store/apps/details?id=com.google.android.webview';
@@ -36,8 +37,8 @@ if (window.CanvasRenderingContext2D && !CanvasRenderingContext2D.prototype.round
     p.textContent = webview
       ? (vi ? 'Trang này cần “Android System WebView” mới hơn. Cập nhật nó trên Play Store, rồi mở lại.'
             : 'This page needs a newer “Android System WebView”. Update it on the Play Store, then open this again.')
-      : (vi ? 'Trình duyệt này quá cũ để mở trang (cần Chrome 80, Safari 14 trở lên). Cập nhật trình duyệt, rồi mở lại.'
-            : 'This browser is too old for this page (it needs Chrome 80, Safari 14 or newer). Update it, then open this again.');
+      : (vi ? 'Trình duyệt này quá cũ để mở trang (cần Chrome 80, Safari 15.4 trở lên). Cập nhật trình duyệt, rồi mở lại.'
+            : 'This browser is too old for this page (it needs Chrome 80, Safari 15.4 or newer). Update it, then open this again.');
     card.appendChild(h);
     card.appendChild(p);
     if (webview) {

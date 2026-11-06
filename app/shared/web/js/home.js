@@ -211,7 +211,8 @@ function homeWidgetDlg(k, c0, title, send) {
 async function homeCard() {
   const line = $('#homestate'), btn = $('#homeopen');
   if (!line) return;
-  const r = ADB.state === 'ready' ? await homeLink.read(false, true) : null;
+  const gen = tvGen, r = ADB.state === 'ready' ? await homeLink.read(false, true) : null;
+  if (gen !== tvGen) return;                                          // the old TV's (dropped by call()): the new TV's card is drawn by its own read
   homeNow = r && r.installed ? r : null;
   checkSet('home', r ? { installed: !!r.installed, home: r.home, latest: r.latest, keysOk: !!(r.config && r.config.keysOk), keyon: !!(r.config && r.config.keyon) } : null);
   line.hidden = btn.hidden = !homeNow;

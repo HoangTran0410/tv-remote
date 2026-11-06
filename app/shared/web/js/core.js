@@ -129,7 +129,12 @@ function timeoutSignal(ms) {
   if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) return AbortSignal.timeout(ms);
   const c = new AbortController(); setTimeout(() => c.abort(), ms); return c.signal;
 }
+// A read of one TV whose answer lands after another TV was picked is dropped (null, quiet): the old TV's apps, cards and
+// Health facts must not overwrite the new one's. What is not about one TV (the list of TVs, Several TVs, a job, the app) is kept.
+let tvGen = 0;                                                       // +1 on each change of TV (refresh): what call() compares
+const TV_FREE = /^\/api\/(tvs|fleet|discover|adb\/discover|job|settings|update|tailscale|log|census|speed)\b/;
 async function call(path, data, quiet, ms) {
+  const gen = tvGen;
   try {
     const r = await fetch(path, { ...(data ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) } : {}), ...(ms ? { signal: timeoutSignal(ms) } : {}) });
     if (r.status === 401 && CORE === 'tv') { refresh(); return null; }   // this browser is no longer paired with the TV
@@ -142,8 +147,9 @@ async function call(path, data, quiet, ms) {
       if (adbWords(r.status, e) !== e) { e = adbWords(r.status, e); setTimeout(refresh, 300); }
       if (!quiet) toast(T('common.error_msg', { msg: friendly(e) })); return null;
     }
-    return await r.json();
-  } catch { if (!quiet) toast(T('core.server_unreachable')); return null; }
+    const j = await r.json();
+    return data || gen === tvGen || TV_FREE.test(path) ? j : null;
+  } catch { if (!quiet && gen === tvGen) toast(T('core.server_unreachable')); return null; }
 }
 
 // A small menu under a button (⋯ on each app): items are [icon, words, fn, class]; null items are left out. A click elsewhere,
@@ -417,7 +423,7 @@ async function refreshRead() {
     else { setTimeout(refresh, 1000); if (s.name) put('#conname', 'textContent', s.name); }
   }
   if (!justPicked && $('#connecting').open) $('#connecting').close();
-  if (s.host !== curHost) { const first = curHost === null; curHost = s.host; if (!first) tvChanged(); }
+  if (s.host !== curHost) { const first = curHost === null; curHost = s.host; if (!first) { tvGen++; tvChanged(); } }
   if (s.volume && Date.now() > volHold) {
     put('#volv', 'textContent', s.volume.level);
     const mute = $('#r-mute');                                        // none when remote.json could not be read
@@ -470,14 +476,36 @@ function kindIntro(key) {
       el('span', { className: 'badge', textContent: kindWhy() })),
     el('ul', {}, ...items.map((t) => el('li', { textContent: t }))));
 }
+// [text] on this device's clipboard: true when it got there. The TV's page is plain http on the LAN, where browsers give no
+// navigator.clipboard: a hidden box is copied from instead, put inside the open modal dialog (outside one it is inert).
+async function clipCopy(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch {}
+  const open = [...document.querySelectorAll('dialog[open]')].pop(), a = el('textarea', { value: text, readOnly: true });
+  (open || document.body).append(a); a.select(); a.setSelectionRange(0, text.length);   // iOS selects only through the range
+  let ok = false; try { ok = document.execCommand('copy'); } catch {}
+  a.remove(); return ok;
+}
+/** Copies [t] and says so: Copied / Could not copy. */
+async function copyText(t) { toast(await clipCopy(t) ? T('health.copied') : T('health.copy_failed')); }
+// A first read that failed (a weak TV, a blip): the placeholder ("Reading from the TV...") becomes why, with ↻ Try again, which
+// puts the placeholder back and reads again. Not twice: a poll that fails again leaves it as it is.
+function failed(box, retry) {
+  if (!box || (box.failMsg && box.contains(box.failMsg))) return;
+  const was = [...box.childNodes];
+  box.failMsg = el('p', { className: 'warnline', textContent: T('core.read_failed') });
+  box.replaceChildren(box.failMsg, el('div', { className: 'actions' }, el('button', { type: 'button', className: 'small', textContent: T('core.read_again'),
+    onclick: () => { box.replaceChildren(...was); retry(); } })));
+}
+// Search boxes find "truyen hinh" in "Truyền hình": accents, đ and case left out on both sides
+const foldText = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').toLowerCase();
+/** [q] (folded already) is in one of [texts], or there is no q. */
+const foldHas = (q, ...texts) => !q || texts.some((t) => foldText(t).includes(q));
 // What the TVs said and the errors shown (WireLog.kt): what a real TV did is what tells a bug apart. Copied, then the site's
 // page where it is pasted and sent on (a GitHub issue or a message): no log in the link, it leaves only when the person sends it.
 async function sendWireLog() {
   let text;
   try { const r = await fetch('/api/wirelog'); if (!r.ok) throw 0; text = await r.text(); } catch { toast(T('core.log_unreadable')); return; }
-  let ok = false;
-  try { await navigator.clipboard.writeText(text); ok = true; } catch {}
-  if (!ok) { const a = el('textarea', { value: text }); document.body.append(a); a.select(); try { ok = document.execCommand('copy'); } catch {} a.remove(); }
+  const ok = await clipCopy(text);
   window.open(LOG_PAGE, '_blank');
   toast(ok ? T('core.log_copied') : T('core.log_copy_failed'));
 }
@@ -642,11 +670,15 @@ $('#pairstart').addEventListener('click', async () => {
   put('#pairf', 'hidden', false); put('#pairerr', 'textContent', T(r.shown === false ? 'core.code_open_setup' : 'core.code_2min'));   // false: the TV could not put it up
   $('#paircode').value = ''; $('#paircode').focus();
 });
+// RemoteService.pairCheck's answers: wrong (tries left), locked (too many wrong: the code is gone), expired; net: no answer at all
+const PAIR_WHY = { wrong: 'core.wrong_code', locked: 'core.code_tries', net: 'core.no_tv' };
 $('#pairf').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const r = await fetch('/api/pair/finish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: $('#paircode').value }) }).then(async (x) => ({ ok: x.ok, ...(await x.json().catch(() => ({}))) })).catch(() => ({}));
+  const r = await fetch('/api/pair/finish', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: $('#paircode').value }) }).then(async (x) => ({ ok: x.ok, ...(await x.json().catch(() => ({}))) })).catch(() => ({ error: 'net' }));
   if (r.ok) { put('#pairerr', 'textContent', ''); refresh(); return; }
-  put('#pairerr', 'textContent', r.error === 'wrong' ? T('core.wrong_code') : T('core.code_expired')); if (r.error !== 'wrong') put('#pairf', 'hidden', true); $('#paircode').select();
+  put('#pairerr', 'textContent', T(PAIR_WHY[r.error] || 'core.code_expired'));
+  if (r.error !== 'wrong' && r.error !== 'net') put('#pairf', 'hidden', true);   // the code is gone: Show the code again; a blip keeps it
+  $('#paircode').select();
 });
 
 // ---------- the TV's page on a phone: it can live on the home screen like an app (manifest.json) ----------

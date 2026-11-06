@@ -6,6 +6,14 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- After picking another TV, a slow answer from the old one no longer replaces the new TV's cards, apps, settings or Health figures.
+- The TV's web page: pairing tells a wrong code, too many wrong codes and no network apart, instead of always "the code has expired".
+- Several TVs: one missed progress check no longer freezes the install lines and hides Stop; after ten it says the connection was lost.
+- Copy buttons work on the TV's plain-http web page too (the kids mode backup codes, the app log, the TV's clipboard).
+- Safari 14 to 15.3 (no dialog support) now get "The browser needs an update" instead of questions that silently do nothing.
+- Health, its RAM apps, the Setup tab's TV settings and the Apps list: a first read that fails says so, with Try again, instead of a spinner or a blank list.
+- Searching Apps, Files, Quick launch and Open apps ignores accents ("truyen hinh" finds "Truyền hình").
+- The page loads only its own language's words before it draws; English and Vietnamese only when a word is missing.
 - TV Setup: a timed scene that finds no ADB at its minute is tried again for 5 minutes instead of being dropped.
 - TV Setup: the sleep timer, bedtime, limits and app locks keep running after an unexpected error in a check.
 - TV Setup: when the system takes the key filter out right after it was turned on, TV Setup looks again a few times instead of giving up until the next reboot.

@@ -174,7 +174,7 @@ async function kidsRaw(body) {
 function showRecovery(codes) {
   return new Promise((done) => {
     const text = codes.map((c) => String(c).replace(/(\d{4})(?=\d)/g, '$1 ')).join('\n');
-    const copy = UI.btn(T('kidsdlg.rec_copy'), async () => { try { await navigator.clipboard.writeText(text); toast(T('kidsdlg.rec_copied')); } catch { toast(T('kidsdlg.rec_copy_fail')); } });
+    const copy = UI.btn(T('kidsdlg.rec_copy'), async () => toast(T(await clipCopy(text) ? 'kidsdlg.rec_copied' : 'kidsdlg.rec_copy_fail')));
     const print = UI.btn(T('kidsdlg.rec_print'), () => {
       const w = window.open('', '_blank'); if (!w) return toast(T('kidsdlg.rec_copy_fail'));
       w.document.title = T('kidsdlg.rec_title'); w.document.body.append(el('pre', { textContent: T('kidsdlg.rec_title') + '\n\n' + text })); w.print();
