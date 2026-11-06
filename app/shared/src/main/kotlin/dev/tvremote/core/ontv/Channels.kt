@@ -162,8 +162,11 @@ object Channels {
     @Throws(IOException::class)
     fun playResult(sh: (String) -> String, url: String): Play {
         require(validStream(url.trim())) { "channels:bad_link" }
-        val out = sh("am start -a android.intent.action.VIEW -d '${streamLink(url.trim())}' $PKG 2>&1")   // encoded: no quote can get in
-        return verdict(out) { sh("pm path $PKG").contains("package:") }
+        val start = "am start -a android.intent.action.VIEW -d '${streamLink(url.trim())}' $PKG 2>&1"   // encoded: no quote can get in
+        // turned off or kept for another profile it also says "unable to resolve" (and `pm path` still finds it): bring it back and
+        // ask once more, so OLD (update it) is only said of an app that is enabled and still does not know the link
+        val (out, _) = AppRestore.run(sh, PKG, start) { !it.contains("Error") && !it.contains("unable to resolve", true) }
+        return verdict(out) { AppRestore.enabled(sh, PKG) }
     }
 
     /** [playResult] as a yes or no: false when TV Channels is not there or too old. */

@@ -45,7 +45,7 @@ http://e""".lineSequence()
         assertEquals(Channels.Play.OK, Channels.verdict("Starting: Intent { }") { throw AssertionError("asked") })
         assertEquals(Channels.Play.OLD, Channels.verdict(no) { true })
         assertEquals(Channels.Play.MISSING, Channels.verdict(no) { false })
-        assertEquals(Channels.Play.OLD, Channels.playResult({ if (it.startsWith("pm ")) "package:/data/app/x/base.apk" else no }, "http://a.b/c.m3u8"))
+        assertEquals(Channels.Play.OLD, Channels.playResult({ if (it.startsWith("pm list")) "package:" + Channels.PKG else if (it.startsWith("pm ")) "package:/data/app/x/base.apk" else no }, "http://a.b/c.m3u8"))
         assertEquals(Channels.Play.MISSING, Channels.playResult({ if (it.startsWith("pm ")) "" else no }, "http://a.b/c.m3u8"))
     }
 

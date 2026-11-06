@@ -70,7 +70,7 @@ object Home {
     @Throws(IOException::class)
     fun openPin(sh: (String) -> String, key: String) {
         if (!PIN_KEY.matches(key)) throw IOException("pin_bad_link")
-        val r = sh("am start -n ${HomeConfig.PKG}/.OpenActivity --es t " + Adb.q(key) + " 2>&1")
+        val (r, _) = AppRestore.run(sh, HomeConfig.PKG, "am start -n ${HomeConfig.PKG}/.OpenActivity --es t " + Adb.q(key) + " 2>&1") { !it.contains("Error") }
         if (r.contains("Error")) throw IOException("home:missing")
     }
     private val PIN_KEY = Regex("^pin:[A-Za-z][\\w.]*/[\\w.:@+=,~-]{1,200}$")

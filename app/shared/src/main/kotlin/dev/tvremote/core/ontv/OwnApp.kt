@@ -52,7 +52,7 @@ class OwnApp(val pkg: String, val apk: String, private val versionKey: String, p
     fun open(sh: (String) -> String, start: String): Boolean {
         fun ok(out: String) = !out.contains("Error") && !out.contains("does not exist", true) && !out.contains("unable to resolve", true)
         if (ok(sh((if (afterInstall.isEmpty()) "" else "$afterInstall; ") + "$start 2>&1"))) return true
-        sh("cmd package install-existing --user current $pkg >/dev/null 2>&1; pm enable --user current $pkg >/dev/null 2>&1")
+        sh(AppRestore.command(pkg))
         return ok(sh("$start 2>&1"))
     }
 
