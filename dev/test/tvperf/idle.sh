@@ -1,6 +1,6 @@
 #!/bin/bash
 # idle.sh <serial> [secs] [keys before...]: TV Home left alone (after the keys): frames drawn and CPU ms per thread
-D=$1; T=${2:-15}; shift 2
+D=$1; T=${2:-130}; shift 2                                   # 130 s: two of the widgets' 60 s ticks fall inside (15 s never saw one)
 A="adb -s $D shell"
 $A input keyevent HOME; sleep 4
 for x in "$@"; do $A input keyevent $x; sleep 0.5; done; sleep 2

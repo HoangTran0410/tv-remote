@@ -4,9 +4,7 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## 0.48.0 - 2026-11-07
-
-Web 0.48.0 · Phone app 0.45.0 · TV app 0.46.0 · TV Home 0.29.1 · TV Channels 0.20.0 · TV Games 0.22.0 · TV Apps 0.6.0
+## Unreleased
 
 - TV Setup: a timed scene that finds no ADB at its minute is tried again for 5 minutes instead of being dropped.
 - TV Setup: the sleep timer, bedtime, limits and app locks keep running after an unexpected error in a check.
@@ -14,9 +12,6 @@ Web 0.48.0 · Phone app 0.45.0 · TV app 0.46.0 · TV Home 0.29.1 · TV Channels
 - TV Setup updates itself on each TV at its own moment within a day of a release (three days on Android 10 and older), so a bad release can be pulled before it reaches most TVs; Update now still installs at once.
 - Voice: when TV Setup Voice cannot load its speech model, the TV's own recognizer listens instead of the mic giving up for 10 minutes.
 - Support: the report sent to support hides link keys (?k=, pass=), tokens and emails in the log; remote support may only read a fixed list of system dumps.
-- The 👁️ Support button (let support look at this TV for 30 minutes) sits in the top bar now, not at the bottom of the Setup tab's TV card.
-- Draw on the TV: a 🎞️ Video button beside Picture and Text opens the Video on TV box (a video or a camera in a frame on the TV).
-- TV Home photos on the TV's web page: holding OK to delete a photo no longer throws when the list was drawn again meanwhile.
 - Home Assistant / Shortcuts in the Computer app: `tv=` (a saved TV's name or address) aims a call at that TV instead of the one selected in the window; an unknown name answers 404 with the list of saved TVs. Without `tv=` nothing changes. TV Setup's hook (one TV) refuses `tv=` rather than act on the wrong TV.
 - Android TV remote link (keys without ADB): a TV that vanished without closing the link (plug pulled, router restarted) is noticed after 20 s of no pings and dialled again, instead of showing "connected" for about 15 minutes.
 - App names refresh in the background again (a comment had swallowed the thread's start): an app installed since the last run no longer shows its package name.
@@ -28,6 +23,31 @@ Web 0.48.0 · Phone app 0.45.0 · TV app 0.46.0 · TV Home 0.29.1 · TV Channels
 - Home screen: a failed pick after a launcher set "through TV Setup" no longer leaves the old launcher's record behind (Settings and the watchdog named a launcher Home no longer opened).
 - Locked apps: Unlock now lifts the lock under the Android user (Google TV profile) it was set for, not only user 0.
 - Words sent by the apps (not the page) pick plural forms per language as the page does: Russian 2-4 / 22-24 and Arabic's forms are right.
+- TV Home: the widget row is no longer rebuilt every minute while nothing on it changed (less idle CPU on weak boxes).
+- Site: the TV-only install (Downloader code) shows in the hero, a short link `tvremote.pages.dev/dl/tv-setup.apk` for TVs without Google Play, a one-line note on Android's warning under the download buttons, the live demo has an English address (`/en/demo/`), and the version pill no longer sits at "NEW" when GitHub's API limit is hit.
+- After picking another TV, a slow answer from the old one no longer replaces the new TV's cards, apps, settings or Health figures.
+- The TV's web page: pairing tells a wrong code, too many wrong codes and no network apart, instead of always "the code has expired".
+- Several TVs: one missed progress check no longer freezes the install lines and hides Stop; after ten it says the connection was lost.
+- Copy buttons work on the TV's plain-http web page too (the kids mode backup codes, the app log, the TV's clipboard).
+- Safari 14 to 15.3 (no dialog support) now get "The browser needs an update" instead of questions that silently do nothing.
+- Health, its RAM apps, the Setup tab's TV settings and the Apps list: a first read that fails says so, with Try again, instead of a spinner or a blank list.
+- Searching Apps, Files, Quick launch and Open apps ignores accents ("truyen hinh" finds "Truyền hình").
+- The page loads only its own language's words before it draws; English and Vietnamese only when a word is missing.
+- Computer app: a scan that finds no TV now offers three buttons: Install on the TV (the Downloader code, then the step-by-step guide), Type the IP and Scan again.
+- The "can't reach the TV" banner has a Send the log button next to its fix, for the cases the self-check cannot solve.
+- Phones: the small buttons in lists and card heads (Open / Wake / Delete on a saved TV, ⋯) get a 44 px touch area; they look the same.
+- Telegram history in Settings: a double-tapped More no longer adds the same rows twice, and rows of the chat (or TV) left meanwhile no longer land in the new list.
+- Setup tab steps: switching TV no longer carries over a pairing started on the old one, nor draws the old TV's steps under the new one.
+- Words: Russian counts use the right form for 2-4 (22-24 …) everywhere; Russian has the scene "Add to TV Home" words; the voice settings say the offline commands come in Vietnamese or English (with both sizes, ru/fr); Vietnamese stream errors and the RAM card in plain words; the guest check-out in Russian no longer reads "evict"; Vietnamese says "app" and, in the Files tab, "tệp" throughout.
+- TV health shows "Blocked apps" when another package (usually the Google TV launcher) has suspended apps ("App isn't available... managed by Google TV"): who blocked which apps, and an Unblock button that asks first, then resets the blocking app (clearing it makes Android lift all its blocks; `pm unsuspend` only lifts the shell's own). One filtered `dumpsys package` read a minute while Health is open; nothing shows or runs more when no app is blocked. The same card sits on top of the Apps tab, and a blocked app's ⋯ menu has Unblock (Google TV Home is protected from Clear data there). Proved on a TCL G10 (Android 12): clearing the Google TV launcher lifted all its blocks. Named "blocked", not "locked": "locked" is the PIN lock.
+
+## 0.48.0 - 2026-11-07
+
+Web 0.48.0 · Phone app 0.45.0 · TV app 0.46.0 · TV Home 0.29.1 · TV Channels 0.20.0 · TV Games 0.22.0 · TV Apps 0.6.0
+
+- The 👁️ Support button (let support look at this TV for 30 minutes) sits in the top bar now, not at the bottom of the Setup tab's TV card.
+- Draw on the TV: a 🎞️ Video button beside Picture and Text opens the Video on TV box (a video or a camera in a frame on the TV).
+- TV Home photos on the TV's web page: holding OK to delete a photo no longer throws when the list was drawn again meanwhile.
 
 - TV health shows "Locked apps" when another package (usually the Google TV launcher) has suspended apps ("App isn't available... managed by Google TV"): who locked which apps, and an Unlock button that asks first, then resets the locking app (clearing it makes Android lift all its locks; `pm unsuspend` only lifts the shell's own). One filtered `dumpsys package` read a minute while Health is open; nothing shows or runs more when no app is locked. The same card sits on top of the Apps tab, and a locked app's ⋯ menu has Unlock (Google TV Home is protected from Clear data there). Proved on a TCL G10 (Android 12): clearing the Google TV launcher lifted all its locks.
 

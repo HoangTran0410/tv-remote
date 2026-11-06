@@ -127,6 +127,43 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
             }
             return Moon(day, full, new, tet, Holidays.next(today))
         }
+
+        /** "3d 17h", "5h 12m", "42m". */
+        fun spanOf(ms: Long): String {
+            val m = ms / 60_000
+            return when {
+                m >= 1440 -> "${m / 1440}d ${m % 1440 / 60}h"
+                m >= 60 -> "${m / 60}h ${m % 60}m"
+                else -> "${m}m"
+            }
+        }
+
+        /** Widgets whose words count the minutes (a countdown, "5 min ago", the headline that turns every 2 min): redrawn each minute. */
+        private val MINUTELY = setOf("timer", "prayer", "news")
+
+        /**
+         * What [show] draws from [f] at [now], as a string ([look]: the settings and the row's size): the same string, the minute's read
+         * leaves the row alone (it was torn down and built again every 60 s, ~480 times in 8 h of a TV left on Home). Each part is the
+         * value as drawn (a percent, the uptime's words); the date and hour always (calendar, lunar, the weekday letters, weather's "as of").
+         */
+        fun drawn(want: List<String>, f: Facts, now: Calendar, look: String): String {
+            val gb = 1024.0 * 1024 * 1024
+            fun pct(p: Pair<Long, Long>) = if (p.second > 0) Math.round(p.first * 100.0 / p.second) else -1L
+            val s = StringBuilder(look).append('|').append(want.joinToString(","))
+            s.append('|').append(now.get(Calendar.YEAR)).append('-').append(now.get(Calendar.DAY_OF_YEAR)).append('-').append(now.get(Calendar.HOUR_OF_DAY))
+            if (want.any { it in MINUTELY }) s.append(':').append(now.get(Calendar.MINUTE))
+            s.append('|').append(pct(f.ram)).append(',').append(Math.round(f.ram.first * 10 / gb)).append(',').append(f.ram.second)
+                .append(',').append(pct(f.disk)).append(',').append(Math.round(f.disk.first / gb)).append(',').append(f.disk.second)
+            s.append('|').append(f.ip).append(f.eth).append(f.rssi).append(f.link).append(f.dns).append(f.adb).append(f.adbPort)
+            s.append('|').append(spanOf(f.up)).append(',').append(f.cpu?.let { Math.round(it * 100) }).append(',').append(f.cores).append(',').append(f.cpuWhy)
+            s.append('|').append(f.usage).append('|').append(f.recent).append('|').append(f.timer).append('|').append(f.icons.keys.sorted())
+            f.wx?.let { w -> s.append("|wx").append(w.at).append(w.place).append(w.temp).append(w.kind).append(w.night).append(w.days.size) }
+            f.air?.let { r -> s.append("|air").append(r.at).append(',').append(r.aqi).append(',').append(r.pm25) }
+            f.market?.let { m -> s.append("|mk").append(m.ratesAt).append(',').append(m.goldAt).append(',').append(m.btcAt).append(',').append(m.fuelAt) }
+            s.append("|nw").append(f.news.size); f.news.firstOrNull()?.let { s.append(it.at).append(it.title) }
+            f.moon?.hol?.let { s.append("|hol").append(it.key).append(it.days) }
+            return s.toString()
+        }
     }
 
     /** (used, total) bytes of RAM from /proc/meminfo, which any app may read; null when it cannot be read. */
@@ -475,15 +512,7 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
         companion object { const val WIDE_DP = 320 }
     }
 
-    /** "3d 17h", "5h 12m", "42m". */
-    internal fun span(ms: Long): String {
-        val m = ms / 60_000
-        return when {
-            m >= 1440 -> "${m / 1440}d ${m % 1440 / 60}h"
-            m >= 60 -> "${m / 60}h ${m % 60}m"
-            else -> "${m}m"
-        }
-    }
+    internal fun span(ms: Long) = spanOf(ms)
 
     /** A widget's "look" when it is "solid" or "none" (glass is how [widget], [pill] and the clock are made; tonal is its own widget). */
     private fun bare(v: View, k: String) {

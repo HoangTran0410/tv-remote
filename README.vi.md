@@ -45,14 +45,14 @@ Mọi thứ đi thẳng từ máy bạn tới TV: không qua đám mây, không 
 |---|---|---|---|
 | Điện thoại Android | **App điện thoại** (*TV Remote*) | [tv-remote.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-remote.apk) | **`2973135`** |
 | iPhone, hoặc trình duyệt bất kỳ | **Web của TV**: cài **App TV** (*TV Setup*) lên TV, mở `http://<IP của TV>:8765` | [tv-setup.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-setup.apk) | **`2397346`** |
-| Mac | **App máy tính** (*TV Remote*, khoảng 20 MB) | [TV-Remote-mac.zip](https://github.com/HoangTran0410/tv-remote/releases/latest/download/TV-Remote-mac.zip) | |
+| Mac | **App máy tính** (*TV Remote*, khoảng 35 MB) | [TV-Remote-mac.zip](https://github.com/HoangTran0410/tv-remote/releases/latest/download/TV-Remote-mac.zip) | |
 | Windows 10 / 11 | **App máy tính** | [TV-Remote-windows-x64.zip](https://github.com/HoangTran0410/tv-remote/releases/latest/download/TV-Remote-windows-x64.zip) | |
 | Linux | **App máy tính** | [x64](https://github.com/HoangTran0410/tv-remote/releases/latest/download/TV-Remote-linux-x64.tar.gz) · [arm64](https://github.com/HoangTran0410/tv-remote/releases/latest/download/TV-Remote-linux-arm64.tar.gz) | |
 | Tùy chọn, trên TV | TV Home · TV Channels · TV Games · TV Apps | [tv-home.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-home.apk) · [tv-channels.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-channels.apk) · [tv-games.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-games.apk) · [tv-apps.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-apps.apk) | **`4356026`** · **`8135635`** · **`2294968`** · **`1082201`** |
 
 Tự cập nhật app điện thoại: [Obtainium](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22dev.tvremote.phone%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FHoangTran0410%2Ftv-remote%22%2C%22author%22%3A%22HoangTran0410%22%2C%22name%22%3A%22TV%20Remote%22%2C%22additionalSettings%22%3A%22%7B%5C%22apkFilterRegEx%5C%22%3A%20%5C%22%5Etv-remote%5C%5C%5C%5C.apk%24%5C%22%2C%20%5C%22releaseDateAsVersion%5C%22%3A%20true%2C%20%5C%22includePrereleases%5C%22%3A%20false%7D%22%7D) (chỉ theo dõi `tv-remote.apk`). TV hay box chạy được, hay không? Gửi một [báo cáo thiết bị](https://github.com/HoangTran0410/tv-remote/issues/new?template=device_report.yml) giúp rất nhiều.
 
-Mã nhập trong app **Downloader** trên TV, luôn trỏ tới bản mới nhất. *tv-voice.apk* (nhận giọng nói ngay trên TV, tiếng Việt, 39 MB) và *tv-voice-en.apk* (tiếng Anh, 47 MB, khi TV Setup ở ngôn ngữ khác) không có mã: TV Setup tự cài khi bạn bật "Nhận giọng nói ngay trên TV" (tab Thiết lập, thẻ Nút remote) và gỡ khi tắt.
+Mã nhập trong app **Downloader** trên TV, luôn trỏ tới bản mới nhất. Không có Downloader: gõ `tvremote.pages.dev/dl/tv-setup.apk` vào trình duyệt TV (tệp nào ở trên cũng được: `/dl/<tên>`). *tv-voice.apk* (nhận giọng nói ngay trên TV, tiếng Việt, 39 MB) và *tv-voice-en.apk* (tiếng Anh, 47 MB, khi TV Setup ở ngôn ngữ khác) không có mã: TV Setup tự cài khi bạn bật "Nhận giọng nói ngay trên TV" (tab Thiết lập, thẻ Nút remote) và gỡ khi tắt.
 
 ## Bắt đầu nhanh
 
