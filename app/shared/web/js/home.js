@@ -241,7 +241,10 @@ async function homeOpen() {
     const n = await homeLink.write(change);
     if (n && n.installed) { r = n; homeNow = n; draw(); }
   };
-  const after = async (n) => { r = n; homeNow = n; draw(); const t = await homeLink.read(true); if (t && t.installed) { keepThumbs(t); r = t; homeNow = t; draw(); } };   // a photo came or went: its small picture
+  // only a whole snapshot replaces what is drawn: an answer without `config` (a failed or partial upload on a weak link) left r with
+  // none and every redraw threw (census 5829f935, 0.44.0, a photo picked)
+  const take = (n) => { if (n && n.config) { r = n; homeNow = n; return true; } return false; };
+  const after = async (n) => { take(n); draw(); const t = await homeLink.read(true); if (t && t.installed) { keepThumbs(t); r = t; homeNow = t; draw(); } };   // a photo came or went: its small picture
   const dropPhoto = async (id) => { const n = await homeLink.drop(id); if (n && n.installed) await after(n); };
   // on the TV itself (TV Setup's page) there is no ✕ to aim at with the D-pad: OK held on a photo asks, then deletes, as on TV Home
   const holdDrop = (b, id) => {
@@ -289,7 +292,7 @@ async function homeOpen() {
   let picFor = null;
   const picFile = el('input', { type: 'file', accept: 'image/*', hidden: true, onchange: async () => {
     const f = picFile.files[0], p = picFor; picFile.value = ''; picFor = null;
-    if (f && p && await homeAppPic(f, p, (n) => { r = n; homeNow = n; })) after(r);
+    if (f && p && await homeAppPic(f, p, take)) after(r);
   } });
   const pickPic = (p) => { picFor = p; picFile.click(); };
   const addPic = el('button', { type: 'button', className: 'small', textContent: T('home.pic_add'), onclick: async () => {
@@ -422,7 +425,7 @@ async function homeOpen() {
     const go = picked.slice(0, Math.max(room, 0));
     for (let i = 0; i < go.length; i++) {                             // the button turns and says which one goes, the TV's push takes seconds
       const back = UI.busy(upload, go.length > 1 ? T('home.sending_n', { i: i + 1, n: go.length }) : T('home.sending_photo'));
-      try { await homePhoto(go[i], (n) => { r = n; homeNow = n; }); } finally { back(); }
+      try { await homePhoto(go[i], take); } finally { back(); }
     }
     if (picked.length) after(r);
   } });
@@ -584,7 +587,7 @@ async function homeOpen() {
   const sugHead = el('h3', { textContent: T('home.wh_suggest') }), sugBox = el('div', { className: 'homegal' }), pageBox = el('div', { className: 'homegal' }), sugNote = el('p', { className: 'note', textContent: T('home.sug_note') });
   sugHead.hidden = sugBox.hidden = sugNote.hidden = pageBox.hidden = true;
   const markSug = (c) => { for (const b of [...pageBox.children, ...sugBox.children]) { const on = c.wall === 'web' && c.wurl === b.dataset.url; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); } };
-  homeGallery(gal, credit, galHead, (n) => { r = n; homeNow = n; draw(); }, { box: sugBox, pages: pageBox, head: sugHead, note: sugNote, pick: (u, fade) => send({ wall: 'web', wurl: u, wmode: 'live', wfade: fade }), mark: () => markSug(r.config) });
+  homeGallery(gal, credit, galHead, (n) => { if (take(n)) draw(); }, { box: sugBox, pages: pageBox, head: sugHead, note: sugNote, pick: (u, fade) => send({ wall: 'web', wurl: u, wmode: 'live', wfade: fade }), mark: () => markSug(r.config) });
 
   // "Add to home screen": a picker of the apps (hidden ones too), their shortcuts and the live widgets; a press puts one on the grid or
   // takes it off and the list stays open. Shortcuts and live widgets are in config "tiles" (the order they have on the grid), an app is

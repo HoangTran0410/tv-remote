@@ -1234,6 +1234,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "5829f9352b7b17a070bc391f|0.44.0": {
+  "at": "2026-11-06T07:18:04+07:00",
+  "n": 1,
+  "note": "home.js: an upload answer without config replaced r; take() keeps only whole snapshots"
+ },
  "58e80942ee619021d01ddea4|0.29.0": {
   "at": "2026-11-05T10:40:19+07:00",
   "n": 1,

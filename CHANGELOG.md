@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home settings page: a picture upload whose answer came back incomplete no longer breaks the page until it is reopened
 - TV Setup, Phone and Computer apps: an ADB key file cut short (power lost while it was written) no longer stops the app at every start; a new key is made and the TV asks to allow it once more
 - Phone app: on an LG, Samsung, Roku or VIDAA TV the Menu key no longer starts the "turn on ADB" help ("did Settings open?" then ADB steps and an ADB connection attempt); no ADB help or Manage screen opens for a TV without ADB.
 - Send the log page: the confirmation scrolls into view after Send.
