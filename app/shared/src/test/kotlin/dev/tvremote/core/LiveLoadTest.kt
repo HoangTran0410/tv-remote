@@ -36,11 +36,8 @@ class LiveLoadTest {
     @Test fun memoryInBytes() {
         val m = LiveLoad.mem("MemTotal:         997308 kB\nMemFree:          117244 kB\nMemAvailable:     163336 kB\nSwapTotal:        747976 kB\nSwapFree:         159780 kB\n")
         assertEquals(997308L * 1024, m.getLong("total")); assertEquals(163336L * 1024, m.getLong("avail")); assertEquals(159780L * 1024, m.getLong("swap_free"))
-        assertFalse(m.has("cache"))                                       // an old reading without the cache lines: the page falls back to avail
-        val e = LiveLoad.mem("MemTotal:         997308 kB\nMemFree:          173236 kB\nMemAvailable:     178004 kB\nBuffers:            1456 kB\n" +
-            "Cached:           183120 kB\nSReclaimable:      44104 kB\n")   // the emulator's: avail - free said 5 MB of cache
-        assertEquals((183120L + 1456 + 44104) * 1024, e.getLong("cache"))
-        assertEquals((997308L - 173236 - 183120 - 1456 - 44104) * 1024, e.getLong("used"))
+        assertEquals(117244L * 1024, m.getLong("free"))
+        assertFalse(m.has("used"))                                        // the page's split: total - avail, avail - free, free
     }
 
     @Test fun clocksOnlyWhenTheyMeanSomething() {

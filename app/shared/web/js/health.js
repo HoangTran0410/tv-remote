@@ -450,8 +450,8 @@ function liveChart(series, fmt, max0) {
   return el('div', { className: 'lchart' }, head, box, el('div', { className: 'sl-axis' }, el('span', { textContent: T('health.secs_ago', { n: 60 }) }), el('span', { textContent: T('health.now_word') })));
 }
 const rate = (v) => fmtSize(v || 0) + '/s';
-// RAM in use as free(1) says it: total less free and the cache (LiveLoad.mem); a reading without the cache lines, Android's own figure
-const memUsed = (m) => m.used ?? (m.total || 0) - (m.avail || 0);
+// RAM in use: total - MemAvailable, the figure the full-memory notice and auto free RAM go by (LiveLoad.mem)
+const memUsed = (m) => (m.total || 0) - (m.avail || 0);
 // a bar split in parts [[share, cls, words]], then its legend
 function split(parts) {
   const bar = el('div', { className: 'sbar' }, ...parts.filter((p) => p[0] > 0).map(([v, cls]) => { const i = el('i', { className: cls }); i.style.width = v + '%'; return i; }));
@@ -485,7 +485,7 @@ function drawLive(r) {
       cores.length ? el('div', { className: 'cores' }, ...cores) : null,
       el('div', { className: 'kv' }, ...kv([mhz.length ? [T('health.clock'), (lo === hi ? ghz(hi) : ghz(lo) + '–' + ghz(hi)) + ' GHz'] : null, hfull && hfull.gpu != null ? ['GPU', hfull.gpu + '%'] : null, hfull ? ['Chip', hfull.chip] : null])));
   } else if (hsub === 'ram') {
-    const free = m.free || 0, used = memUsed(m), cache = m.cache ?? Math.max(0, (m.avail || 0) - free), pc = (v) => m.total ? v * 100 / m.total : 0;
+    const free = m.free || 0, used = memUsed(m), cache = Math.max(0, (m.avail || 0) - free), pc = (v) => m.total ? v * 100 / m.total : 0;
     $('#hram').replaceChildren(big(memPct == null ? null : Math.round(memPct), '%', m.total ? fmtSize(used) + ' / ' + fmtSize(m.total) : ''),
       ...split([[pc(used), 'p-a', T('health.ram_in_use') + ' ' + fmtSize(used)], [pc(cache), 'p-b', T('health.ram_cache') + ' ' + fmtSize(cache)], [pc(free), 'p-f', T('health.ram_free') + ' ' + fmtSize(free)]]),
       liveChart([{ k: 'mem', cls: 'lc-a', label: 'RAM' }], (v) => Math.round(v) + '%', 100),
