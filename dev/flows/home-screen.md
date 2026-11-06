@@ -82,6 +82,13 @@ launcher is picked, Optimize's Undo (`app/shared/src/main/kotlin/dev/tvremote/co
 A Chromecast or ZTE sent to the key way by 0.32.1 or older has no record: `LauncherSwap.dropKey` tells them by the TV itself
 (`aChromecastSentByAnOlderVersionWithNoRecordStillLetsHomePass`). A launcher uninstalled while it has the key: `HomeKey.pkg` finds no
 home activity and Home passes to the TV's own.
+No record: the TV's own launchers that are off are read with `Pkg.list` (`pm list packages -d`); a read the TV did not answer (the
+package service stalled: "Failure calling service", an empty reply) is asked once more after 2 s, then the rollback throws "rollback not
+done" and turns nothing on from a guess (the record is kept; the watchdog or the person tries again) (`PkgAskTest`).
+Every `pm enable` / `disable-user` / `list` here and in Optimize carries `TvUser.USER` (the user in front, `am get-current-user`, 0 on
+Android 7 and older): on a Google TV with a profile switched in, user 0 alone was changed and read back (measured, dev/decisions/tv-setup.md
+"Profiles"). Optimize's plan refuses (`optimize.cant_check_apps`) when the Settings / input handlers cannot be listed (`Activities`, the
+`dumpsys package` resolver table on Android 8 and older), so nothing the TV needs is offered for turning off.
 
 ## "What does Home open?": `LauncherSwap.homeOpens`
 

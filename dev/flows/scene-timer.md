@@ -39,6 +39,7 @@ the scene's next time after it (`Scenes.nextAt`, in the TV's time zone of that m
 | 12 | Fire TV (local ADB blocked) or no ADB ever | row 3 each time: tried for 5 min, then "no ADB" | |
 | 13 | TV Setup older than `SetupNeed` "scenetime" | the client's save is refused with the update question; nothing timed on the TV | |
 | 14 | no timed scene | `SceneTimer.any` false: Guard does not run for it, nothing is read | |
+| 15 | an "open app" step: the app turned off, or Android 6 and older (no `cmd package resolve-activity`) | `Scenes.launch`: resolve its TV / phone screen; else `am start -p` by category; still nothing: `AppRestore` brings it back for the user in front and tries once more; then "no launcher screen" | |
 
 ## Checking it
 

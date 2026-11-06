@@ -47,3 +47,8 @@ is left out, and so is the app under the bar (TV Setup passes it as `front`: pic
 
 9 and 14 take the same path (a see-through activity of TV Home started by TV Setup); on 14 it needs the appop above, which every ADB
 link sets. Without TV Setup nothing starts it, so there is no bar and Home is the system's.
+
+## Other keys (not Home)
+
+A key given "Voice command" (target `do:voice`, `KeyFix.VOICE`, `SetupNeed` "voicekey") opens TV Setup's `MicActivity` from the key
+filter, the same way the bar is started; the key is taken only when a voice recognizer is on the TV. Home is never such a key.

@@ -9,6 +9,8 @@ Read [README.md](README.md) first: change the row a fault belongs to, and this f
 
 **Tests:** `app/tvsetup/src/test/kotlin/dev/tvremote/setup/MicVoiceTest.kt`, `app/tvsetup/src/test/kotlin/dev/tvremote/setup/home/HomeControlTest.kt`, `app/tvvoice/src/test/kotlin/dev/tvremote/setup/voice/VoiceProtocolTest.kt`; the numbers: `dev/test/voice_wer.py`.
 
+Turning Google's own listener off or back on (`MicVoice`) acts on the user in front (`TvUser`, Google TV profiles; dev/decisions/tv-setup.md "Profiles").
+
 ## The goal, for the person
 
 Press the remote's mic button, say a command, the TV does it: with Google's recognizer where the TV has one (it understands any
