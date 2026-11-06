@@ -6,6 +6,12 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Computer app: a scan that finds no TV now offers three buttons: Install on the TV (the Downloader code, then the step-by-step guide), Type the IP and Scan again.
+- The "can't reach the TV" banner has a Send the log button next to its fix, for the cases the self-check cannot solve.
+- Phones: the small buttons in lists and card heads (Open / Wake / Delete on a saved TV, ⋯) get a 44 px touch area; they look the same.
+- Telegram history in Settings: a double-tapped More no longer adds the same rows twice, and rows of the chat (or TV) left meanwhile no longer land in the new list.
+- Setup tab steps: switching TV no longer carries over a pairing started on the old one, nor draws the old TV's steps under the new one.
+- Words: Russian counts use the right form for 2-4 (22-24 …) everywhere; Russian has the scene "Add to TV Home" words; the voice settings say the offline commands come in Vietnamese or English (with both sizes, ru/fr); Vietnamese stream errors and the RAM card in plain words; the guest check-out in Russian no longer reads "evict"; Vietnamese says "app" and, in the Files tab, "tệp" throughout.
 - The 👁️ Support button (let support look at this TV for 30 minutes) sits in the top bar now, not at the bottom of the Setup tab's TV card.
 - Draw on the TV: a 🎞️ Video button beside Picture and Text opens the Video on TV box (a video or a camera in a frame on the TV).
 - TV Home photos on the TV's web page: holding OK to delete a photo no longer throws when the list was drawn again meanwhile.

@@ -328,7 +328,7 @@ function scanRow(f) {
 // The scan runs on the computer; asked again every 400 ms, each TV shows up as soon as it answers instead of after the
 // whole network (and a second pass when the first finds nothing)
 $('#scan').addEventListener('click', async () => {
-  const list = $('#scanlist'), done = UI.busy($('#scan'), T('setup.scanning')); list.replaceChildren(); put('#scaninfo', 'textContent', '');
+  const list = $('#scanlist'), done = UI.busy($('#scan'), T('setup.scanning')); list.replaceChildren(); put('#scaninfo', 'textContent', ''); put('#scannone', 'hidden', true);
   let r = await api('/api/discover?new=1');
   while (r) {
     for (const f of r.found) {                                        // one row per TV: a saved one is known by both its addresses
@@ -342,7 +342,14 @@ $('#scan').addEventListener('click', async () => {
   }
   done(); if (!r) return;
   put('#scaninfo', 'textContent', r.found.length ? '' : T('setup.no_tv_found'));
+  put('#scannone', 'hidden', !!r.found.length);
 });
+// Nothing found (often: TV Setup not on the TV yet, or the TV off): install it by its Downloader code, type the address, or scan again
+$('#scaninstall').addEventListener('click', async () => {
+  if (await ask(await dlTip(), { ok: T('setup.none_guide') })) window.open('https://tvremote.pages.dev' + (LANG === 'vi' ? '' : '/en') + '/guide#install-tv', '_blank');
+});
+$('#scanip').addEventListener('click', () => $('#ipin').focus());
+$('#scanagain').addEventListener('click', () => $('#scan').click());
 $('#ipf').addEventListener('submit', (e) => { e.preventDefault(); const ip = $('#ipin').value.trim(); if (ip) selectTv(ip); });
 $('#setuprefresh').addEventListener('click', () => loadSteps());
 
@@ -574,15 +581,19 @@ $('#tsgo').addEventListener('click', tailscaleGo);
 $('#tsclose').addEventListener('click', () => $('#ts').close());
 $('#ts').addEventListener('close', () => { tsGen++; });
 
-let stepsBusy = false, pairing = false;
+let stepsBusy = false, pairing = false, stepsTv = 0;                 // stepsTv: which TV a load in flight was for
+// another TV: its steps start over (pairing begun on the old one is not this one's; an old answer in flight is dropped)
+onTvChange(() => { stepsTv++; stepsBusy = false; pairing = false; stepsSig = ''; });
 function step(n, state, title, text, ...actions) {
   return el('div', { className: 'step ' + state }, el('div', { className: 'mark', textContent: state === 'ok' ? '✓' : n }),
     el('div', { className: 'body' }, el('b', { textContent: title }), el('p', { textContent: text }), actions.filter(Boolean).length ? el('div', { className: 'actions' }, ...actions.filter(Boolean)) : null));
 }
 const act = (label, fn, cls = '', name = '') => el('button', { className: 'small ' + cls, textContent: label, title: name, onclick: async (e) => { const b = e.currentTarget; b.disabled = true; try { await fn(); } finally { b.disabled = false; } } });
 async function loadSteps() {
-  if (stepsBusy || CORE !== 'pc') return; stepsBusy = true;
-  const s = await api('/api/setup/status', null, true); stepsBusy = false;
+  if (stepsBusy || CORE !== 'pc') return; stepsBusy = true; const tv = stepsTv;
+  const s = await api('/api/setup/status', null, true);
+  if (tv !== stepsTv) return;                                         // the TV changed meanwhile: the new TV's own load draws (and owns stepsBusy)
+  stepsBusy = false;
   if (!s) return;
   put($('#setuphost'), 'textContent', s.host ? (s.model ? s.model + ' · ' : '') + s.host : T('setup.no_tv_chosen'));
   if (!s.host) { $('#steps').replaceChildren(el('p', { className: 'muted', textContent: T('setup.pick_a_tv') })); return; }

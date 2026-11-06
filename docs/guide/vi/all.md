@@ -390,7 +390,7 @@ Giữ mũi tên, âm lượng hay kênh thì nó lặp lại. Khi đang **xem h�
 
 Tab **📱 Ứng dụng** liệt kê app đã cài. Gõ tên vào ô tìm, hoặc lọc bằng chip: Tất cả, Đang mở, 🚀 Tự chạy, 🔒 Cần giữ, ⏸ Đã tắt.
 
-- **🔒 App bị khóa**: nếu có app bị khóa, thẻ này hiện đầu tab với nút **Mở khóa**.
+- **🔒 App bị chặn**: nếu có app bị app khác chặn, thẻ này hiện đầu tab với nút **Bỏ chặn** (khác với [khóa app bằng PIN](#lock)).
 - **Đang mở**: app gần đây, mới nhất trước, kèm RAM.
 - **Chuyển** quay lại app, **Đóng** đóng app.
 - **Đóng nhiều app**: tích các app cần đóng (app TV cần giữ, và app đang bật trợ năng như app đổi phím, không đóng được).
@@ -876,7 +876,7 @@ Mạng chậm? Bấm **⚡ Đo tốc độ** ở **Hiện tại → 📶 Mạng*
 
 TV đầy bộ nhớ? Ở **Hiện tại → 🧠 RAM**, bấm **🧹 Dọn RAM**, hoặc **⏹ Dừng** một app trong danh sách.
 
-App nào cũng báo “Ứng dụng không sử dụng được”? Có app (thường là Google TV) đã khóa chúng. Xem thẻ **🔒 App bị khóa** ở **Hiện tại → TV này**, bấm **Mở khóa**.
+App nào cũng báo “Ứng dụng không sử dụng được”? Có app (thường là Google TV) đã chặn chúng. Xem thẻ **🔒 App bị chặn** ở **Hiện tại → TV này**, bấm **Bỏ chặn**.
 
 ## Kiểm tra quyền riêng tư
 
@@ -1392,5 +1392,5 @@ Màn hình Quản lý trong app điện thoại dùng trình duyệt của Andro
 | Fire TV: TV Setup báo không nối được ADB dù đã bật | Amazon chặn app trên TV dùng ADB của chính TV; dùng app điện thoại hoặc máy tính. |
 | Fire TV: nút Home / Alexa chết, các phím khác vẫn chạy | Cài đặt ban đầu chưa xong: app tự báo ở đầu trang, bấm **Sửa** (đặt `user_setup_complete` = 1). |
 | Cài đặt của TV đứng ở trang Chuyển văn bản thành giọng nói | Chạy lệnh `pm clear com.google.android.tts` (mục Terminal, hoặc `adb shell`); giọng đọc tải lại ở lần dùng đầu. |
-| Mọi app báo “Ứng dụng không sử dụng được… do Google TV quản lý” | Tab **Ứng dụng** có thẻ **🔒 App bị khóa**: bấm **Mở khóa** (màn hình chính Google TV được đặt lại). Bị lại đúng giờ cũ thì tắt giới hạn giờ trong hồ sơ. |
+| Mọi app báo “Ứng dụng không sử dụng được… do Google TV quản lý” | Tab **Ứng dụng** có thẻ **🔒 App bị chặn**: bấm **Bỏ chặn** (màn hình chính Google TV được đặt lại). Bị lại đúng giờ cũ thì tắt giới hạn giờ trong hồ sơ. |
 | Trang web của TV không hiện mã ghép | TV không có ADB nên chưa tự hiện được: mở app TV Setup trên TV, mã ở màn hình chính (2 phút). Xem [Mở trang web của TV](#web-iphone). |

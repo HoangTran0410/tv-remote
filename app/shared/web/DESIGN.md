@@ -261,7 +261,7 @@ hue; in `button`, `label.filebtn`, `a.linkbtn`, `#toast` and the state marks (`I
 - Three chip-row looks: `.places` (pills, `--chip`), `.fchips` (same + `margin-top:4px`), `.seg` (segmented, `min-height:34px`,
   `.seg.mini` 28px, `css/remote.css:54-69`). Tabs are `42px` (`css/page.css:102`).
 - Undefined vars and `var(--x, #hex)` fallbacks are gone and `tests/css.test.js` keeps them out (a hover tint is `color-mix(in srgb, var(--ink) 8%, transparent)`; JS-set names are in its allow-list). Still open: raw hex `color:` on the dark surfaces (`.term`, `.screenbox`, `.qkbadge`, `.wallx`).
-- Small controls keep their drawn size and get a 44px hit area from an `::after { inset:-8px }` (`.wallx` -12px, `.chstar`); `.seg.mini` buttons are `--ctl-sm`.
+- Small controls keep their drawn size and get a 44px hit area from an `::after { inset:-8px }` (`.wallx` -12px, `.chstar`); `.seg.mini` buttons are `--ctl-sm`. On a finger (`pointer:coarse`) every `.small` / `.iconbtn` gets one too (`css/kit.css`, at the end).
 - Radii are raw px everywhere but cards: 10px x19, 12px x17, 8px x10, 6/9/5/16/7px; only `--radius` is a token.
 - Font sizes off the scale: 12.5px, 13.5px, 15px, 17px in dialogs and the about box.
 - `.danger` is red text on the page but a red fill inside `dialog.ask` (`css/page.css:200`).

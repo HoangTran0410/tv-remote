@@ -390,7 +390,7 @@ Hold an arrow, volume or channel and it repeats. While **watching the TV picture
 
 The **📱 Apps** tab lists installed apps. Type in the search box or filter with the chips: All, Open now, 🚀 Autostart, 🔒 Must keep, ⏸ Turned off.
 
-- **🔒 Locked apps**: if an app is locked, this card shows on top of the tab with an **Unlock** button.
+- **🔒 Blocked apps**: if another app blocked some apps, this card shows on top of the tab with an **Unblock** button (not the same as [locking apps with a PIN](#lock)).
 - **Open now**: recent apps, newest first, with their memory.
 - **Switch** goes back to an app, **Close** closes it.
 - **Close in bulk**: tick the apps to close (ones the TV needs, and apps with an accessibility service on such as a key mapper, can't be).
@@ -876,7 +876,7 @@ Slow network? Tap **⚡ Speed test** in **Now → 📶 Network**: the TV measure
 
 TV low on memory? In **Now → 🧠 RAM**, tap **🧹 Free up RAM**, or **⏹ Stop** an app in the list.
 
-Every app says “App isn't available… managed by Google TV”? Another app (usually Google TV) locked them. **Now → This TV** shows a **🔒 Locked apps** card with who locked which. Tap **Unlock**: it resets the locking app.
+Every app says “App isn't available… managed by Google TV”? Another app (usually Google TV) blocked them. **Now → This TV** shows a **🔒 Blocked apps** card with who blocked which. Tap **Unblock**: it resets the blocking app.
 
 ## Privacy check
 
@@ -1392,5 +1392,5 @@ The phone app's Manage screen uses Android's own browser (WebView). If it is too
 | Fire TV: TV Setup cannot reach ADB though it is on | Amazon blocks an app on the TV from using its own ADB; use the phone or computer app. |
 | Fire TV: Home / Alexa buttons dead, other keys work | First setup never finished: the app says so at the top, press **Fix** (sets `user_setup_complete` to 1). |
 | TV Settings freezes on the text-to-speech page | Run `pm clear com.google.android.tts` (the Terminal, or `adb shell`); the voice downloads again on first use. |
-| Every app says “App isn't available… managed by Google TV” | Google TV locked them. The **Apps** (or **Health**) tab shows **🔒 Locked apps**: press **Unlock** (resets the Google TV home screen). Locked again at the same hour? Turn off the time limit in the profile. |
+| Every app says “App isn't available… managed by Google TV” | Google TV blocked them. The **Apps** (or **Health**) tab shows **🔒 Blocked apps**: press **Unblock** (resets the Google TV home screen). Blocked again at the same hour? Turn off the time limit in the profile. |
 | The TV's page shows no pairing code | A TV with no ADB cannot show it by itself: open TV Setup on the TV, the code is on its main screen (2 minutes). See [Open the TV's web page](#web-iphone). |

@@ -18,4 +18,4 @@ Slow network? Tap **⚡ Speed test** in **Now → 📶 Network**: the TV measure
 
 TV low on memory? In **Now → 🧠 RAM**, tap **🧹 Free up RAM**, or **⏹ Stop** an app in the list.
 
-Every app says “App isn't available… managed by Google TV”? Another app (usually Google TV) locked them. **Now → This TV** shows a **🔒 Locked apps** card with who locked which. Tap **Unlock**: it resets the locking app.
+Every app says “App isn't available… managed by Google TV”? Another app (usually Google TV) blocked them. **Now → This TV** shows a **🔒 Blocked apps** card with who blocked which. Tap **Unblock**: it resets the blocking app.

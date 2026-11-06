@@ -18,4 +18,4 @@ Mạng chậm? Bấm **⚡ Đo tốc độ** ở **Hiện tại → 📶 Mạng*
 
 TV đầy bộ nhớ? Ở **Hiện tại → 🧠 RAM**, bấm **🧹 Dọn RAM**, hoặc **⏹ Dừng** một app trong danh sách.
 
-App nào cũng báo “Ứng dụng không sử dụng được”? Có app (thường là Google TV) đã khóa chúng. Xem thẻ **🔒 App bị khóa** ở **Hiện tại → TV này**, bấm **Mở khóa**.
+App nào cũng báo “Ứng dụng không sử dụng được”? Có app (thường là Google TV) đã chặn chúng. Xem thẻ **🔒 App bị chặn** ở **Hiện tại → TV này**, bấm **Bỏ chặn**.
