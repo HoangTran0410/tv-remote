@@ -40,4 +40,26 @@ object UpdatePlan {
 
     /** When an app had to wait (on screen, used lately), the apps step is tried again after this, on the cached release, without asking GitHub again. */
     const val RETRY = 20 * 60_000L
+
+    /** TV Setup's own automatic installs are spread over this long after a release, one fixed spot per TV ([soak]). */
+    const val SPREAD = 24 * 3600_000L
+
+    /** Added on Android 10 and older, where a TV Setup that fails is not reliably put back (no `pm rollback-app` before 10, flaky on 10). */
+    const val NO_ROLLBACK = 48 * 3600_000L
+
+    /**
+     * How long after a release this TV waits before TV Setup installs it by itself: a spot in [SPREAD] from [id] (the census id,
+     * random per install), plus [NO_ROLLBACK] on [sdk] 29 and older. A release that breaks on some boxes then reaches only the
+     * early few before it can be pulled. "Update now" on the page or the TV does not wait (it is not this path).
+     */
+    fun soak(id: String, sdk: Int): Long = (id.hashCode().toLong() % SPREAD + SPREAD) % SPREAD + if (sdk <= 29) NO_ROLLBACK else 0L   // not Math.floorMod: Android 7+
+
+    /**
+     * ms until TV Setup may install a release by itself; 0 = now. [published]: GitHub's published_at (0 unknown: then [firstSeen],
+     * when this TV first saw that version). A clock behind the release only waits longer, never installs early.
+     */
+    fun soakLeft(published: Long, firstSeen: Long, now: Long, id: String, sdk: Int): Long {
+        val from = if (published > 0) published else firstSeen
+        return (from + soak(id, sdk) - now).coerceAtLeast(0L)
+    }
 }

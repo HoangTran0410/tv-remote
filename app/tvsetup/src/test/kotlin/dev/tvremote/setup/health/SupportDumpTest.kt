@@ -27,4 +27,23 @@ class SupportDumpTest {
             "timeout 60 getevent -lt -c 40", "timeout 15 getevent -lt", "sendevent /dev/input/event4 1 2 1")
             .forEach { assertFalse(it, SupportDump.allowed(it)) }
     }
+
+    @Test fun dumpsysIsAListOfServicesAndTheirArguments() {                                // S7: a denylist let these through
+        listOf("dumpsys meminfo", "dumpsys meminfo -a dev.tvremote.setup", "dumpsys cpuinfo", "dumpsys window windows", "dumpsys activity top",
+            "dumpsys activity services dev.tvremote.setup", "dumpsys role", "dumpsys accessibility", "dumpsys input", "dumpsys deviceidle", "dumpsys connectivity")
+            .forEach { assertTrue(it, SupportDump.allowed(it)) }
+        listOf("dumpsys battery suspend_input", "dumpsys deviceidle tempwhitelist -d 100 x", "dumpsys deviceidle motion", "dumpsys wifi",
+            "dumpsys usagestats", "dumpsys batterystats", "dumpsys location", "dumpsys media_session", "dumpsys dropbox", "dumpsys window dump-visible-window-views",
+            "dumpsys activity start-in-vsync", "dumpsys input_method set x", "dumpsys package a b", "dumpsys power reset")
+            .forEach { assertFalse(it, SupportDump.allowed(it)) }
+    }
+
+    @Test fun theReportTakesKeysAndEmailsOutButKeepsAddresses() {                           // S2: blank() left these in
+        val out = Support.scrub("GET http://192.168.1.20:8765/?k=s3cret&x=1 by someone@gmail.com\nauth Bearer abc.def\nfe80::1 up")
+        assertFalse(out, out.contains("s3cret"))
+        assertFalse(out, out.contains("someone@gmail.com"))
+        assertFalse(out, out.contains("abc.def"))
+        assertTrue(out, out.contains("192.168.1.20:8765"))                                 // a network fault is found by them
+        assertTrue(out, out.contains("fe80::1"))
+    }
 }

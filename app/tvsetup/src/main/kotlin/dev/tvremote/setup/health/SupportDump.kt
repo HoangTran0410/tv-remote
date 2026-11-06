@@ -17,11 +17,11 @@ object SupportDump {
 
     // one command, no shell syntax (no ; | & > < ` $ quotes or line breaks): the only way to chain or write is ruled out first
     private val SYNTAX = Regex("[;|&><`$\\\\'\"\\n\\r(){}]")
-    // and what may run: commands that print, never set. dumpsys / cmd forms that act are named below.
+    // and what may run: commands that print, never set (dumpsys: [DUMPSYS], its own list)
     private val READ = listOf(
         Regex("getprop( [\\w.-]+)?"),
         Regex("settings (get (global|secure|system) [\\w.-]+|list (global|secure|system))"),
-        Regex("dumpsys( -t \\d{1,3})? (-l|[a-zA-Z][\\w./:-]*)( [\\w./:-]+)*"),   // a service is named: not the whole dump
+        Regex("dumpsys -l"),
         Regex("pm (list (packages|permissions|features|users|libraries)( -[a-zA-Z]+)*( [\\w.-]+)?|path [\\w.]+|dump [\\w.]+)"),
         Regex("appops get [\\w.]+( [\\w_:]+)?"),
         Regex("cmd package (resolve-activity|query-activities|query-services|query-receivers|list packages)( [\\w.:/=-]+)*"),
@@ -33,13 +33,32 @@ object SupportDump {
         Regex("getevent -(?=[lip]*p)[lip]+"),
         Regex("timeout ([1-9]|1\\d|20) getevent -lt? -c \\d{1,3}")
     )
-    private val ACTS = Regex("\\b(set|reset|unplug|enable|disable|force-idle|force-inactive|step|clear|kill|run|put|delete|write|unforce|--reset|start|stop|add|remove)\\b")
+    /**
+     * dumpsys: only these services, each with the arguments it may take (a fixed list, not a list of what is refused: some services
+     * act on words nobody thought of, `battery suspend_input`, `deviceidle tempwhitelist`). What the owner's support has needed: the
+     * box's memory, CPU, heat and power; what is on screen and which apps / services run; packages, the home role, the key filter
+     * (accessibility, input); sound, HDMI inputs and the network link. Left out on purpose, their dumps carry the person's own life:
+     * wifi (saved networks), location, usagestats / batterystats (app use), media_session (what is being watched), notification,
+     * clipboard, account, dropbox (other apps' crash texts).
+     */
+    private const val PKG = "( [\\w.-]+)?"
+    private val DUMPSYS = mapOf(
+        "battery" to "", "cpuinfo" to "", "thermalservice" to "", "power" to "", "display" to "", "deviceidle" to "",
+        "meminfo" to "( -[a-z]+)*$PKG", "gfxinfo" to PKG, "package" to PKG, "role" to "", "accessibility" to "", "input" to "",
+        "input_method" to "", "audio" to "", "tv_input" to "", "hdmi_control" to "", "connectivity" to "", "alarm" to "", "jobscheduler" to "",
+        "activity" to "( (activities|top|recents|processes|broadcasts|intents|providers|lru|oom|starter|containers)|( services| p)$PKG)?",
+        "window" to "( (windows|displays|policy|tokens|input|lastanr|visible-apps))?",
+    )
+    private val DUMP = Regex("dumpsys( -t \\d{1,3})? ([a-z_]+)(.*)")
 
-    // services whose dump carries a person's own words or accounts: never asked from afar
-    private val PRIVATE = Regex("(?<![\\w.-])(clipboard|notification|account|telecom|content|sms|contacts|private)(?![\\w.-])")   // as a word anywhere: after -t N or extra spaces too
+    private fun dumpOk(cmd: String): Boolean {
+        val m = DUMP.matchEntire(cmd) ?: return false
+        val args = DUMPSYS[m.groupValues[2]] ?: return false
+        return Regex(args).matches(m.groupValues[3])
+    }
 
-    fun allowed(cmd: String): Boolean = cmd.length <= 200 && !SYNTAX.containsMatchIn(cmd) && READ.any { it.matches(cmd) } &&
-        !(cmd.startsWith("dumpsys") && (ACTS.containsMatchIn(cmd) || PRIVATE.containsMatchIn(cmd)))
+    fun allowed(cmd: String): Boolean = cmd.length <= 200 && !SYNTAX.containsMatchIn(cmd) &&
+        (READ.any { it.matches(cmd) } || dumpOk(cmd))
 
     /** [cmd] when [allowed], over this app's own ADB link; (status, output). */
     fun shell(cmd: String): Pair<Int, String> {

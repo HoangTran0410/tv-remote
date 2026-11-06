@@ -48,13 +48,16 @@ object Support {
     val left get() = relay?.left ?: -1
 
     /** The report as sent: what AdbReport reads without ADB, this app's state, its log. */
-    fun report(c: Context, version: String): String = Scrub.blank(buildString {
+    fun report(c: Context, version: String): String = scrub(buildString {
         append("TV Setup ").append(version).append(" · adb ").append(RemoteService.adbState()).append(' ').append(RemoteService.adbDetail()).append('\n')
         append(AdbReport.facts(c, RemoteService.adbState(), RemoteService.adbDetail())).append('\n')
         append(SupportRelay.fit(SupportDump.prefs(c), 10_000, tail = false)).append('\n')
         append(SupportRelay.fit(SupportDump.logcat(), 14_000, tail = true)).append('\n')
         append(WireLog.all.report().takeLast(24_000))
     })
+
+    /** The log and free text can hold a link's ?k= / pass=, a Bearer token or an email: all out; the IP addresses stay (network faults). */
+    internal fun scrub(s: String): String = Scrub.text(s, keepIps = true)
 
     /** Sends the report; the code to read out, or null. Blocks: off the main thread. */
     fun send(c: Context): String? = relay(c).send()

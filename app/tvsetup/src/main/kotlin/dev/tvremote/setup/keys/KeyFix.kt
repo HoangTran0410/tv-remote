@@ -254,6 +254,17 @@ object KeyFix {
     }
 
     private var wrote = 0L
+    private var refused = 0                                           // times in a row the system took the service out within the guard
+    const val REARM = 3
+    /** Set by [KeyFixWatch] while it runs: look again in so many ms. */
+    @Volatile internal var later: ((Long) -> Unit)? = null
+
+    /**
+     * Pure: the service was taken out again within 60 s of [wrote] ([tries] times so far): ms until one more look, just past the guard,
+     * or null after [REARM] tries (a policy that always wins: give up, never a fight loop). Without it nothing looked again until the
+     * next package change or boot, and the mic button, hold keys and Home bar stayed dead.
+     */
+    internal fun rearm(t: Long, wrote: Long, tries: Int): Long? = if (tries >= REARM) null else (wrote + 61_000L - t).coerceAtLeast(1_000L)
 
     /** Turn the service on while a dead key needs it and it is wanted, off when not; nothing when this app may not write the settings. */
     fun sync(c: Context) {
@@ -271,9 +282,14 @@ object KeyFix {
                 || HomeKeys.bar(c)                                    // Home over an app shows TV Home's bar ([HomeBar])
                 || HomeKey.pkg(c) != null                             // Home to the launcher picked: asked for on the page, not by the dead-key switch
             if (need && !KeysAddon.current(c)) { KeysAddon.installThen(c) { sync(c) }; return }   // the service is in the add-on: put it on the TV first (it comes back here)
-            if (need == has && !old) return
+            if (need == has && !old) { if (has && System.currentTimeMillis() - wrote >= 60000) refused = 0; return }   // it stayed past the guard: the policy let go
             val t = System.currentTimeMillis()
-            if (need && !old && t - wrote < 60000) return        // the system took it out again just now (a policy): not every few seconds
+            if (need && !old && t - wrote < 60000) {                  // the system took it out again just now (a policy): not every few seconds
+                val wait = rearm(t, wrote, refused)
+                if (wait == null) dev.tvremote.setup.health.AdbReport.once(c, "keyfix_refused", "service taken out ${REARM}x")
+                else { refused++; later?.invoke(wait) }
+                return
+            }
             if (need) wrote = t
             val now = list(was, need)
             Settings.Secure.putString(r, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, now.ifEmpty { null })
@@ -295,6 +311,7 @@ internal class KeyFixWatch(private val c: Context) {
     }
 
     fun start() {
+        KeyFix.later = { ms -> ui.removeCallbacks(again); ui.postDelayed(again, ms) }
         try {
             c.registerReceiver(packages, IntentFilter().apply {
                 addAction(Intent.ACTION_PACKAGE_ADDED); addAction(Intent.ACTION_PACKAGE_REMOVED); addAction(Intent.ACTION_PACKAGE_CHANGED)
@@ -306,6 +323,7 @@ internal class KeyFixWatch(private val c: Context) {
     }
 
     fun stop() {
+        KeyFix.later = null
         try { c.unregisterReceiver(packages) } catch (e: Exception) { }
         try { c.contentResolver.unregisterContentObserver(list) } catch (e: Exception) { }
         ui.removeCallbacks(again)

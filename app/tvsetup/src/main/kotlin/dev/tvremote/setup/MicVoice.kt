@@ -33,6 +33,13 @@ object MicVoice {
 
     fun granted(c: Context): Boolean = c.packageManager.checkPermission(PERM, c.packageName) == PackageManager.PERMISSION_GRANTED
 
+    /**
+     * Pure: does TV Setup Voice listen this time (else the TV's own)? [offline] it already does (a network fault moved there),
+     * [tvFirst] it was picked over Google's, [own] the TV has a recognizer; [noModel] it could not load its model just now: then the
+     * TV's own when there is one, never "no model" for 10 minutes while Google's works (dev/flows/voice.md row 8).
+     */
+    fun useAddon(offline: Boolean, tvFirst: Boolean, own: Boolean, noModel: Boolean): Boolean = if (noModel) !own else offline || tvFirst || !own
+
     /** Is there a recognizer to ask, the TV's or TV Setup Voice? Read when the rules are (never in the key path). */
     fun available(c: Context): Boolean = own(c) || offline(c) != null
 
