@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.49.0 - 2026-11-07
+
+Web 0.49.0 · Phone app 0.46.0 · TV app 0.47.0 · TV Home 0.30.0 · TV Channels 0.21.0 · TV Games 0.23.0 · TV Apps 0.7.0
 
 - Fix: the warnings of the sleep timer, bedtime, app limits and "turn off when idle" opened inside TV Setup's own screen when TV Setup had been left open, so TV Setup (or its PIN screen) came up and hid the warning; they now open over the app being watched (seen on the FPT box).
 - A scene can start by itself on an event, next to "Start at": **Start when** an app opens (e.g. YouTube opens, volume 15) or the TV turns on from standby. TV Setup 0.46.1 and later runs it on the TV; one run per opening, a scene that opens its own app does not start itself again, and with no such scene nothing extra runs.
