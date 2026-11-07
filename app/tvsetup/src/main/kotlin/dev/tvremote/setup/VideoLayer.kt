@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.Point
+import android.graphics.SurfaceTexture
 import android.media.MediaCodec
 import android.media.MediaFormat
 import android.media.MediaPlayer
@@ -18,8 +19,7 @@ import android.util.Base64
 import android.util.Log
 import android.view.Gravity
 import android.view.Surface
-import android.view.SurfaceHolder
-import android.view.SurfaceView
+import android.view.TextureView
 import android.view.WindowManager
 import android.widget.FrameLayout
 import java.io.BufferedInputStream
@@ -42,7 +42,8 @@ import org.json.JSONObject
  * that connection the camera's frames ([int length][byte flags: 1 key][long µs][bytes], Annex B); any other line makes it a
  * control connection, one operation per line, each answered with the state ({"shown","playing","muted","pos","dur","err"}):
  *   {"o":"file","name":"v.mp4","x":5000,"y":5000,"s":3500}  plays files/video/<name>, looped, centred at x,y, s wide (0..10000)
- *   {"o":"move","x":..,"y":..,"s":..} · {"o":"pause"} · {"o":"play"} · {"o":"mute","on":true} · {"o":"close"} · {"o":"q"}
+ *   {"o":"move","x":..,"y":..,"s":..,"rot":90} · {"o":"pause"} · {"o":"play"} · {"o":"mute","on":true} · {"o":"close"} · {"o":"q"}
+ * "rot" (0, 90, 180, 270, with any of the place's ops) turns the picture clockwise: a phone's upright video fills a TV turned on its side.
  */
 internal object VideoLayer {
     private const val TAG = "VideoLayer"
@@ -52,6 +53,7 @@ internal object VideoLayer {
     private var app: Context? = null
 
     private var box: FrameLayout? = null
+    private var view: TextureView? = null                             // a TextureView, not a SurfaceView: only it can be turned (rot)
     private var lp: WindowManager.LayoutParams? = null
     @Volatile private var surface: Surface? = null
     private var player: MediaPlayer? = null
@@ -59,6 +61,7 @@ internal object VideoLayer {
     @Volatile private var live: Socket? = null                       // the camera's stream now shown: a newer one closes it
     private var cx = 5000; private var cy = 5000; private var size = 3500
     private var aspect = 16f / 9f                                     // width / height of the picture
+    private var rot = 0                                               // the picture turned clockwise by this, in degrees
     private var muted = false
     private var err = ""
 
@@ -145,7 +148,11 @@ internal object VideoLayer {
         if (o.has("x")) cx = o.optInt("x").coerceIn(0, 10000)
         if (o.has("y")) cy = o.optInt("y").coerceIn(0, 10000)
         if (o.has("s")) size = o.optInt("s").coerceIn(800, 10000)
+        if (o.has("rot")) rot = Math.floorMod(o.optInt("rot") / 90, 4) * 90
     }
+
+    /** Width / height of the box: the picture's, swapped when it is turned on its side. */
+    private fun shape(): Float = if (rot % 180 == 90) 1f / aspect else aspect
 
     private fun state(): JSONObject {
         val p = player?.takeIf { ready }
@@ -153,7 +160,7 @@ internal object VideoLayer {
         val pos = try { p?.currentPosition ?: 0 } catch (e: Exception) { 0 }
         val dur = try { p?.duration ?: 0 } catch (e: Exception) { 0 }
         return JSONObject().put("shown", box != null).put("playing", playing).put("muted", muted).put("live", live != null)
-            .put("pos", pos).put("dur", dur).put("err", err).put("aspect", aspect.toDouble())
+            .put("pos", pos).put("dur", dur).put("err", err).put("aspect", aspect.toDouble()).put("rot", rot)
             .put("x", cx).put("y", cy).put("s", size)                 // a page opened later draws the box where it is
     }
 
@@ -167,8 +174,8 @@ internal object VideoLayer {
     private fun bounds(): IntArray {
         val sc = screen()
         var w = (sc.x * size / 10000f).toInt()
-        var h = (w / aspect).toInt()
-        if (h > sc.y) { h = sc.y; w = (h * aspect).toInt() }
+        var h = (w / shape()).toInt()
+        if (h > sc.y) { h = sc.y; w = (h * shape()).toInt() }
         val x = (sc.x * cx / 10000f - w / 2f).toInt().coerceIn(0, maxOf(0, sc.x - w))
         val y = (sc.y * cy / 10000f - h / 2f).toInt().coerceIn(0, maxOf(0, sc.y - h))
         return intArrayOf(x, y, w, h)
@@ -179,32 +186,46 @@ internal object VideoLayer {
         val l = lp ?: return
         val r = bounds()
         l.x = r[0]; l.y = r[1]; l.width = r[2]; l.height = r[3]
+        turn(r[2], r[3])
         try { (app!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager).updateViewLayout(b, l) } catch (e: Exception) { }
+    }
+
+    /** The picture inside a [w] x [h] box: laid out unturned (sides swapped when on its side), then turned about its centre. */
+    private fun turn(w: Int, h: Int) {
+        val v = view ?: return
+        val side = rot % 180 == 90
+        v.layoutParams = FrameLayout.LayoutParams(if (side) h else w, if (side) w else h, Gravity.CENTER)
+        v.rotation = rot.toFloat()
     }
 
     /** The window, once; false when this TV gives no window over other apps (the sender was told "overlay": false). */
     private fun show(): Boolean {
         if (box != null) { layout(); return true }
         val c = app ?: return false
-        val v = SurfaceView(c)
-        v.holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceCreated(h: SurfaceHolder) { surface = h.surface; player?.setSurface(h.surface) }
-            override fun surfaceChanged(h: SurfaceHolder, f: Int, w: Int, hh: Int) {}
-            override fun surfaceDestroyed(h: SurfaceHolder) { surface = null; try { player?.setSurface(null) } catch (e: Exception) { } }
-        })
-        val b = FrameLayout(c).apply { setBackgroundColor(Color.BLACK); addView(v, FrameLayout.LayoutParams(-1, -1)) }
+        val v = TextureView(c)
+        v.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
+            override fun onSurfaceTextureAvailable(t: SurfaceTexture, w: Int, h: Int) { val sf = Surface(t); surface = sf; player?.setSurface(sf) }
+            override fun onSurfaceTextureSizeChanged(t: SurfaceTexture, w: Int, h: Int) {}
+            override fun onSurfaceTextureDestroyed(t: SurfaceTexture): Boolean { try { player?.setSurface(null) } catch (e: Exception) { }; surface?.release(); surface = null; return true }
+            override fun onSurfaceTextureUpdated(t: SurfaceTexture) {}
+        }
+        val b = FrameLayout(c).apply { setBackgroundColor(Color.BLACK); addView(v) }
+        view = v
         val type = if (Build.VERSION.SDK_INT >= 26) WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             else @Suppress("DEPRECATION") WindowManager.LayoutParams.TYPE_PHONE
         val r = bounds()
+        turn(r[2], r[3])
         val l = WindowManager.LayoutParams(r[2], r[3], type,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,          // a TextureView draws only in a hardware window
             PixelFormat.OPAQUE).apply { gravity = Gravity.TOP or Gravity.START; x = r[0]; y = r[1] }
         return try {
             (c.getSystemService(Context.WINDOW_SERVICE) as WindowManager).addView(b, l)
             box = b; lp = l
             true
         } catch (e: Exception) {
+            view = null
             Log.w(TAG, "no window over other apps: $e")
             err = "video:nooverlay"
             false
@@ -232,7 +253,8 @@ internal object VideoLayer {
         player?.let { p -> player = null; ready = false; try { p.stop() } catch (e: Exception) { }; try { p.release() } catch (e: Exception) { } }
         live?.let { s -> live = null; try { s.close() } catch (e: Exception) { } }
         val b = box ?: return
-        box = null; lp = null; surface = null
+        box = null; lp = null; view = null
+        surface?.let { surface = null; it.release() }                  // the player and the decoder have let go of it above
         try { (app?.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.removeView(b) } catch (e: Exception) { }
     }
 

@@ -200,6 +200,7 @@ section.card.old:not(.rc):not(.playing) > * + * { margin-top:var(--gap); }   /* 
 .vbox.on { border:2px solid var(--accent); }
 .vbox:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
 .vbox video { width:100%; height:100%; object-fit:contain; pointer-events:none; display:block; }
+.vbox video.turned { position:absolute; left:50%; top:50%; width:100%; height:100%; }
 .vgrip { position:absolute; right:0; bottom:0; width:22px; height:22px; cursor:nwse-resize; background:linear-gradient(135deg, transparent 50%, var(--accent) 50%); }
 p.state.bad { color:var(--bad); }
 .fchips.homewalls { display:grid; grid-template-columns:repeat(auto-fill, minmax(72px, 1fr)); gap:8px; overflow:visible; }   /* a tile per wall: the colour itself, its name under it */

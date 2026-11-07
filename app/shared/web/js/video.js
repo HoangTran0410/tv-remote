@@ -1,16 +1,18 @@
 // 📹 A video or a camera in a box over the TV (Video.kt, VideoLayer in TV Setup): moved and resized while it plays.
 // The stage is the TV's screen in small: the box is dragged, its corner resizes it, the arrows move it; x, y = the box's centre and
 // s = its width, 0..10000 of the screen (VideoLayer keeps it whole on the screen, the page does the same so both look alike).
-const VB = { x: 7300, y: 7000, s: 4000, aspect: 16 / 9 };
+// rot turns the picture clockwise (0, 90, 180, 270): a phone's upright video lies across the TV; the box takes the turned shape.
+const VB = { x: 7300, y: 7000, s: 4000, aspect: 16 / 9, rot: 0 };
 let vbCam = null;                                                     // the camera being sent: { stop() }
 
-const vbPlace = () => ({ x: Math.round(VB.x), y: Math.round(VB.y), s: Math.round(VB.s) });
+const vbPlace = () => ({ x: Math.round(VB.x), y: Math.round(VB.y), s: Math.round(VB.s), rot: VB.rot });   // rot: an older TV Setup ignores it
+const vbShape = () => VB.rot % 180 ? 1 / VB.aspect : VB.aspect;      // width / height of the box
 const vbCanCam = () => !!(window.isSecureContext && window.VideoEncoder && window.VideoFrame && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 
 function vbFit() {                                                    // the box inside the stage (16:9), its height from the video's shape
   VB.s = Math.max(800, Math.min(10000, VB.s));
-  let h = VB.s * (16 / 9) / VB.aspect;
-  if (h > 10000) { h = 10000; VB.s = h * VB.aspect / (16 / 9); }
+  let h = VB.s * (16 / 9) / vbShape();
+  if (h > 10000) { h = 10000; VB.s = h * vbShape() / (16 / 9); }
   VB.x = Math.max(VB.s / 2, Math.min(10000 - VB.s / 2, VB.x));
   VB.y = Math.max(h / 2, Math.min(10000 - h / 2, VB.y));
   return h;
@@ -19,7 +21,7 @@ function vbFit() {                                                    // the box
 async function videoOpen() {
   if (await needAdbSoon() || !await setupFor('video')) return;
   let st = await api('/api/videobox', { o: 'q' }); if (!st) return;
-  if (st.shown) { VB.x = st.x; VB.y = st.y; VB.s = st.s; if (st.aspect > 0) VB.aspect = st.aspect; }
+  if (st.shown) { VB.x = st.x; VB.y = st.y; VB.s = st.s; if (st.aspect > 0) VB.aspect = st.aspect; if (st.rot >= 0) VB.rot = st.rot; }
 
   const prev = el('video', { muted: true, playsInline: true, loop: true, autoplay: true });
   prev.muted = true;
@@ -31,6 +33,10 @@ async function videoOpen() {
   const input = el('input', { type: 'file', accept: 'video/*', hidden: true });
   const pick = el('label', { className: 'linkbtn filebtn' }, input, el('span', { textContent: '🎞️ ' + T('vbox.file') }));
   const cam = el('button', { type: 'button', textContent: '📷 ' + T('vbox.camera'), onclick: () => vbCam ? camStop() : camStart() });
+  const turn = el('button', { type: 'button', textContent: '↷ ' + T('vbox.rotate'), title: T('vbox.rotate_tip'), onclick: async () => {
+    if (st.rot === undefined && !await setupFor('videorot')) return;   // an older TV Setup would leave the picture as it is
+    VB.rot = (VB.rot + 90) % 360; draw(); move();
+  } });
   const flip = el('button', { type: 'button', className: 'small', textContent: '🔄 ' + T('vbox.flip'), hidden: true, onclick: () => { facing = facing === 'user' ? 'environment' : 'user'; camStart(); } });
   const playb = el('button', { type: 'button', onclick: () => op({ o: st.playing ? 'pause' : 'play' }) });
   const muteb = el('button', { type: 'button', onclick: () => op({ o: 'mute', on: !st.muted }) });
@@ -42,6 +48,10 @@ async function videoOpen() {
     const h = vbFit();
     box.style.left = (VB.x - VB.s / 2) / 100 + '%'; box.style.top = (VB.y - h / 2) / 100 + '%';
     box.style.width = VB.s / 100 + '%'; box.style.height = h / 100 + '%';
+    const side = VB.rot % 180 !== 0, k = vbShape();                   // the small copy turned like the TV's: laid out unturned, then turned about its centre
+    prev.style.width = side ? 100 / k + '%' : ''; prev.style.height = side ? 100 * k + '%' : '';
+    prev.style.transform = VB.rot ? 'translate(-50%, -50%) rotate(' + VB.rot + 'deg)' : '';
+    prev.classList.toggle('turned', !!VB.rot);
     box.classList.toggle('on', !!st.shown);
     put(prev, 'hidden', !prev.src && !prev.srcObject);
     const file = st.shown && !st.live;
@@ -56,7 +66,7 @@ async function videoOpen() {
   }
   async function op(o) {
     const r = await api('/api/videobox', o); if (!r) return null;
-    st = r; if (r.aspect > 0) VB.aspect = r.aspect; draw(); return r;
+    st = r; if (r.aspect > 0) VB.aspect = r.aspect; if (r.rot >= 0) VB.rot = r.rot; draw(); return r;
   }
   let moving = 0, sending = false, again = false;                     // the box's place: its newest one, one request at a time
   function move() {
@@ -77,7 +87,7 @@ async function videoOpen() {
     const left = x0 - s0 / 2, top = y0 - h0 / 2, sizing = e.target === grip;
     const onMove = (m) => {
       const dx = (m.clientX - sx) / r.width * 10000, dy = (m.clientY - sy) / r.height * 10000;
-      if (sizing) { VB.s = s0 + Math.max(dx, dy * VB.aspect / (16 / 9)); const h = VB.s * (16 / 9) / VB.aspect; VB.x = left + VB.s / 2; VB.y = top + h / 2; }
+      if (sizing) { VB.s = s0 + Math.max(dx, dy * vbShape() / (16 / 9)); const h = VB.s * (16 / 9) / vbShape(); VB.x = left + VB.s / 2; VB.y = top + h / 2; }
       else { VB.x = x0 + dx; VB.y = y0 + dy; }
       draw(); move();
     };
@@ -126,7 +136,7 @@ async function videoOpen() {
   const d = el('dialog', { className: 'ask menu vboxdlg' }, el('div', { className: 'card' },
     el('div', { className: 'card-head' }, el('h2', { textContent: '📹 ' + T('vbox.title') }),
       el('button', { className: 'small iconbtn', textContent: '✕', title: T('common.close'), 'aria-label': T('common.close'), onclick: () => d.close() })),
-    el('div', { className: 'actions' }, pick, cam, flip),
+    el('div', { className: 'actions' }, pick, cam, flip, turn),
     stage, say,
     el('div', { className: 'actions' }, playb, muteb, stopb),
     el('p', { className: 'note', textContent: T('vbox.note') })));

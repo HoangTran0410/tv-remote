@@ -261,6 +261,21 @@ class HomeInfo : ContentProvider() {
     override fun delete(u: Uri, s: String?, a: Array<out String>?) = 0
     override fun update(u: Uri, v: ContentValues?, s: String?, a: Array<out String>?) = 0
 
+    /**
+     * Video on the TV, a file: the shell writes it in (`content write --uri content://dev.tvremote.setup.home/video/v.mp4 < file`)
+     * where it cannot reach our own folder itself (Android 11's storage on a TCL: Android/data is "Permission denied" to the shell).
+     * The shell alone, write only, the one folder, one plain name; the files before it go (one video at a time, as Video.file's rm).
+     */
+    override fun openFile(u: Uri, mode: String): android.os.ParcelFileDescriptor? {
+        if (Binder.getCallingUid() != android.os.Process.SHELL_UID || !mode.startsWith("w")) throw SecurityException("no")
+        val seg = u.pathSegments
+        val name = seg.getOrNull(1)?.takeIf { seg.size == 2 && seg[0] == "video" && Regex("v\\.[A-Za-z0-9]{1,5}").matches(it) } ?: throw java.io.FileNotFoundException(u.toString())
+        val dir = context!!.getExternalFilesDir("video") ?: throw java.io.FileNotFoundException("no storage")
+        dir.listFiles()?.forEach { it.delete() }
+        return android.os.ParcelFileDescriptor.open(File(dir, name), android.os.ParcelFileDescriptor.MODE_WRITE_ONLY or
+            android.os.ParcelFileDescriptor.MODE_CREATE or android.os.ParcelFileDescriptor.MODE_TRUNCATE)
+    }
+
     internal companion object {
         @Volatile var cpu: String? = null                              // {busy, cores}, the latest measure
         val measuring = java.util.concurrent.atomic.AtomicBoolean()

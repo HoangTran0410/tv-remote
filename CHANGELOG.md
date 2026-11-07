@@ -4,6 +4,11 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- Video on the TV: "Rotate" turns the picture 90°, so an upright phone video fills the TV (TV Setup 0.47.1).
+- Video on the TV: a video file now plays on TVs whose storage shuts the shell out of app folders (a TCL on Android 11 said "Permission denied"); TV Setup 0.47.1 takes the file in itself.
+
 ## 0.49.1 - 2026-11-07
 
 Web 0.49.1 · Phone app 0.46.0 · TV app 0.47.0 · TV Home 0.30.1 · TV Channels 0.21.0 · TV Games 0.23.0 · TV Apps 0.7.0

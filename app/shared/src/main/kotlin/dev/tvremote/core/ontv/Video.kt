@@ -53,7 +53,12 @@ class Video(private val adb: () -> Adb) {
         val cp = if (o.optBoolean("sent")) "mv" else "cp"               // sent just for this: moved, so no copy is left in Download
         val out = adb().shell("mkdir -p ${Adb.q(w.dir)} && rm -f ${Adb.q(w.dir)}/* && $cp ${Adb.q(path)} ${Adb.q(w.dir + "/" + name)} && " +
             "chmod 644 ${Adb.q(w.dir + "/" + name)} && echo ok 2>&1", 60000)  // cp makes it 600, the shell's: TV Setup could not read it
-        if (!out.contains("ok")) throw IOException("video:copy " + out.trim().take(200))
+        if (!out.contains("ok")) {                                     // Android 11 on a TCL: Android/data is shut to the shell; TV Setup writes it itself
+            val w2 = adb().shell("content write --uri content://${RulesClient.SETUP}.home/video/$name < ${Adb.q(path)} 2>&1 && " +
+                (if (cp == "mv") "rm -f ${Adb.q(path)}; " else "") + "echo ok", 60000)
+            if (w2.contains("No files supported") || w2.contains("FileNotFound")) throw SetupNeed.Missing("videocopy", SetupUpdate.installed(adb()))   // a TV Setup before HomeInfo.openFile
+            if (w2.trim() != "ok") throw IOException("video:copy " + out.trim().take(200))
+        }
         return op(JSONObject(o.toString()).put("o", "file").put("name", name))
     }
 
