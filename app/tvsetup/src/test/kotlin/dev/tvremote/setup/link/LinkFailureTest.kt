@@ -60,6 +60,10 @@ class LinkFailureTest {
         assertEquals(true, LinkFailure.opensWireless(false, 30))
         assertEquals(false, LinkFailure.opensWireless(true, 34))   // already on: the words say pair, nothing to open
         assertEquals(false, LinkFailure.opensWireless(false, 29))
+        assertEquals(false, LinkFailure.opensWireless(false, 30, shield = true))   // a SHIELD: its Network debugging switch, not Wireless debugging
+        assertEquals(listOf("tv_main.shield_adb"), LinkFailure.noPortHowto(false, 30, shield = true))
+        assertEquals(true, LinkFailure.shield("NVIDIA", "SHIELD Android TV"))
+        assertEquals(false, LinkFailure.shield("TCL", "Smart TV Pro"))
     }
 
     @Test fun fireTvsOwnAdbBlockedSaysSo() {

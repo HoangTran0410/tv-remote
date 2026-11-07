@@ -381,7 +381,8 @@ function steps(text) {
 const fold = (title, text) => el('details', { className: 'afold' }, el('summary', { textContent: title }), ...steps(text));
 // Turning ADB on by hand. A TV whose maker hides the switch somewhere else (Xiaomi's China models, TCL's) is told from its
 // name and model: its own steps come first, the usual way folded under them; the other makers' ways wait under one fold.
-const BRANDS = { xiaomi: [/xiaomi|\bmi ?tv|mitv|redmi/i, 'setup.xiaomi_title', 'setup.xiaomi_steps'], tcl: [/\btcl\b|ffalcon/i, 'setup.tcl_title', 'setup.tcl_steps'] };
+const BRANDS = { xiaomi: [/xiaomi|\bmi ?tv|mitv|redmi/i, 'setup.xiaomi_title', 'setup.xiaomi_steps'], tcl: [/\btcl\b|ffalcon/i, 'setup.tcl_title', 'setup.tcl_steps'],
+  shield: [/\bshield\b|nvidia/i, 'setup.shield_title', 'setup.shield_steps'] };
 function tvBrand(more = '') {
   const d = STATE.device || {}, words = [STATE.name, d.manufacturer, d.model, more].join(' ');
   return Object.keys(BRANDS).find((b) => BRANDS[b][0].test(words)) || '';

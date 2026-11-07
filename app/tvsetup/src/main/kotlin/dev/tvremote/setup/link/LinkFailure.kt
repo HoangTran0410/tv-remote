@@ -46,7 +46,8 @@ internal object LinkFailure {
      * Chromecast with Google TV (20 of ~70 census reports, 2026-10): it never opens 5555, so "unplug it" led nowhere; the way in is
      * the Wireless debugging switch and a code, once (not "Reconnect": nothing opens 5555 before the pairing). Older Android has no such switch: only the plain note.
      */
-    fun noPortHowto(wifiOn: Boolean, sdk: Int, opening: Boolean = false): List<String> = when {   // opening: the page opens now, its line says where the switch sits
+    fun noPortHowto(wifiOn: Boolean, sdk: Int, opening: Boolean = false, shield: Boolean = false): List<String> = when {   // opening: the page opens now, its line says where the switch sits
+        shield -> listOf("tv_main.shield_adb")                       // its own "Network debugging" switch opens 5555 (census: refused on 3 SHIELDs)
         sdk >= 30 && !wifiOn && opening -> listOf("tv_main.opening_wireless_debugging", "tv_main.adb_wifi_only_pair", "tv_main.adb_wifi_only_again")
         sdk >= 30 && wifiOn -> listOf("tv_main.adb_wifi_only_howto", "tv_main.adb_wifi_only_pair", "tv_main.adb_wifi_only_again")
         sdk >= 30 -> listOf("tv_main.adb_wifi_off_howto", "tv_main.adb_wifi_only_pair", "tv_main.adb_wifi_only_again")   // three lines, as the switch-on case: a fourth pushed the first out of the log box
@@ -66,5 +67,8 @@ internal object LinkFailure {
         Screen("com.android.settings", "", "com.android.settings.development.WirelessDebuggingFragment"))
 
     /** Open the page by itself, once, only where the words say to go there (Wireless debugging off, Android 11+). */
-    fun opensWireless(wifiOn: Boolean, sdk: Int): Boolean = sdk >= 30 && !wifiOn
+    fun opensWireless(wifiOn: Boolean, sdk: Int, shield: Boolean = false): Boolean = !shield && sdk >= 30 && !wifiOn
+
+    /** An NVIDIA SHIELD: 5555 is its "Network debugging" switch in Developer options, beside USB debugging. */
+    fun shield(maker: String, model: String): Boolean = maker.equals("NVIDIA", ignoreCase = true) || model.contains("SHIELD", ignoreCase = true)
 }

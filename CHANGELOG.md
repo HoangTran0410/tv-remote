@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Setup and the page: an NVIDIA SHIELD whose ADB is refused is told to turn on its own “Network debugging” switch (TV Setup opens Developer options), not sent to Wireless debugging.
 - All pages: when one of the page's scripts does not load (a weak TV dropped it), the page loads again once by itself instead of showing a "not defined" error; a second failure says to open the page again.
 - TV web page and Phone app: "Turn ADB on for this TV" shows the steps by hand, not buttons that only the Computer app can carry out (they answered "not found").
 

@@ -826,16 +826,19 @@ class MainActivity : Activity() {
                         log("✗ " + T("tv_main.adb_no_port"))
                         // Android 11+ with no 5555 (a Chromecast with Google TV): only Wireless debugging; a paired phone or computer opens 5555 for TV Setup
                         val wifiOn = try { android.provider.Settings.Global.getInt(contentResolver, "adb_wifi_enabled", 0) == 1 } catch (x: Exception) { false }
-                        val opens = !openedWireless && LinkFailure.opensWireless(wifiOn, android.os.Build.VERSION.SDK_INT)   // once: straight to the switch
-                        LinkFailure.noPortHowto(wifiOn, android.os.Build.VERSION.SDK_INT, opens).forEach { howto(T(it)) }
+                        val shield = LinkFailure.shield(android.os.Build.MANUFACTURER, android.os.Build.MODEL)
+                        val opens = !openedWireless && LinkFailure.opensWireless(wifiOn, android.os.Build.VERSION.SDK_INT, shield)   // once: straight to the switch
+                        LinkFailure.noPortHowto(wifiOn, android.os.Build.VERSION.SDK_INT, opens, shield).forEach { howto(T(it)) }
                         if (opens) { openedWireless = true; wirelessDebugging() }
+                        else if (shield && !openedDev) { openedDev = true; devOptions() }   // the switch is in Developer options
                         tiles[1].enable(true)
                         tiles[1].view.requestFocus()
                         return@ui
                     }
                     log("✗ " + if (refused) T("tv_main.adb_refused") else reason(e))
                     if (android.os.Build.MANUFACTURER.equals("Xiaomi", ignoreCase = true)) howto(T("tv_main.xiaomi_adb"))
-                    else if (android.os.Build.MANUFACTURER.equals("TCL", ignoreCase = true)) howto(T("setup.tcl_hidden_adb"))   // TCL China: a key sequence, no Developer options   // China's PatchWall has no Developer options: ADB is under Account & Security
+                    else if (android.os.Build.MANUFACTURER.equals("TCL", ignoreCase = true)) howto(T("setup.tcl_hidden_adb"))
+                    else if (LinkFailure.shield(android.os.Build.MANUFACTURER, android.os.Build.MODEL)) howto(T("tv_main.shield_adb"))   // TCL China: a key sequence, no Developer options   // China's PatchWall has no Developer options: ADB is under Account & Security
                     howto(T(if (ispBox()) "tv_main.isp_no_taps" else "tv_main.enable_adb_howto"))
                     howto(T("tv_main.then_come_back_here"))
                     tiles[1].enable(true)
