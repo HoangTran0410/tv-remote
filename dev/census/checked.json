@@ -2454,6 +2454,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "a3c50fa342d23dac064f20a9|0.47.0": {
+  "at": "2026-11-08T00:33:01+07:00",
+  "n": 1,
+  "note": "keyfix_refused on X96mini (Android 10): firmware takes the key filter out, same as WS/ADT-3/G-Two/SWTV; 0.47.0 has no cause in the detail yet (a20c4155 adds it), left"
+ },
  "a3e21d228922e0f24f4b55f4|0.34.1": {
   "at": "2026-11-03T23:36:48+07:00",
   "n": 1,
