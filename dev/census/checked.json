@@ -1119,6 +1119,11 @@
   "n": 1,
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
+ "4bc084ff295051d304168552|0.47.0": {
+  "at": "2026-11-07T15:31:07+07:00",
+  "n": 1,
+  "note": "state, not a crash: Polytron/HKC 2K AI Smart TV (Android 11) firmware removes the key filter's accessibility service; KeyFix gives up after 3 tries by design (no fight loop). Device policy, left"
+ },
  "4c9f22508e678c8d48ee59f1|0.34.1": {
   "at": "2026-10-30T09:08:11+07:00",
   "n": 1,
