@@ -1199,6 +1199,11 @@
   "n": 1,
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
+ "511f3a265738aafe0658b20a|0.47.0": {
+  "at": "2026-11-07T23:21:48+07:00",
+  "n": 1,
+  "note": "state, not a crash: Skyworth SWTV-22AE (Android 11) firmware takes the key filter's accessibility service out; KeyFix gives up after 3 tries by design, same as 1246e79d (G-Two Box)"
+ },
  "516d4346df0ee681f688361c|0.33.1": {
   "at": "2026-10-30T09:08:13+07:00",
   "n": 1,
