@@ -2235,9 +2235,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "91a5ee662f21120ec67e968e|0.30.0": {
-  "at": "2026-11-07T15:26:46+07:00",
-  "n": 4,
-  "note": "fixed in 5de6ba6f, released in TV Home 0.30.1 (v0.49.1); new reports are TVs still on 0.30.0"
+  "at": "2026-11-07T19:55:39+07:00",
+  "n": 9,
+  "note": "still TVs on 0.30.0 (AutoUpdate staggers 0.30.1 over 24 h, 72 h on SDK<=29); fixed in 0.30.1"
  },
  "91edf9043da787065b68c466|0.38.0": {
   "at": "2026-11-02T22:17:48+07:00",
