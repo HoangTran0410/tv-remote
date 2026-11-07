@@ -64,6 +64,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "054e1adb82724af476bb5118|0.47.0": {
+  "at": "2026-11-08T05:23:25+07:00",
+  "n": 1,
+  "note": "keyfix_refused on BA003, 8th box on 0.47.0; cause (force-stop / off) reported from the next TV Setup"
+ },
  "05a960b8701c5d39240e4c3e|0.27.0": {
   "at": "2026-10-27T09:37:01+07:00",
   "n": 1,
