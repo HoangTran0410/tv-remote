@@ -99,8 +99,10 @@ function bkDraw() {
   if (bkFile) {
     const sum = backupSummary(bkFile).filter((p) => p.id !== 'apps');
     kids.push(UI.group(T('backup.held', { name: bkFile.from.name || bkFile.from.model || '?', date: bkFile.made.slice(0, 10) })));
-    kids.push(UI.chips(sum.map((p) => ({ label: T(BK_WORDS[p.id]), on: bkPick.has(p.id), disabled: bkBusy,
-      fn: (e) => { bkPick.has(p.id) ? bkPick.delete(p.id) : bkPick.add(p.id); e.currentTarget.classList.toggle('on', bkPick.has(p.id)); } }))));
+    const pick = UI.chips(sum.map((p) => ({ label: T(BK_WORDS[p.id]), on: bkPick.has(p.id), disabled: bkBusy,
+      fn: (e) => { bkPick.has(p.id) ? bkPick.delete(p.id) : bkPick.add(p.id); e.currentTarget.classList.toggle('on', bkPick.has(p.id)); } })));
+    pick.classList.add('wrap');                                       // ticks, not one choice: every part in view (a sideways row hid the third at 1100 px)
+    kids.push(pick);
     kids.push(UI.list(sum.map((p) => {
       const r = bkRes[p.id];
       return UI.item({ name: T(BK_WORDS[p.id]), sub: r ? (r.ok ? '✓ ' : '✗ ') + r.text : T('backup.count', { n: p.n }) });

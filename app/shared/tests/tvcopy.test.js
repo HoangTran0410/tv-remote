@@ -118,3 +118,11 @@ test('a TV without TV Setup or TV Home is said, not skipped silently', () => {
   assert.equal(row(p, 'look').state, 'needs_home'); assert.equal(row(p, 'bedtime').state, 'needs_setup');
   assert.deepEqual(p.steps, []); assert.deepEqual(p.home, {});
 });
+
+test('turn off when idle goes with bedtime, only to a TV Setup that knows it', () => {
+  const a = { ...rulesA, idle_h: 2 };
+  const take = (b) => tvCopyPlan(tvCopyTake(['bedtime'], null, a, 'A'), null, b, []);
+  assert.deepEqual(take({ ...emptyB, idle_h: 0 }).steps.find((s) => s.do === 'idle'), { do: 'idle', hours: 2 });
+  assert.equal(take({ ...emptyB, idle_h: 2 }).steps.find((s) => s.do === 'idle'), undefined);
+  assert.equal(take(emptyB).steps.find((s) => s.do === 'idle'), undefined);   // an older TV Setup: no step that would stop the copy
+});

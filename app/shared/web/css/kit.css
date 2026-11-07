@@ -23,7 +23,7 @@ form.line button { padding:0 16px; }
 .places { display:flex; gap:6px; }
 /* chips stay on one line: more than fits scrolls sideways (the wheel too, js/ui.js), faded at the side that has more */
 :is(.places, .fchips) { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding:6px; margin:-6px; }   /* room for the focus ring (5px on the TV) */
-.fchips.wrap { flex-wrap:wrap; overflow:visible; row-gap:6px; }   /* a setting's few choices: every one in view (a row scrolled sideways hid "Right of the apps" at 1100 px) */
+.places.wrap, .fchips.wrap { flex-wrap:wrap; overflow:visible; row-gap:6px; }   /* a setting's few choices: every one in view (a row scrolled sideways hid "Right of the apps" at 1100 px) */
 :is(.places, .fchips)::-webkit-scrollbar { display:none; }
 :is(.places, .fchips) > * { flex-shrink:0; }
 :is(.places, .fchips).more-r { mask-image:linear-gradient(to right, #000 calc(100% - 36px), transparent); }

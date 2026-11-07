@@ -50,7 +50,7 @@
       if (g.at === 'home' && home) { b.groups.push(g.id); for (const k of HOME_FIELDS[g.id]) if (h[k] !== undefined) b.home[k] = h[k]; }
       if (g.at === 'rules' && rules) {
         b.groups.push(g.id);
-        if (g.id === 'bedtime') { b.rules.bedtime = r.bedtime; b.rules.volume = r.volume; b.rules.ram = r.ram; }
+        if (g.id === 'bedtime') { b.rules.bedtime = r.bedtime; b.rules.volume = r.volume; b.rules.ram = r.ram; if (r.idle_h !== undefined) b.rules.idle_h = r.idle_h; }
         if (g.id === 'limits') b.rules.limits = (r.limits || []).map((l) => ({ pkg: l.pkg, minutes: l.minutes }));
         if (g.id === 'sched') b.rules.sched = (r.sched || []).map((s) => (s.block ? { pkg: s.pkg, block: true } : { pkg: s.pkg, windows: s.windows, max: s.max }));
         if (g.id === 'total') b.rules.total = { min: (r.total || {}).min || 0, days: (r.total || {}).days || [], warn: (r.total || {}).warn };
@@ -119,10 +119,12 @@
       if (id === 'bedtime') {
         const bt = r.bedtime || {}, ranges = (bt.ranges || []).map((x) => ({ from: x.from, to: x.to }));
         const bb = b.bedtime || {};
-        row.total = 3;
+        const idle = r.idle_h !== undefined && b.idle_h !== undefined;   // both TV Setups know "turn off when idle" (0.46.1+); an older one is left as it is
+        row.total = idle ? 4 : 3;
         if (!same({ on: !!bt.on, ranges }, { on: !!bb.on, ranges: (bb.ranges || []).map((x) => ({ from: x.from, to: x.to })) })) { row.changes++; out.steps.push({ do: 'bedtime', on: !!bt.on, ranges }); }
         if (!same(r.volume || [], b.volume || [])) { row.changes++; out.steps.push({ do: 'volume', ranges: r.volume || [] }); }
         if (r.ram && !same({ on: !!r.ram.on, pct: r.ram.pct }, { on: !!(b.ram || {}).on, pct: (b.ram || {}).pct })) { row.changes++; out.steps.push({ do: 'ram', on: !!r.ram.on, pct: r.ram.pct }); }
+        if (idle && (r.idle_h | 0) !== (b.idle_h | 0)) { row.changes++; out.steps.push({ do: 'idle', hours: r.idle_h | 0 }); }
       }
       if (id === 'limits') {
         const a = r.limits || [], bl = new Map((b.limits || []).map((l) => [l.pkg, l.minutes]));
