@@ -2229,6 +2229,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
+ "91a5ee662f21120ec67e968e|0.30.0": {
+  "at": "2026-11-07T14:25:19+07:00",
+  "n": 2,
+  "note": "fixed in 5de6ba6f (onPause while locked)"
+ },
  "91edf9043da787065b68c466|0.38.0": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
