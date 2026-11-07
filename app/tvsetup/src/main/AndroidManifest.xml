@@ -42,9 +42,10 @@
         <activity android:name=".ManageActivity" android:exported="false" android:process=":web" android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize" />
         <!-- PairActivity and WarnActivity: started by this app and by the shell (am start over ADB: DUMP is held by the shell only), never by another app -->
         <activity android:name=".PairActivity" android:exported="true" android:permission="android.permission.DUMP" android:excludeFromRecents="true" android:launchMode="singleTop" />
-        <!-- the sleep timer, bedtime and app limits warn over whatever is on screen; started through the TV's ADB (Guard.kt) -->
+        <!-- the sleep timer, bedtime, app limits and "turn off when idle" warn over whatever is on screen; started through the TV's ADB (Guard.kt).
+             Its own task: in TV Setup's task it brought TV Setup (and its PIN screen) up over the warning instead of the app watched (FPT, 2026-11-07) -->
         <activity android:name=".WarnActivity" android:exported="true" android:permission="android.permission.DUMP" android:excludeFromRecents="true" android:launchMode="singleTop"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" android:noHistory="true" />
+            android:taskAffinity="" android:theme="@android:style/Theme.Translucent.NoTitleBar" android:noHistory="true" />
         <!-- a locked app's PIN, over it (Guard.kt): its own task, so the app is back under it once the PIN is given -->
         <activity android:name=".PinActivity" android:exported="true" android:permission="android.permission.DUMP" android:excludeFromRecents="true" android:launchMode="singleTop"
             android:taskAffinity="" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:noHistory="true" />
