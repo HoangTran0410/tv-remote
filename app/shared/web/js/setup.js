@@ -416,6 +416,12 @@ async function adbHelp() {
       CORE !== 'tv' ? choice(T('setup.wireless_choice'), '', wirelessPair) : null);
     return;
   }
+  if (CORE !== 'pc') {                                                // the ways below go through /api/assist, the Computer app's only (Server.kt): a 404 here (census KM7)
+    assistShow(T('setup.turn_on_adb'), ...adbGuide(),
+      CORE !== 'tv' ? say(tip) : null,                                // on the TV page TV Setup is the one answering: no install tip
+      CORE !== 'tv' ? choice(T('setup.wireless_choice'), T('setup.wireless_note'), wirelessPair) : null);
+    return;
+  }
   assistShow(T('setup.turn_on_adb'),
     choice(T('setup.auto_install'), T('setup.auto_install_note'), () => installSetup(), 'primary'),
     choice(T('setup.by_hand'), T('setup.by_hand_note'), findSettings),

@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV web page and Phone app: "Turn ADB on for this TV" shows the steps by hand, not buttons that only the Computer app can carry out (they answered "not found").
+
 - Phone app: the drawing bar has the Video on the TV button, as the web page's has.
 - Video on the TV: a new video sent while one plays no longer reads as stopped on the page (TV Setup let the old player go on its main thread, 5 s and more on a TCL), the small copy keeps the new video's shape, and the buttons stay on one line on a narrow phone (Rotate shows its icon only).
 - TV Home: Back in "Choose apps" after ticking asks Save or Discard, instead of dropping the changes.
