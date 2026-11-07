@@ -17,7 +17,9 @@ Không kết nối được? App tự kiểm tra trong chưa đầy 4 giây rồ
 | TV đang bật mạng nhưng chưa nhận lệnh | TV ngủ nhẹ. Bấm nút nguồn trên điều khiển thật, chờ vài giây. |
 | Fire TV chưa hoàn tất cài đặt ban đầu | Nút Home và Alexa không bấm được. Bấm **Sửa** để đánh dấu đã cài đặt xong. |
 
-Các nút trong hộp: **🔄 Thử lại**, **🔍 Quét mạng**, **🧭 Bật ADB giúp tôi**, **Sửa** (chỉ Fire TV chưa cài đặt xong), **📋 Gửi nhật ký** (khi app chưa tự sửa được). Mở danh sách **Đã kiểm tra** để xem app đã thử những gì.
+Các nút trong hộp: **🔄 Thử lại**, **🔍 Quét mạng**, **🧭 Bật ADB giúp tôi**, **Sửa** (chỉ Fire TV chưa cài đặt xong), **📋 Gửi nhật ký** (khi app chưa tự sửa được).
+
+Mở danh sách **Đã kiểm tra** để xem app đã thử những gì.
 
 > 💡 Hộp này hiện ở app máy tính, màn hình Quản lý của app điện thoại và danh sách TV của app điện thoại.
 

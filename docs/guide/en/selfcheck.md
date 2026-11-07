@@ -17,7 +17,9 @@ Cannot connect? The app checks by itself in under 4 seconds and gives **one conc
 | The TV is on the network but not listening | The TV is dozing. Press power on its own remote and wait a few seconds. |
 | This Fire TV never finished its first setup | The Home and Alexa buttons stay dead. Tap **Fix** to mark setup as done. |
 
-Buttons in the box: **🔄 Try again**, **🔍 Scan**, **🧭 Turn ADB on for me**, **Fix** (only for a Fire TV whose setup never finished), **📋 Send the log** (when the app cannot fix it). Open the **What was checked** list to see what the app tried.
+Buttons in the box: **🔄 Try again**, **🔍 Scan**, **🧭 Turn ADB on for me**, **Fix** (only for a Fire TV whose setup never finished), **📋 Send the log** (when the app cannot fix it).
+
+Open the **What was checked** list to see what the app tried.
 
 > 💡 The box shows in the computer app, the phone app's Manage screen and the phone app's TV list.
 
