@@ -235,8 +235,8 @@ internal object VideoLayer {
     private fun play(f: File) {
         val p = MediaPlayer()
         player = p; ready = false
-        p.setOnVideoSizeChangedListener { _, w, h -> if (w > 0 && h > 0) { aspect = w.toFloat() / h; layout() } }
-        p.setOnErrorListener { _, what, extra -> Log.w(TAG, "player error $what/$extra"); err = "video:decoder"; close(); true }
+        p.setOnVideoSizeChangedListener { mp, w, h -> if (player === mp && w > 0 && h > 0) { aspect = w.toFloat() / h; layout() } }
+        p.setOnErrorListener { mp, what, extra -> if (player === mp) { Log.w(TAG, "player error $what/$extra"); err = "video:decoder"; close() }; true }   // not one being let go of
         p.setOnPreparedListener { if (player === it) { ready = true; it.start() } }
         p.isLooping = true
         try {
@@ -250,12 +250,17 @@ internal object VideoLayer {
 
     /** Everything away: the player, a camera's stream, the window. */
     private fun close() {
-        player?.let { p -> player = null; ready = false; try { p.stop() } catch (e: Exception) { }; try { p.release() } catch (e: Exception) { } }
+        val p = player; player = null; ready = false
         live?.let { s -> live = null; try { s.close() } catch (e: Exception) { } }
-        val b = box ?: return
-        box = null; lp = null; view = null
-        surface?.let { surface = null; it.release() }                  // the player and the decoder have let go of it above
-        try { (app?.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.removeView(b) } catch (e: Exception) { }
+        val b = box
+        val sf = if (b != null) surface else null
+        if (b != null) { box = null; lp = null; view = null; surface = null }
+        if (p != null) Thread({                                       // a TCL holds stop/release 5 s and more on a webm: off the main thread, which the page's answer waits on
+            try { p.stop() } catch (e: Exception) { }; try { p.release() } catch (e: Exception) { }
+            sf?.release()                                             // once the player has let go of it
+        }, "video-release").start()
+        else sf?.release()
+        if (b != null) try { (app?.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.removeView(b) } catch (e: Exception) { }
     }
 
     /** A camera's frames, decoded straight onto the window's surface; the window goes when the stream ends. */

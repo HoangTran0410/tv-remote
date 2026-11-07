@@ -33,10 +33,10 @@ async function videoOpen() {
   const input = el('input', { type: 'file', accept: 'video/*', hidden: true });
   const pick = el('label', { className: 'linkbtn filebtn' }, input, el('span', { textContent: '🎞️ ' + T('vbox.file') }));
   const cam = el('button', { type: 'button', textContent: '📷 ' + T('vbox.camera'), onclick: () => vbCam ? camStop() : camStart() });
-  const turn = el('button', { type: 'button', textContent: '↷ ' + T('vbox.rotate'), title: T('vbox.rotate_tip'), onclick: async () => {
+  const turn = el('button', { type: 'button', className: 'vturn', title: T('vbox.rotate_tip'), ariaLabel: T('vbox.rotate'), onclick: async () => {
     if (st.rot === undefined && !await setupFor('videorot')) return;   // an older TV Setup would leave the picture as it is
     VB.rot = (VB.rot + 90) % 360; draw(); move();
-  } });
+  } }, '↷ ', el('span', { className: 'lbl', textContent: T('vbox.rotate') }));   // the word goes on a narrow phone (remote.css)
   const flip = el('button', { type: 'button', className: 'small', textContent: '🔄 ' + T('vbox.flip'), hidden: true, onclick: () => { facing = facing === 'user' ? 'environment' : 'user'; camStart(); } });
   const playb = el('button', { type: 'button', onclick: () => op({ o: st.playing ? 'pause' : 'play' }) });
   const muteb = el('button', { type: 'button', onclick: () => op({ o: 'mute', on: !st.muted }) });
@@ -66,7 +66,7 @@ async function videoOpen() {
   }
   async function op(o) {
     const r = await api('/api/videobox', o); if (!r) return null;
-    st = r; if (r.aspect > 0) VB.aspect = r.aspect; if (r.rot >= 0) VB.rot = r.rot; draw(); return r;
+    st = r; if (r.aspect > 0 && !prev.videoWidth) VB.aspect = r.aspect; if (r.rot >= 0) VB.rot = r.rot; draw(); return r;   // the TV answers a new file with the last one's shape until it has read it: the copy here knows
   }
   let moving = 0, sending = false, again = false;                     // the box's place: its newest one, one request at a time
   function move() {
