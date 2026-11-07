@@ -509,6 +509,11 @@
   "n": 1,
   "note": "fixed in 314c0f33 (Adb ArrayList(streams.values))"
  },
+ "1eb7f68a7d1e7939564c3332|0.47.0": {
+  "at": "2026-11-08T03:23:05+07:00",
+  "n": 1,
+  "note": "keyfix_refused on IP STATION, 7th box on 0.47.0; next TV Setup reports whether the add-on was force-stopped (a RAM cleaner) or turned off"
+ },
  "21d6ea2f3f739402aeb51852|0.32.1": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 2,

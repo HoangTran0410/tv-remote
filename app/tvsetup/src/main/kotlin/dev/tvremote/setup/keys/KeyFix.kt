@@ -269,7 +269,11 @@ object KeyFix {
         val installer = try {
             if (Build.VERSION.SDK_INT >= 30) c.packageManager.getInstallSourceInfo(KeysProtocol.ADDON).initiatingPackageName ?: "-" else "-"
         } catch (e: Exception) { "?" }
-        return "sdk ${Build.VERSION.SDK_INT}, adb ${if (dev.tvremote.setup.RemoteService.adb() != null) "up" else "down"}, add-on by $installer"
+        val addon = try {                                             // stopped: a force-stop (a box's RAM cleaner) takes a service out of the list; off: the add-on itself was turned off
+            val ai = c.packageManager.getApplicationInfo(KeysProtocol.ADDON, 0)
+            (if (ai.flags and android.content.pm.ApplicationInfo.FLAG_STOPPED != 0) "stopped" else "running") + (if (!ai.enabled) ", off" else "")
+        } catch (e: Exception) { "missing" }
+        return "sdk ${Build.VERSION.SDK_INT}, adb ${if (dev.tvremote.setup.RemoteService.adb() != null) "up" else "down"}, add-on by $installer, $addon"
     }
 
     private var wrote = 0L
