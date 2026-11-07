@@ -184,6 +184,7 @@ object Picker {
         }
         linkBox.done = { if (linkBox.text.isNotBlank()) pinTyped() }
         val chosen = LinkedHashSet<String>()                             // CHOOSE: the apps ticked now (not saved until Done)
+        var start: Set<String>? = null                                   // CHOOSE: what was ticked when the list came; Back with a change asks
         var allKeys = emptyList<String>()
         val doneBtn = TvUi.button(a, "", {}); val allBtn = TvUi.button(a, "", {})
         fun labels() {
@@ -348,7 +349,7 @@ object Picker {
             if (mode == Mode.TARGET && last) got.add(Item(LAST, a.getString(R.string.qk_last), null, a.getString(R.string.qk_last_tag), 0, R.drawable.ic_power))   // the power-on slot only: no app, "the one open when the TV turned off"
             if (mode == Mode.TARGET && actions) got.add(Item(Target.CONTROL, a.getString(R.string.cc_title), null, a.getString(R.string.pk_over_apps), 0, R.drawable.ic_settings))   // a key's action: the Control Center over any app
             for (p in apps) got.add(Item(p.pkg, p.label, p, if (p.pkg in hidden && mode == Mode.GRID) a.getString(R.string.pk_hidden) else "", 0))
-            if (mode == Mode.CHOOSE) { allKeys = apps.map { it.pkg }; chosen.clear(); if (pick == null) chosen.addAll(apps.map { it.pkg }.filter { it !in hidden }) else chosen.addAll(picked); a.runOnUiThread { labels() }
+            if (mode == Mode.CHOOSE) { allKeys = apps.map { it.pkg }; chosen.clear(); if (pick == null) chosen.addAll(apps.map { it.pkg }.filter { it !in hidden }) else chosen.addAll(picked); val first = chosen.toSet(); a.runOnUiThread { start = first; labels() }
                 if (pick != null) {                                    // a folder can hold what is on the grid besides apps: shortcuts and live widgets
                     // all of them, also a shortcut pinned through Android that is not in "tiles" yet (YouTube, channels): Folders.keep puts it there
                     val home = a as? dev.tvremote.home.HomeActivity
@@ -404,6 +405,25 @@ object Picker {
                 dialog.dismiss()
             }
             labels()
+            // Back after ticking: Save or Discard, not lost silently (the user, 2026-11-07: Done sat at the top, Back dropped it all); Back again keeps choosing
+            fun askSave() {
+                val (d, box) = TvUi.sheet(a, R.style.TvSheet)
+                TvUi.sheetTitle(box, a.getString(R.string.pk_unsaved))
+                TvUi.sheetNote(box, a.getString(R.string.pk_unsaved_note))
+                val save = TvUi.button(a, a.getString(R.string.pk_unsaved_save)) { d.dismiss(); doneBtn.performClick() }
+                val drop = TvUi.button(a, a.getString(R.string.pk_unsaved_drop)) { d.dismiss(); dialog.dismiss() }
+                box.addView(LinearLayout(a).apply {
+                    gravity = Gravity.END; setPadding(0, dp(6), 0, 0)
+                    addView(save, LinearLayout.LayoutParams(-2, -2)); addView(drop, LinearLayout.LayoutParams(-2, -2).apply { marginStart = dp(12) })
+                })
+                d.show(); save.requestFocus()
+            }
+            dialog.setOnKeyListener { _, code, e ->
+                val was = start
+                if (code != android.view.KeyEvent.KEYCODE_BACK || was == null || chosen == was) return@setOnKeyListener false
+                if (e.action == android.view.KeyEvent.ACTION_UP && !e.isCanceled) askSave()
+                true
+            }
         }
         dialog.show()
         return dialog
