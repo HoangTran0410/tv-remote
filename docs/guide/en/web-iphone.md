@@ -14,3 +14,5 @@ iPhone has no app. Instead the TV serves its own control page. Open it in Safari
 > 💡 A TV with Wireless debugging only? Press **📡 Pair with Wireless debugging** on this page, type the IP:port and 6-digit code. Once only.
 
 > 💡 A TV with no ADB cannot show the code by itself: open **TV Setup** on the TV, the code is on its main screen (valid for 2 minutes).
+
+> 💡 Too many wrong codes cancel the code: tap **📺 Show the code on the TV** again for a new one. A Safari older than 15.4 says the browser needs an update.

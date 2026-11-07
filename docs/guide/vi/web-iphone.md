@@ -14,3 +14,5 @@ iPhone không có app. Thay vào đó, TV tự phát một trang web điều khi
 > 💡 TV chỉ có Gỡ lỗi không dây? Bấm **📡 Ghép bằng Gỡ lỗi không dây** ở trang này, gõ IP:cổng và mã 6 số. Chỉ một lần.
 
 > 💡 TV không có ADB thì không tự hiện được mã: mở app **TV Setup** trên TV, mã nằm ở màn hình chính (có hiệu lực 2 phút).
+
+> 💡 Gõ sai mã nhiều lần thì mã bị hủy: bấm lại **📺 Hiện mã trên TV** để lấy mã mới. Safari cũ hơn 15.4 sẽ báo cần cập nhật trình duyệt.

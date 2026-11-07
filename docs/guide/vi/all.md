@@ -114,6 +114,8 @@ iPhone không có app. Thay vào đó, TV tự phát một trang web điều khi
 
 > 💡 TV không có ADB thì không tự hiện được mã: mở app **TV Setup** trên TV, mã nằm ở màn hình chính (có hiệu lực 2 phút).
 
+> 💡 Gõ sai mã nhiều lần thì mã bị hủy: bấm lại **📺 Hiện mã trên TV** để lấy mã mới. Safari cũ hơn 15.4 sẽ báo cần cập nhật trình duyệt.
+
 ## Remote hồng ngoại (không cần mạng)
 
 Điện thoại có đèn hồng ngoại (nhiều máy Xiaomi, Huawei, Samsung đời cũ) thì dùng được như remote giấy: không cần Wi-Fi, không cần chọn TV. Chỉ có ở app điện thoại.
@@ -722,7 +724,7 @@ Phím nhanh mở app ngay từ màn hình chính bằng một phím số hoặc 
 
 - Ô **Khi bật TV**: chọn app = tự mở, xóa = tắt. Nút **Tự mở … khi bật TV**: mở app đó (trống: TV Home) dù TV tự vào HDMI hay app khác, trừ lúc cast.
 - Cùng ô đó có **Ứng dụng vừa dùng**: mở app đang chạy lúc tắt TV (mặc định tắt).
-- Live widget cũng gán được và hiện icon riêng.
+- Live widget cũng gán được và hiện icon riêng. Có cả **Lệnh giọng nói**: mở micro của TV Remote (cần TV Setup 0.46.1).
 
 Tùy chỉnh → Phím & khởi động → **Phím Home trong app: hiện thanh app** (mặc định tắt).
 
@@ -1358,7 +1360,7 @@ Không kết nối được? App tự kiểm tra trong chưa đầy 4 giây rồ
 | TV đang bật mạng nhưng chưa nhận lệnh | TV ngủ nhẹ. Bấm nút nguồn trên điều khiển thật, chờ vài giây. |
 | Fire TV chưa hoàn tất cài đặt ban đầu | Nút Home và Alexa không bấm được. Bấm **Sửa** để đánh dấu đã cài đặt xong. |
 
-Các nút trong hộp: **🔄 Thử lại**, **🔍 Quét mạng**, **🧭 Bật ADB giúp tôi**, **Sửa** (chỉ Fire TV chưa cài đặt xong). Mở danh sách **Đã kiểm tra** để xem app đã thử những gì.
+Các nút trong hộp: **🔄 Thử lại**, **🔍 Quét mạng**, **🧭 Bật ADB giúp tôi**, **Sửa** (chỉ Fire TV chưa cài đặt xong), **📋 Gửi nhật ký** (khi app chưa tự sửa được). Mở danh sách **Đã kiểm tra** để xem app đã thử những gì.
 
 > 💡 Hộp này hiện ở app máy tính, màn hình Quản lý của app điện thoại và danh sách TV của app điện thoại.
 

@@ -8,7 +8,7 @@ Quick keys open an app from the home screen with one number or color key on the 
 
 - The **At power-on** slot: pick an app = it opens at power-on, clear = off. **Auto-open … at power-on**: opens it (empty: TV Home) even if the TV woke into HDMI or another app, except during a cast.
 - The same slot offers **Last app used**: the app open when the TV turned off (off by default).
-- Live widgets can be assigned too and show their own icon.
+- Live widgets can be assigned too and show their own icon. There is also **Voice command**: opens TV Remote's microphone (needs TV Setup 0.46.1).
 
 Customize → Keys & startup → **Home key in an app: show the app bar** (off by default).
 

@@ -114,6 +114,8 @@ iPhone has no app. Instead the TV serves its own control page. Open it in Safari
 
 > 💡 A TV with no ADB cannot show the code by itself: open **TV Setup** on the TV, the code is on its main screen (valid for 2 minutes).
 
+> 💡 Too many wrong codes cancel the code: tap **📺 Show the code on the TV** again for a new one. A Safari older than 15.4 says the browser needs an update.
+
 ## Infrared remote (no network)
 
 A phone with an IR blaster (many Xiaomi, Huawei and older Samsung phones) works like a paper remote: no Wi-Fi, no TV to pick. Phone app only.
@@ -722,7 +724,7 @@ Quick keys open an app from the home screen with one number or color key on the 
 
 - The **At power-on** slot: pick an app = it opens at power-on, clear = off. **Auto-open … at power-on**: opens it (empty: TV Home) even if the TV woke into HDMI or another app, except during a cast.
 - The same slot offers **Last app used**: the app open when the TV turned off (off by default).
-- Live widgets can be assigned too and show their own icon.
+- Live widgets can be assigned too and show their own icon. There is also **Voice command**: opens TV Remote's microphone (needs TV Setup 0.46.1).
 
 Customize → Keys & startup → **Home key in an app: show the app bar** (off by default).
 
@@ -1358,7 +1360,7 @@ Cannot connect? The app checks by itself in under 4 seconds and gives **one conc
 | The TV is on the network but not listening | The TV is dozing. Press power on its own remote and wait a few seconds. |
 | This Fire TV never finished its first setup | The Home and Alexa buttons stay dead. Tap **Fix** to mark setup as done. |
 
-Buttons in the box: **🔄 Try again**, **🔍 Scan**, **🧭 Turn ADB on for me**, **Fix** (only for a Fire TV whose setup never finished). Open the **What was checked** list to see what the app tried.
+Buttons in the box: **🔄 Try again**, **🔍 Scan**, **🧭 Turn ADB on for me**, **Fix** (only for a Fire TV whose setup never finished), **📋 Send the log** (when the app cannot fix it). Open the **What was checked** list to see what the app tried.
 
 > 💡 The box shows in the computer app, the phone app's Manage screen and the phone app's TV list.
 
