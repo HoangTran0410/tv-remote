@@ -244,6 +244,11 @@
   "n": 1,
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
+ "1246e79da13b1f97f2bdb7fc|0.47.0": {
+  "at": "2026-11-07T21:05:23+07:00",
+  "n": 1,
+  "note": "state, not a crash: G-Two Box firmware removes the key filter's accessibility service; KeyFix gives up after 3 tries by design. From 0.47.0, before d0fb2fd6's detail (sdk/adb/installer): the next report says whether it is Android 13's restricted setting"
+ },
  "13b5562e22b1aff18d3e7207|0.15.0": {
   "at": "2026-10-30T09:07:55+07:00",
   "n": 1,
