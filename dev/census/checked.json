@@ -135,14 +135,19 @@
   "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "10008337d9a0f8f648c7fce1|0.32.1": {
-  "at": "2026-11-05T10:40:10+07:00",
+  "at": "2026-11-07T23:39:01+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "user state, handled: TCL Smart TV Pro. 0.47.0 Android 14: 5555 closed, only Wireless debugging on and not paired yet; TV Setup opens Wireless debugging for the code (MainActivity notPaired). 0.32/0.35 Android 11/12: timeout with 5555 open = Allow not answered (old versions; LinkFailure stops asking and says so)"
  },
  "10008337d9a0f8f648c7fce1|0.35.0": {
-  "at": "2026-11-05T10:40:10+07:00",
+  "at": "2026-11-07T23:39:01+07:00",
   "n": 2,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "user state, handled: TCL Smart TV Pro. 0.47.0 Android 14: 5555 closed, only Wireless debugging on and not paired yet; TV Setup opens Wireless debugging for the code (MainActivity notPaired). 0.32/0.35 Android 11/12: timeout with 5555 open = Allow not answered (old versions; LinkFailure stops asking and says so)"
+ },
+ "10008337d9a0f8f648c7fce1|0.47.0": {
+  "at": "2026-11-07T23:39:01+07:00",
+  "n": 1,
+  "note": "user state, handled: TCL Smart TV Pro. 0.47.0 Android 14: 5555 closed, only Wireless debugging on and not paired yet; TV Setup opens Wireless debugging for the code (MainActivity notPaired). 0.32/0.35 Android 11/12: timeout with 5555 open = Allow not answered (old versions; LinkFailure stops asking and says so)"
  },
  "10beb007bf91c5ebda6acc25|0.25.0": {
   "at": "2026-10-27T09:37:02+07:00",
