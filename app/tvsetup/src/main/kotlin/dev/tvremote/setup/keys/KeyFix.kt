@@ -260,6 +260,18 @@ object KeyFix {
         KeysAddon.prepare(adb)                                        // the service is the add-on's: the same for its package, once it is installed
     }
 
+    /**
+     * What tells the two causes apart in the report (Android logs both as "disallowed by device admin policy"): with ADB up the add-on's
+     * ACCESS_RESTRICTED_SETTINGS was lifted ([KeysAddon.prepare]), so a refusal then is a real admin / firmware policy; without ADB on
+     * Android 13+ it may be only the restriction, which the next ADB link lifts. Measured on the API 34 emulator (appop ignore: refused).
+     */
+    private fun refusedWhy(c: Context): String {
+        val installer = try {
+            if (Build.VERSION.SDK_INT >= 30) c.packageManager.getInstallSourceInfo(KeysProtocol.ADDON).initiatingPackageName ?: "-" else "-"
+        } catch (e: Exception) { "?" }
+        return "sdk ${Build.VERSION.SDK_INT}, adb ${if (dev.tvremote.setup.RemoteService.adb() != null) "up" else "down"}, add-on by $installer"
+    }
+
     private var wrote = 0L
     private var refused = 0                                           // times in a row the system took the service out within the guard
     const val REARM = 3
@@ -293,7 +305,7 @@ object KeyFix {
             val t = System.currentTimeMillis()
             if (need && !old && t - wrote < 60000) {                  // the system took it out again just now (a policy): not every few seconds
                 val wait = rearm(t, wrote, refused)
-                if (wait == null) dev.tvremote.setup.health.AdbReport.once(c, "keyfix_refused", "service taken out ${REARM}x")
+                if (wait == null) dev.tvremote.setup.health.AdbReport.once(c, "keyfix_refused", "service taken out ${REARM}x; ${refusedWhy(c)}")
                 else { refused++; later?.invoke(wait) }
                 return
             }
