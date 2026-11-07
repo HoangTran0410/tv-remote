@@ -89,6 +89,11 @@
   "n": 1,
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
+ "0a9749690d5a3b0e1613f21f|0.47.0": {
+  "at": "2026-11-08T02:46:13+07:00",
+  "n": 1,
+  "note": "keyfix_refused on VISION XS100MINI+, 6th box (WS, ADT-3, G-Two, SWTV, X96mini): cause logged from the next TV Setup (a20c4155), left"
+ },
  "0cc42fae2aa5fd9fed3c6839|0.31.0": {
   "at": "2026-11-05T17:16:53+07:00",
   "n": 1,
