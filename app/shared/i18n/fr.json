@@ -2533,6 +2533,7 @@
   "tv_main.not_installed": "non installé",
   "tv_main.enable_adb_howto": "Activez le « Débogage ADB » : Paramètres → Préférences de l’appareil (Google TV, Chromecast : Système) → À propos → appuyez 7 fois sur OK sur « Numéro de build » (« Build Android TV OS »), puis, de retour dans la même liste, Options pour les développeurs → « Débogage ADB » (ou « Débogage USB »).",
   "tv_main.adb_no_port": "Le « Débogage ADB » est activé, mais la TV n’ouvre aucun port ADB réseau (5555).",
+  "tv_main.allow_not_shown": "Aucune question à l’écran ? Certaines TV ne l’affichent jamais. Utilisez alors le débogage sans fil :",
   "tv_main.adb_wifi_only_howto": "Débogage sans fil uniquement : scannez le code QR en haut à droite avec n’importe quel téléphone (iPhone aussi), ou ouvrez cette adresse sur un ordinateur.",
   "tv_main.adb_wifi_off_howto": "Activez Débogage sans fil dans Options pour les développeurs, puis scannez le QR en haut à droite avec un téléphone.",
   "tv_main.adb_wifi_only_pair": "Sur la TV : Paramètres > Options pour les développeurs > Débogage sans fil > Associer avec un code, et laissez le code affiché.",

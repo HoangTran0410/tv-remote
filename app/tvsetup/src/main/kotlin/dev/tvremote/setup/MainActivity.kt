@@ -805,6 +805,8 @@ class MainActivity : Activity() {
                     if ((e.message ?: "").contains(Adb.UNANSWERED)) {   // ADB is on; the question ran out of time: "turn on ADB" would send the person in circles
                         setStatus(WARN, T("allow.the_tv_is_asking"), T("tv_main.tick_always_allow_then"))
                         log("✗ " + reason(e))
+                        val wifiOn = try { android.provider.Settings.Global.getInt(contentResolver, "adb_wifi_enabled", 0) == 1 } catch (x: Exception) { false }
+                        LinkFailure.unansweredHowto(android.os.Build.VERSION.SDK_INT, wifiOn).forEach { howto(T(it)) }
                         tiles[1].enable(true)
                         tiles[1].view.requestFocus()
                         return@ui

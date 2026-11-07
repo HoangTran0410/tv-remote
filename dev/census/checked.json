@@ -2000,14 +2000,19 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "828f06d14524e826ed528989|0.34.1": {
-  "at": "2026-10-30T09:08:17+07:00",
+  "at": "2026-11-08T06:06:15+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "AI PONT (Changhong, Android 11): allow question unanswered on 3 installs, likely never shown; TV Setup now points to Wireless debugging after it"
  },
  "828f06d14524e826ed528989|0.35.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-08T06:06:15+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "AI PONT (Changhong, Android 11): allow question unanswered on 3 installs, likely never shown; TV Setup now points to Wireless debugging after it"
+ },
+ "828f06d14524e826ed528989|0.47.0": {
+  "at": "2026-11-08T06:06:15+07:00",
+  "n": 3,
+  "note": "AI PONT (Changhong, Android 11): allow question unanswered on 3 installs, likely never shown; TV Setup now points to Wireless debugging after it"
  },
  "82bbd4343b46d5b4f2b8ec5e|0.30.0": {
   "at": "2026-10-28T14:05:17+07:00",

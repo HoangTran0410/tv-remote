@@ -2527,6 +2527,7 @@
  "tv_main.not_installed": "not installed",
  "tv_main.enable_adb_howto": "Turn on “ADB debugging”: Settings → Device Preferences (Google TV, Chromecast: System) → About → press OK 7 times on “Build” (“Android TV OS build”), then back in the same list, Developer options → “ADB debugging” (or “USB debugging”).",
  "tv_main.adb_no_port": "“ADB debugging” is on, but the TV opens no network ADB port (5555).",
+ "tv_main.allow_not_shown": "No question on the screen? Some TVs never show it. Then use Wireless debugging:",
  "tv_main.adb_wifi_only_howto": "Wireless debugging only: scan the QR at the top right with any phone (iPhone too), or open that address on a computer.",
  "tv_main.adb_wifi_off_howto": "Turn on Wireless debugging in Developer options, then scan the QR at the top right with a phone.",
  "tv_main.adb_wifi_only_pair": "On the TV: Settings > Developer options > Wireless debugging > Pair with code, and leave the code up.",

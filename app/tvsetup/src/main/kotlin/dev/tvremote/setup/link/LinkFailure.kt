@@ -69,6 +69,17 @@ internal object LinkFailure {
     /** Open the page by itself, once, only where the words say to go there (Wireless debugging off, Android 11+). */
     fun opensWireless(wifiOn: Boolean, sdk: Int, shield: Boolean = false): Boolean = !shield && sdk >= 30 && !wifiOn
 
+    /**
+     * ADB is on, port 5555 open, yet "Allow USB debugging?" ran out of time: on some TVs it never shows (a Changhong AI PONT,
+     * Android 11: 3 installs, census 828f06d1). Android 11+ has a way with no question: a phone or computer pairs through
+     * Wireless debugging, then answers TV Setup's question itself (AdbPrompt). Word ids, added under "tick Always allow".
+     */
+    fun unansweredHowto(sdk: Int, wifiOn: Boolean): List<String> = when {
+        sdk < 30 -> emptyList()
+        wifiOn -> listOf("tv_main.allow_not_shown", "tv_main.adb_wifi_only_howto")
+        else -> listOf("tv_main.allow_not_shown", "tv_main.adb_wifi_off_howto")
+    }
+
     /** An NVIDIA SHIELD: 5555 is its "Network debugging" switch in Developer options, beside USB debugging. */
     fun shield(maker: String, model: String): Boolean = maker.equals("NVIDIA", ignoreCase = true) || model.contains("SHIELD", ignoreCase = true)
 }

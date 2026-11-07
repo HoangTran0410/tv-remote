@@ -63,6 +63,8 @@ class LinkFailureTest {
         assertEquals(false, LinkFailure.opensWireless(false, 30, shield = true))   // a SHIELD: its Network debugging switch, not Wireless debugging
         assertEquals(listOf("tv_main.shield_adb"), LinkFailure.noPortHowto(false, 30, shield = true))
         assertEquals(true, LinkFailure.shield("NVIDIA", "SHIELD Android TV"))
+        assertEquals(emptyList<String>(), LinkFailure.unansweredHowto(29, false))   // no Wireless debugging before Android 11
+        assertEquals(listOf("tv_main.allow_not_shown", "tv_main.adb_wifi_off_howto"), LinkFailure.unansweredHowto(30, false))
         assertEquals(false, LinkFailure.shield("TCL", "Smart TV Pro"))
     }
 
