@@ -7,7 +7,7 @@ const FOLD_PANELS = '[data-panel=auto], [data-panel=tv]';
 const FOLD_CARD = 'section.card[id]:not([data-nofold])';
 const FOLD_WHAT = {                                                    // what a card is for, shown while it has nothing on ("Not set" says too little)
   sleepcard: 'fold.what_sleep', bedcard: 'fold.what_bed', limitcard: 'fold.what_limit', lockcard: 'fold.what_lock', kidscard: 'fold.what_kids',
-  totalcard: 'fold.what_total', schedcard: 'fold.what_sched', volcard: 'fold.what_vol', ramcard: 'fold.what_ram', welcomecard: 'fold.what_welcome',
+  totalcard: 'fold.what_total', schedcard: 'fold.what_sched', volcard: 'fold.what_vol', ramcard: 'fold.what_ram', idlecard: 'fold.what_idle', welcomecard: 'fold.what_welcome',
   scenecard: 'fold.what_scenes', tvsetcard: 'fold.what_tvset', optcard: 'fold.what_opt', keyscard: 'fold.what_keys', tvcopycard: 'fold.what_tvcopy', backupcard: 'fold.what_backup',
 };
 let foldSums = {};                                                    // card id -> { text, on } for the TV in use

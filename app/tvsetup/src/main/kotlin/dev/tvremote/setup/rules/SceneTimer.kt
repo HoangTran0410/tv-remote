@@ -191,7 +191,7 @@ internal object SceneTimer {
         val id = scene.optString("id")
         if (!starting.add(id)) return
         quiet[id] = now..Long.MAX_VALUE
-        runNow(c, scene, started = { done(id) }, finished = {
+        runNow(c, scene, started = { done(id) }, noAdb = { true }, finished = {   // no ADB: silent, not "cannot run" on every app opened
             synchronized(this) { starting.remove(id); quiet[id] = now..(System.currentTimeMillis() + QUIET_AFTER_MS) }
         })
     }

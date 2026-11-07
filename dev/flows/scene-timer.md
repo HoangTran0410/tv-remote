@@ -49,7 +49,7 @@ the scene's next time after it (`Scenes.nextAt`, in the TV's time zone of that m
 | 20 | first look after TV Setup starts / the clock went back | the cursor starts at now and the app in front (`Usage.front`) is no start | |
 | 21 | `on.power`: the TV turns on from standby | the screen-on receiver of `WelcomeWatch` calls `SceneTimer.onPower`; not while that scene runs. A cold boot is not covered (BootReceiver) | `twoScenesOnTheSameAppBothStartAndPowerSkipsARunningOne` |
 | 22 | no scene with `on`; screen off | no events are read, no receiver work (`onPower` returns at once); TV Setup older than `SetupNeed` "sceneon": the save is refused with the update question | |
-| 23 | no ADB at an event run | `runNow` says "no ADB" once; no retry (an event is gone) | |
+| 23 | no ADB at an event run | `launch` passes `noAdb = { true }`: silent, no "no ADB" on every app opened; no retry (an event is gone) | measured: on an emulator without the link the wait took ~3 min, the scene quiet meanwhile |
 
 ## Checking it
 

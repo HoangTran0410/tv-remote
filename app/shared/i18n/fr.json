@@ -4567,6 +4567,7 @@
   "fold.what_sched": "Jours et heures où une appli s'ouvre",
   "fold.what_vol": "Volume max selon l'heure",
   "fold.what_ram": "Une alerte quand la mémoire manque",
+  "fold.what_idle": "Éteint si personne n’appuie sur une touche pendant des heures",
   "fold.what_welcome": "Un message quand la TV s'allume",
   "fold.what_scenes": "Un appui, plusieurs étapes",
   "fold.what_tvset": "Réglages de la TV, redémarrage",

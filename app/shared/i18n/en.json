@@ -4534,6 +4534,7 @@
  "fold.what_sched": "Days and hours an app may open",
  "fold.what_vol": "Loudest volume, by the hour",
  "fold.what_ram": "A notice when memory runs low",
+ "fold.what_idle": "Off when nobody presses a key for hours",
  "fold.what_welcome": "A greeting when the TV turns on",
  "fold.what_scenes": "One tap, many steps",
  "fold.what_tvset": "TV settings, restart",
