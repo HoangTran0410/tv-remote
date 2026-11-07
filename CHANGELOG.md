@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Phone app: the drawing bar has the Video on the TV button, as the web page's has.
 - TV Home: Back in "Choose apps" after ticking asks Save or Discard, instead of dropping the changes.
 - Video on the TV: "Rotate" turns the picture 90°, so an upright phone video fills the TV (TV Setup 0.47.1).
 - Video on the TV: a video file now plays on TVs whose storage shuts the shell out of app folders (a TCL on Android 11 said "Permission denied"); TV Setup 0.47.1 takes the file in itself.

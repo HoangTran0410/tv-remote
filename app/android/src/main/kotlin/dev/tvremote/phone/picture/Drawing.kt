@@ -110,13 +110,15 @@ internal fun MainActivity.drawTools(): LinearLayout {
     pic.setOnClickListener { withSetup("pic") { pickDrawPic() } }    // an older TV Setup draws lines but no pictures
     val say = icon("@type", T("drawing.type_a_message_on"), BTN)
     say.setOnClickListener { withSetup("pic") { askText(T("draw.message_for_tv"), T("drawing.e_g_dinner_s"), T("draw.next")) { placeMessage(it) } } }
+    val vid = icon("@camera", T("rkey.vbox"), BTN)                   // the web's draw bar has it too (draw.js #drawvid): the same Video on TV box
+    vid.setOnClickListener { stopDrawing(); dev.tvremote.phone.remote.phoneActions["vbox"]?.invoke(this, null) }
     val undo = icon("@undo", T("remote.take_back_the_last"), BTN)
     undo.setOnClickListener { drawSend(JSONObject().put("o", "u")) }
     val clear = icon("@trash", T("drawing.clear_all"), BTN)
     clear.setOnClickListener { drawView.clear(); drawSend(JSONObject().put("o", "x")) }
     val done = icon("@check", T("drawing.done"), ACCENT)
     done.setOnClickListener { stopDrawing() }
-    for (b in listOf(pic, say, undo, clear, done)) bar.addView(b, LinearLayout.LayoutParams(dp(40), dp(40)).also { it.leftMargin = dp(4) })
+    for (b in listOf(pic, say, vid, undo, clear, done)) bar.addView(b, LinearLayout.LayoutParams(dp(40), dp(40)).also { it.leftMargin = dp(4) })
     tools.addView(bar, LinearLayout.LayoutParams(-1, -2))
 
     val place = LinearLayout(this)
