@@ -2834,6 +2834,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "bde60ff92ccf60d7ef86e7fd|0.47.0": {
+  "at": "2026-11-07T16:19:11+07:00",
+  "n": 1,
+  "note": "state: Skyworth SWTV-24AE-FHD (Android 14) takes the key filter out; report new in 0.47.0 (954a032c). FPT on 0.47.0: service stays on, no refused: not our regression"
+ },
  "bea8129f3d33d72242395b1d|0.40.0": {
   "at": "2026-11-03T10:07:27+07:00",
   "n": 1,
