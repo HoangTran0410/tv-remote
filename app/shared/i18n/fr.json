@@ -4028,6 +4028,7 @@
   "err.copied": "Copié",
   "err.sent": "Rapport d'erreur envoyé",
   "err.close": "Fermer",
+  "err.partial": "Une partie de la page n'a pas pu être chargée. Rouvrez la page.",
   "err.share": "Partager",
   "err.repeat": "répétée {n} fois",
   "homeweb.title": "🏠 TV Home",

@@ -4214,6 +4214,7 @@
  "err.copied": "تم النسخ",
  "err.sent": "تم إرسال تقرير الخطأ",
  "err.close": "إغلاق",
+ "err.partial": "لم يُحمَّل جزء من الصفحة. افتح الصفحة مرة أخرى.",
  "err.share": "مشاركة",
  "err.repeat": "تكرر {n} مرة",
  "homeweb.title": "🏠 TV Home",

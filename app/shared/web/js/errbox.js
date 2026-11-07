@@ -59,7 +59,7 @@
     box.insertBefore ? box.insertBefore(sentLine, box.children[box.children.length - 1]) : box.append(sentLine);
   }
 
-  function show(msg, stack, kind) {
+  function show(msg, stack, kind, local) {
     msg = String(msg || '').slice(0, 500);
     full = report(msg, stack);
     const key = msg + '\n' + String(stack || '').split('\n')[0];
@@ -88,17 +88,33 @@
       try { if (/[?&]ontv=1/.test(location.search)) closeBtn.focus(); } catch {}   // the TV's D-pad needs a focus to start from
     }
     repeats = 0; shown = key; sentLine = null;
-    sendCrash(key, msg, stack, kind);
+    if (!local) sendCrash(key, msg, stack, kind);
     title.textContent = word('err.title');
     more.textContent = '';
     copyBtn.textContent = word('err.copy');
     body.textContent = [msg].concat(String(stack || '').split('\n').filter((l) => l.trim()).slice(0, LINES)).join('\n');
   }
 
-  window.addEventListener('error', (e) => {
+  /** One of the page's own scripts did not load (a weak TV dropped the request): every script after it then fails with "X is not
+   *  defined" (census 34503a65), which is no fault of the code. Load the page again once; if it fails again within a minute, say so. */
+  let missing = '';
+  const RELOADED = 'tvr-reloaded';
+  function scriptMissing(src) {
+    if (missing) return;
+    missing = src;
+    let again = false;
+    try { again = Date.now() - Number(sessionStorage.getItem(RELOADED) || 0) < 60000; sessionStorage.setItem(RELOADED, String(Date.now())); } catch {}
+    if (!again) { try { location.reload(); return; } catch {} }
+    show(word('err.partial'), src, 'Load', true);
+  }
+
+  window.addEventListener('error', (e) => {                           // capture: a script element's failure does not bubble
+    const t = e.target;
+    if (t && t !== window && t.tagName === 'SCRIPT' && t.src && t.src.indexOf('/js/') >= 0) return scriptMissing(t.src);
+    if (missing && e.error && e.error.name === 'ReferenceError') return;   // what the missing script would have defined
     if (ignored(e)) return;
     show(e.message || (e.error && e.error.message) || 'Error', e.error && e.error.stack, e.error && e.error.name);
-  });
+  }, true);
   window.addEventListener('unhandledrejection', (e) => {
     const r = e.reason;
     if (injected(r && r.stack)) return;

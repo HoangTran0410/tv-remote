@@ -729,6 +729,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "34503a651177c8d0b5ba1c8e|0.47.0": {
+  "at": "2026-11-08T00:55:13+07:00",
+  "n": 1,
+  "note": "home_link.js did not load on a MediaTek TV (the script before home.js): errbox now reloads once on a failed /js/ script and sends no report for its ReferenceErrors"
+ },
  "34a118fd3d429df53bebadbb|0.20.2": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,

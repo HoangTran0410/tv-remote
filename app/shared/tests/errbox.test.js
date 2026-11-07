@@ -100,3 +100,21 @@ test('a failed report is silent: no box line, no throw', async () => {
   await new Promise((r) => setTimeout(r, 5));
   assert.doesNotMatch(p.text(p.body.children[0]), /err\.sent/);
 });
+
+test('a script of the page that did not load: the page loads again once, its "not defined" errors are no box and no report', () => {
+  let reloads = 0, sent = 0; const store = {};
+  const extra = { sessionStorage: { getItem: (k) => store[k] || null, setItem: (k, v) => { store[k] = v; } },
+    fetch: () => { sent++; return Promise.resolve({ ok: false }); }, location: { href: 'http://x/', search: '', reload: () => { reloads++; } } };
+  const p = page(extra);
+  const script = { tagName: 'SCRIPT', src: 'http://x/js/home_link.js', nodeType: 1 };
+  p.listeners.error({ target: script });
+  assert.equal(reloads, 1);
+  p.listeners.error({ message: 'homeLinkFor is not defined', error: Object.assign(new ReferenceError('homeLinkFor is not defined'), { stack: 'ReferenceError: x\n    at http://x/js/home.js:7:18' }), lineno: 7 });
+  assert.equal(p.body.children.length, 0);
+  assert.equal(sent, 0);
+  const q = page(extra);                                              // it failed again just after the reload: say so, still no report
+  q.listeners.error({ target: script });
+  assert.equal(reloads, 1);
+  assert.match(q.text(q.body.children[0]), /err\.partial/);
+  assert.equal(sent, 0);
+});

@@ -4001,6 +4001,7 @@
  "err.copied": "Copied",
  "err.sent": "Error report sent",
  "err.close": "Close",
+ "err.partial": "Part of the page did not load. Open the page again.",
  "err.share": "Share",
  "err.repeat": "repeated {n} times",
  "homeweb.title": "🏠 TV Home",

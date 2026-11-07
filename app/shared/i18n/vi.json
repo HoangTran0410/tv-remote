@@ -3863,6 +3863,7 @@
  "err.copied": "Đã chép",
  "err.sent": "Đã gửi báo lỗi",
  "err.close": "Đóng",
+ "err.partial": "Một phần của trang không tải được. Hãy mở lại trang.",
  "err.share": "Chia sẻ",
  "err.repeat": "lặp lại {n} lần",
  "homeweb.title": "🏠 TV Home",
