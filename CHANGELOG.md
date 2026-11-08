@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.50.0 - 2026-11-08
+
+Web 0.50.0 · Phone app 0.47.0 · TV app 0.48.0 · TV Home 0.31.0 · TV Channels 0.22.0 · TV Games 0.23.0 · TV Apps 0.7.0
 
 - TV Home and TV Setup: a new switch, “Ask for the PIN to change TV Home” (off by default; TV Home settings and the Manage page): the TV asks the PIN before Customize, the long-OK menus, + Add, folders and move; a right code opens it for 10 minutes. No PIN or an old TV Setup: nothing is asked. Phones and computers are not asked (issue #24).
 - TV Setup: when a rule cannot close an app or turn the TV off while ADB debugging is on, it no longer says "ADB debugging is off"; it says TV Setup can't connect to ADB and to choose Reconnect.
