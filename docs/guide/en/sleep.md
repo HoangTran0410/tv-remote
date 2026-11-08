@@ -10,4 +10,4 @@
 
 > 💡 Turn off when nobody uses it counts key presses, not the picture: a film playing with no key pressed is asked about too. Needs TV Setup 0.46.1.
 
-> 💡 The TV could not be turned off (ADB is off)? The timer does not clear itself: it says so once and keeps trying.
+> 💡 The TV could not be turned off (ADB is off, or TV Setup can’t connect)? The timer does not clear itself: it says so once and keeps trying.

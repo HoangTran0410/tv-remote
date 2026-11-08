@@ -12,4 +12,4 @@
 
 > 💡 All of it lives on the TV and needs TV Setup. It holds even with your device off.
 
-> 💡 The app could not be closed (ADB is off)? It says so once and tries again; the “app closed” alert is not sent by mistake.
+> 💡 The app could not be closed (ADB is off, or TV Setup can’t connect)? It says so once and tries again; the “app closed” alert is not sent by mistake.

@@ -10,4 +10,4 @@
 
 > 💡 Tự tắt khi không ai dùng đếm phím bấm, không đếm hình: phim chiếu mà không bấm phím cũng bị hỏi. Cần TV Setup 0.46.1.
 
-> 💡 TV chưa tắt được (ADB đang tắt)? Hẹn giờ không tự xóa: nó báo một lần và thử lại.
+> 💡 TV chưa tắt được (ADB tắt hoặc TV Setup chưa nối được)? Hẹn giờ không tự xóa: nó báo một lần và thử lại.

@@ -12,4 +12,4 @@
 
 > 💡 Tất cả nằm trên TV và cần TV Setup. TV ngủ hay máy bạn tắt vẫn có hiệu lực.
 
-> 💡 Chưa đóng được app (ADB đang tắt)? App báo một lần và thử lại, thông báo “đã đóng app” không gửi sai.
+> 💡 Chưa đóng được app (ADB tắt hoặc TV Setup chưa nối được)? App báo một lần và thử lại, thông báo “đã đóng app” không gửi sai.

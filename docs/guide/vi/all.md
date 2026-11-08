@@ -168,6 +168,8 @@ Không bắt buộc, và thường không cần làm: TV Setup tự mở chỗ b
 
 > 📡 TV chỉ có **Gỡ lỗi không dây** (Android 11 trở lên)? Không cần Gỡ lỗi ADB: mở trang web của TV, bấm **📡 Ghép bằng Gỡ lỗi không dây**, làm theo [hướng dẫn](#wireless).
 
+> 🛡 **NVIDIA SHIELD:** trong Tùy chọn nhà phát triển bật thêm **Gỡ lỗi mạng** (Network debugging), rồi chọn **Reconnect**.
+
 > 🔥 **Fire TV:** ADB đã bật mà TV Setup vẫn báo không nối được? Amazon chặn app trên TV dùng ADB của chính nó; dùng app điện thoại hoặc máy tính.
 
 > 🔐 TV Setup báo “TV đang hỏi Cho phép gỡ lỗi USB?”: ADB đã bật, chỉ cần tích **Luôn cho phép** trên TV rồi chọn OK.
@@ -1016,7 +1018,7 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 
 > 💡 Tự tắt khi không ai dùng đếm phím bấm, không đếm hình: phim chiếu mà không bấm phím cũng bị hỏi. Cần TV Setup 0.46.1.
 
-> 💡 TV chưa tắt được (ADB đang tắt)? Hẹn giờ không tự xóa: nó báo một lần và thử lại.
+> 💡 TV chưa tắt được (ADB tắt hoặc TV Setup chưa nối được)? Hẹn giờ không tự xóa: nó báo một lần và thử lại.
 
 ## Giờ đi ngủ
 
@@ -1026,7 +1028,7 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 
 > 💡 Cần TV Setup trên TV. Việc tắt do chính TV làm.
 
-> 💡 TV chưa tắt được (ADB đang tắt)? App báo một lần và thử lại, Telegram không báo “đã tắt” sai.
+> 💡 TV chưa tắt được (ADB tắt hoặc TV Setup chưa nối được)? App báo một lần và thử lại, Telegram không báo “đã tắt” sai.
 
 ## Màn hình chào
 
@@ -1050,7 +1052,7 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 
 > 💡 Tất cả nằm trên TV và cần TV Setup. TV ngủ hay máy bạn tắt vẫn có hiệu lực.
 
-> 💡 Chưa đóng được app (ADB đang tắt)? App báo một lần và thử lại, thông báo “đã đóng app” không gửi sai.
+> 💡 Chưa đóng được app (ADB tắt hoặc TV Setup chưa nối được)? App báo một lần và thử lại, thông báo “đã đóng app” không gửi sai.
 
 ## Chế độ trẻ em: thiết lập nhanh
 

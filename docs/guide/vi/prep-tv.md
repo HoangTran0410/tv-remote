@@ -11,6 +11,8 @@ Không bắt buộc, và thường không cần làm: TV Setup tự mở chỗ b
 
 > 📡 TV chỉ có **Gỡ lỗi không dây** (Android 11 trở lên)? Không cần Gỡ lỗi ADB: mở trang web của TV, bấm **📡 Ghép bằng Gỡ lỗi không dây**, làm theo [hướng dẫn](wireless.md).
 
+> 🛡 **NVIDIA SHIELD:** trong Tùy chọn nhà phát triển bật thêm **Gỡ lỗi mạng** (Network debugging), rồi chọn **Reconnect**.
+
 > 🔥 **Fire TV:** ADB đã bật mà TV Setup vẫn báo không nối được? Amazon chặn app trên TV dùng ADB của chính nó; dùng app điện thoại hoặc máy tính.
 
 > 🔐 TV Setup báo “TV đang hỏi Cho phép gỡ lỗi USB?”: ADB đã bật, chỉ cần tích **Luôn cho phép** trên TV rồi chọn OK.

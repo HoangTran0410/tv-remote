@@ -6,4 +6,4 @@
 
 > 💡 Cần TV Setup trên TV. Việc tắt do chính TV làm.
 
-> 💡 TV chưa tắt được (ADB đang tắt)? App báo một lần và thử lại, Telegram không báo “đã tắt” sai.
+> 💡 TV chưa tắt được (ADB tắt hoặc TV Setup chưa nối được)? App báo một lần và thử lại, Telegram không báo “đã tắt” sai.

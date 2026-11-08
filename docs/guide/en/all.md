@@ -168,6 +168,8 @@ Optional, and usually not needed: TV Setup opens the switch itself. Without ADB 
 
 > 📡 A TV with **Wireless debugging** only (Android 11+)? No ADB debugging switch needed: open the TV's web page, press **📡 Pair with Wireless debugging**, follow [the steps](#wireless).
 
+> 🛡 **NVIDIA SHIELD:** in Developer options also turn on **Network debugging**, then choose **Reconnect**.
+
 > 🔥 **Fire TV:** ADB is on but TV Setup still cannot connect? Amazon blocks an app on the TV from using its own ADB; use the phone or computer app.
 
 > 🔐 TV Setup says “The TV is asking Allow USB debugging?”: ADB is already on, just tick **Always allow** on the TV, then choose OK.
@@ -1016,7 +1018,7 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 
 > 💡 Turn off when nobody uses it counts key presses, not the picture: a film playing with no key pressed is asked about too. Needs TV Setup 0.46.1.
 
-> 💡 The TV could not be turned off (ADB is off)? The timer does not clear itself: it says so once and keeps trying.
+> 💡 The TV could not be turned off (ADB is off, or TV Setup can’t connect)? The timer does not clear itself: it says so once and keeps trying.
 
 ## Bedtime
 
@@ -1026,7 +1028,7 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 
 > 💡 Needs TV Setup on the TV. The TV does the turning off itself.
 
-> 💡 The TV could not be turned off (ADB is off)? It says so once and tries again; Telegram does not report “off” by mistake.
+> 💡 The TV could not be turned off (ADB is off, or TV Setup can’t connect)? It says so once and tries again; Telegram does not report “off” by mistake.
 
 ## Welcome screen
 
@@ -1050,7 +1052,7 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 
 > 💡 All of it lives on the TV and needs TV Setup. It holds even with your device off.
 
-> 💡 The app could not be closed (ADB is off)? It says so once and tries again; the “app closed” alert is not sent by mistake.
+> 💡 The app could not be closed (ADB is off, or TV Setup can’t connect)? It says so once and tries again; the “app closed” alert is not sent by mistake.
 
 ## Kids mode: quick setup
 

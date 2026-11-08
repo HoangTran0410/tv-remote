@@ -6,4 +6,4 @@
 
 > 💡 Needs TV Setup on the TV. The TV does the turning off itself.
 
-> 💡 The TV could not be turned off (ADB is off)? It says so once and tries again; Telegram does not report “off” by mistake.
+> 💡 The TV could not be turned off (ADB is off, or TV Setup can’t connect)? It says so once and tries again; Telegram does not report “off” by mistake.
