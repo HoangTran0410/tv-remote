@@ -2720,24 +2720,34 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "b2bad9122a9b4f430c6f151b|0.25.0": {
-  "at": "2026-10-30T09:08:25+07:00",
+  "at": "2026-11-08T09:51:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
  },
  "b2bad9122a9b4f430c6f151b|0.32.1": {
-  "at": "2026-10-30T09:08:25+07:00",
+  "at": "2026-11-08T09:51:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
  },
  "b2bad9122a9b4f430c6f151b|0.34.1": {
-  "at": "2026-10-30T09:08:25+07:00",
+  "at": "2026-11-08T09:51:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
  },
  "b2bad9122a9b4f430c6f151b|0.38.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-08T09:51:02+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
+ },
+ "b2bad9122a9b4f430c6f151b|0.46.0": {
+  "at": "2026-11-08T09:51:02+07:00",
+  "n": 1,
+  "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
+ },
+ "b2bad9122a9b4f430c6f151b|0.47.0": {
+  "at": "2026-11-08T09:51:02+07:00",
+  "n": 2,
+  "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
  },
  "b3dbb5ec6f1c76a39a24c383|0.29.0": {
   "at": "2026-11-05T10:40:28+07:00",
