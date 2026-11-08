@@ -1394,6 +1394,11 @@
   "n": 1,
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
+ "592b546d339601dd498113ae|0.47.0": {
+  "at": "2026-11-08T18:17:11+07:00",
+  "n": 1,
+  "note": "MiTV-MZTU0, ADB on + 5555 open: same as 24516ed4, fixed in 'Guard: ADB debugging is off only when it is' (next release; its report will carry the link error)"
+ },
  "5a3f0f3294d8f48d02e14828|0.43.0": {
   "at": "2026-11-05T10:40:20+07:00",
   "n": 1,
