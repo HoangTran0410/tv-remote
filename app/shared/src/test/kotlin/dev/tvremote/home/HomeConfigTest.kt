@@ -334,6 +334,13 @@ class HomeConfigTest {
         assertFalse(n.getBoolean("clock24"))
     }
 
+    @Test fun theLayoutLockIsOffUntilTurnedOn() {
+        val c = HomeConfig.clean(JSONObject())
+        assertFalse(c.getBoolean("lockLayout"))
+        assertTrue(HomeConfig.merge(c, JSONObject().put("lockLayout", true)).getBoolean("lockLayout"))
+        assertFalse(HomeConfig.clean(JSONObject().put("lockLayout", "junk")).getBoolean("lockLayout"))
+    }
+
     @Test fun everythingOnTheFirstScreenIsOnUntilTurnedOff() {
         val c = HomeConfig.clean(JSONObject())
         for (k in HomeConfig.SHOWS) assertTrue(k, c.getBoolean(k))

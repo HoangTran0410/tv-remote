@@ -1060,6 +1060,8 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 
 > 💡 It uses the Kids mode, Total TV time and Bedtime rules, so edit each on its own card. Needs the latest TV Setup.
 
+> 💡 Lock TV Home's layout: turn on **Ask for the PIN to change TV Home** in TV Home settings. A right PIN opens it for 10 minutes.
+
 ## Lock apps with a PIN
 
 1. Tab **⏰ Automation → 🔒 Lock apps with a PIN**, tap **＋ Add**.

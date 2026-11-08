@@ -50,6 +50,10 @@ import org.json.JSONObject
  *           showWatch (the Play Next / channels row, on top of hiding one app's from its menu); showInputs (an Inputs button in the top
  *           bar, default OFF, unlike the rest; it opens the Inputs list). A TV Home older than these
  *           does not report them, so a page offers them only to one that does
+ *   lockLayout  changing TV Home's layout on the TV (Customize, every long-OK / Menu menu, + Add, folders, move) asks TV Setup's PIN
+ *           first, and a right code opens it for 10 minutes; default false, nothing runs while off. With no PIN set, or no TV Setup
+ *           (or an old one), nothing is asked: a parent is never locked out. A phone, the Computer app and the TV web page are the
+ *           parent's own and change everything without the PIN. A TV Home that has this reports it in the config
  *   watchAt where the Play Next items go ([WATCH_AT], default "bottom"): "top" a row of their own above the apps, "under1" under
  *           the first row of apps, "bottom" after the last row of apps, "tiles" no row: they follow the grid's last tile in its columns.
  *           A TV Home older than this does not report it, so a page offers the choice only to one that does
@@ -788,6 +792,7 @@ object HomeConfig {
             .also { n -> for (k in SHOWS) n.put(k, o.optBoolean(k, true)) }
             .put("showInputs", o.optBoolean("showInputs", false))   // the one switch that starts off: an extra button nobody asked for
             .put("infold", o.optBoolean("infold", false))
+            .put("lockLayout", o.optBoolean("lockLayout", false))      // the PIN before the layout changes (HomeActivity.layoutGate)
             .put("watchAt", o.optString("watchAt").takeIf { it in WATCH_AT } ?: WATCH_AT[0])
             .put("anim", o.optBoolean("anim", true))
             .put("homebar", o.optBoolean("homebar", false))           // Home over an app shows the bar (DockBarActivity), through TV Setup's key filter

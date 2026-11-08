@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home and TV Setup: a new switch, “Ask for the PIN to change TV Home” (off by default; TV Home settings and the Manage page): the TV asks the PIN before Customize, the long-OK menus, + Add, folders and move; a right code opens it for 10 minutes. No PIN or an old TV Setup: nothing is asked. Phones and computers are not asked (issue #24).
 - TV Setup: when a rule cannot close an app or turn the TV off while ADB debugging is on, it no longer says "ADB debugging is off"; it says TV Setup can't connect to ADB and to choose Reconnect.
 - TV Setup: no false “key filter taken out” report (keyfix_refused): two checks running at once counted the second as the system taking the filter out, while it stayed on.
 - TV Setup: when “Allow USB debugging?” runs out of time on Android 11+, it also says that some TVs never show it and points to Wireless debugging, which needs no question.

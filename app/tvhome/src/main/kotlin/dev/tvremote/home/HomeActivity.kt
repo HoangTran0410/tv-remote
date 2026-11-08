@@ -333,7 +333,7 @@ class HomeActivity : Activity() {
         Look.read(Store.get(this))                                    // before the apps load: App.load makes the icon of icon / glass tiles off the main thread
         loadApps()
         if (Motion.on) enter()
-        if (reopen) { reopen = false; ui.post { customize("lang") } }
+        if (reopen) { reopen = false; ui.post { customizeNow("lang") } }
     }
 
     /** A new language: the screen built again in it, the panel reopened if the change came from it (else it is closed). */
@@ -364,6 +364,7 @@ class HomeActivity : Activity() {
         if (locked) return
         wantStart?.let { i -> wantStart = null; bar.post { if (!isDestroyed) startAction(i) } }   // started for one menu (the Input key, the Control Center over an app): once the home is up
         dev.tvremote.home.ui.ControlCenter.warm(this)
+        layoutBack()
         Themes.refresh(this)                                          // a day old: the launcher's process outlives the check at its start
         Motion.read(this, conf)                                       // the system's "remove animations" may have changed while away
         zoom.back()                                                   // the plate that grew over the opened app shrinks into its tile
@@ -495,7 +496,8 @@ class HomeActivity : Activity() {
     private val glassFont: (TextView) -> Unit = { it.typeface = if (it.typeface?.isBold == true) Font.bold else Font.regular }
 
     /** [items] in the glass panel of the app menu ([TvGlass]), on the half of the screen away from [anchor] so the element being changed stays in view, the dim light. */
-    private fun elementMenu(title: String, items: List<TvGlass.Item>, note: String = "", anchor: View? = currentFocus) {
+    private fun elementMenu(title: String, items: List<TvGlass.Item>, note: String = "", anchor: View? = currentFocus) = layoutGate { elementMenuNow(title, items, note, anchor) }
+    private fun elementMenuNow(title: String, items: List<TvGlass.Item>, note: String, anchor: View?) {
         val x = anchor?.let { v -> IntArray(2).also { v.getLocationOnScreen(it) }[0] + v.width / 2 } ?: 0
         val dlg = TvGlass.menu(this, R.style.Menu, title, items, note = note, checkIcon = R.drawable.ic_check, sideRight = x < resources.displayMetrics.widthPixels / 2, font = glassFont)
         dlg.setOnDismissListener { ui.postDelayed({                    // 350: the widgets are read again off the main thread
@@ -521,7 +523,8 @@ class HomeActivity : Activity() {
         }
     }
     private var editBack: (() -> Unit)? = null                         // Back ends the edit mode and goes back where it came from (Customize's door)
-    internal fun edit(back: (() -> Unit)? = null) {
+    internal fun edit(back: (() -> Unit)? = null) { if (!editing) layoutGate { editNow(back) } }
+    private fun editNow(back: (() -> Unit)?) {
         if (editing) return
         editBack = back
         editing = true; widgets.editing = true; hint.visibility = View.VISIBLE
@@ -1252,7 +1255,8 @@ class HomeActivity : Activity() {
         }
     }
 
-    private fun startMove(pkg: String) {
+    private fun startMove(pkg: String) = layoutGate { startMoveNow(pkg) }
+    private fun startMoveNow(pkg: String) {
         val t = tiles().firstOrNull { it.app?.pkg == pkg } ?: return
         moving = t; movingFavs = dockCount()
         t.requestFocus(); t.carry(true); glass.hide()                 // the glass's edge inside the ring read as two borders
@@ -2130,7 +2134,8 @@ class HomeActivity : Activity() {
      * of rows in the same panel (Back comes up a level, onto the group just left). A real app first asks TV Setup how it is locked and
      * limited ([AppRules]); no answer = no Lock & limits group and no force stop / cache, everything else is here without it.
      */
-    private fun menu(a: App) {
+    private fun menu(a: App) = layoutGate { menuNow(a) }
+    private fun menuNow(a: App) {
         Store.tipDone(this); tip()                                    // they found the menu: the tip has done its job
         if (a.folder) { folderMenu(a); return }
         if (a.grid || a.pin != null || a.pkg == packageName) { menu(a, null); return }
@@ -2702,7 +2707,41 @@ class HomeActivity : Activity() {
     }
 
     private var panel: android.app.Dialog? = null
-    internal fun customize(at: String? = null) { open = Customize.show(this, at).also { panel = it } }
+    internal fun customize(at: String? = null) = layoutGate { customizeNow(at) }
+    private fun customizeNow(at: String? = null) { open = Customize.show(this, at).also { panel = it } }
+
+    // ---- the layout lock (HomeConfig "lockLayout", default off: with it off [layoutGate] only calls [then]; nothing else runs) ----
+    private var layoutOpenUntil = 0L                                  // TV Setup's "home_open" from the last right code (ms)
+    private var layoutPending: (() -> Unit)? = null                   // what to run when the person comes back from the PIN screen and the layout is open
+
+    /**
+     * Runs [then] if the layout may change: the lock is off, or open for a few minutes after a right code. Else TV Setup shows its PIN
+     * screen (started from here, SetupHand: Android 14 drops its own start) and [then] waits for [onResume]. It fails open: no PIN set, no TV
+     * Setup, a TV Setup older than "home:unlock" (its answer has no "home_open"), or the screen not opening, never lock a parent out.
+     */
+    private fun layoutGate(then: () -> Unit) {
+        if (!conf.optBoolean("lockLayout", false) || layoutOpenUntil > System.currentTimeMillis()) { then(); return }
+        bg.execute {
+            val out = SetupHand.control(this, "home:unlock")
+            val until = out?.optLong("home_open") ?: 0L
+            runOnUiThread {
+                if (isDestroyed) return@runOnUiThread
+                if (out == null || !out.has("home_open") || !out.optBoolean("pin") || out.has("error")) then()
+                else if (until > System.currentTimeMillis()) { layoutOpenUntil = until; then() }
+                else layoutPending = then                             // the PIN screen is up
+            }
+        }
+    }
+
+    /** Back from the PIN screen: asks TV Setup once whether a right code opened the layout. A wrong code or Close leaves it shut. */
+    private fun layoutBack() {
+        val then = layoutPending ?: return
+        layoutPending = null
+        bg.execute {
+            val until = SetupHand.control(this, "")?.optLong("home_open") ?: 0L
+            runOnUiThread { if (!isDestroyed && until > System.currentTimeMillis()) { layoutOpenUntil = until; then() } }
+        }
+    }
 
     /** The remote's Menu key anywhere but on an app (an app's own Menu opens its menu) opens the settings. */
     override fun onKeyUp(code: Int, e: KeyEvent): Boolean {
@@ -2726,7 +2765,8 @@ class HomeActivity : Activity() {
      * apps are the choice grid (many ticked at once), not rows here.
      */
     /** [back]: Back on the first page goes there (Customize's door) instead of Home; a row chosen does not ([Customize.backTo]). */
-    fun addPanel(back: (() -> Unit)? = null) {
+    fun addPanel(back: (() -> Unit)? = null) = layoutGate { addPanelNow(back) }
+    private fun addPanelNow(back: (() -> Unit)?) {
         val hidden = Store.list(this, "hidden"); val onGrid = Store.list(this, "tiles") + Pins.list(this).map { it.pkg }   // a pinned shortcut is on the grid already
         fun icon(pkg: String) = try { packageManager.getApplicationIcon(pkg) } catch (e: Exception) { null }
         val live = ArrayList<TvGlass.Item>(); val pins = ArrayList<TvGlass.Item>(); val rowsOff = ArrayList<TvGlass.Item>()

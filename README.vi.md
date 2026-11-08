@@ -67,7 +67,7 @@ Mã nhập trong app **Downloader** trên TV, luôn trỏ tới bản mới nh�
 | 🎮 **Remote** | Mũi tên, âm lượng, kênh, app, gõ chữ, giọng nói; giữ phím như remote thật; Remote đơn giản phím to cho ông bà | [→](https://tvremote.pages.dev/guide#remote) |
 | 📺 **Hình TV** | Ngay trên máy bạn, có chạm và tiếng; nghe tiếng TV cả khi tắt màn hình điện thoại | [→](https://tvremote.pages.dev/guide#picture) |
 | ✏️ **Lên màn hình TV** | Vẽ, gửi ảnh, video, camera hoặc lời nhắn; đang phát; clipboard của TV; giảm sáng, lọc ánh sáng xanh | [→](https://tvremote.pages.dev/guide#draw) |
-| 🔒 **Cho trẻ em** | Hẹn giờ tắt, giờ đi ngủ, giới hạn app, giới hạn âm lượng, khóa app bằng PIN: chạy ngay trên TV | [→](https://tvremote.pages.dev/guide#limits) |
+| 🔒 **Cho trẻ em** | Hẹn giờ tắt, giờ đi ngủ, giới hạn app, giới hạn âm lượng, khóa app và bố cục TV Home bằng PIN: chạy ngay trên TV | [→](https://tvremote.pages.dev/guide#limits) |
 | 📱 **Quản lý TV** | Ứng dụng, tệp, sức khỏe (RAM, tốc độ mạng của chính TV), nhiều TV cùng lúc | [→](https://tvremote.pages.dev/guide#apps) |
 | ⚡ **Tối ưu TV** | Nhanh, nhẹ hơn: tắt hiệu ứng, tạm dừng màn hình chính đầy quảng cáo và app không dùng; **Hoàn tác** trả lại hết | [→](https://tvremote.pages.dev/guide#optimize) |
 | 🏠 **Thư viện launcher** | Chọn màn hình chính không quảng cáo (TV Home trước, rồi các cái khác), bấm một lần là cài; cái cũ chỉ tắt khi cái mới đã nhận nút Home | [→](https://tvremote.pages.dev/guide#launchers) |

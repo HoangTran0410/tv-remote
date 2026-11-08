@@ -65,7 +65,7 @@ Codes go in the **Downloader** app on the TV and always point at the latest rele
 | 🎮 **Remote** | Arrows, volume, channels, apps, typing, voice; holds keys like the real remote; a Simple remote of big keys for grandparents | [→](https://tvremote.pages.dev/guide?lang=en#remote) |
 | 📺 **The TV's picture** | On your device, with touch and sound; listen with the phone's screen off | [→](https://tvremote.pages.dev/guide?lang=en#picture) |
 | ✏️ **On the TV's screen** | Draw, send a photo, a video or your camera, or a message; now playing; the TV's clipboard; dim or blue light filter | [→](https://tvremote.pages.dev/guide?lang=en#draw) |
-| 🔒 **For kids** | Sleep timer, bedtime, app limits, volume limits, PIN-locked apps: they run on the TV itself | [→](https://tvremote.pages.dev/guide?lang=en#limits) |
+| 🔒 **For kids** | Sleep timer, bedtime, app limits, volume limits, PIN-locked apps and TV Home layout: they run on the TV itself | [→](https://tvremote.pages.dev/guide?lang=en#limits) |
 | 📱 **Manage the TV** | Apps, files, health (memory, the TV's own internet speed), several TVs at once | [→](https://tvremote.pages.dev/guide?lang=en#apps) |
 | ⚡ **Optimize TV** | Faster and lighter: animations off, ad-filled home screen and unused apps paused; **Undo** puts it all back | [→](https://tvremote.pages.dev/guide?lang=en#optimize) |
 | 🏠 **Launcher gallery** | Pick a home screen without ads (TV Home first, then others) and install it in one tap; the old one goes off only once the new one answers Home | [→](https://tvremote.pages.dev/guide?lang=en#launchers) |

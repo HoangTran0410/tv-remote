@@ -24,13 +24,20 @@ import org.json.JSONObject
  * "mic:tv" / "mic:google": who listens, the panel's two-way switch (the user, 2026-11-03): TV Setup Voice ("mic" on, "mic_engine" tv),
  * or the TV's own (Google's Assistant: "mic" off, "mic_engine" auto); "mic:tv" with TV Setup Voice not on the TV opens [VoiceActivity],
  * which offers it, and so does "voice" (dev/flows/voice.md).
+ * "home:unlock" opens the same PIN screen (`home_unlock`) for TV Home's "Lock TV Home's layout with the PIN" (HomeConfig `lockLayout`): a right code
+ * opens the layout for [HOME_OPEN_MIN] minutes ([homeOpenUntil], in memory: a restart asks again), told to TV Home as `home_open`; no code set, or already open: no screen.
  * `arg`: "" asks | "sleep:<minutes>" | "kids:on" | "kids:off" | "kids:setup" | "manage:health" | "dim:<pct>" | "dimc:<colour>" | "mic:on" | "mic:off"
- * | "mic:tv" | "mic:google" | "voice". The answer {sleep_at, kids, pin, dim, mic, mic_engine, voice, error?}: error "bad" | "pin"
+ * | "mic:tv" | "mic:google" | "voice" | "home:unlock". The answer {sleep_at, kids, pin, dim, mic, mic_engine, voice, home_open, error?}: error "bad" | "pin"
  * (kids needs a PIN or a code set first) | "failed" (the screen could not open) | "overlay" (this TV does not let TV Setup draw over apps). An old TV Setup answers
  * "bad" to the last two and has no `dim`: TV Home shows no bar then.
  */
 object HomeControl {
     val SLEEP = setOf(0, 15, 30, 60, 90, 120)
+
+    /** How long a right code opens TV Home's locked layout. */
+    const val HOME_OPEN_MIN = 10
+    /** Until when (ms) TV Home's layout is open after a right code; 0 = locked. Memory only, so a restart of TV Setup asks again. */
+    @Volatile var homeOpenUntil = 0L
 
     /** What a word does: "rules" (changes them here), "pin" / "manage" (only opens a screen, the rules untouched), "ask" (nothing), "bad". */
     fun route(word: String): String = when {
@@ -40,6 +47,7 @@ object HomeControl {
         word == "mic:tv" -> "mictv"                                    // rules when TV Setup Voice is there, else its screen
         word == "voice" -> "voice"
         word == "kids:off" -> "pin"
+        word == "home:unlock" -> "homepin"
         word == "kids:setup" || word == "manage:health" -> "manage"
         word == "keytest" -> "keytest"
         word.startsWith("dim:") && word.substringAfter(':').toIntOrNull()?.let { it == 0 || it in Dim.MIN_PCT..Dim.MAX_PCT } == true -> "dim"
@@ -57,6 +65,7 @@ object HomeControl {
                 if (word == "manage:health") putExtra(ManageActivity.TAB, "health")   // TV Home's watched-today live widget and an app's week
                 else putExtra(ManageActivity.TAB, "auto").putExtra(ManageActivity.SECTION, if (Rules.kidsMode(Rules.load(c))) "kidsadd" else "lockcard")   // on: the apps a child may open; off: the PIN first
             }
+        "homepin" -> if (Rules.hasCode(Rules.load(c)) && homeOpenUntil <= System.currentTimeMillis()) android.content.Intent(c, PinActivity::class.java).putExtra("home_unlock", true) else null
         "keytest" -> android.content.Intent(c, KeyTestActivity::class.java)
         "voice" -> android.content.Intent(c, VoiceActivity::class.java)
         "mictv" -> if (MicVoice.offline(c) == null) android.content.Intent(c, VoiceActivity::class.java) else null
@@ -90,7 +99,7 @@ object HomeControl {
                 "dimc" -> { val st = DimLayer.state(c)
                     if (!st.optBoolean("on")) st.put("pct", 10)                        // off: a light tint (the bar at 90 %; 40 % was too dark, the user 2026-10-30), raised on the bar
                     if (!DimLayer.set(c, st.put("on", true).put("color", word.substringAfter(':')))) error = "overlay" }
-                "pin", "manage", "keytest", "voice" -> if (!handOver && !open(c, screen(c, word)!!)) error = "failed"
+                "pin", "manage", "keytest", "voice", "homepin" -> if (!handOver) screen(c, word)?.let { if (!open(c, it)) error = "failed" }
                 "mictv" -> screen(c, word)?.let { if (!handOver && !open(c, it)) error = "failed" } ?: MicVoice.useTv(c)
                 else -> error = "bad"
             }
@@ -103,6 +112,7 @@ object HomeControl {
         val lock = o.optJSONObject("lock")
         return JSONObject().put("sleep_at", o.optLong("sleep_at").let { if (it > now) it else 0L })
             .put("kids", Rules.kidsMode(o)).put("dim", DimLayer.state(c)).put("mic", o.optBoolean("mic")).put("mic_engine", o.optString("mic_engine").ifEmpty { "auto" }).put("voice", MicVoice.offlineState(c)).put("pin", lock?.has("hash") == true || lock?.has("totp") == true)
+            .put("home_open", homeOpenUntil.let { if (it > now) it else 0L })
             .also { if (error != null) it.put("error", error) }
     }
 }

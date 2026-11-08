@@ -10,6 +10,13 @@ class HomeControlTest {
         assertEquals("manage", HomeControl.route("kids:setup"))
     }
 
+    /** TV Home's layout lock: the word only opens the PIN screen (a right code there opens the layout), it never changes the rules. */
+    @Test fun theLayoutLockWordOnlyOpensThePinScreen() {
+        assertEquals("homepin", HomeControl.route("home:unlock"))
+        assertEquals("bad", HomeControl.route("home:lock"))
+        assertEquals("bad", HomeControl.route("home:"))
+    }
+
     @Test fun onlyTheKnownWordsChangeTheRules() {
         assertEquals("rules", HomeControl.route("kids:on"))
         assertEquals("rules", HomeControl.route("sleep:30"))

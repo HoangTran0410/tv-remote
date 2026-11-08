@@ -1060,6 +1060,8 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 
 > 💡 Dùng chính các luật Chế độ trẻ em, Tổng giờ xem TV và Giờ ngủ, nên sửa riêng từng cái ở thẻ của nó. Cần TV Setup mới nhất.
 
+> 💡 Khóa bố cục TV Home: bật **Hỏi mã PIN khi sửa TV Home** trong Cài đặt TV Home. Đúng PIN thì mở 10 phút.
+
 ## Khóa app bằng mã PIN
 
 1. Tab **⏰ Tự động → 🔒 Khóa app bằng mã PIN**, bấm **＋ Thêm**.

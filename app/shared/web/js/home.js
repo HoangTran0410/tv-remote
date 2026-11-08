@@ -477,6 +477,7 @@ async function homeOpen() {
   const anim = el('input', { type: 'checkbox', onchange: () => send({ anim: anim.checked }) });
   const showInputs = el('input', { type: 'checkbox', onchange: () => send({ showInputs: showInputs.checked }) });   // HomeConfig "showInputs", default off
   const infold = el('input', { type: 'checkbox', onchange: () => send({ infold: infold.checked }) });   // HomeConfig "infold", default off
+  const lockLayout = el('input', { type: 'checkbox', onchange: () => send({ lockLayout: lockLayout.checked }) });   // HomeConfig "lockLayout", default off: the TV asks TV Setup's PIN before its layout changes; this page does not
   const homebar = el('input', { type: 'checkbox', onchange: async () => { if (homebar.checked && !await setupFor('homebar')) { homebar.checked = false; return; } send({ homebar: homebar.checked }); } });   // HomeConfig "homebar", default off; an older TV Setup would ignore it: asked to update first
   const shift = el('input', { type: 'checkbox', onchange: () => send({ shift: shift.checked }) });   // HomeConfig "shift", default off
   const dream = el('input', { type: 'checkbox', onchange: () => send({ dream: dream.checked }) });
@@ -717,6 +718,7 @@ async function homeOpen() {
     chips(vres, 'vres', ['', '1080', '720', '480'], (k) => k ? T('home.v_res_n', { n: k }) : T('home.v_res_screen'));
     everyHead.hidden = every.hidden = !c.wrotate; if (!c.wrotate) everyNote.hidden = true;
     homebar.checked = c.homebar === true; homebar.closest('label').hidden = c.homebar === undefined;
+    lockLayout.checked = c.lockLayout === true; lockLayout.closest('label').hidden = c.lockLayout === undefined;   // an older TV Home does not report it
     shift.checked = c.shift === true; shift.closest('label').hidden = c.shift === undefined;
     showInputs.checked = c.showInputs === true; showInputs.closest('label').hidden = c.showInputs === undefined;   // an older TV Home does not report it
     infold.checked = c.infold === true; infold.closest('label').hidden = c.infold === undefined;   // an older TV Home does not report it
@@ -1131,7 +1133,7 @@ async function homeOpen() {
         check(shows.showAdd, 'home.show_add'), check(shows.showSuggest, 'home.show_suggest'), check(shows.showWatch, 'home.show_watch'), check(infold, 'home.show_infold'), watchAtHead, watchAt),
       sect('home.sec_motion', check(anim, 'home.anim'), motionHead, motion, focusHead, focus, tstyleHead, tstyle, accentHead, accent),
       sect('home.sec_grid', colsHead, cols, check(center, 'home.center'), wplaceHead, wplace, rowsHead, rowsLine, rowsNote),
-      sect('home.sec_edit', orderHead, orderBox, foldHead, foldNote, foldBox),
+      sect('home.sec_edit', check(lockLayout, 'home.lock_layout'), orderHead, orderBox, foldHead, foldNote, foldBox),
       sect(null, tilesHead, tilesNote, addHome, tilesList),
       sect(null, el('div', { className: 'card-head' }, el('h3', { textContent: T('home.hidden') }), addHidden), hidden),
       sect(null, namesHead, names),

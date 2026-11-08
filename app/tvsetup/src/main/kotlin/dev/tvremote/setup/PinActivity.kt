@@ -17,6 +17,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import dev.tvremote.core.T
 import dev.tvremote.setup.health.Stats
+import dev.tvremote.setup.home.HomeControl
 import dev.tvremote.setup.rules.Clock
 import dev.tvremote.setup.rules.Guard
 import dev.tvremote.setup.rules.Kids
@@ -52,6 +53,7 @@ class PinActivity : Activity() {
     private var len = 4
     private var total = false                                       // opened over the "time is up" screen, not over an app
     private var kidsOff = false                                 // opened by TV Home's Control Center: a right code turns kids mode off
+    private var homeUnlock = false                              // opened by TV Home's layout lock (HomeControl "home:unlock"): a right code opens the layout for 10 minutes
     private var grant = 0                                           // opened from a notice (bedtime, a limit): minutes the TV opens for on a right code
     private var ask: Button? = null
     private var useBackup: Button? = null
@@ -71,7 +73,7 @@ class PinActivity : Activity() {
         card.background = GradientDrawable().apply { setColor(Color.rgb(25, 29, 35)); cornerRadius = dp(20).toFloat() }
         card.setPadding(dp(36), dp(20), dp(36), dp(20))
         card.addView(text("🔒", 36, false))
-        card.addView(text(if (kidsOff) T("pin.kids_off_title") else if (total) T("kids.total_title") else if (grant > 0) T("pin.unlock_title") else T("pin.locked", "name" to name()), 24, true), LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(6) })
+        card.addView(text(if (kidsOff) T("pin.kids_off_title") else if (homeUnlock) T("pin.home_title") else if (total) T("kids.total_title") else if (grant > 0) T("pin.unlock_title") else T("pin.locked", "name" to name()), 24, true), LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(6) })
         said = text(enterText(), 16, false).apply { setTextColor(MUTED); maxWidth = dp(420) }
         card.addView(said, LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(8) })
         dots = text("", 30, true).apply { letterSpacing = 0.3f }
@@ -103,6 +105,8 @@ class PinActivity : Activity() {
         total = i.getBooleanExtra("total", false)
         grant = i.getIntExtra("grant", 0)
         kidsOff = i.getBooleanExtra("kids_off", false)
+        homeUnlock = i.getBooleanExtra("home_unlock", false)
+        if (homeUnlock) pkg = "home_unlock"                         // likewise
         if (kidsOff) pkg = "kids_off"                               // not an app: only so the Guard does not ask over it too
         showing = pkg
         len = Rules.load(this).optJSONObject("lock")?.optInt("len", 4) ?: 4
@@ -115,12 +119,13 @@ class PinActivity : Activity() {
         override fun run() {
             val o = Rules.load(this@PinActivity)
             val now = System.currentTimeMillis()
-            val open = if (kidsOff) !Rules.kidsMode(o)
+            val open = if (homeUnlock) !Rules.hasCode(o) || HomeControl.homeOpenUntil > now
+                else if (kidsOff) !Rules.kidsMode(o)
                 else if (total) Rules.unlockUntil(o, now) > 0 || (Rules.totalLeftSec(o, try { stats.today(now, true).first } catch (e: Exception) { JSONObject() }, Kids.free(this@PinActivity, now), now) ?: 1L) > 0
                 else if (grant > 0) Rules.unlockUntil(o, now) > 0
                 else if (pkg == packageName) !Rules.hasCode(o)             // TV Setup's rule screens: free for kids mode, never without the code
                 else !Rules.needsPin(o, pkg, now, Kids.free(this@PinActivity, now))
-            if (open) { if (!total && !kidsOff) Guard.unlock(pkg); showing = null; finish(); return }
+            if (open) { if (!total && !kidsOff && !homeUnlock) Guard.unlock(pkg); showing = null; finish(); return }
             val left = Lockout.until(this@PinActivity, now) - now
             if (left > 0) { said.text = T("pin.wait_long", "t" to clock(left)); said.setTextColor(BAD); waiting = true }
             else if (waiting) { waiting = false; said.text = enterText(); said.setTextColor(MUTED) }
@@ -177,6 +182,7 @@ class PinActivity : Activity() {
             pending = false
             Lockout.right(this)
             RemoteService.unlocked(how, pkg)
+            if (homeUnlock) { HomeControl.homeOpenUntil = System.currentTimeMillis() + HomeControl.HOME_OPEN_MIN * 60_000L; showing = null; finish(); return }
             if (kidsOff) { Rules.change(this, JSONObject().put("do", "kids").put("mode", "list")); showing = null; finish(); return }
             if (total || grant > 0) Rules.change(this, JSONObject().put("do", "unlock").put("minutes", if (grant > 0) grant else TOTAL_UNLOCK_MIN)) else Guard.unlock(pkg)
             showing = null

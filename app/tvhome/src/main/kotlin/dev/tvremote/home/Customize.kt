@@ -483,6 +483,7 @@ object Customize {
                     if (write != null) write(choices[pick].first) else Store.change(a, JSONObject().put(key, choices[pick].first))
                     then(); return@setOnClickListener
                 }
+                if (key == "lockLayout" && !on) { lockOn(a) { on = true; paint() }; return@setOnClickListener }   // only with a PIN to ask for
                 on = !on
                 try { Store.change(a, JSONObject().put(key, on)) } catch (e: SecurityException) { on = !on; systemDream(a) }
                 paint()
@@ -918,6 +919,7 @@ object Customize {
             section(a.getString(R.string.g_sec_edit))
             val doors = launchPage(a, col, ::glass, ::label, gap, quick = false)
             doors.getOrNull(doorAt)?.let { v -> groups[2].start = { v } }; doorAt = -1   // come back from a door: on it
+            tile(R.drawable.ic_lock, a.getString(R.string.show_lock_layout), null, "lockLayout")   // the PIN before the layout changes, default off (HomeConfig "lockLayout")
         }
         groups[3].fill = {
             val preview = PackGlyph(a)
@@ -1316,6 +1318,23 @@ object Customize {
         if (a is HomeActivity) { act(a); return }
         try { a.startActivity(Intent(a, HomeActivity::class.java).setAction(action).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)) } catch (e: Exception) { }
         a.finish()
+    }
+
+    /**
+     * The layout lock goes ON only when TV Setup is new enough and has a PIN ([done] then); else a question says what is missing
+     * (no PIN: OK opens TV Setup's lock card). Off needs nothing: this screen is behind the same lock.
+     */
+    private fun lockOn(a: Activity, done: () -> Unit) {
+        Thread({
+            val out = dev.tvremote.home.apps.SetupHand.control(a, "")
+            a.runOnUiThread {
+                if (a.isDestroyed) return@runOnUiThread
+                if (out != null && out.has("home_open") && out.optBoolean("pin")) { Store.change(a, JSONObject().put("lockLayout", true)); done(); return@runOnUiThread }
+                val noPin = out != null && out.has("home_open")
+                android.app.AlertDialog.Builder(a, R.style.Menu).setMessage(if (noPin) R.string.lock_need_pin else R.string.lock_need_setup)
+                    .setPositiveButton(R.string.ok) { _, _ -> if (noPin) Thread({ dev.tvremote.home.apps.SetupHand.control(a, "kids:setup") }, "home-lock-setup").apply { isDaemon = true }.start() }.showOnOk()
+            }
+        }, "home-lock").apply { isDaemon = true }.start()
     }
 
     /** The screensaver switch cannot write the setting (no WRITE_SECURE_SETTINGS yet; a phone or computer grants it): the system's own screen for it instead. */
