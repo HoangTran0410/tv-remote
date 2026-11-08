@@ -1089,6 +1089,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
+ "46ba6f20cbb30fffeb8af3c1|0.47.0": {
+  "at": "2026-11-08T18:48:43+07:00",
+  "n": 1,
+  "note": "rk3566_rgo, 12th on 0.47.0: the KeyFix.sync race fixed in 5dd45fb6 (next release)"
+ },
  "478a387890933579fecf99b4|0.32.1": {
   "at": "2026-11-05T10:40:16+07:00",
   "n": 1,
