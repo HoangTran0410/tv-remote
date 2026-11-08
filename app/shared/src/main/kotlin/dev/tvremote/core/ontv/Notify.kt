@@ -18,6 +18,7 @@ object Notify {
     const val SECONDS = 5
     const val MIN_SECONDS = 1
     const val MAX_SECONDS = 60
+    const val MAX_DELAY = 86400                                        // a day, in seconds: "remind me in ..."
     const val MAX_TITLE = 60
     const val MAX_TEXT = 300
 
@@ -67,12 +68,20 @@ object Notify {
         return Math.round(d.coerceIn(MIN_SECONDS.toDouble(), MAX_SECONDS.toDouble())).toInt()
     }
 
+    /** Whole seconds to wait before showing, 0..[MAX_DELAY]; anything that is not a positive number is 0 (now). */
+    fun delay(v: Any?): Int {
+        val d = when (v) { is Number -> v.toDouble(); is String -> v.trim().toDoubleOrNull(); else -> null }
+        if (d == null || d.isNaN() || d < 1) return 0
+        return Math.round(d.coerceAtMost(MAX_DELAY.toDouble())).toInt()
+    }
+
     /** The message as TV Setup takes it, or IllegalArgumentException("empty") when there is neither title nor text. */
     fun clean(o: JSONObject): JSONObject {
         val title = o.optString("title").trim().take(MAX_TITLE)
         val text = o.optString("text").trim().take(MAX_TEXT)
         if (title.isEmpty() && text.isEmpty()) throw IllegalArgumentException("empty")
         val m = JSONObject().put("title", title).put("text", text).put("corner", corner(o.opt("corner") as? String)).put("seconds", seconds(o.opt("seconds")))
+        delay(o.opt("delay")).takeIf { it > 0 }?.let { m.put("delay", it) }   // only when asked: an old TV Setup would show it at once, so [send] asks for "notifylater" first
         if (speak(o.opt("speak"))) {                                   // only when asked: an old TV Setup and today's messages stay as they were
             m.put("speak", true)
             langCode(o.opt("lang") as? String).takeIf { it.isNotEmpty() }?.let { m.put("lang", it) }   // the sender's language; an old TV Setup ignores the key
@@ -103,6 +112,7 @@ object Notify {
     fun send(sh: (String) -> String, msg: JSONObject): JSONObject {
         val clean = clean(msg)
         if (clean.optBoolean("speak")) { val have = SetupNeed.have(sh); if (!SetupNeed.ok(have, "speak")) throw SetupNeed.Missing("speak", have) }
+        if (clean.has("delay")) { val have = SetupNeed.have(sh); if (!SetupNeed.ok(have, "notifylater")) throw SetupNeed.Missing("notifylater", have) }
         val arg = B64.encode(clean.toString().toByteArray(Charsets.UTF_8))
         // the card is a window over other apps: the shell may allow that for TV Setup, where the TV has no screen for it
         val out = sh("appops set ${RulesClient.SETUP} SYSTEM_ALERT_WINDOW allow >/dev/null 2>&1; am broadcast --include-stopped-packages -n $RECEIVER --es n $arg 2>&1")

@@ -3,9 +3,9 @@
 Read [README.md](README.md) first: change the row a fault belongs to, and this file in the same commit.
 
 **Code:** `app/tvsetup/src/main/kotlin/dev/tvremote/setup/rules/SceneTimer.kt`, `app/tvsetup/src/main/kotlin/dev/tvremote/setup/rules/Guard.kt`,
-`app/tvsetup/src/main/kotlin/dev/tvremote/setup/ScenePin.kt`, `app/shared/src/main/kotlin/dev/tvremote/core/scenes/Scenes.kt`.
+`app/tvsetup/src/main/kotlin/dev/tvremote/setup/ScenePin.kt`, `app/tvsetup/src/main/kotlin/dev/tvremote/setup/rules/NotifyLater.kt`, `app/shared/src/main/kotlin/dev/tvremote/core/scenes/Scenes.kt`.
 
-**Tests:** `app/tvsetup/src/test/kotlin/dev/tvremote/setup/rules/SceneTimerTest.kt`: each row names its test where a pure one can hold it.
+**Tests:** `app/tvsetup/src/test/kotlin/dev/tvremote/setup/rules/SceneTimerTest.kt` (it also holds the `NotifyLater.step` tests): each row names its test where a pure one can hold it.
 
 ## The goal, for the person
 
@@ -50,6 +50,7 @@ the scene's next time after it (`Scenes.nextAt`, in the TV's time zone of that m
 | 21 | `on.power`: the TV turns on from standby | the screen-on receiver of `WelcomeWatch` calls `SceneTimer.onPower`; not while that scene runs. A cold boot is not covered (BootReceiver) | `twoScenesOnTheSameAppBothStartAndPowerSkipsARunningOne` |
 | 22 | no scene with `on`; screen off | no events are read, no receiver work (`onPower` returns at once); TV Setup older than `SetupNeed` "sceneon": the save is refused with the update question | |
 | 23 | no ADB at an event run | `launch` passes `noAdb = { true }`: silent, no "no ADB" on every app opened; no retry (an event is gone) | measured: on an emulator without the link the wait took ~3 min, the scene quiet meanwhile |
+| 24 | a notification sent "in 10 min / 20 min / 1 h" (`delay` on the notify request; the page's Notify dialog "When") | `NotifyReceiver` keeps it in prefs `notifylater` (`NotifyLater.add`, pokes Guard); `Guard.check` shows what is due through `NotifyLater.tick`. Not shown if > 10 min late (TV off), dropped if due further away than a day (clock went back); survives TV Setup being killed; none pending = nothing runs. TV Setup older than `SetupNeed` "notifylater": the client asks to update before sending | `aMessageWaitsThenShowsOnceAndNeverInAPile` |
 
 ## Checking it
 

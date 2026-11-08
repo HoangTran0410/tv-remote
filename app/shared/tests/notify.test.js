@@ -16,7 +16,7 @@ function page(store) {
   const sandbox = { localStorage, console };
   vm.createContext(sandbox);
   vm.runInContext(read('shared/web/js/notify.js').replace(/^(const|function|async function) /gm, (m) => (m.startsWith('const') ? 'var ' : m))
-    + '\nthis.api = { notifyCorner, notifySeconds, notifyPrefs, notifySave, NOTIFY_CORNERS, NOTIFY_SECONDS };', sandbox);
+    + '\nthis.api = { notifyCorner, notifySeconds, notifyPrefs, notifySave, NOTIFY_CORNERS, NOTIFY_SECONDS, NOTIFY_WHEN };', sandbox);
   return sandbox.api;
 }
 
@@ -74,4 +74,11 @@ test('it is in Tools, a scene step, and a feature that needs a newer TV Setup', 
   assert.ok(/SETUP_NEEDS = \{[^}]*notify:/.test(core));
   assert.ok(read('shared/src/main/kotlin/dev/tvremote/core/ontv/SetupNeed.kt').includes('"notify" to "0.4.2"'));
   assert.ok(read('tvsetup/src/main/kotlin/dev/tvremote/setup/link/Scope.kt').includes('"/api/notify"'));
+});
+
+test('"when" is now or 10 min / 20 min / 1 h, within the day TV Setup keeps (Notify.MAX_DELAY)', () => {
+  const { NOTIFY_WHEN } = page({});
+  assert.deepEqual([...NOTIFY_WHEN], [0, 600, 1200, 3600]);
+  assert.ok(NOTIFY_WHEN.every((n) => n >= 0 && n <= 86400));
+  assert.match(read('shared/src/main/kotlin/dev/tvremote/core/ontv/Notify.kt'), /MAX_DELAY = 86400/);
 });

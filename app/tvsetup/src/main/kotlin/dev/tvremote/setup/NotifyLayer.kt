@@ -40,6 +40,9 @@ internal object NotifyLayer {
         val ctx = c.applicationContext
         app = ctx
         if (Build.VERSION.SDK_INT >= 23 && !Settings.canDrawOverlays(ctx)) return false
+        if (android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) {   // from Guard's thread (a reminder): a window is made on the main one
+            android.os.Handler(android.os.Looper.getMainLooper()).post { show(ctx, msg) }; return true
+        }
         remove()
         val corner = msg.optString("corner", Notify.CORNER)
         val card = card(ctx, msg.optString("title"), msg.optString("text"))
@@ -118,6 +121,11 @@ class NotifyReceiver : BroadcastReceiver() {
         }
         val msg = try { Notify.clean(JSONObject(String(Base64.decode(i.getStringExtra("n") ?: "", Base64.DEFAULT), Charsets.UTF_8))) }
         catch (e: Exception) { return reply(JSONObject().put("error", e.message ?: e.javaClass.simpleName), null) }
+        if (msg.optInt("delay") > 0) {                                  // "remind me in 10 min": kept by NotifyLater, shown by Guard's check
+            if (Build.VERSION.SDK_INT >= 23 && !Settings.canDrawOverlays(c)) return reply(JSONObject().put("error", "overlay"), null)
+            dev.tvremote.setup.rules.NotifyLater.add(c, msg)
+            return reply(JSONObject().put("ok", true).put("later", msg.optInt("delay")), null)
+        }
         if (!NotifyLayer.show(c, msg)) return reply(JSONObject().put("error", "overlay"), null)
         if (!msg.optBoolean("speak")) return reply(JSONObject().put("ok", true), null)
         val pending = goAsync()

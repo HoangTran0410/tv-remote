@@ -430,7 +430,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         lastUse = System.currentTimeMillis()
         lastSeen = lastUse
         connect()
-        guard = Guard(this) { link?.getQuiet() }                       // its failure reaches Guard.sh: the census says why.also { it.start() }
+        guard = Guard.launch(this) { link?.getQuiet() }                // its failure reaches Guard.sh: the census says why
         dev.tvremote.core.ontv.Launchers.useTestFile(getExternalFilesDir(null))
         dev.tvremote.core.ontv.Launchers.dir = java.io.File(cacheDir, "launchers")   // the gallery's list and pictures kept: it opens without waiting on the network
         launcherGuard = LauncherGuard(this) { try { link?.getQuiet() } catch (e: Exception) { null } }.also { it.start() }

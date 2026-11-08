@@ -32,8 +32,11 @@ internal data class Marks(val bedWarnedAt: Long, val totalWarnedAt: Long, val ra
  * times a second, since its PIN must come up before anyone watches it: [PinActivity] goes over it until the PIN is given, and the
  * app stays open until another one comes to the front or the TV goes to standby.
  */
-internal class Guard(private val c: Context, private val adb: () -> Adb?) {
+internal class Guard private constructor(private val c: Context, private val adb: () -> Adb?) {
     companion object {
+        /** The only way to make one: made and started together (TV Setup 0.48.0 made one and never started it, a `.also { it.start() }`
+         *  lost into a comment: no timer, bedtime, limit or lock ran). */
+        fun launch(c: Context, adb: () -> Adb?): Guard = Guard(c, adb).also { it.start() }
         @Volatile private var running: Guard? = null
         /** The rules changed: check now rather than at the next tick. */
         fun poke() { running?.let { g -> g.ui.removeCallbacks(g.tick); g.ui.post(g.tick) } }
@@ -135,7 +138,7 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
         try { AdbReport.once(c, "guard_$where", e.toString()) } catch (t: Throwable) { }
     }
 
-    fun start() {
+    private fun start() {
         running = this
         ui.postDelayed(tick, 5_000)
         Thread({ while (!stopped) Thread.sleep(safe(5_000L, { died("lockCheck", it) }) { lockCheck() }) }, "guard-lock").apply { isDaemon = true }.start()
@@ -208,6 +211,8 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
 
         // ---- scenes that start at a time or when an app opens (nothing happens with none)
         SceneTimer.tick(c, now, on)?.let { next = minOf(next, it.coerceAtLeast(1_000L)) }
+        // ---- a message the page asked to show later (nothing happens with none)
+        NotifyLater.tick(c, now)?.let { next = minOf(next, it.coerceAtLeast(1_000L)) }
         // ---- turn off when nobody uses it (off: nothing is read; on: one read when the deadline could have come, see IdleOff)
         val idleH = IdleOff.hours(o)
         if (idleH > 0 && on) next = minOf(next, idleLook(idleH))

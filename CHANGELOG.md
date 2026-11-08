@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Setup: the sleep timer, bedtime, app limits, app schedule, timed scenes and the PIN lock ran again: 0.48.0 (v0.50.0) never started its rule watcher, a start call lost into a comment; it is now made and started in one call.
+- Send a notification: "Remind me later": in 10 min, 20 min or 1 hour; TV Setup keeps it and shows it on time, with every phone and computer off (#27).
 - Kids mode has a plain way off: a "Turn off kids mode" button in the Kids mode card, and a tile on TV Setup's own screen that asks the PIN (#28).
 - Mic key: pick the language the TV's own speech recognizer listens in (TV settings → mic key), when it is not the TV's language; TV Setup passes it to the recognizer on each request.
 - Saving a file the page makes (Move to a new TV backup, TV copy, a TV Home theme, a screenshot) works in the Phone app and the Computer app's window: the page hands it to its own server (`/api/hold`) and downloads a normal link, as `blob:` links saved nothing there (#25).

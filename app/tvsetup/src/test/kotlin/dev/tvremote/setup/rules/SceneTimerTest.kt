@@ -103,4 +103,22 @@ class SceneTimerTest {
         assertEquals(listOf("a", "b"), SceneTimer.decideApps(two, listOf(open(yt, 1)), "", emptyMap(), 2).fire)
         assertEquals(listOf("p"), SceneTimer.decidePower(listOf("p", "q"), mapOf("q" to (0L..Long.MAX_VALUE)), 100))
     }
+
+    // NotifyLater.step (a notification asked for "in 10 min")
+    private val later = JSONObject("{text:'tea'}")
+    private val laterNow = 1_800_000_000_000L
+
+    @Test fun aMessageWaitsThenShowsOnceAndNeverInAPile() {
+        var s = NotifyLater.step(listOf((laterNow + 600_000) to later), laterNow)
+        assertTrue(s.fire.isEmpty()); assertEquals(600_000L, s.wait); assertEquals(1, s.keep.size)
+        s = NotifyLater.step(s.keep, laterNow + 600_500)                       // due: shown and gone
+        assertEquals(1, s.fire.size); assertTrue(s.keep.isEmpty()); assertNull(s.wait)
+        s = NotifyLater.step(listOf((laterNow - NotifyLater.LATE_MS - 1) to later), laterNow)   // the TV was off for long: skipped
+        assertTrue(s.fire.isEmpty() && s.keep.isEmpty())
+    }
+
+    @Test fun aDueTimeFurtherAwayThanAnyDelayIsDroppedAndTheNearestSetsTheWait() {
+        val s = NotifyLater.step(listOf((laterNow + 90_000_000L) to later, (laterNow + 120_000) to later, (laterNow + 60_000) to later), laterNow)   // 25 h: the clock went back
+        assertEquals(2, s.keep.size); assertEquals(60_000L, s.wait)
+    }
 }

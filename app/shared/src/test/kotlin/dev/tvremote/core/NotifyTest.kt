@@ -150,4 +150,19 @@ class NotifyTest {
         assertTrue(SetupNeed.ok("0.4.2", "notify"))
         assertEquals("Gửi thông báo lên TV", SetupNeed.name("notify", "vi"))
     }
+
+    @Test fun delayIsWholeSecondsUpToADayElseNow() {
+        assertEquals(600, clean("""{"text":"x","delay":600}""").getInt("delay"))
+        assertEquals(1200, clean("""{"text":"x","delay":"1200"}""").getInt("delay"))
+        assertEquals(Notify.MAX_DELAY, clean("""{"text":"x","delay":999999}""").getInt("delay"))
+        for (bad in listOf("0", "-5", "\"soon\"", "null")) assertTrue(bad, !clean("{\"text\":\"x\",\"delay\":$bad}").has("delay"))
+        assertTrue(!clean("""{"text":"x"}""").has("delay"))   // today's message stays as it was
+    }
+
+    @Test fun aLaterMessageNeedsANewerTvSetup() {
+        val sh = { c: String -> if (c.contains("versionName")) "    versionName=0.48.0" else "Broadcast completed: result=0, data=\"e30=\"" }
+        try { Notify.send(sh, JSONObject("""{"text":"x","delay":600}""")); org.junit.Assert.fail("0.48.0 would show it at once") }
+        catch (e: dev.tvremote.core.ontv.SetupNeed.Missing) { assertEquals("notifylater", e.feature) }
+        Notify.send(sh, JSONObject("""{"text":"x"}"""))     // no delay: as before
+    }
 }
