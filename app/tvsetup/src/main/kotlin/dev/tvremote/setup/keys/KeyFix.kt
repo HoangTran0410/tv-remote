@@ -289,7 +289,13 @@ object KeyFix {
      */
     internal fun rearm(t: Long, wrote: Long, tries: Int): Long? = if (tries >= REARM) null else (wrote + 61_000L - t).coerceAtLeast(1_000L)
 
-    /** Turn the service on while a dead key needs it and it is wanted, off when not; nothing when this app may not write the settings. */
+    /**
+     * Turn the service on while a dead key needs it and it is wanted, off when not; nothing when this app may not write the settings.
+     * One at a time: it is called from several threads at once (the watcher, Rules, HomeInfo, KeyList at start); two that both read
+     * the list before the first wrote it counted the second as "taken out again", and three of those reported keyfix_refused with the
+     * service on all along (11 boxes on 0.47.0, census 0bea8243 and the ten before).
+     */
+    @Synchronized
     fun sync(c: Context) {
         if (!can(c)) return
         try {
