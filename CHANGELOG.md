@@ -4,6 +4,10 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- TV Setup: the key add-on turned off in the TV's Settings is left off (it was written back 3 times and reported keyfix_refused, census 456d47c9); turned on again, its key filter comes back at once instead of after a restart
+
 ## 0.50.0 - 2026-11-08
 
 Web 0.50.0 · Phone app 0.47.0 · TV app 0.48.0 · TV Home 0.31.0 · TV Channels 0.22.0 · TV Games 0.23.0 · TV Apps 0.7.0

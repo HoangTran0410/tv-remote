@@ -276,6 +276,10 @@ object KeyFix {
         return "sdk ${Build.VERSION.SDK_INT}, adb ${if (dev.tvremote.setup.RemoteService.adb() != null) "up" else "down"}, add-on by $installer, $addon"
     }
 
+    /** The add-on is installed but turned off (pm disable-user, or Settings → Apps → Disable); our own code never does that (Setup.PROTECTED). */
+    private fun addonOff(c: Context): Boolean = try { !c.packageManager.getApplicationInfo(KeysProtocol.ADDON, 0).enabled } catch (e: Exception) { false }
+
+    private var wasOff = false
     private var wrote = 0L
     private var refused = 0                                           // times in a row the system took the service out within the guard
     const val REARM = 3
@@ -311,9 +315,17 @@ object KeyFix {
                 || HomeKeys.bar(c)                                    // Home over an app shows TV Home's bar ([HomeBar])
                 || HomeKey.pkg(c) != null                             // Home to the launcher picked: asked for on the page, not by the dead-key switch
             if (need && !KeysAddon.current(c)) { KeysAddon.installThen(c) { sync(c) }; return }   // the service is in the add-on: put it on the TV first (it comes back here)
-            if (need == has && !old) { if (has && System.currentTimeMillis() - wrote >= 60000) refused = 0; return }   // it stayed past the guard: the policy let go
+            if (need && addonOff(c)) { wasOff = true; android.util.Log.i("KeyFix", "the add-on is turned off: left so"); return }   // someone turned it off in Settings: Android drops its service at once, so writing it was a fight lost 3 times and a keyfix_refused (a MiTV, census 456d47c9)
+            val back = need && wasOff; wasOff = false                 // turned on again: Android keeps the entry but marks the service crashed and never binds it (API 34 emulator)
+            if (back && has) {                                        // out now, in on the next look: written back at once it stayed crashed (measured)
+                Settings.Secure.putString(r, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, list(was, false).ifEmpty { null })
+                wrote = 0L
+                later?.invoke(3000) ?: run { Thread.sleep(3000); sync(c) }
+                return
+            }
+            if (need == has && !old && !back) { if (has && System.currentTimeMillis() - wrote >= 60000) refused = 0; return }   // it stayed past the guard: the policy let go
             val t = System.currentTimeMillis()
-            if (need && !old && t - wrote < 60000) {                  // the system took it out again just now (a policy): not every few seconds
+            if (need && !old && !back && t - wrote < 60000) {                // the system took it out again just now (a policy): not every few seconds
                 val wait = rearm(t, wrote, refused)
                 if (wait == null) dev.tvremote.setup.health.AdbReport.once(c, "keyfix_refused", "service taken out ${REARM}x; ${refusedWhy(c)}")
                 else { refused++; later?.invoke(wait) }

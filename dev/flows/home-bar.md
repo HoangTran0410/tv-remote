@@ -33,7 +33,7 @@ the app beneath stays visible and running. No service, receiver or timer of our 
 | 3 | option on, TV Home in front (home screen, or the bar itself) | Home as before: the rule `homekey`'s launcher, else the HOME intent; from the bar this is the second Home, the bar closes in `onStop` | `aHomeScreenInFrontLetsHomeThrough` |
 | 4 | option on, nothing known in front, or the system's bars | Home as before | `nothingKnownOrTheSystemsBarsLetHomeThrough` |
 | 5 | Home held 500 ms | the TV's own long press, as in the key way (`HomeKey.longPress`) | |
-| 6 | the add-on not installed or not on (no key filter) | Home as before; the page's text says the bar needs TV Setup | |
+| 6 | the add-on not installed or not on (no key filter); turned off in Settings: left off, not written again (`KeyFix.addonOff`); turned on again: taken out of the list and put back 3 s later, or Android keeps it "crashed" and unbound | Home as before; the page's text says the bar needs TV Setup | |
 | 7 | screen off | the add-on does not take keys while it is off: Home wakes the TV as before | |
 | 8 | a client's Home: the TV web page (`/api/key` -> `KeysBridge.press`) or the Computer app's ADB fallback (`RulesClient.key`, only when its remote link is down) | the same decision as a real press: option on and an app in front: the bar (`KeysBridge.press` -> `homeBar`); option off: injected, Home as before. The Phone app's ADB link and `input keyevent` skip the filter: no bar there | |
 

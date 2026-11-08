@@ -1049,6 +1049,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "456d47c9fb50b8a31f2d3c71|0.48.0": {
+  "at": "2026-11-08T23:36:00+07:00",
+  "n": 1,
+  "note": "the key add-on was turned off (disabled) on the TV: Android drops its service; KeyFix now leaves it off, and rebinds when it is turned on again; emulator-tested"
+ },
  "457abcc7833427ac40dcc540|0.45.0": {
   "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
