@@ -1984,6 +1984,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
+ "7ce62d6ce53d30ec3ee956df|0.49.0": {
+  "at": "2026-11-08T22:48:37+07:00",
+  "n": 1,
+  "note": "Linux Computer app (WebKitGTK): famGet missing in renderFamily; family.js's card code moved out of its if block (the only file with block-scoped declarations); not reproduced"
+ },
  "7cf9011759eb60d1071330ae|0.32.1": {
   "at": "2026-10-29T17:20:07+07:00",
   "n": 1,
