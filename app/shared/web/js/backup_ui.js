@@ -15,8 +15,7 @@ async function bkTake() {
   const file = backupBuild(o);
   if (!Object.keys(file.parts).length) { toast(T('backup.read_failed')); return; }
   if (Object.keys(file.parts).length < 6) toast(T('backup.some_missing'));
-  const a = el('a', { href: URL.createObjectURL(new Blob([JSON.stringify(file, null, 2)], { type: 'application/json' })), download: backupFileName(o.model || o.name, o.made) });
-  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  await saveFile(backupFileName(o.model || o.name, o.made), JSON.stringify(file, null, 2));
   toast(T('backup.saved'));
 }
 

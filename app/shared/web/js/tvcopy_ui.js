@@ -42,10 +42,7 @@ async function tcApply() {
   await tcCheck();
 }
 
-function tcSave() {
-  const a = el('a', { href: URL.createObjectURL(new Blob([JSON.stringify(tcHeld, null, 2)], { type: 'application/json' })), download: 'tvcopy-' + tcHeld.date + '.json' });
-  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-}
+function tcSave() { return saveFile('tvcopy-' + tcHeld.date + '.json', JSON.stringify(tcHeld, null, 2)); }
 async function tcOpen(f) {
   let b = null;
   try { b = tvCopyRead(JSON.parse(await f.text())); } catch (e) { b = null; }

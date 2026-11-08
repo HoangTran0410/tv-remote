@@ -114,6 +114,20 @@ const STALE = T('core.stale');
 // only past 150 ms so quick calls do not flicker). Counted from the end of the click handler, or from the yes to an ask() in it.
 let clicked = null, clickedAt = Infinity;
 document.addEventListener('click', (e) => { clicked = e.target.closest && e.target.closest('button'); clickedAt = Infinity; setTimeout(() => { clickedAt = performance.now(); }, 0); }, true);
+// A file made in the page (a backup, a theme), saved as a download. A blob: link is saved only by a browser: the Phone app's
+// WebView and the Computer app's window fetch a download again from the server, so it goes there first (Manage "hold", issue
+// #25); a server without it (404) gets the blob link, as before.
+async function saveFile(name, data, type = 'application/json') {
+  const blob = data instanceof Blob ? data : new Blob(Array.isArray(data) ? data : [data], { type });
+  let href = null;
+  try {
+    const r = await fetch('api/hold?name=' + encodeURIComponent(name) + '&type=' + encodeURIComponent(blob.type || type), { method: 'POST', body: blob, headers: { 'content-type': 'application/octet-stream' } });
+    if (r.ok) href = (await r.json()).url;
+  } catch {}
+  const url = href || URL.createObjectURL(blob), a = el('a', { href: url, download: name });
+  document.body.append(a); a.click(); a.remove();
+  if (!href) setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
 async function api(path, data, quiet, ms) {
   if (path === '/api/key' && typeof snapKey === 'function') snapKey();   // every key of every button comes through here: screenshot mode looks again soon after
   const b = clicked && !clicked.dataset.busy && !clicked.ownRing && performance.now() - clickedAt < 1000 ? clicked : null;

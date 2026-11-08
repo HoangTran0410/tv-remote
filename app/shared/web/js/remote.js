@@ -107,8 +107,7 @@ async function screenshot() {
   try {
     const r = await fetch('/api/screen');
     if (!r.ok) { let e = r.statusText; try { e = (await r.json()).error || e; } catch {} toast(T('common.error_msg', { msg: friendly(adbWords(r.status, e)) })); return; }
-    const url = URL.createObjectURL(await r.blob()), a = el('a', { href: url, download: name });
-    a.click(); setTimeout(() => URL.revokeObjectURL(url), 10000);
+    await saveFile(name, await r.blob(), 'image/png');                // the Phone app saves only a link it can fetch again
   } catch { toast(T('core.server_unreachable')); } finally { shotDone(); }
 }
 function shotDone() { clearTimeout(shotDone.t); $('#r-screenshot').classList.remove('busy'); }

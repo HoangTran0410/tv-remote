@@ -114,7 +114,7 @@ internal class Managing(private val a: MainActivity, root: FrameLayout) : HttpSe
                 picking = cb
                 try {
                     @Suppress("DEPRECATION")
-                    a.startActivityForResult(params!!.createIntent(), PICK_FILE)
+                    a.startActivityForResult(pickIntent(params!!), PICK_FILE)
                 } catch (e: Exception) {
                     picking = null
                     return false
@@ -287,6 +287,14 @@ internal class Managing(private val a: MainActivity, root: FrameLayout) : HttpSe
         val cb = picking ?: return
         cb.onReceiveValue(pickedUris(result, data))
         picking = null
+    }
+
+    // createIntent() keeps only the MIME types: a page that names files by their ending (.apk, .xapk) got a picker with every
+    // APK greyed and only zip files to choose (issue #26); any type then, and the page checks the ending itself, as in a browser
+    private fun pickIntent(p: WebChromeClient.FileChooserParams): Intent {
+        if (p.acceptTypes.none { it.trim().startsWith(".") }) return p.createIntent()
+        return Intent(Intent.ACTION_GET_CONTENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
+            .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, p.mode == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE)
     }
 
     // parseResult reads only getData(): a picker that answers a multiple pick with ClipData alone (a POCO's gallery) gave the

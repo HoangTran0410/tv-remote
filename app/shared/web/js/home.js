@@ -1054,8 +1054,7 @@ async function homeOpen() {
           dataUrl: (b) => new Promise((ok, no) => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.onerror = () => no(new Error('read')); fr.readAsDataURL(b); }),
         });
       }
-      const url = URL.createObjectURL(new Blob(homeMediaFile(name, conf, media), { type: 'application/json' }));
-      saveAs(url, file); setTimeout(() => URL.revokeObjectURL(url), 60000);
+      await saveFile(file, new Blob(homeMediaFile(name, conf, media), { type: 'application/json' }));
     };
     // share to the community store: a form (the display name is kept on this page), then the job on the server side (api/home/theme/share) is asked
     // every second: its step in words, Cancel while it runs, the end in words a person can act on

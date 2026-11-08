@@ -141,6 +141,7 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
                     if (post) { WireLog.all.add("page", r.json().optString("said").take(500)); return HttpServer.Response.json(JSONObject().put("ok", true)) }   // what went wrong inside the page (a decoder that gave nothing), for the same log
                     return HttpServer.Response.of("text/plain; charset=utf-8", WireLog.all.report().toByteArray())   // ours, not the TV's: "Gửi nhật ký"
                 }
+                "hold" -> return hold(r)                        // a file made in the page, saved as a plain download (issue #25)
                 "settings" -> if (!post) return text(TvShell.SETTINGS_READ, 20000)
                 "inputs" -> if (!post) return HttpServer.Response.json(Inputs.json(inputs(r.q("fresh") == "1")))   // HDMI 1 · PlayStation...
                 "caps" -> return HttpServer.Response.json(JSONObject().put("text", labels?.caps() ?: ""))
@@ -333,6 +334,38 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
     }
 
     companion object {
+        /**
+         * POST ?name=&type= with the file (sent as application/octet-stream: the Computer app takes JSON bodies only up to a size) as the body: kept a few minutes, answered with a link; GET ?id= gives it back as a download. A blob:
+         * link is saved only by a browser: the Phone app's WebView and the Computer app's window fetch a download again from this
+         * server (Managing.saveToPhone, Window.kt tvrSave), so a backup made in the page never reached them (issue #25).
+         */
+        fun hold(r: HttpServer.Request): HttpServer.Response {
+            val post = r.method == "POST"
+            if (post) {
+                if (r.length <= 0 || r.length > HOLD_MAX) throw IllegalArgumentException("too big")
+                val b = ByteArray(r.length.toInt()); var off = 0
+                while (off < b.size) { val n = r.body.read(b, off, b.size - off); if (n < 0) break; off += n }
+                val name = holdName(r.q("name")); val id = java.util.UUID.randomUUID().toString().replace("-", "")
+                synchronized(held) {
+                    val t = System.currentTimeMillis()
+                    held.entries.removeAll { t - it.value.at > HOLD_MS }
+                    while (held.size >= 3) held.remove(held.keys.first())  // a few at once: memory on a weak TV box
+                    held[id] = Held(name, r.q("type").takeIf { it.matches(Regex("[a-z]+/[a-z0-9.+-]+")) } ?: "application/octet-stream", b.copyOf(off), t)
+                }
+                return HttpServer.Response.json(JSONObject().put("url", "api/hold?id=$id"))
+            }
+            val h = synchronized(held) { held[r.q("id")]?.takeIf { System.currentTimeMillis() - it.at <= HOLD_MS } } ?: return HttpServer.Response.json(404, JSONObject().put("error", "not found"))
+            val enc = java.net.URLEncoder.encode(h.name, "UTF-8").replace("+", "%20")
+            return HttpServer.Response.of(h.type, h.data).also { it.headers["Content-Disposition"] = "attachment; filename=\"${h.name}\"; filename*=UTF-8''$enc" }
+        }
+
+        private class Held(val name: String, val type: String, val data: ByteArray, val at: Long)
+        private val held = LinkedHashMap<String, Held>()
+        const val HOLD_MAX = 64L shl 20                                // a theme with its pictures and videos (home.js) can be tens of MB
+        const val HOLD_MS = 10 * 60_000L
+        /** The file's name as asked, without a path or quotes, never empty. */
+        fun holdName(n: String): String = n.substringAfterLast('/').substringAfterLast('\\').filter { it >= ' ' && it != '"' && it != ';' }.trim().take(120).ifEmpty { "file" }
+
         /** A step's own error code ("games:missing", "home:frame_full", "launcher:install:…"), not ADB's words ("refused: shell:…", "adb pair: …"). */
         val APP_CODE = Regex("^(?!adb)[a-z]+:[a-z_]+")
 
