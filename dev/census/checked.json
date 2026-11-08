@@ -274,6 +274,11 @@
   "n": 3,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "13e27d831d17fd88362a6de6|0.47.0": {
+  "at": "2026-11-08T10:55:39+07:00",
+  "n": 1,
+  "note": "keyfix_refused on a 4K Google TV Stick, 10th on 0.47.0; cause reported from the next TV Setup"
+ },
  "13ebb1a66fdaf61270829f5a|0.26.3": {
   "at": "2026-11-05T10:40:10+07:00",
   "n": 1,
