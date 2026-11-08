@@ -2715,9 +2715,14 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
  "aee77a3818915324ab95d974|0.47.0": {
-  "at": "2026-11-07T19:36:52+07:00",
+  "at": "2026-11-09T00:47:01+07:00",
   "n": 1,
-  "note": "keyfix_refused: Android 13+ restricted setting or admin policy (same log, measured); the report says which from d0fb2fd6"
+  "note": "0.48.0, same WS box as on 0.47.0 (fake 'Android 13', sdk 29 eros-p1 userdebug): add-on running and on, the sync race fixed, still taken out: the firmware's own policy; KeyFix gives up after 3 as meant"
+ },
+ "aee77a3818915324ab95d974|0.48.0": {
+  "at": "2026-11-09T00:47:01+07:00",
+  "n": 1,
+  "note": "0.48.0, same WS box as on 0.47.0 (fake 'Android 13', sdk 29 eros-p1 userdebug): add-on running and on, the sync race fixed, still taken out: the firmware's own policy; KeyFix gives up after 3 as meant"
  },
  "af07b280da306e71dfc625f7|0.34.1": {
   "at": "2026-10-30T09:08:24+07:00",
