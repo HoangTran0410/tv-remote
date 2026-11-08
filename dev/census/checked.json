@@ -544,6 +544,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "24516ed4c9c94a793f74b26d|0.47.0": {
+  "at": "2026-11-08T15:25:13+07:00",
+  "n": 1,
+  "note": "BRAVIA VU3: ADB on, 5555 open, the link failed and the words said ADB off; now says 'can't connect, Reconnect' and the report carries the link error"
+ },
  "25473d8d21bbc354ae617435|0.45.0": {
   "at": "2026-11-06T17:03:02+07:00",
   "n": 1,

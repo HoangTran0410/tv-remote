@@ -4563,6 +4563,7 @@
  "tv_main.turn_back_on_cannot": "Chưa bật được: kết nối ADB một lần để TV Setup có quyền tự bật lại",
  "guard.no_adb_standby": "Không tắt được TV: ADB đang tắt. Bật Gỡ lỗi ADB trên TV",
  "guard.no_adb_close": "Không đóng được {name}: ADB đang tắt trên TV",
+ "guard.no_adb_link": "TV Setup chưa kết nối được ADB. Mở TV Setup và chọn Kết nối lại.",
  "listen.refused": "TV từ chối chia sẻ tiếng (Android {sdk}). Một số TV hoặc app chặn việc này.",
  "listen.decoder_failed": "Trình duyệt không giải mã được tiếng từ TV nên đã dừng nghe.",
  "listen.audio_blocked": "Trình duyệt đã tắt tiếng (cuộc gọi, hoặc tab chạy nền). Chạm 🎧 để nghe lại.",

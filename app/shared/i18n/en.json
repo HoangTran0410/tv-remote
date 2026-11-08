@@ -4701,6 +4701,7 @@
  "tv_main.turn_back_on_cannot": "Not working yet: connect ADB once so TV Setup gets the permission to turn it back on",
  "guard.no_adb_standby": "Could not turn the TV off: ADB debugging is off on this TV",
  "guard.no_adb_close": "Could not close {name}: ADB debugging is off on this TV",
+ "guard.no_adb_link": "TV Setup can't connect to ADB. Open TV Setup and choose Reconnect.",
  "listen.refused": "The TV refused to share its sound (Android {sdk}). Some TVs and apps block it.",
  "listen.decoder_failed": "This browser could not decode the TV’s sound, so listening stopped.",
  "listen.audio_blocked": "The browser muted the sound (a call, or the tab in the background). Tap 🎧 to listen again.",

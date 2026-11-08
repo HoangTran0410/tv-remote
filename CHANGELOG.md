@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Setup: when a rule cannot close an app or turn the TV off while ADB debugging is on, it no longer says "ADB debugging is off"; it says TV Setup can't connect to ADB and to choose Reconnect.
 - TV Setup: no false “key filter taken out” report (keyfix_refused): two checks running at once counted the second as the system taking the filter out, while it stayed on.
 - TV Setup: when “Allow USB debugging?” runs out of time on Android 11+, it also says that some TVs never show it and points to Wireless debugging, which needs no question.
 - TV Setup and the page: an NVIDIA SHIELD whose ADB is refused is told to turn on its own “Network debugging” switch (TV Setup opens Developer options), not sent to Wireless debugging.

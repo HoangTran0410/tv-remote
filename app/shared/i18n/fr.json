@@ -4734,6 +4734,7 @@
   "tv_main.turn_back_on_cannot": "Pas encore actif : connectez ADB une fois pour que TV Setup obtienne l’autorisation de le réactiver",
   "guard.no_adb_standby": "Impossible d’éteindre la TV : le débogage ADB est désactivé sur cette TV",
   "guard.no_adb_close": "Impossible de fermer {name} : le débogage ADB est désactivé sur cette TV",
+  "guard.no_adb_link": "TV Setup n'arrive pas à se connecter à ADB. Ouvrez TV Setup et choisissez Reconnecter.",
   "listen.refused": "La TV refuse de partager son son (Android {sdk}). Certaines TV et applis le bloquent.",
   "listen.decoder_failed": "Ce navigateur n’a pas pu décoder le son de la TV, l’écoute s’est arrêtée.",
   "listen.audio_blocked": "Le navigateur a coupé le son (appel ou onglet en arrière-plan). Touchez 🎧 pour réécouter.",

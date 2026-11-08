@@ -361,10 +361,12 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
 
     /** Null when there is no ADB right now (down, or the command failed): the caller must not act as if it worked. */
     private fun sh(cmd: String): String? {
-        val out = try { adb()?.shell(cmd) } catch (e: Exception) { null }
-        if (out != null) noAdbSaid = false
+        val out = try { adb()?.shell(cmd) } catch (e: Exception) { why = e.message ?: e.javaClass.simpleName; null }
+        if (out != null) { noAdbSaid = false; why = "" }
         return out
     }
+
+    private var why = ""                                              // the last ADB failure, for the census: what "no ADB" really was
 
     /** The TV goes to standby; false when ADB could not be reached (the rule then keeps trying and says nothing of success). */
     private fun standby(): Boolean {
@@ -378,9 +380,14 @@ internal class Guard(private val c: Context, private val adb: () -> Adb?) {
     /** A rule could not act for want of ADB: one word on screen per failure episode (until ADB answers again), and the census hears it once per version. */
     private fun noAdb(said: String) {
         // Fire TV: "ADB debugging is off" was false (census AFTMA2857F, 2026-11-07); Amazon blocks an app's own ADB, nothing on the TV turns it on
-        val text = if (!android.os.Build.MANUFACTURER.equals("Amazon", true)) said
-            else said.substringBefore(':').trimEnd() + ": " + T("tv_main.fire_adb_blocked")
-        AdbReport.once(c, "rules_no_adb", text)
+        // ADB on but no link (a BRAVIA VU3 with 5555 open, census 24516ed4): "ADB debugging is off" was false there too
+        val adbOn = try { android.provider.Settings.Global.getInt(c.contentResolver, android.provider.Settings.Global.ADB_ENABLED, 0) == 1 } catch (e: Exception) { false }
+        val text = when {
+            android.os.Build.MANUFACTURER.equals("Amazon", true) -> said.substringBefore(':').trimEnd() + ": " + T("tv_main.fire_adb_blocked")
+            adbOn -> said.substringBefore(':').trimEnd() + ": " + T("guard.no_adb_link")
+            else -> said
+        }
+        AdbReport.once(c, "rules_no_adb", text + (if (why.isNotEmpty()) " [" + why.take(160) + "]" else ""))
         if (noAdbSaid) return
         noAdbSaid = true
         say(text)
