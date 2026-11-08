@@ -43,6 +43,9 @@ import org.json.JSONObject
 internal object Rules {
     private const val PREFS = "rules"
     private val PKG = dev.tvremote.core.adb.Pkg.RE
+    private val TV_LANG = Regex("[a-z]{2,3}(-[A-Z]{2})?")           // a BCP-47 tag the TV's recognizer takes (ar-SA, fr)
+    /** The language the TV's own recognizer listens in: "" = the TV's (TV Setup's) language, else a tag; anything else is refused. */
+    fun tvLang(s: String): String = s.takeIf { it.isEmpty() || TV_LANG.matches(it) } ?: throw IllegalArgumentException("bad lang")
     private val HHMM = Regex("([01]?\\d|2[0-3]):([0-5]\\d)")
 
     @Synchronized
@@ -135,6 +138,7 @@ internal object Rules {
             "mic_engine" -> o.put("mic_engine", if (d.optString("engine") == "tv") "tv" else "auto")   // who listens first: "tv" = TV Setup Voice over Google's (MicVoice.engineTv)
             "mic_freespeech" -> o.put("mic_freespeech", d.optBoolean("on"))   // TV Setup Voice also decodes free speech (MicVoice.freeSpeech); off = nothing of it runs
             "mic_free" -> {}                                                // nothing kept: the answer to mic_block (MicVoice.free), run below
+            "mic_tv_lang" -> o.put("mic_tv_lang", tvLang(d.optString("lang")))   // the language the TV's own recognizer listens in (MicActivity); not the add-on's "mic_lang"
             "mic_lang_remove" -> {}                                         // nothing kept: MicVoice.removeLang uninstalls and moves "mic_lang"
             "mic_lang" -> d.optString("lang").takeIf { it in VoiceProtocol.LANGS }?.let { o.put("mic_lang", it) }   // the language TV Setup Voice listens in (MicVoice.lang); a new one is added, not swapped
             "voice_search" -> o.put("voice_search", d.optString("pkg").takeIf { PKG.matches(it) } ?: "")    // the app a bare "tìm X" searches in ("" = the TV's own search, today); Voice.Prefs
@@ -565,7 +569,7 @@ internal object Rules {
             .put("in_bedtime", inBedtime(o, now)).put("snooze_until", o.optLong("snooze_until").let { if (it > now) it else 0L })
             .put("limits", limits).put("volume", o.optJSONArray("volume") ?: JSONArray()).put("volume_now", volumeCap(o, now) ?: JSONObject.NULL)
             .put("idle_h", IdleOff.hours(o)).put("ram", ram(o)).put("volume_fixed", Guard.volumeFixed(c)).put("running", RemoteService.isRunning()).put("wanted", active(c))
-            .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("mic_offline", o.optBoolean("mic_offline")).put("mic_secure", dev.tvremote.setup.keys.KeyFix.can(c)).put("mic_engine", o.optString("mic_engine").ifEmpty { "auto" }).put("mic_freespeech", o.optBoolean("mic_freespeech")).put("voice", MicVoice.offlineState(c)).put("mic_lang", MicVoice.lang(c)).put("mic_active", MicVoice.active(c) ?: "").put("mic_langs", JSONArray(MicVoice.installed(c))).put("voice_search", o.optString("voice_search")).put("voice_youtube", o.optString("voice_youtube")).put("voice_tubes", MicVoice.tubes(c)).put("homekey", o.optString("homekey"))
+            .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("mic_offline", o.optBoolean("mic_offline")).put("mic_secure", dev.tvremote.setup.keys.KeyFix.can(c)).put("mic_engine", o.optString("mic_engine").ifEmpty { "auto" }).put("mic_freespeech", o.optBoolean("mic_freespeech")).put("voice", MicVoice.offlineState(c)).put("mic_lang", MicVoice.lang(c)).put("mic_tv_lang", o.optString("mic_tv_lang")).put("mic_active", MicVoice.active(c) ?: "").put("mic_langs", JSONArray(MicVoice.installed(c))).put("voice_search", o.optString("voice_search")).put("voice_youtube", o.optString("voice_youtube")).put("voice_tubes", MicVoice.tubes(c)).put("homekey", o.optString("homekey"))
             .put("family", o.optJSONObject("family") ?: JSONObject.NULL)
             .put("keys", KeysBridge.bound())                           // the key filter is up: LauncherSwap.byKey keeps Home only then (issue #9)
             .put("sched", sched)

@@ -32,6 +32,8 @@ Tiếng Việt 39 MB, tiếng Anh 47 MB (dòng **Ngôn ngữ**). **Lệnh + nói
 
 Muốn TV Setup Voice luôn nghe trước (nhanh hơn, giọng nói không rời TV): chọn **TV Setup** ở dòng “Nghe giọng nói bằng”, hoặc bấm ô Nút mic trong Cài đặt nhanh của TV Home.
 
+Mic nghe sai ngôn ngữ? Chọn **Ngôn ngữ mic nghe trên TV**.
+
 ### Mẹo
 
-- Trên app điện thoại có [Nói nhanh](quick-talk.md) (giữ để nói, xem trước việc sẽ làm). Câu lệnh là danh sách ký trên trang web: có thêm nhiều lệnh thường ngày như đóng app, về Home, mở Cài đặt.
+- Trên app điện thoại có [Nói nhanh](quick-talk.md) (giữ để nói, xem trước việc sẽ làm). Câu lệnh là danh sách ký trên trang web, có thêm lệnh như đóng app, về Home.

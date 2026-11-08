@@ -32,6 +32,8 @@ Vietnamese 39 MB, English 47 MB (**Language** row). **Commands + free speech**: 
 
 To have TV Setup Voice always listen first (faster, your voice stays on the TV): pick **TV Setup** under “Listen with”, or press the Mic button tile in TV Home's Quick settings.
 
+Wrong language? Pick **Language the mic listens in**.
+
 ### Tips
 
-- The phone app has [Quick talk](quick-talk.md) (hold to talk, a preview of what will happen). The phrases are a signed list on the site: many more everyday commands such as close app, home, settings.
+- The phone app has [Quick talk](quick-talk.md) (hold to talk, with a preview). The phrases are a signed list on the site, with more commands such as close app, home.

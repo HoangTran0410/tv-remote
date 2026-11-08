@@ -11,6 +11,7 @@ import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import dev.tvremote.setup.rules.Rules
 import dev.tvremote.setup.voice.VoiceProtocol
 import android.view.Gravity
 import android.view.KeyEvent
@@ -158,7 +159,8 @@ class MicActivity : Activity(), RecognitionListener {
 
     private fun start(r: SpeechRecognizer, words: ArrayList<String>?) {
         again = { if (!done && sr === r) start(r, words) }
-        val lang = if (android.os.Build.VERSION.SDK_INT >= 24)            // the app's language with its region (vi-VN, fr-FR): recognizers want one
+        val own = if (offline) "" else try { Rules.load(this).optString("mic_tv_lang") } catch (e: Exception) { "" }   // picked on the page for the TV's recognizer (rule "mic_tv_lang"); the add-on keeps its own
+        val lang = if (own.isNotEmpty()) own else if (android.os.Build.VERSION.SDK_INT >= 24)            // the app's language with its region (vi-VN, fr-FR): recognizers want one
             android.icu.util.ULocale.addLikelySubtags(android.icu.util.ULocale(Words.lang)).let { it.language + "-" + it.country }
             else if (Words.lang == "en") "en-US" else Words.lang
         r.startListening(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply { if (words != null) putStringArrayListExtra(VoiceProtocol.WORDS, words); if (offline && MicVoice.freeSpeech(this@MicActivity)) putExtra(VoiceProtocol.FREE_SPEECH, true) }

@@ -29,6 +29,8 @@ once and it listens first (`mic_engine` "tv", the user 2026-11-03).
 
 The third is shown only once the add-on is ready (chips under the mic switches; `setupFor('mic_engine')`, TV Setup 0.39.1).
 
+The language the TV's own recognizer listens in (rule `mic_tv_lang`, "" = TV Setup's language; a `<select>` under the mic switches while `mic` is on, `mic_offline` off and TV Setup reports it): `MicActivity.start` passes it as `EXTRA_LANGUAGE` when the add-on is not the listener. It is not `mic_lang`, which is the add-on's.
+
 Language (the user, 2026-11-03: pick it, add one without losing the other): one model per APK and one package per language (`VoiceProtocol.addon`: `dev.tvremote.setup.voice` vi, `.voice.en` en), so they sit side by side. The rule `mic_lang` is the one that listens (`MicVoice.lang`; unset = `VoiceAddon.lang` of TV Setup's language), picked on `VoiceActivity` (`paintLangs`) or the page's chips (`r.mic_langs`: absent = a TV Setup older than languages, no chips).
 
 | Case | What happens |
