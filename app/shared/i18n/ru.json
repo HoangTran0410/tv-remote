@@ -2256,6 +2256,7 @@
  "tv_main.group_optimize_sub": "Оптимизация, отмена, кнопки",
  "tv_main.connection": "Подключение",
  "tv_main.connection_sub": "Переподключение, ADB, Tailscale",
+ "tv_main.kids_off_sub": "Нужен код родителя",
  "tv_main.developer_options": "Для разработчиков",
  "tv_main.reconnect": "Переподключить",
  "tv_main.the_tv_s_adb": "ADB этого ТВ",

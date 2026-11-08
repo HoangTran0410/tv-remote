@@ -149,6 +149,7 @@ class MainActivity : Activity() {
     private val VOICE = dev.tvremote.core.ontv.Bundle.App("TV Setup Voice", dev.tvremote.core.ontv.VoiceAddon.PKG, "tv", dev.tvremote.core.ontv.VoiceAddon.APK) { a, d, l, p -> dev.tvremote.core.ontv.VoiceAddon.install(a, d, l, progress = p, voice = MicVoice.lang(this)) }
     /** TV Setup itself, first in the row (the user, 2026-11-03: it is one of the apps too); OK opens its Update menu, as the tile at the top. */
     private val SELF = dev.tvremote.core.ontv.Bundle.App("TV Setup", "dev.tvremote.setup", "tv", "tv-setup.apk") { _, _, _, _ -> org.json.JSONObject() }
+    private lateinit var kidsOffTile: Tile
     private var ecoNote: TextView? = null
     private var ecoWaiting: Eco? = null                               // Android's "install unknown apps" switch was opened for this one
 
@@ -299,6 +300,12 @@ class MainActivity : Activity() {
         }
         // a TV has no Update tile: TV Setup's own banner, first in the More TV apps row, is it (the user, 2026-11-03: twice was too many);
         // updateTile stays, unseen, as the state it paints from
+        // kids mode on: its way off right here, the PIN asked first (PinActivity), as in TV Home's Quick settings; gone once off (onResume)
+        kidsOffTile = Tile(R.drawable.ic_lock, T("pin.kids_off_title"), T("tv_main.kids_off_sub")) {
+            startActivity(android.content.Intent(this, PinActivity::class.java).putExtra("kids_off", true))
+        }
+        kidsOffTile.view.visibility = View.GONE
+        left.addView(kidsOffTile.view, LinearLayout.LayoutParams(-1, dp(if (phone) 76 else 60)).apply { topMargin = dp(if (phone) 8 else 12) })
         val grid = listOf(manage) + if (phone) tiles else tiles.filter { it !== updateTile }   // Manage first, in the grid: no ragged last row
         val cols = if (phone) 2 else 3                                 // TV: one row of three; phone: 2 x 2
         for (row in grid.chunked(cols)) {
@@ -587,6 +594,7 @@ class MainActivity : Activity() {
             startActivity(android.content.Intent(this, PinActivity::class.java).putExtra("pkg", packageName))
         }
         shown = true
+        kidsOffTile.view.visibility = if (Rules.kidsMode(Rules.load(this))) View.VISIBLE else View.GONE
         voiceWatch()
         if (MicVoice.on(this)) Thread({ micBlockLog() }, "mic-block").apply { isDaemon = true }.start()   // off: nothing is read
         self.check({ }, { r -> install(r) })                          // back from "install unknown apps" for an update: on with it

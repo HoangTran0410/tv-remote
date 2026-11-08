@@ -53,6 +53,7 @@ function renderKids(r) {
   const lockPart = [UI.group(T('auto.kids_lock_title'), UI.chips([
     { label: T('auto.kids_mode_list'), on: !kids, fn: () => kids && kidsSave(k, { mode: 'list' }) },
     { label: T('auto.kids_mode_kids'), on: kids, fn: () => !kids && kidsSave(k, { mode: 'kids' }) }]))];
+  if (kids) lockPart.push(UI.actions(act(T('pin.kids_off_title'), () => kidsSave(k, { mode: 'list' }), 'danger')));   // the chip below says "Lock some apps": nobody read it as off (issue #28)
   if (kids) {
     const names = k.allow.map((p) => {
       const icon = appIcon(p); onMeta(p, (m) => icon.fill(m));

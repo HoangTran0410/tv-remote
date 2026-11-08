@@ -2210,6 +2210,7 @@
  "tv_main.group_optimize_sub": "Optimize, undo, buttons",
  "tv_main.connection": "Connection",
  "tv_main.connection_sub": "Reconnect, ADB, Tailscale",
+ "tv_main.kids_off_sub": "Needs the parent's code",
  "tv_main.developer_options": "Developer options",
  "tv_main.reconnect": "Reconnect",
  "tv_main.the_tv_s_adb": "The TV's ADB",

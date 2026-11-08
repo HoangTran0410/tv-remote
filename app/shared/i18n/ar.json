@@ -2318,6 +2318,7 @@
  "tv_main.group_optimize_sub": "التسريع، التراجع، الأزرار",
  "tv_main.connection": "الاتصال",
  "tv_main.connection_sub": "إعادة الاتصال، ADB، Tailscale",
+ "tv_main.kids_off_sub": "يتطلب رمز الوالدين",
  "tv_main.developer_options": "خيارات المطور",
  "tv_main.reconnect": "أعد الاتصال",
  "tv_main.the_tv_s_adb": "ADB في التلفزيون",

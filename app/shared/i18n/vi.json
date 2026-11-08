@@ -2129,6 +2129,7 @@
  "tv_main.group_optimize_sub": "Tối ưu, hoàn tác, phím",
  "tv_main.connection": "Kết nối",
  "tv_main.connection_sub": "Kết nối lại, ADB, Tailscale",
+ "tv_main.kids_off_sub": "Cần mã của bố mẹ",
  "tv_main.developer_options": "Tùy chọn nhà phát triển",
  "tv_main.reconnect": "Kết nối lại",
  "tv_main.the_tv_s_adb": "ADB của TV",

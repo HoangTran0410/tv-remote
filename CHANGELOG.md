@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Kids mode has a plain way off: a "Turn off kids mode" button in the Kids mode card, and a tile on TV Setup's own screen that asks the PIN (#28).
 - Mic key: pick the language the TV's own speech recognizer listens in (TV settings → mic key), when it is not the TV's language; TV Setup passes it to the recognizer on each request.
 - Saving a file the page makes (Move to a new TV backup, TV copy, a TV Home theme, a screenshot) works in the Phone app and the Computer app's window: the page hands it to its own server (`/api/hold`) and downloads a normal link, as `blob:` links saved nothing there (#25).
 - Phone app: Install an APK lets you pick `.apk` files again (the picker greyed them out, #26).
