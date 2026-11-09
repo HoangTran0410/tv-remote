@@ -284,6 +284,11 @@
   "n": 2,
   "note": "keyfix_refused: the box's firmware takes the key add-on out (add-on stopped/not running); KeyFix gives up after 3 as meant (f6d83e85)"
  },
+ "1246e79da13b1f97f2bdb7fc|0.49.0": {
+  "at": "2026-11-10T00:14:44+07:00",
+  "n": 1,
+  "note": "ICONE G-Two Box sdk 31 on 0.49.0 (seen on 0.47.0 too), add-on running: firmware takes the service out; next TV Setup reports known/others/a11y (e957a72e)"
+ },
  "13b5562e22b1aff18d3e7207|0.15.0": {
   "at": "2026-10-30T09:07:55+07:00",
   "n": 1,
