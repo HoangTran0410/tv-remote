@@ -3259,6 +3259,16 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "d13c1017c291a813ee171b51|0.48.0": {
+  "at": "2026-11-09T11:03:24+07:00",
+  "n": 2,
+  "note": "Willfon Neo (3 installs): 127.0.0.1:5555 takes the TCP connection but adbd never answers CNXN within 15 s, 6 tries in 3 min: the box's adbd is silent (not an Allow prompt: that path answers AUTH). Nothing to fix without a support code from one"
+ },
+ "d13c1017c291a813ee171b51|0.49.0": {
+  "at": "2026-11-09T11:03:24+07:00",
+  "n": 1,
+  "note": "Willfon Neo (3 installs): 127.0.0.1:5555 takes the TCP connection but adbd never answers CNXN within 15 s, 6 tries in 3 min: the box's adbd is silent (not an Allow prompt: that path answers AUTH). Nothing to fix without a support code from one"
+ },
  "d31494e53999b8f4ce821451|0.20.1": {
   "at": "2026-10-30T09:08:27+07:00",
   "n": 1,
