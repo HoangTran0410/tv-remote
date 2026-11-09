@@ -9,6 +9,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - Wi-Fi scan: an Android box whose media player answers like a Hisense (ports 38400 / 18400) is no longer listed as a Hisense VIDAA TV unless its remote port 36669 answers; it is reached over ADB instead.
 - Hisense VIDAA and Roku: "the TV did not answer on port …" is said in the app's language, with what to do (turn the TV on, same Wi-Fi).
 - Computer app: no error when the page was swapped while the Now playing bar ticks (census 3cefc344).
+- TV Channels: the programme guide no longer crashes when the TV empties the app's cache while it loads (census 7128da05).
 
 ## 0.51.0 - 2026-11-09
 

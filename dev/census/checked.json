@@ -1914,6 +1914,11 @@
   "n": 1,
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
+ "7128da054cd735f24176e919|0.22.0": {
+  "at": "2026-11-10T05:00:31+07:00",
+  "n": 1,
+  "note": "guide cache folder emptied under the write (Android low storage / a cleaner); Guide.keep makes it again and never throws; GuideTest"
+ },
  "72197a51e589326b53120179|0.28.0": {
   "at": "2026-11-03T03:42:52+07:00",
   "n": 1,

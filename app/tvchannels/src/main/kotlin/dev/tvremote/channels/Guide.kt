@@ -62,10 +62,18 @@ object Guide {
             val day = day(p, d)
             val f = File(dir, "${p.id}-${ref.filter { it.isLetterOrDigit() || it == '-' }}-$day.json")
             val kept = f.takeIf { it.exists() && dev.tvremote.guard.Age.fresh(it.lastModified(), KEEP) }?.let { fromJson(it.readText()) }
-            val got = kept ?: try { kind.guide(p, ref, day) } catch (e: Exception) { null }?.also { if (it.isNotEmpty()) f.writeText(toJson(it)) }   // none yet (tomorrow comes out later in the day): asked again
+            val got = kept ?: try { kind.guide(p, ref, day) } catch (e: Exception) { null }?.also { if (it.isNotEmpty()) keep(f, toJson(it)) }   // none yet (tomorrow comes out later in the day): asked again
             out += got ?: if (d == 0) f.takeIf { it.exists() }?.let { fromJson(it.readText()) }.orEmpty() else emptyList()
         }
         return out.sortedBy { it.start }.distinctBy { it.start }
+    }
+
+    /**
+     * The day's guide kept for the next look, or not: Android (low storage) or a cleaner (TV Setup's nightly caches) may empty the
+     * cache folder between [read]'s mkdirs and this write, and the guide shown now must not die of it (census 7128da05, an H96 Max).
+     */
+    internal fun keep(f: File, text: String) {
+        try { f.parentFile?.mkdirs(); f.writeText(text) } catch (e: java.io.IOException) { }
     }
 
     /** The provider's date [plus] days from now, in its own time zone ("tz"): a TV abroad still asks for Vietnam's today. */
