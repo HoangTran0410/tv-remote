@@ -779,6 +779,8 @@ These need TV Setup on the TV and ADB switched on. They run by themselves once o
 
 > 💡 A TV with no ADB: this add-on also opens the system power menu for TV Home's Power off ([Quick settings](#home-control)).
 
+> 💡 Turned off by you in the TV's Settings (Accessibility), the add-on stays off: TV Setup does not turn it back on.
+
 ## TV Channels, free TV channels
 
 An app on the TV that plays channels from iptv-org's public lists and VieON's free channels (Vietnam), plus some stations' own public streams as backups. No account.
@@ -1066,6 +1068,8 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 > 💡 It uses the Kids mode, Total TV time and Bedtime rules, so edit each on its own card. Needs the latest TV Setup.
 
 > 💡 Lock TV Home's layout: turn on **Ask for the PIN to change TV Home** in TV Home settings. A right PIN opens it for 10 minutes.
+
+> 💡 Turn kids mode off: **Turn off kids mode** on the Kids mode card, or the same tile on TV Setup's screen (asks the PIN).
 
 ## Lock apps with a PIN
 

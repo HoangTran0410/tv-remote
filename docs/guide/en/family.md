@@ -7,3 +7,5 @@
 > 💡 It uses the Kids mode, Total TV time and Bedtime rules, so edit each on its own card. Needs the latest TV Setup.
 
 > 💡 Lock TV Home's layout: turn on **Ask for the PIN to change TV Home** in TV Home settings. A right PIN opens it for 10 minutes.
+
+> 💡 Turn kids mode off: **Turn off kids mode** on the Kids mode card, or the same tile on TV Setup's screen (asks the PIN).

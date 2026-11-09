@@ -17,3 +17,5 @@ These need TV Setup on the TV and ADB switched on. They run by themselves once o
 > 💡 TCL TVs: the remote's Netflix, YouTube, Prime and Apple TV buttons open that app while [TV Home](home.md) is on screen. Not inside other apps: catching keys everywhere makes a held volume key move one step on TCL TVs.
 
 > 💡 A TV with no ADB: this add-on also opens the system power menu for TV Home's Power off ([Quick settings](home-control.md)).
+
+> 💡 Turned off by you in the TV's Settings (Accessibility), the add-on stays off: TV Setup does not turn it back on.

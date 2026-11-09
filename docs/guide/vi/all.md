@@ -779,6 +779,8 @@ Cần TV Setup trên TV và ADB đang bật. Các việc dưới đây tự ch�
 
 > 💡 TV không có ADB: add-on này cũng mở menu nguồn của hệ thống cho nút Tắt TV trên TV Home ([Cài đặt nhanh](#home-control)).
 
+> 💡 Bạn tự tắt add-on trong Cài đặt của TV (Hỗ trợ tiếp cận) thì nó được để tắt, TV Setup không bật lại.
+
 ## TV Channels, kênh truyền hình miễn phí
 
 App trên TV phát kênh từ danh sách công khai của iptv-org và các kênh miễn phí của VieON (VTV, HTV, đài tỉnh), thêm luồng công khai của chính một số đài làm dự phòng. Không tài khoản.
@@ -1066,6 +1068,8 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 > 💡 Dùng chính các luật Chế độ trẻ em, Tổng giờ xem TV và Giờ ngủ, nên sửa riêng từng cái ở thẻ của nó. Cần TV Setup mới nhất.
 
 > 💡 Khóa bố cục TV Home: bật **Hỏi mã PIN khi sửa TV Home** trong Cài đặt TV Home. Đúng PIN thì mở 10 phút.
+
+> 💡 Tắt chế độ trẻ em: nút **Tắt chế độ trẻ em** trên thẻ Chế độ trẻ em, hoặc ô cùng tên trên màn hình TV Setup (hỏi PIN).
 
 ## Khóa app bằng mã PIN
 
