@@ -105,9 +105,14 @@
   "note": "keyfix_refused on VISION XS100MINI+, 6th box (WS, ADT-3, G-Two, SWTV, X96mini): cause logged from the next TV Setup (a20c4155), left"
  },
  "0bea8243f97640450535da70|0.47.0": {
-  "at": "2026-11-08T11:24:40+07:00",
+  "at": "2026-11-09T07:39:12+07:00",
   "n": 1,
-  "note": "JmGO, 11th: cause found, KeyFix.sync ran on several threads at once and counted its own race as taken out; @Synchronized"
+  "note": "keyfix_refused: the box's firmware takes the key add-on out (add-on stopped/not running); KeyFix gives up after 3 as meant (f6d83e85)"
+ },
+ "0bea8243f97640450535da70|0.48.0": {
+  "at": "2026-11-09T07:39:12+07:00",
+  "n": 1,
+  "note": "keyfix_refused: the box's firmware takes the key add-on out (add-on stopped/not running); KeyFix gives up after 3 as meant (f6d83e85)"
  },
  "0cc42fae2aa5fd9fed3c6839|0.31.0": {
   "at": "2026-11-05T17:16:53+07:00",
@@ -270,9 +275,9 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "1246e79da13b1f97f2bdb7fc|0.47.0": {
-  "at": "2026-11-07T21:05:23+07:00",
-  "n": 1,
-  "note": "state, not a crash: G-Two Box firmware removes the key filter's accessibility service; KeyFix gives up after 3 tries by design. From 0.47.0, before d0fb2fd6's detail (sdk/adb/installer): the next report says whether it is Android 13's restricted setting"
+  "at": "2026-11-09T07:39:12+07:00",
+  "n": 2,
+  "note": "keyfix_refused: the box's firmware takes the key add-on out (add-on stopped/not running); KeyFix gives up after 3 as meant (f6d83e85)"
  },
  "13b5562e22b1aff18d3e7207|0.15.0": {
   "at": "2026-10-30T09:07:55+07:00",
@@ -2320,9 +2325,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "91a5ee662f21120ec67e968e|0.30.0": {
-  "at": "2026-11-08T01:12:19+07:00",
-  "n": 15,
-  "note": "home 0.30.0 only: fixed in 5de6ba6f (onPause returns while locked), out in home 0.30.1 / v0.49.1; TVs update by themselves"
+  "at": "2026-11-09T07:39:11+07:00",
+  "n": 19,
+  "note": "TV Home 0.30.0 only: onPause on a locked Home, fixed in 5de6ba6f (0.31.0, v0.50.0)"
  },
  "91edf9043da787065b68c466|0.38.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -3870,9 +3875,9 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "fbed4da875a2ffa6e96f47b8|0.47.0": {
-  "at": "2026-11-07T19:36:54+07:00",
-  "n": 1,
-  "note": "keyfix_refused: Android 13+ restricted setting or admin policy (same log, measured); the report says which from d0fb2fd6"
+  "at": "2026-11-09T07:39:11+07:00",
+  "n": 2,
+  "note": "keyfix_refused: the box's firmware takes the key add-on out (add-on stopped/not running); KeyFix gives up after 3 as meant (f6d83e85)"
  },
  "fc50f4abd4e3d69b9a57334c|0.34.1": {
   "at": "2026-10-30T09:08:32+07:00",
