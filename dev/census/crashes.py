@@ -145,7 +145,8 @@ def main():
     marks = checked()
     if o.mark:
         rows = call(o.url, "/v1/crashes", {"sig": "" if o.mark == "all" else full(o, o.mark), "v": o.v, "app": o.app})["crashes"]
-        if o.mark == "all": rows = [r for r in rows if unseen(r, marks) > 0]   # only what --new lists: the others keep their own notes
+        if o.mark == "all": rows = [r for r in rows if unseen(r, marks) > 0]
+        if o.v: rows = [r for r in rows if r["v"] == o.v]              # the worker answers every version of a sig: --v keeps the other versions' notes   # only what --new lists: the others keep their own notes
         at = __import__("datetime").datetime.now().astimezone().isoformat(timespec="seconds")
         for r in rows:
             k = r["sig"] + "|" + r["v"]
