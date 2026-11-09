@@ -864,6 +864,11 @@
   "n": 1,
   "note": "fixed in 314c0f33 (IR import capped 1 MB)"
  },
+ "3cefc344bd184c43c4a35642|0.50.0": {
+  "at": "2026-11-09T10:46:21+07:00",
+  "n": 1,
+  "note": "playing.js 250 ms tick read $('#playing').hidden with no box on the page (swapped); null-safe now. Why the box was gone on a macOS 27 window: no stack, not pinned"
+ },
  "3d3fb10724ef308cde567ed9|0.42.0": {
   "at": "2026-11-06T17:03:04+07:00",
   "n": 1,
@@ -3538,6 +3543,11 @@
   "at": "2026-11-03T23:36:34+07:00",
   "n": 3,
   "note": "fixed in 9831be93, shipped in v0.44.0 (phone 0.41.0); these are 0.40.0 installs"
+ },
+ "e64a6aea48ad472759061a7e|0.45.0": {
+  "at": "2026-11-09T10:42:18+07:00",
+  "n": 1,
+  "note": "rules_no_adb: the TV's ADB debugging was off, so the sleep timer could not turn it off (a health report, TV Setup 0.45.0); KeepAdb turns it back on where WRITE_SECURE_SETTINGS was granted"
  },
  "e79672e1ff8459fb2088df18|0.32.1": {
   "at": "2026-10-29T17:20:22+07:00",
