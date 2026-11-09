@@ -273,7 +273,17 @@ object KeyFix {
             val ai = c.packageManager.getApplicationInfo(KeysProtocol.ADDON, 0)
             (if (ai.flags and android.content.pm.ApplicationInfo.FLAG_STOPPED != 0) "stopped" else "running") + (if (!ai.enabled) ", off" else "")
         } catch (e: Exception) { "missing" }
-        return "sdk ${Build.VERSION.SDK_INT}, adb ${if (dev.tvremote.setup.RemoteService.adb() != null) "up" else "down"}, add-on by $installer, $addon"
+        // known: Android drops an enabled entry whose service it does not list as installed (a firmware filter, a missing permission);
+        // others / a11y: only ours taken out, or the whole list wiped (a cleaner, a firmware reset). Two SDK 34 boxes (aaa561ab, 96b65c49)
+        // had the add-on running and installed by the shell, which these tell apart
+        val known = try {
+            val am = c.getSystemService(Context.ACCESSIBILITY_SERVICE) as android.view.accessibility.AccessibilityManager
+            if (am.installedAccessibilityServiceList.any { isOurs(it.id) || it.resolveInfo?.serviceInfo?.packageName == KeysProtocol.ADDON }) "yes" else "no"
+        } catch (e: Exception) { "?" }
+        val r = c.contentResolver
+        val others = (Settings.Secure.getString(r, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES) ?: "").split(":").count { it.isNotEmpty() && !isOurs(it) }
+        val on = try { Settings.Secure.getInt(r, Settings.Secure.ACCESSIBILITY_ENABLED) } catch (e: Exception) { -1 }
+        return "sdk ${Build.VERSION.SDK_INT}, adb ${if (dev.tvremote.setup.RemoteService.adb() != null) "up" else "down"}, add-on by $installer, $addon, known $known, others $others, a11y $on"
     }
 
     /** The add-on is installed but turned off (pm disable-user, or Settings → Apps → Disable); our own code never does that (Setup.PROTECTED). */
