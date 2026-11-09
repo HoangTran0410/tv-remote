@@ -72,8 +72,21 @@ class TvField(c: Context) : EditText(c) {
         return true
     }
 
-    private companion object {
-        val NAV = setOf(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_CENTER)
+    /**
+     * An arrow the keyboard app sent (Gboard's ◀ ▶ keys) moves the caret and nothing else, never the focus: leaving the field
+     * closes the keyboard while OK is still held on that key, Gboard never sees it let go and its key repeat sends the arrow
+     * forever, until the TV is unplugged (a TCL user, 2026-11-10: Customize's pages kept going back on their own).
+     */
+    override fun dispatchKeyEvent(e: KeyEvent): Boolean {
+        if (soft(e) && e.keyCode in ARROWS) { super.dispatchKeyEvent(e); return true }
+        return super.dispatchKeyEvent(e)
+    }
+
+    companion object {
+        private val NAV = setOf(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_CENTER)
+        private val ARROWS = NAV - KeyEvent.KEYCODE_DPAD_CENTER
+        /** Sent by the keyboard app on screen, not pressed on a remote: a parent's own D-pad rules must leave it to the field. */
+        fun soft(e: KeyEvent) = e.flags and KeyEvent.FLAG_SOFT_KEYBOARD != 0
     }
 
     override fun onFocusChanged(focused: Boolean, dir: Int, prev: Rect?) {

@@ -1218,7 +1218,8 @@ object Customize {
         val panel = object : FrameLayout(a) {
             // Left from a control with nothing to its left, on a page: back to the first level (a held key does it once)
             override fun dispatchKeyEvent(e: android.view.KeyEvent): Boolean {
-                if (cur != null && e.keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT) {
+                if (cur != null && e.keyCode == android.view.KeyEvent.KEYCODE_DPAD_LEFT && !dev.tvremote.tvui.TvField.soft(e)) {   // the keyboard's ◀: the field's caret
+
                     val f = findFocus()
                     if (f == null) { if (e.action == android.view.KeyEvent.ACTION_DOWN) cur?.let { g -> (firstFocusable(g.col) ?: g.page)?.requestFocus() }; return true }
                     val west = f.focusSearch(View.FOCUS_LEFT)
