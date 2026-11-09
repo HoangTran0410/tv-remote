@@ -1877,6 +1877,7 @@
  "errors.tv_cannot_reach_internet": "The TV cannot reach the Internet.",
  "errors.network_slow_dropped_try": "The network is slow or dropped. Try again in a few minutes.",
  "errors.tv_stopped_answering_midway": "The TV stopped answering midway. Try again; if it keeps happening, restart the TV.",
+ "errors.tv_no_answer_port": "The TV did not answer. Turn it on (standby is not enough), keep it on the same Wi-Fi as this device, then try again.",
  "errors.optimize_lost": "The TV stopped responding after {pkg} was turned off and has not come back in 1.5 minutes. When it is back, connect again. If anything looks wrong, press Undo.",
  "errors.optimize_restarted": "The TV restarted right after turning off {pkg}, so Optimize stopped. Undo turns back on all {n} before it; next time, untick {pkg}.",
  "errors.file_did_not_reach": "The file did not reach the TV whole. Try again.",

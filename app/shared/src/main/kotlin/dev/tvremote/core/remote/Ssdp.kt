@@ -62,6 +62,7 @@ object Ssdp {
                     if (seen.containsKey(ip)) continue
                     val head = String(p.data, 0, p.length, Charsets.UTF_8)
                     val kind = kind(head) ?: continue
+                    if (kind == Remote.Kind.VIDAA && !named(head) && !listens(ip, 36669)) continue   // a media port alone: an Android box (QuickShare) was called a Hisense, its ADB never tried
                     val f = Found(ip, kind, name(ip, kind, location(head, ip)))
                     seen[ip] = f
                     each(f)
@@ -80,6 +81,13 @@ object Ssdp {
         Regex("(?i)vidaa|:38400/|:18400/").containsMatchIn(head) -> Remote.Kind.VIDAA   // VIDAA's media renderer answers from these ports
         else -> null
     }
+
+    /** The answer names VIDAA itself; the media ports alone (38400 / 18400) are also used by Android boxes' renderers. */
+    fun named(head: String): Boolean = Regex("(?i)vidaa").containsMatchIn(head)
+
+    private fun listens(ip: String, port: Int): Boolean = try {
+        java.net.Socket().use { it.connect(java.net.InetSocketAddress(ip, port), 700); true }
+    } catch (e: Exception) { false }
 
     /** The name the person gave the TV: Samsung's REST description, Roku's device-info, else the UPnP description's friendlyName. */
     private fun name(ip: String, kind: String, location: String?): String {

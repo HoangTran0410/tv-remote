@@ -1880,6 +1880,7 @@
   "errors.tv_cannot_reach_internet": "La TV n’a pas accès à Internet.",
   "errors.network_slow_dropped_try": "Le réseau est lent ou a coupé. Réessayez dans quelques minutes.",
   "errors.tv_stopped_answering_midway": "La TV a cessé de répondre en cours de route. Réessayez ; si cela se reproduit, redémarrez la TV.",
+  "errors.tv_no_answer_port": "La TV ne répond pas. Allumez-la (la veille ne suffit pas), mettez-la sur le même Wi-Fi que cet appareil, puis réessayez.",
   "errors.optimize_lost": "La TV a cessé de répondre après la désactivation de {pkg} et n’est pas revenue en 1,5 minute. Une fois revenue, reconnectez-vous. Si quelque chose semble anormal, appuyez sur Annuler.",
   "errors.optimize_restarted": "La TV a redémarré juste après la désactivation de {pkg}, donc Optimiser s’est arrêté. Annuler réactive les {n} éléments d’avant ; la prochaine fois, décochez {pkg}.",
   "errors.file_did_not_reach": "Le fichier n’est pas arrivé complet sur la TV. Réessayez.",

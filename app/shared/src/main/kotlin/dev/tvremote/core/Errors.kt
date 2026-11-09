@@ -77,6 +77,7 @@ object Errors {
             all.contains("not an APK file") -> t("errors.file_not_apk")
             all.contains(Roku.LIMITED) -> t("errors.roku_blocks_control_from")
             all.contains(Vidaa.NO_CERT) -> t("errors.hisense_tv_needs_certificate")
+            all.contains(Vidaa.NO_ANSWER) -> t("errors.tv_no_answer_port")    // Hisense VIDAA, Roku: their remote service, not ADB
             all.contains("protected: the TV needs this app") -> t("errors.tv_needs_app_cannot")
             all.contains(dev.tvremote.core.scenes.Scenes.FACTORY_APP) -> t("errors.factory_app")
             else -> e.message ?: e.javaClass.simpleName

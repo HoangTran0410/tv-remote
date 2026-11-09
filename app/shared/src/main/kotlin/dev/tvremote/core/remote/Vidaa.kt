@@ -142,7 +142,7 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
         val ways = ways()
         var failed: Exception? = null
         login(ways, user, pass, onClosed) { failed = it }?.let { return it }
-        if (!portOpen()) throw IOException("the TV did not answer on port $port")
+        if (!portOpen()) throw IOException("$NO_ANSWER $port")
         if (fetchCerts(dir)) login(ways() - ways.toSet(), user, pass, onClosed) { failed = it }?.let { return it }   // a TV that wants a certificate: only now downloaded
         if (ways().none { it != "tls" && it != "plain" }) throw IOException(NO_CERT)
         throw IOException("cannot reach the TV's remote service: " + (failed?.message ?: "?"))
@@ -474,6 +474,8 @@ class Vidaa(private val dir: File, private val host: String, private val port: I
     companion object {
         /** The TV wants Hisense's client certificate and we have none yet. */
         const val NO_CERT = "vidaa: the certificate from Hisense's app is needed"
+        /** Nothing listens on the remote service's port: a TV in standby, off, or on another network ([Errors.say] puts it in words). */
+        const val NO_ANSWER = "the TV did not answer on port"
         /** The official app whose package holds the certificate (the phone reads it from there). */
         val APPS = listOf("com.universal.remote.multi", "com.vidaa.smarttv", "com.hisense.tv.remotenow")
 

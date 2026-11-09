@@ -1802,6 +1802,7 @@
  "errors.tv_cannot_reach_internet": "TV chưa vào được Internet.",
  "errors.network_slow_dropped_try": "Mạng chậm hoặc vừa mất kết nối. Thử lại sau ít phút.",
  "errors.tv_stopped_answering_midway": "TV ngừng trả lời giữa chừng. Thử lại; vẫn vậy thì khởi động lại TV.",
+ "errors.tv_no_answer_port": "TV không trả lời. Bật TV lên (chế độ chờ chưa đủ), để TV chung Wi-Fi với máy này, rồi thử lại.",
  "errors.optimize_lost": "Mất kết nối sau khi tắt {pkg}, 1,5 phút chưa thấy TV. TV lên thì kết nối lại; có gì lạ thì bấm Hoàn tác.",
  "errors.optimize_restarted": "TV tự khởi động lại sau khi tắt {pkg}, đã dừng. Hoàn tác bật lại {n} app trước đó; lần sau bỏ tích {pkg}.",
  "errors.file_did_not_reach": "Chép tệp lên TV không trọn vẹn. Thử lại.",

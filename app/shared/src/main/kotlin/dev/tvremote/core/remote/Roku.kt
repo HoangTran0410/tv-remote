@@ -57,7 +57,7 @@ class Roku(@Suppress("UNUSED_PARAMETER") dir: File, private val host: String, pr
 
     /** Blocks until the Roku answers and takes commands; [LIMITED] when "Control by mobile apps" keeps us out. */
     override fun connect(onClosed: () -> Unit) {
-        val info = fetch("/query/device-info") ?: throw IOException("the Roku did not answer on port $port")
+        val info = fetch("/query/device-info") ?: throw IOException("${Vidaa.NO_ANSWER} $port")
         WireLog.all.add("←", "Roku $host device-info " + info.replace(Regex("\\s+"), " ").take(400))
         read(info)
         if (field(info, "ecp-setting-mode").lowercase() in setOf("limited", "disabled")) throw IOException(LIMITED)
