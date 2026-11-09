@@ -7,6 +7,7 @@ python3 dev/census/crashes.py --new --json            # not looked at yet, every
 python3 dev/census/crashes.py --new --adb --json      # also "TV Setup ADB ..." (a TV with ADB off or unanswered: states, hidden from --new by default)
 python3 dev/census/crashes.py --mark SIG --note "fixed in 1a2b3c4"   # looked at (also --mark all); writes checked.json: commit it
 python3 dev/census/crashes.py --json --since 2026-10-01 [--app pc] [--v 0.22.1]
+python3 dev/census/crashes.py --new --json --last 2026-11-08   # only those seen since that day, filtered by the worker (crashwatch: a few rows, not the table)
 python3 dev/census/crashes.py SIG --frames            # stack + repo path:line of each frame that maps to a file here
 python3 dev/census/crashes.py --delete SIG            # after the fix is released
 ```

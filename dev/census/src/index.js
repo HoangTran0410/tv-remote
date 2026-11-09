@@ -79,6 +79,7 @@ async function crashes(req, env, url) {
   const auth = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
   if (!(await sameSecret(auth, env.CRASH_TOKEN))) return json({ error: "forbidden" }, 403);
   const sig = url.searchParams.get("sig") || "", v = url.searchParams.get("v") || "", app = url.searchParams.get("app") || "";
+  const last = url.searchParams.get("last") || "";                  // only those seen on or after that day: crashwatch's 2-minute look reads a few rows by the index, not the table
   if (req.method === "DELETE") {
     if (!sig) return json({ error: "sig needed" }, 400);
     const where = v ? "sig = ?1 AND v = ?2" : "sig = ?1";
@@ -94,6 +95,7 @@ async function crashes(req, env, url) {
   const q = ["SELECT sig, v, app, loc, kind, SUBSTR(msg, 1, 120) AS msg, brand, model, android, os, n, installs, first, last FROM crashes WHERE 1=1"], b = [];
   if (v) { b.push(v); q.push(`AND v = ?${b.length}`); }
   if (app) { b.push(app); q.push(`AND app = ?${b.length}`); }
+  if (last) { b.push(last); q.push(`AND last >= ?${b.length}`); }
   q.push("ORDER BY n DESC, last DESC LIMIT 200");
   const { results } = await env.DB.prepare(q.join(" ")).bind(...b).all();
   return json({ crashes: results });

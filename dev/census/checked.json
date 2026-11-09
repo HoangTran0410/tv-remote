@@ -774,6 +774,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "33667cb7920469ef4a9c5cff|0.47.0": {
+  "at": "2026-11-09T20:45:42+07:00",
+  "n": 1,
+  "note": "rules_no_adb: a health report (ADB off on that Skyworth, 0.47.0), not a fault; e64a6aea"
+ },
  "34503a651177c8d0b5ba1c8e|0.47.0": {
   "at": "2026-11-08T00:55:13+07:00",
   "n": 1,
@@ -1060,9 +1065,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "456d47c9fb50b8a31f2d3c71|0.48.0": {
-  "at": "2026-11-08T23:36:00+07:00",
-  "n": 1,
-  "note": "the key add-on was turned off (disabled) on the TV: Android drops its service; KeyFix now leaves it off, and rebinds when it is turned on again; emulator-tested"
+  "at": "2026-11-09T20:45:41+07:00",
+  "n": 2,
+  "note": "0.48.0 again: add-on turned off on that MiTV; fixed in 6222de49, shipped in TV Setup 0.49.0"
  },
  "457abcc7833427ac40dcc540|0.45.0": {
   "at": "2026-11-06T17:03:02+07:00",
@@ -1959,6 +1964,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "74a3e53f7289e296dc00b342|0.47.0": {
+  "at": "2026-11-09T20:45:42+07:00",
+  "n": 1,
+  "note": "keyfix_refused on 0.47.0 (before the @Synchronized sync fix, 0bea8243 family); no detail in that version"
+ },
  "74e9dd24769f68fce154098f|0.26.3": {
   "at": "2026-10-27T09:37:17+07:00",
   "n": 1,
@@ -2708,6 +2718,11 @@
   "at": "2026-11-06T00:58:39+07:00",
   "n": 1,
   "note": "ADB key file cut short: Adb.kt now makes a new key and writes keys whole (tmp + rename)"
+ },
+ "aaa561abf78db4410f816c4c|0.49.0": {
+  "at": "2026-11-09T20:45:43+07:00",
+  "n": 1,
+  "note": "keyfix_refused on 0.49.0, Rockchip stick sdk 34, add-on running, installed by shell: firmware takes the service out, as aee77a38; KeyFix gives up after 3 as meant"
  },
  "ac1f05f98ad5126b3167283a|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",

@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS support (
   made INTEGER NOT NULL, live INTEGER NOT NULL DEFAULT 0, seen INTEGER NOT NULL
 ) WITHOUT ROWID;
 CREATE INDEX IF NOT EXISTS support_h ON support (h, made);
+CREATE INDEX IF NOT EXISTS support_made ON support (made);   -- the owner's list (newest 50) every 2 min read the whole table without it
 -- The owner's questions to a live TV and its answers; deleted after a day by the cron.
 CREATE TABLE IF NOT EXISTS support_q (
   code TEXT NOT NULL, id INTEGER NOT NULL, path TEXT NOT NULL, asked INTEGER NOT NULL, taken INTEGER NOT NULL DEFAULT 0,
