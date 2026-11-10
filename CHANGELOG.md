@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.52.0 - 2026-11-11
+
+Web 0.52.0 · Phone app 0.49.0 · TV app 0.50.0 · TV Home 0.32.0 · TV Channels 0.23.0 · TV Games 0.24.0 · TV Apps 0.8.0
 
 - Find a feature: 🔍 Find at the end of the tab bar (computer app, the phone app's Manage screen, the TV web page and Manage on the TV) searches every card and Settings section by name and by the user guide's words, in any language the page speaks; a pick opens its tab and lights the card (#29).
 - TV Setup: no longer jumps back to the home screen every few seconds when the TV says it is asking "Allow USB debugging?" but shows no box; it steps aside once, then stays and says to turn USB debugging off and on.
