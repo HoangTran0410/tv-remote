@@ -102,6 +102,9 @@ Why some code looks odd ([the list](../DECISIONS.md)).
   (MD5 of each base64 blob). Never Allow a key you cannot match.
 - **On the Google TV emulator the "Set up Google TV" reminder hides the question**, and TV Setup steps aside for a question it
   cannot see. Bring the question up (`cmd activity stack remove <its task>`, then start TV Setup again).
+- **Android can keep a question it never shows** (adbd logs `send_auth_request`, `AdbDebuggingManager` no "Received public key";
+  API 34 emulator after several Cancels, 2026-11-11). TV Setup steps aside for it once (`uncover`, `steppedAside`, until ADB
+  answers): stepping aside on every ADB retry sent it back to Home every few seconds and it could not be used at all.
 
 ## ISP boxes that lock Developer options (FPT Play, Viettel)
 

@@ -755,6 +755,7 @@ class MainActivity : Activity() {
         }
     }.apply { isDaemon = true }.start()
     @Volatile private var backed = false                              // stepped aside for the TV's question (uncover)
+    @Volatile private var steppedAside = false                                 // once until ADB answers: see uncover
 
     /** The TV's question comes up over this screen. Still in front 4 s into asking: the TV dropped it, as another question
      *  (a dead connection's, from before this screen opened) is up behind this one. Stepping aside shows it; once it is
@@ -768,7 +769,9 @@ class MainActivity : Activity() {
             override fun run() {
                 if (!connecting) { watching = false; return }
                 askingFor = if (dev.tvremote.core.adb.Adb.askState() != "ask") 0 else if (shown) askingFor + 1 else askingFor   // in front, no question over it
-                if (askingFor == 2) { backed = true; moveTaskToBack(true) }
+                // once: when nothing was behind (Android keeps a question it never shows, measured on the API 34 emulator), each
+                // ADB retry sent this screen back to Home again and TV Setup could not be used; the hint below says what to do
+                if (askingFor == 2 && !steppedAside) { steppedAside = true; backed = true; moveTaskToBack(true) }
                 // still no answer: the TV's ADB can stay sure a question is up when none is on screen; off and on clears that
                 if (askingFor >= 20 && !hinted) {
                     hinted = true
@@ -796,6 +799,7 @@ class MainActivity : Activity() {
                         uncover() }
                 })
                 adb = a
+                steppedAside = false                                      // answered: a later question may be stepped aside for again
                 // back in front: Android lets an app in the background start no screen, the shell it just got may; but
                 // never over a question still up (another key's, queued): that one would then block every later one
                 if (backed) { backed = false; try { if (!questionUp(a)) a.shell("am start -n $packageName/.MainActivity", 10000) } catch (ignored: Exception) { } }
