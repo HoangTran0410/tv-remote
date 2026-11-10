@@ -70,6 +70,12 @@ CREATE TABLE IF NOT EXISTS support (
 ) WITHOUT ROWID;
 CREATE INDEX IF NOT EXISTS support_h ON support (h, made);
 CREATE INDEX IF NOT EXISTS support_made ON support (made);   -- the owner's list (newest 50) every 2 min read the whole table without it
+-- Replies (src/support.js): one thread per install (h), "us" = the project's owner, "tv" = the person (the page or the TV).
+CREATE TABLE IF NOT EXISTS support_msg (
+  h TEXT NOT NULL, id INTEGER NOT NULL, who TEXT NOT NULL, text TEXT NOT NULL, at INTEGER NOT NULL,
+  PRIMARY KEY (h, id)
+) WITHOUT ROWID;
+CREATE INDEX IF NOT EXISTS support_msg_at ON support_msg (who, at);   -- crashwatch's "what people wrote since"
 -- The owner's questions to a live TV and its answers; deleted after a day by the cron.
 CREATE TABLE IF NOT EXISTS support_q (
   code TEXT NOT NULL, id INTEGER NOT NULL, path TEXT NOT NULL, asked INTEGER NOT NULL, taken INTEGER NOT NULL DEFAULT 0,
