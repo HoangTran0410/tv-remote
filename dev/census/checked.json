@@ -3604,6 +3604,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "e13f5371b0d111ad389260eb|0.28.0": {
+  "at": "2026-11-11T01:08:31+07:00",
+  "n": 1,
+  "note": "Window key up -> PhoneWindow asks for PiP on a device without the feature; MainActivity eats KEYCODE_WINDOW there (unreleased)"
+ },
  "e183da6cf42d4c2e775d5eee|0.23.0": {
   "at": "2026-10-30T09:08:03+07:00",
   "n": 1,

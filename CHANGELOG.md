@@ -11,6 +11,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - Computer app: no error when the page was swapped while the Now playing bar ticks (census 3cefc344).
 - TV Channels: the programme guide no longer crashes when the TV empties the app's cache while it loads (census 7128da05).
 - TV Home: the on-screen keyboard's ◀ ▶ keys in a text field (Customize > greeting words) move the cursor again; they used to leave the page and close the keyboard mid-press, and Gboard then kept sending the arrow until the TV was unplugged.
+- Phone app: no crash when a box with no picture-in-picture gets the remote's Window key (census e13f5371).
 
 ## 0.51.0 - 2026-11-09
 

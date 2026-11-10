@@ -525,6 +525,9 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
     /** The phone's volume buttons change the TV's volume while connected. */
     override fun dispatchKeyEvent(e: KeyEvent): Boolean {
         val c = e.keyCode
+        // the Window key's up asks Android for picture-in-picture (PhoneWindow.onKeyUp), which throws where the device has none
+        // although the manifest allows it (census e13f5371, a HiDPT box on Android 16)
+        if (c == KeyEvent.KEYCODE_WINDOW && !packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_PICTURE_IN_PICTURE)) return true
         // a game controller (Bluetooth / USB) drives the TV, as on the page (PadMap); a text field in focus keeps its keys
         if (live() && e.source and (InputDevice.SOURCE_GAMEPAD or InputDevice.SOURCE_JOYSTICK) != 0 && currentFocus !is EditText) {
             val k = PadMap.key(c, video && tv != null)                     // picture off keeps the session (keys), not the picture
