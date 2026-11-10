@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "updated": "2026-11-06",
+  "updated": "2026-11-10",
   "about": "Optimize TV's additions to Bloat.kt, read from the site: suggest (package -> name, ticked by default), drop (no longer suggested), keep and factory (Java regexes, only added). Edit, run dev/sign/sign_bloat.py, commit both files.",
   "suggest": {
     "android.autoinstalls.config.askey.tvbox": "Askey app installer",
@@ -133,7 +133,9 @@
     "com.sony.dtv.kenhchonloc": "Sony shop promo"
   },
   "drop": [
-    "com.xm.webcontent"
+    "com.xm.webcontent",
+    "com.sony.dtv.sonybugreportsys",
+    "com.sonyericsson.idd.agent"
   ],
   "keep": [
     "com\\.tianci\\.(de|movieplatform|localmedia|setting|system)",

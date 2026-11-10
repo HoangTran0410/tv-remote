@@ -5,7 +5,14 @@ before launcherx, check Home, roll back) come from these. Read them again now an
 `dev/sign/sign_bloat.py`, commit, push: every app reads it from the site when Optimize TV opens, no release needed), and now and
 then fold that list into Bloat.kt and empty it. The site's list can add suggestions, drop them, and only add to keep / factory.
 
-Last read: **2026-11-06**, upstream `3c122bc073` (573 commits after `3cd274f866`; 82 `debloat.txt` changed, 69 packages no list had,
+Last read: **2026-11-10**, upstream `3e06c1b2` (394 commits after `3c122bc073`), vgs-cleantv 4.0.9 (it republishes upstream's
+lists). Into bloat.json: DROP Sony `sonybugreportsys` / `idd.agent` (issue 3608: off, USB Ethernet dies on a Sony VH2; their shared
+system uid holds NETWORK_SETTINGS; upstream PR 3609). Checked, already right: Undo turns Home screens on before the wizard (3578: setupwraith
+on with launcherx off ended in a factory reset; PRs 3620 / 3653 do the same). Noted, not acted on: 3446 / PR 3680 (setupwraith off kills
+casting on a TCL G10: the price of the Home swap, as 2991), 3533 (`com.tcl.usercenter` off: reboot on wake; we never suggest it),
+3635 / 3478 / 3508 (stock Home back after a reboot on MiTV / TCL 55P78E), 3613 (XGIMI gear key: a second scancode). ~90 new packages
+on one list each (factory menus, TCL, Haier/CVTE, Google preinstalls) not taken yet: one list each, not read line by line.
+Before that: **2026-11-06**, upstream `3c122bc073` (573 commits after `3cd274f866`; 82 `debloat.txt` changed, 69 packages no list had,
 all on one list each). Into bloat.json: SUGGEST CVTE `tv.infoprovider` (device info reports) / `tv.remotedebug` (a support screen
 recorder), KTC `kgzn.inforeport`, `zeasn.deviceportal.asdprovider.ktc` (ads), Jio `stbadservice` / `systemstats` / `rjil.podlogservice`,
 `haier.apps.evoSmart`, `sony.dtv.kenhchonloc` (a shop promo, Vietnamese); KEEP `com.tcl.assistant` (TCL BeyondTV's remote mic, from
