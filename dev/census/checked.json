@@ -20,9 +20,14 @@
   "note": "ADB off on the box (5555 refused): TV Setup's report, the page already says how to turn it on"
  },
  "016efc69d24da6757e6f472b|0.47.0": {
-  "at": "2026-11-08T22:31:01+07:00",
+  "at": "2026-11-10T20:00:56+07:00",
   "n": 1,
-  "note": "Smart TV Pro, 13th on 0.47.0: the KeyFix.sync race fixed in 5dd45fb6 (next release)"
+  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
+ },
+ "016efc69d24da6757e6f472b|0.49.0": {
+  "at": "2026-11-10T20:00:56+07:00",
+  "n": 1,
+  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
  },
  "017d528e6843bf9047e126a7|0.35.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -85,9 +90,24 @@
   "note": "TV Games 0.18.0 NM-TVBOX1: says ES3, EGL refuses the ES3 config; GlCheck asks first + GLThread guard, the game says so (fixed, next release)"
  },
  "079fd99f0b7cd0f6ad9bfa5b|0.34.0": {
-  "at": "2026-10-30T09:08:04+07:00",
+  "at": "2026-11-10T20:01:00+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+ },
+ "079fd99f0b7cd0f6ad9bfa5b|0.47.0": {
+  "at": "2026-11-10T20:01:00+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+ },
+ "079fd99f0b7cd0f6ad9bfa5b|0.48.0": {
+  "at": "2026-11-10T20:01:00+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+ },
+ "079fd99f0b7cd0f6ad9bfa5b|0.49.0": {
+  "at": "2026-11-10T20:01:00+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
  },
  "0831a9cc1968dedff68abcc5|0.26.3": {
   "at": "2026-10-26T21:47:39+07:00",
@@ -574,6 +594,11 @@
   "n": 1,
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
+ "2549868201603299678c450e|0.49.0": {
+  "at": "2026-11-10T20:01:01+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+ },
  "26d2655349a426cd1a66e207|0.34.1": {
   "at": "2026-11-04T03:07:24+07:00",
   "n": 1,
@@ -679,6 +704,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "2f7b4a5845c32315a71d9ed8|0.48.0": {
+  "at": "2026-11-10T20:00:58+07:00",
+  "n": 1,
+  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
+ },
  "304d571eb8351582e87856f4|0.26.3": {
   "at": "2026-10-26T21:47:43+07:00",
   "n": 1,
@@ -773,6 +803,16 @@
   "at": "2026-11-03T15:54:04+07:00",
   "n": 1,
   "note": "fixed: fold.js :is() selector on Chrome<88"
+ },
+ "3300c7152426d45697dc8ea8|0.34.1": {
+  "at": "2026-11-10T20:01:04+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+ },
+ "3300c7152426d45697dc8ea8|0.45.1": {
+  "at": "2026-11-10T20:01:04+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
  },
  "330d8f5d7bec6332a86acee7|0.38.4": {
   "at": "2026-11-03T03:42:50+07:00",
@@ -1059,6 +1099,11 @@
   "n": 1,
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
+ "3fd52ef15449ebe1bb5ee526|0.49.0": {
+  "at": "2026-11-10T20:00:59+07:00",
+  "n": 1,
+  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
+ },
  "41dd31f77cb49ce98c2242e0|0.28.0": {
   "at": "2026-10-27T09:37:26+07:00",
   "n": 1,
@@ -1339,6 +1384,11 @@
   "n": 1,
   "note": "not our code: minified script the browser injected into the TV web page; errbox now drops stacks whose every frame is the page itself"
  },
+ "52b902dfab9195f27703bb1b|0.49.0": {
+  "at": "2026-11-10T20:01:01+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+ },
  "535993e358ec33bffb4a2ab7|0.27.0": {
   "at": "2026-11-04T03:07:28+07:00",
   "n": 1,
@@ -1443,6 +1493,11 @@
   "at": "2026-11-05T10:40:20+07:00",
   "n": 1,
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+ },
+ "5a43900035518aa8a6184a4d|0.49.0": {
+  "at": "2026-11-10T20:01:03+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
  },
  "5b47665e5391015e7bcf0337|0.23.0": {
   "at": "2026-10-29T17:19:33+07:00",
@@ -1919,6 +1974,11 @@
   "n": 1,
   "note": "guide cache folder emptied under the write (Android low storage / a cleaner); Guide.keep makes it again and never throws; GuideTest"
  },
+ "720ba44c1259a6219de5792d|0.49.0": {
+  "at": "2026-11-10T20:01:02+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+ },
  "72197a51e589326b53120179|0.28.0": {
   "at": "2026-11-03T03:42:52+07:00",
   "n": 1,
@@ -1983,6 +2043,11 @@
   "at": "2026-11-09T20:45:42+07:00",
   "n": 1,
   "note": "keyfix_refused on 0.47.0 (before the @Synchronized sync fix, 0bea8243 family); no detail in that version"
+ },
+ "74a91a00f5c640b36868223c|0.47.0": {
+  "at": "2026-11-10T20:01:02+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
  },
  "74e9dd24769f68fce154098f|0.26.3": {
   "at": "2026-10-27T09:37:17+07:00",
@@ -2494,6 +2559,11 @@
   "n": 1,
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
+ "9f6a673eb2b9277595915bec|0.49.0": {
+  "at": "2026-11-10T20:01:03+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+ },
  "9fae8eef259fdd7309a272c5|0.32.1": {
   "at": "2026-11-05T10:40:26+07:00",
   "n": 1,
@@ -2570,14 +2640,24 @@
   "note": "keyfix_refused on X96mini (Android 10): firmware takes the key filter out, same as WS/ADT-3/G-Two/SWTV; 0.47.0 has no cause in the detail yet (a20c4155 adds it), left"
  },
  "a3e21d228922e0f24f4b55f4|0.34.1": {
-  "at": "2026-11-03T23:36:48+07:00",
+  "at": "2026-11-10T20:01:00+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
  },
  "a3e21d228922e0f24f4b55f4|0.40.0": {
-  "at": "2026-11-03T23:36:48+07:00",
+  "at": "2026-11-10T20:01:00+07:00",
   "n": 1,
-  "note": "TV Setup's own ADB link report: ADB off / allow unanswered / Fire TV local ADB blocked (known classes, the TV shows the fix)"
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+ },
+ "a3e21d228922e0f24f4b55f4|0.48.0": {
+  "at": "2026-11-10T20:01:00+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+ },
+ "a3e21d228922e0f24f4b55f4|0.49.0": {
+  "at": "2026-11-10T20:01:00+07:00",
+  "n": 1,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
  },
  "a3e2566824d6782617e3795d|0.37.0": {
   "at": "2026-11-05T10:40:27+07:00",
@@ -2600,29 +2680,34 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "a468264ed0a50f4f2ddd7dce|0.26.3": {
-  "at": "2026-11-05T10:40:27+07:00",
+  "at": "2026-11-10T20:00:59+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
  },
  "a468264ed0a50f4f2ddd7dce|0.30.0": {
-  "at": "2026-11-05T10:40:27+07:00",
+  "at": "2026-11-10T20:00:59+07:00",
   "n": 2,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
  },
  "a468264ed0a50f4f2ddd7dce|0.34.1": {
-  "at": "2026-11-05T10:40:27+07:00",
+  "at": "2026-11-10T20:00:59+07:00",
   "n": 4,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
  },
  "a468264ed0a50f4f2ddd7dce|0.35.0": {
-  "at": "2026-11-05T10:40:27+07:00",
+  "at": "2026-11-10T20:00:59+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
  },
  "a468264ed0a50f4f2ddd7dce|0.37.0": {
-  "at": "2026-11-05T10:40:27+07:00",
+  "at": "2026-11-10T20:00:59+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+ },
+ "a468264ed0a50f4f2ddd7dce|0.45.1": {
+  "at": "2026-11-10T20:00:59+07:00",
+  "n": 2,
+  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
  },
  "a54cc4711ab55a41b38bd0ab|0.29.0": {
   "at": "2026-11-04T03:07:29+07:00",
@@ -2904,6 +2989,11 @@
   "n": 1,
   "note": "fixed in 5d4096ec"
  },
+ "b6c7fcef24aacecc9feb98e1|0.48.0": {
+  "at": "2026-11-10T20:00:57+07:00",
+  "n": 1,
+  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
+ },
  "b6f2dbac085dd251c785a738|0.26.2": {
   "at": "2026-10-29T17:20:14+07:00",
   "n": 1,
@@ -3138,6 +3228,11 @@
   "at": "2026-10-29T17:20:18+07:00",
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+ },
+ "c8d464bbe23c0af114056b4b|0.49.0": {
+  "at": "2026-11-10T20:00:57+07:00",
+  "n": 1,
+  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
  },
  "c9277726f6417817933fbf3f|0.15.1": {
   "at": "2026-10-30T09:08:27+07:00",
@@ -3935,9 +4030,14 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "fbed4da875a2ffa6e96f47b8|0.47.0": {
-  "at": "2026-11-09T07:39:11+07:00",
+  "at": "2026-11-10T20:00:58+07:00",
   "n": 2,
-  "note": "keyfix_refused: the box's firmware takes the key add-on out (add-on stopped/not running); KeyFix gives up after 3 as meant (f6d83e85)"
+  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
+ },
+ "fbed4da875a2ffa6e96f47b8|0.49.0": {
+  "at": "2026-11-10T20:00:58+07:00",
+  "n": 1,
+  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
  },
  "fc50f4abd4e3d69b9a57334c|0.34.1": {
   "at": "2026-10-30T09:08:32+07:00",
