@@ -102,6 +102,8 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
         fun inUse(out: String): Boolean = out.lines().any { (it.trim().toIntOrNull() ?: 0) > 0 }
         /** What this project turned off beyond its own lists, so Undo can turn exactly that back on. Kept on the TV. */
         const val OFF_LIST = "/data/local/tmp/tvr-disabled.txt"
+        /** Seconds Undo gives one app to come back on: pm answers in under 1 s, a hung package service never. */
+        const val SLOW = 20
         private const val TMP = "/data/local/tmp/tvr-setup.apk"
         const val ANIM = "window_animation_scale transition_animation_scale animator_duration_scale"
 
@@ -402,17 +404,41 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
         return restoreScript(model, date, host, undoable().filter { has(it.substringBefore('/')) }, home, dev.tvremote.core.adb.AdbPort.known(host))   // a BeeCube: 5877
     }
 
+    /**
+     * Turns everything back on. One app whose turning on hangs the TV's package service (cleanyourtv: Undo sat for minutes on one
+     * package and the rest stayed off) is given [SLOW] s, then skipped and named; three in a row and the TV is not answering at
+     * all: Undo stops there. What was not turned on stays on the record, so Undo can run again later.
+     */
     @Throws(Exception::class)
     fun undo() {
+        readAbout()
         var on = 0
-        for (p in undoable())
-            if (has(p.substringBefore('/'))) { sh(TvUser.enable(p)); on++ }   // p may be one screen of an app (the wizard's Home)
-        sh("rm -f $OFF_LIST")
+        val todo = undoable()
+        val slow = ArrayList<String>()
+        var inRow = 0
+        var stopAt = todo.size
+        val there = Pkg.list(sh, TvUser.USER, empty = true)          // one ask, not a pm per app that a hung package service would hold too
+        for ((i, p) in todo.withIndex()) {
+            if (inRow == 3) { stopAt = i; break }
+            if (p.substringBefore('/') !in there) continue           // p may be one screen of an app (the wizard's Home)
+            if (sh(enableIn(p)).lines().any { it.trim() == "tvr-slow" }) { slow += p; inRow++ } else { on++; inRow = 0 }
+        }
+        val left = (slow + todo.drop(stopAt)).filter { SAFE.matches(it) }
+        if (left.isEmpty()) sh("rm -f $OFF_LIST")
+        else {
+            sh("printf '%s\\n' " + left.joinToString(" ") { "'$it'" } + " > $OFF_LIST")
+            log.line(t("optimize.undo_slow", "apps" to left.joinToString(", ")))
+            report("undo-slow", "", slow.associateWith { "" })
+        }
         LauncherSwap(sh).let { s -> if (s.state()?.why == LauncherSwap.KEY) s.rollback("user") else s.dropKey(); s.forget() }   // the key filter lets Home pass
         sh("for k in $ANIM; do settings put global \$k 1.0; done")
         log.line(t("optimize.re_enabled_apps_google", "n" to on))
         log.line(t("optimize.tvhome_tailscale_settings_left"))
     }
+
+    /** pm enable given [SLOW] s where the TV has `timeout` (toybox, Android 6+); "tvr-slow" when it ran out (124). Older TVs wait as before. */
+    private fun enableIn(p: String) =
+        "if command -v timeout >/dev/null 2>&1; then timeout $SLOW ${TvUser.enable(p)} || [ \$? != 124 ] || echo tvr-slow; else ${TvUser.enable(p)}; fi"
 
     /** Copies the APK to the TV through ADB and has the shell user install it there (an app may not install on its own). */
     @Throws(IOException::class)

@@ -2709,6 +2709,7 @@
  },
  "optimize.done": "تم.",
  "optimize.not_off": "– التلفزيون لم يسمح بإيقاف هذه: {apps}",
+ "optimize.undo_slow": "– لم يُعَد تشغيلها لأن التلفزيون تأخر كثيرًا: {apps}. اضغط «تراجع» مرة أخرى لاحقًا.",
  "optimize.waiting_tv": "… توقف التلفزيون عن الرد بعد إيقاف {pkg} مباشرة، جارٍ انتظاره (حتى دقيقة ونصف)",
  "optimize.downloading_tvhome": "… جارٍ تنزيل TV Home",
  "optimize.installing_tvhome": "… جارٍ تثبيت TV Home",

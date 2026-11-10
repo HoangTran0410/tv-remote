@@ -2496,6 +2496,7 @@
  "optimize.turned_off_apps": "✓ Đã tắt {n} app",
  "optimize.done": "Xong.",
  "optimize.not_off": "– TV không cho tắt: {apps}",
+ "optimize.undo_slow": "– Chưa bật lại được vì TV phản hồi quá lâu: {apps}. Lát nữa bấm Hoàn tác lần nữa.",
  "optimize.waiting_tv": "… TV ngừng trả lời ngay sau khi tắt {pkg}, đang chờ TV (tối đa 1,5 phút)",
  "optimize.downloading_tvhome": "… Đang tải TV Home",
  "optimize.installing_tvhome": "… Đang cài TV Home",

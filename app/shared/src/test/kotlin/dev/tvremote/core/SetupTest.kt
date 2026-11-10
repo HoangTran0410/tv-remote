@@ -34,6 +34,7 @@ class SetupTest {
         var stayDown = false                                          // ...and it never comes back
         var restarts = true                                           // false: only the link dropped
         var lost = false
+        val hangs = mutableSetOf<String>()                            // turning this one on holds pm past Setup.SLOW
         fun sh(raw: String): String {
             val cmd = raw.replace(dev.tvremote.core.ontv.TvUser.ID, "0")
             if (lost) throw IOException("adb connection lost")
@@ -51,10 +52,14 @@ class SetupTest {
             Regex("^pm disable --user 0 (\\S+) 2>&1$").find(cmd)?.let { disabled += it.groupValues[1]; return "" }
             Regex("^ime set (\\S+)$").find(cmd)?.let { keyboard = it.groupValues[1]; return "" }
             Regex("^pm enable --user 0 (\\S+)$").find(cmd)?.let { disabled -= it.groupValues[1]; return "" }
+            Regex("^if command -v timeout .* then timeout ${Setup.SLOW} pm enable --user 0 (\\S+) .*; fi$").find(cmd)?.let {
+                if (it.groupValues[1] in hangs) return "tvr-slow"; disabled -= it.groupValues[1]; return "" }
+            Regex("^printf '%s\\\\n' (.*) > ${Setup.OFF_LIST}$").find(cmd)?.let { offList.clear(); offList += it.groupValues[1].split(" ").map { w -> w.trim('\'') }; return "" }
             Regex("^grep -qx '([^']+)' ${Setup.OFF_LIST} 2>/dev/null \\|\\| echo '\\1' >> ${Setup.OFF_LIST}$").find(cmd)?.let { if (it.groupValues[1] !in offList) offList += it.groupValues[1]; return "" }
             return when {
                 cmd == "pm has-feature android.software.leanback" -> tv.toString()
                 cmd.startsWith("pm list packages -d") -> disabled.joinToString("\n") { "package:$it" }
+                cmd == "pm list packages --user 0" -> installed.joinToString("\n") { "package:$it" }
                 cmd.startsWith("pm list packages -e") -> (installed - disabled).joinToString("\n") { "package:$it" }
                 cmd.startsWith("cmd package query-activities") && "HOME" in cmd ->
                     homes.keys.filter { on(it) }.joinToString("\n") { "priority=${homes[it]}\n$it/.Home" }.ifEmpty { "dev.fake.stub/.Home" }   // a TV that has query-activities always has a home
@@ -308,6 +313,31 @@ class SetupTest {
         assertTrue(tv.offList.isEmpty())
         assertEquals("1.0", tv.anim)
         assertFalse(tv.setup().optimized())
+    }
+
+    @Test fun undoSkipsAnAppThatHangsAndNamesIt() {                   // cleanyourtv: Undo sat on one package, the rest stayed off
+        val tv = FakeTv(true, *Setup.GOOGLE, "com.foo.game", "com.bar.shop")
+        tv.setup().apply(Setup.Choice(anim = false, home = false, disable = listOf("com.foo.game", "com.bar.shop")))
+        tv.hangs += "com.foo.game"
+        val lines = mutableListOf<String>()
+        Setup(null, null, "en", { tv.sh(it) }) { lines += it }.undo()
+        assertEquals(setOf("com.foo.game"), tv.disabled)
+        assertEquals(listOf("com.foo.game"), tv.offList)              // still on the record: Undo again later
+        assertTrue(lines.any { "com.foo.game" in it && "too long" in it })
+        tv.hangs.clear()
+        tv.setup().undo()
+        assertTrue(tv.disabled.isEmpty() && tv.offList.isEmpty())
+    }
+
+    @Test fun undoStopsAfterThreeHangsInARowAndKeepsTheRest() {       // the package service is gone: not 20 s for each of 40 apps
+        val apps = (1..6).map { "com.app.n$it" }
+        val tv = FakeTv(true, *apps.toTypedArray())
+        tv.setup().apply(Setup.Choice(anim = false, home = false, disable = apps))
+        tv.hangs += apps
+        tv.setup().undo()
+        assertEquals(apps.toSet(), tv.disabled)
+        assertEquals(apps, tv.offList)
+        assertEquals(3, tv.said.count { it.startsWith("if command -v timeout") })
     }
 
     @Test fun optimizedSeesAnAppOnlyWeTurnedOff() {                   // so the page offers Undo for a TV optimized with a hand-picked list

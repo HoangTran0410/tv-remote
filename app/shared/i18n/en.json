@@ -2589,6 +2589,7 @@
  },
  "optimize.done": "Done.",
  "optimize.not_off": "– The TV would not let these be turned off: {apps}",
+ "optimize.undo_slow": "– Not turned back on, the TV took too long: {apps}. Press Undo again later.",
  "optimize.waiting_tv": "… The TV stopped answering right after {pkg} was turned off, waiting for it (up to 1.5 minutes)",
  "optimize.downloading_tvhome": "… Downloading TV Home",
  "optimize.installing_tvhome": "… Installing TV Home",

@@ -79,6 +79,8 @@ launchers, or any of `HomeKey.own`: an AOC's launcher was not one of Google's, s
 It turns on what the record turned off, chooses the home before, and drops the `homekey` rule of a key-way record (`LauncherSwap.dropKey`).
 Called by: Keep's Go back and the notice (`user`), the gallery's "Use the TV's own home screen", the Settings page when the TV's own
 launcher is picked, Optimize's Undo (`app/shared/src/main/kotlin/dev/tvremote/core/ontv/Setup.kt:undo`, before the record is deleted), the watchdog.
+Optimize's Undo turns its own apps on first, each within `Setup.SLOW` s (`timeout`, toybox): one that hangs pm is skipped, named and
+kept on Optimize's record, three in a row stop it (`undoSkipsAnAppThatHangsAndNamesIt`); the rollback after it is unchanged.
 A Chromecast or ZTE sent to the key way by 0.32.1 or older has no record: `LauncherSwap.dropKey` tells them by the TV itself
 (`aChromecastSentByAnOlderVersionWithNoRecordStillLetsHomePass`). A launcher uninstalled while it has the key: `HomeKey.pkg` finds no
 home activity and Home passes to the TV's own.

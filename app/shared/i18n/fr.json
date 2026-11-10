@@ -2595,6 +2595,7 @@
   },
   "optimize.done": "Terminé.",
   "optimize.not_off": "– La TV n’a pas permis de désactiver : {apps}",
+  "optimize.undo_slow": "– Pas réactivé, la TV a mis trop de temps : {apps}. Appuyez de nouveau sur Annuler plus tard.",
   "optimize.waiting_tv": "… La TV a cessé de répondre juste après la désactivation de {pkg}, attente de son retour (jusqu’à 1,5 minute)",
   "optimize.downloading_tvhome": "… Téléchargement de TV Home",
   "optimize.installing_tvhome": "… Installation de TV Home",

@@ -2638,6 +2638,7 @@
  },
  "optimize.done": "Готово.",
  "optimize.not_off": "– ТВ не дал отключить: {apps}",
+ "optimize.undo_slow": "– Не включено снова, ТВ отвечал слишком долго: {apps}. Нажмите «Отменить» ещё раз позже.",
  "optimize.waiting_tv": "… ТВ перестал отвечать сразу после отключения {pkg}, ждём ТВ (до 1,5 минуты)",
  "optimize.downloading_tvhome": "… Скачивание TV Home",
  "optimize.installing_tvhome": "… Установка TV Home",
