@@ -4815,5 +4815,10 @@
  "support.replies_none": "No reply yet.",
  "support.scan_to_answer": "Scan to answer from your phone",
  "support.who_us": "Support",
- "support.who_you": "You"
+ "support.who_you": "You",
+ "find.button": "Find",
+ "find.title": "Find a feature",
+ "find.placeholder": "Try: sleep, lock apps, screenshot…",
+ "find.none": "Nothing found. Try another word.",
+ "find.guide": "User guide"
 }

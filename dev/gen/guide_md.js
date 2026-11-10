@@ -186,5 +186,6 @@ if (require.main === module) {
   fs.rmSync(OUT, { recursive: true, force: true });
   for (const [f, s] of Object.entries(files)) { fs.mkdirSync(path.dirname(path.join(OUT, f)), { recursive: true }); fs.writeFileSync(path.join(OUT, f), s); }
   console.log(Object.keys(files).length + ' files in docs/guide/');
+  const find = require('./find_topics.js'); fs.writeFileSync(find.OUT, find.build());   // the page's feature search reads the same topics
 }
 module.exports = { build, features };

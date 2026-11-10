@@ -119,8 +119,9 @@ test('every id is used', () => {
 test('scripts write no words of their own: every word is an id', () => {
   // the old way (a table turning Vietnamese sentences into English on the rendered page) is gone: a sentence in a script would
   // show in Vietnamese to every other language. Left alone: old.js (runs on browsers too old for the rest, carries both
-  // languages), voice.js (what people say, matched, not shown).
-  const SKIP = new Set(['i18n.js', 'old.js', 'voice.js']), bad = [];
+  // languages), voice.js (what people say, matched, not shown), find_topics.js (the user guide's own titles, made from docs/guide.html:
+  // the site is Vietnamese and English, and such a row opens that page).
+  const SKIP = new Set(['i18n.js', 'old.js', 'voice.js', 'find_topics.js']), bad = [];
   for (const f of fs.readdirSync(path.join(web, 'js')).filter((x) => x.endsWith('.js') && !SKIP.has(x))) {
     read('js/' + f).split('\n').forEach((line, i) => {
       const code = line.replace(/\/\/.*$/, '');

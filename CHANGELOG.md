@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Find a feature: 🔍 Find at the end of the tab bar (computer app, the phone app's Manage screen, the TV web page and Manage on the TV) searches every card and Settings section by name and by the user guide's words, in any language the page speaks; a pick opens its tab and lights the card (#29).
 - TV Setup: no longer jumps back to the home screen every few seconds when the TV says it is asking "Allow USB debugging?" but shows no box; it steps aside once, then stays and says to turn USB debugging off and on.
 - TV Setup: after "Send to support", support's replies show on the TV (a notice, then Connection → Support replies: the talk and a QR code to answer from a phone, tvremote.pages.dev/support). It checks every 6 hours, only while a code is kept.
 - Wi-Fi scan: an Android box whose media player answers like a Hisense (ports 38400 / 18400) is no longer listed as a Hisense VIDAA TV unless its remote port 36669 answers; it is reached over ADB instead.

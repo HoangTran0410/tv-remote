@@ -4677,5 +4677,10 @@
  "support.replies_none": "Chưa có trả lời.",
  "support.scan_to_answer": "Quét mã để trả lời bằng điện thoại",
  "support.who_us": "Hỗ trợ",
- "support.who_you": "Bạn"
+ "support.who_you": "Bạn",
+ "find.button": "Tìm",
+ "find.title": "Tìm tính năng",
+ "find.placeholder": "Tìm: hẹn giờ, khóa app, chụp màn hình…",
+ "find.none": "Không thấy. Thử từ khác.",
+ "find.guide": "Hướng dẫn"
 }

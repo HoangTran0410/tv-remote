@@ -8,4 +8,5 @@
 
 ### Tips
 
+- **🔍 Find** (end of the tab bar): type a word like “sleep” or “lock” to go straight to it, whatever tab it is in.
 - **Send anonymous stats** (on by default): see [Anonymous stats](census.md). In the phone app it is under Privacy.

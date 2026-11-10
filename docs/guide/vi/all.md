@@ -1351,6 +1351,7 @@ Trong app điện thoại hay máy tính: **Thêm** › **Tiện ích** › **T�
 
 ### Mẹo
 
+- **🔍 Tìm** (cuối thanh tab): gõ một từ như “hẹn giờ” hay “khóa” để tới thẳng chỗ của nó, không cần biết nó ở tab nào.
 - **Gửi thống kê ẩn danh** (bật sẵn): xem [Thống kê ẩn danh](#census). Trên app điện thoại nằm ở Quyền riêng tư.
 
 ## Tự kiểm tra khi không kết nối được

@@ -326,3 +326,11 @@ dialog.ldetail .card { width:min(640px, 94vw); }
 .ltag.warn, .item .name small.warn { color:var(--warn); }
 .note.warn { background:var(--warn-bg); color:var(--warn); padding:8px 10px; border-radius:8px; }
 dialog.ask .fchips { flex-wrap:wrap; row-gap:8px; }   /* "What went wrong?" (askSaid): every chip in view */
+/* 🔍 Find a feature (js/find.js): rows like the country picker's (.chmccs), the place under the name */
+.tabs .tabfind { flex:0 0 auto; padding:0 14px; color:var(--muted); }
+.findrows { max-height:min(56vh, 520px); overflow-y:auto; margin:0 -4px; padding:2px 4px; }
+.findrows .item.pick { flex:none; display:flex; width:100%; padding:8px 10px; border:0; border-radius:10px; background:none; color:var(--ink); text-align:start; cursor:pointer; min-height:0; }
+.findrows .item.pick:hover, .findrows .item.pick:focus-visible { background:var(--btn); }
+.findrows .name { display:flex; flex-direction:column; align-items:flex-start; gap:2px; min-width:0; }
+.findrows .name small { font-size:12px; }
+dialog.finddlg { margin-top:min(10vh, 80px); }                       /* its top stays put while the list grows and shrinks */

@@ -48,7 +48,7 @@
 - [TV Games, game trên TV](games.md): App trên TV chơi game retro và game web, dùng điện thoại làm tay cầm (tối đa 4). Chơi không cần ADB hay TV Setup: quét mã QR trên TV bằng… _(downloader 2294968 game tro choi retro libretro tay cam phone pad qr nes snes gba gameboy megadrive genesis mastersystem gamegear pcengine keyboard ps1 arcade fbneo mame neogeo zip homebrew games)_
 - [TV Apps, kho app cho TV](tvapps.md): Danh sách app miễn phí, mã nguồn mở cho TV (SmartTube, Kodi, VLC, Jellyfin…). Mỗi app tải thẳng từ bản phát hành của nhà làm app, và chỉ… _(downloader 1082201 kho app store cai app mien phi ma nguon mo open source smarttube kodi vlc jellyfin moonlight localsend tvapps)_
 - [Tệp và cài APK](files.md): Tab 📁 Tệp là trình quản lý tệp của TV. _(tep file apk cai upload tai len keo tha terminal thu muc doi ten xoa)_
-- [Sức khỏe TV](health.md): Tab 🩺 Sức khỏe cho biết TV đang khỏe hay mệt. _(suc khoe ram cpu nhiet do temperature mang bluetooth giai phong bo nho health toc do mang speed test)_
+- [Sức khỏe TV](health.md): Tab 🩺 Sức khỏe cho biết TV đang khỏe hay mệt. _(suc khoe ram cpu nhiet do temperature mang wifi network bluetooth giai phong bo nho health toc do mang speed test)_
 - [Kiểm tra quyền riêng tư](privacy.md): Mở Sức khỏe → Riêng tư, chọn Kiểm tra. App đọc nền trên TV, nhẹ, không làm chậm app khác; app hiện dần khi tìm thấy. _(quyen rieng tu privacy adb khoa key micro camera vi tri acr theo doi tracking nghe len)_
 - [Thống kê ẩn danh](census.md): Mỗi ngày một lần, mỗi app gửi một ghi chú nhỏ để biết TV nào chạy tốt. Dùng cho mục "TV đã chạy thử" trên trang chủ. _(thong ke an danh census gui hang model tv chip ay tat telemetry anonymous stats privacy)_
 - [Quản lý ngay trên TV](ontv.md): Không có điện thoại hay máy tính ở gần? Làm ngay trên TV bằng điều khiển của TV. _(quan ly tren tv khong co dien thoai may tinh remote cua tv back tv setup man hinh tv)_
@@ -84,7 +84,7 @@
 - [Chỉ có trên app điện thoại](extras.md):  _(widget tile shortcut phim tat man hinh chinh am luong cap nhat notification thong bao lock screen man hinh khoa)_
 
 ## Khi có lỗi
-- [Cài đặt của app](settings.md): Bấm 🛠️ ở góc trên để mở Cài đặt. _(cai dat settings giao dien sang toi theme ngon ngu language rung vibrate kiem tra ban moi cap nhat tat thoat quit)_
+- [Cài đặt của app](settings.md): Bấm 🛠️ ở góc trên để mở Cài đặt. _(cai dat settings giao dien sang toi theme ngon ngu language rung vibrate tim kiem tinh nang search find kiem tra ban moi cap nhat tat thoat quit)_
 - [Tự kiểm tra khi không kết nối được](selfcheck.md): Không kết nối được? App tự kiểm tra trong chưa đầy 4 giây rồi nói một kết luận kèm cách sửa. Bạn không cần đoán. _(tu kiem tra loi diagnose khong ket noi vpn dong ho clock mang khac thu lai quet mang bat adb)_
 - [“Cần cập nhật trình duyệt”](webview.md): Màn hình Quản lý trong app điện thoại dùng trình duyệt của Android (WebView). Nếu nó quá cũ, app hiện thông báo này. _(webview play store cap nhat trinh duyet android system webview cu old)_
 - [Gửi nhật ký để được giúp](log.md): Mở Cài đặt (🛠️) → Giới thiệu. _(tra loi reply nhat ky log gui loi bao loi wirelog ho tro support ma 8 so)_

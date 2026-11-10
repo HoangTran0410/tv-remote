@@ -419,7 +419,7 @@ function showTab(t) {
 // into view and lit for a moment, so nobody has to look for it. The tab's own loading may move it: placed a little later.
 function goTo(t, id) {
   showTab(t);
-  const c = id && document.getElementById(id);
+  const c = id && (typeof id === 'string' ? document.getElementById(id) : id);   // a card's id, or the card itself (find.js)
   if (!c) return;
   setTimeout(() => {
     if (c.offsetParent === null) return;                             // not on this core / for this TV
@@ -434,8 +434,8 @@ document.querySelectorAll('[data-panel]').forEach((p) => { p.setAttribute('role'
 document.querySelector('nav.tabs').addEventListener('keydown', (e) => {   // ← → Home End between the tabs that are shown
   const k = { ArrowRight: 1, ArrowLeft: -1, Home: 0, End: 0 }[e.key]; if (k === undefined) return;
   if (e.defaultPrevented) return;                                   // on the TV js/ontv.js has moved the focus: OK opens the tab, so passing one loads nothing
-  const all = [...document.querySelectorAll('nav.tabs [data-tab]')].filter((b) => b.offsetParent !== null), i = all.indexOf(document.activeElement); if (i < 0) return;
+  const all = [...document.querySelectorAll('nav.tabs [data-tab], #findbtn')].filter((b) => b.offsetParent !== null), i = all.indexOf(document.activeElement); if (i < 0) return;   // 🔍 Find at the end: on a TV the arrows are the only way to it
   e.preventDefault(); const n = e.key === 'Home' ? all[0] : e.key === 'End' ? all[all.length - 1] : all[(i + k + all.length) % all.length];
-  n.focus(); showTab(n.dataset.tab);
+  n.focus(); if (n.dataset.tab) showTab(n.dataset.tab);
 });
 

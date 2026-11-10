@@ -5056,5 +5056,10 @@
  "support.replies_none": "لا يوجد ردّ بعد.",
  "support.scan_to_answer": "امسح الرمز للردّ من هاتفك",
  "support.who_us": "الدعم",
- "support.who_you": "أنت"
+ "support.who_you": "أنت",
+ "find.button": "بحث",
+ "find.title": "ابحث عن ميزة",
+ "find.placeholder": "مثلًا: النوم، قفل التطبيقات، لقطة شاشة…",
+ "find.none": "لا نتائج. جرّب كلمة أخرى.",
+ "find.guide": "دليل الاستخدام"
 }

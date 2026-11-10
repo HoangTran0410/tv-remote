@@ -4848,5 +4848,10 @@
   "support.replies_none": "Pas encore de réponse.",
   "support.scan_to_answer": "Scannez pour répondre depuis votre téléphone",
   "support.who_us": "Support",
-  "support.who_you": "Vous"
+  "support.who_you": "Vous",
+ "find.button": "Chercher",
+ "find.title": "Trouver une fonction",
+ "find.placeholder": "Ex. : veille, verrou, capture d’écran…",
+ "find.none": "Rien trouvé. Essayez un autre mot.",
+ "find.guide": "Guide"
 }

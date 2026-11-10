@@ -48,7 +48,7 @@ Remote control for Android TV / Google TV (and LG, Samsung, Roku, VIDAA) with no
 - [TV Games, games on the TV](games.md): An app on the TV that plays retro and web games, with phones as pads (up to 4). Playing needs no ADB and no TV Setup: scan the QR on the… _(downloader 2294968 game tro choi retro libretro tay cam phone pad qr nes snes gba gameboy megadrive genesis mastersystem gamegear pcengine keyboard ps1 arcade fbneo mame neogeo zip homebrew games)_
 - [TV Apps, free apps for the TV](tvapps.md): A list of free, open-source TV apps (SmartTube, Kodi, VLC, Jellyfin…). Each comes straight from its maker's release and is installed only… _(downloader 1082201 kho app store cai app mien phi ma nguon mo open source smarttube kodi vlc jellyfin moonlight localsend tvapps)_
 - [Files and installing APKs](files.md): The 📁 Files tab is the TV's file manager. _(tep file apk cai upload tai len keo tha terminal thu muc doi ten xoa)_
-- [TV health](health.md): The 🩺 Health tab shows how the TV is doing. _(suc khoe ram cpu nhiet do temperature mang bluetooth giai phong bo nho health toc do mang speed test)_
+- [TV health](health.md): The 🩺 Health tab shows how the TV is doing. _(suc khoe ram cpu nhiet do temperature mang wifi network bluetooth giai phong bo nho health toc do mang speed test)_
 - [Privacy check](privacy.md): Open Health → Privacy and choose Check. The scan runs quietly on the TV without slowing other apps, and apps appear as they are found. _(quyen rieng tu privacy adb khoa key micro camera vi tri acr theo doi tracking nghe len)_
 - [Anonymous stats](census.md): Once a day each app sends a small note to learn which TVs work well. It feeds the "TVs it ran on" part of the home page. _(thong ke an danh census gui hang model tv chip ay tat telemetry anonymous stats privacy)_
 - [Manage right on the TV](ontv.md): No phone or computer at hand? Do it on the TV itself with the TV's own remote. _(quan ly tren tv khong co dien thoai may tinh remote cua tv back tv setup man hinh tv)_
@@ -84,7 +84,7 @@ Remote control for Android TV / Google TV (and LG, Samsung, Roku, VIDAA) with no
 - [Phone app extras](extras.md):  _(widget tile shortcut phim tat man hinh chinh am luong cap nhat notification thong bao lock screen man hinh khoa)_
 
 ## When something is wrong
-- [App settings](settings.md): Tap 🛠️ in the top corner to open Settings. _(cai dat settings giao dien sang toi theme ngon ngu language rung vibrate kiem tra ban moi cap nhat tat thoat quit)_
+- [App settings](settings.md): Tap 🛠️ in the top corner to open Settings. _(cai dat settings giao dien sang toi theme ngon ngu language rung vibrate tim kiem tinh nang search find kiem tra ban moi cap nhat tat thoat quit)_
 - [The self-check when it will not connect](selfcheck.md): Cannot connect? The app checks by itself in under 4 seconds and gives one conclusion with the fix. No guessing. _(tu kiem tra loi diagnose khong ket noi vpn dong ho clock mang khac thu lai quet mang bat adb)_
 - [“The browser needs an update”](webview.md): The phone app's Manage screen uses Android's own browser (WebView). If it is too old, the app shows this notice. _(webview play store cap nhat trinh duyet android system webview cu old)_
 - [Send the log to get help](log.md): Open Settings (🛠️) → About. _(tra loi reply nhat ky log gui loi bao loi wirelog ho tro support ma 8 so)_

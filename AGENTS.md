@@ -86,7 +86,8 @@ lists), release/, admin/; `gen/optimize_images.py` never touches `docs/home/` an
   (`Errors.kt`, `friendly()` in `js/core.js`). Choices look like buttons. Long waits show progress and can be cancelled.
 - **Never commit** `cert.pem`, `key.pem`, `tvs.json`, `*.jks` (they pair with or sign for real devices). Never expose port 8765 to the Internet (away from home: Tailscale).
 - **"Allow USB debugging?"** is only answered for the key whose fingerprint matches (`AdbPrompt.kt`); never Allow an unknown key.
-- **Nothing in `docs/` is generated** (GSAP timelines and CSS by hand), except `docs/guide/*.md` (the guide for AI agents: `node dev/gen/guide_md.js` after editing `docs/guide.html`; `guide.test.js` fails when stale). `app/*/res/drawable/ic_*.xml` come from
+- **Nothing in `docs/` is generated** (GSAP timelines and CSS by hand), except `docs/guide/*.md` (the guide for AI agents: `node dev/gen/guide_md.js` after editing `docs/guide.html`, which also writes the page's
+  feature search list `app/shared/web/js/find_topics.js`; `guide.test.js` / `find.test.js` fail when stale). `app/*/res/drawable/ic_*.xml` come from
   `dev/gen/gen_icons.py`, the logo's corners and `app/desktop/icon.*` from `dev/gen/round_icons.py`: edit those.
 - Comments say why, not what; match the surrounding style (end-of-line comments aligned to column ~70).
 

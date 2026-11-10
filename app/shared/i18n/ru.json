@@ -4904,5 +4904,10 @@
  "support.replies_none": "Ответов пока нет.",
  "support.scan_to_answer": "Отсканируйте, чтобы ответить с телефона",
  "support.who_us": "Поддержка",
- "support.who_you": "Вы"
+ "support.who_you": "Вы",
+ "find.button": "Поиск",
+ "find.title": "Найти функцию",
+ "find.placeholder": "Например: сон, блокировка, скриншот…",
+ "find.none": "Ничего не найдено. Попробуйте другое слово.",
+ "find.guide": "Руководство"
 }

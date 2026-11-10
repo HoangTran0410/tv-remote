@@ -1351,6 +1351,7 @@ Menu paths from [cleanyour.tv](https://cleanyour.tv/not-android).
 
 ### Tips
 
+- **🔍 Find** (end of the tab bar): type a word like “sleep” or “lock” to go straight to it, whatever tab it is in.
 - **Send anonymous stats** (on by default): see [Anonymous stats](#census). In the phone app it is under Privacy.
 
 ## The self-check when it will not connect
