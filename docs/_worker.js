@@ -11,7 +11,7 @@
 const ORIGIN = "https://tvremote.pages.dev";
 const FILES = new Set(["tv-remote.apk", "tv-setup.apk", "tv-home.apk", "tv-channels.apk", "tv-games.apk", "tv-apps.apk",
   "TV-Remote-mac.zip", "TV-Remote-windows-x64.zip", "TV-Remote-linux-x64.tar.gz", "TV-Remote-linux-arm64.tar.gz"]);
-const PAGES = { "/": true, "/guide": true, "/tvs": true, "/apps": true, "/themes": true, "/demo/": true, "/log": false };   // true: in the sitemap (log is noindex)
+const PAGES = { "/": true, "/guide": true, "/tvs": true, "/apps": true, "/themes": true, "/demo/": true, "/log": false, "/support": false };   // true: in the sitemap (log and support are noindex)
 // Runs at the end of <head>: the address's language wins over what the page's own first script picked; a person whose choice
 // (the VI / EN buttons, nav.js, "langPick") or, on a Vietnamese page reached from elsewhere, whose browser speaks another language
 // is sent to the other address. Never a crawler: it must see each address as it is.

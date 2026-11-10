@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="vi" data-lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-en="Support · TV Remote">Hỗ trợ · TV Remote</title>
+<meta name="description" data-en="Read the answer to the log your TV sent, and write back." content="Đọc trả lời cho log TV đã gửi, và viết lại.">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0a0d14">
+<script>(function(){var l;try{l=localStorage.getItem("lang")}catch(e){}var q=new URLSearchParams(location.search).get("lang");l=q==="en"||q==="vi"?q:l||(/^vi\b/i.test(navigator.language||"")?"vi":"en");document.documentElement.dataset.lang=l;document.documentElement.lang=l})()</script>
+<link rel="icon" href="https://tvremote.pages.dev/img/icon.png?v=1024" sizes="96x96">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="stylesheet" href="css/nav.css">
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/support.css">
+</head>
+<body>
+
+<script src="js/nav.js" data-page="support"></script>
+
+<main class="wrap sup">
+  <span class="eyebrow"><span class="vi">Hỗ trợ</span><span class="en">Support</span></span>
+  <h1 class="sup-h"><span class="vi">Trò chuyện với hỗ trợ</span><span class="en">Talk to support</span></h1>
+  <p class="lead sup-about" data-about></p>
+  <div class="sup-box">
+    <div class="sup-thread" data-thread aria-live="polite"></div>
+    <form class="sup-say" data-say hidden>
+      <label for="sup-text" class="sup-lbl"><span class="vi">Trả lời</span><span class="en">Your answer</span></label>
+      <textarea id="sup-text" maxlength="2000" rows="4" required></textarea>
+      <div class="sup-row"><span class="sup-err" data-err role="alert"></span><button class="btn btn-primary" type="submit"><span class="vi">Gửi</span><span class="en">Send</span></button></div>
+    </form>
+  </div>
+  <p class="sup-note"><span class="vi">Không cần tài khoản hay email: ai quét được mã QR trên TV thì đọc được cuộc trò chuyện này. Tự xóa 14 ngày sau tin nhắn cuối.</span><span class="en">No account or email: whoever scans the QR code on the TV can read this talk. Deleted 14 days after the last message.</span></p>
+</main>
+
+<script src="js/support.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+/* support.html: the thread of a log sent from a TV (js/support.js). Tokens from site.css. */
+.sup{max-width:720px;padding-top:28px;padding-bottom:56px}
+.sup-h{font-size:clamp(28px,6vw,40px);margin:6px 0 8px}
+.sup-about{min-height:1.5em}
+.sup-box{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;min-width:0}
+.sup-thread{display:flex;flex-direction:column;gap:10px}
+.sup-msg{max-width:85%;padding:10px 14px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);white-space:pre-wrap;overflow-wrap:anywhere;font-size:15.5px;line-height:1.5}
+.sup-msg.tv{align-self:flex-end;background:rgba(91,140,255,.16);border-color:rgba(91,140,255,.45)}
+.sup-msg small{display:block;margin-top:4px;color:var(--dim);font-size:12px}
+.sup-empty{color:var(--muted);text-align:center;padding:20px 8px}
+.sup-say{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+.sup-lbl{display:block;font-weight:600;margin-bottom:6px}
+.sup-say textarea{width:100%;box-sizing:border-box;min-height:96px;padding:10px 12px;border-radius:12px;border:1px solid var(--line2);background:var(--bg2);color:var(--text);font:inherit;font-size:16px;resize:vertical}
+.sup-say textarea:focus{outline:2px solid var(--blue);outline-offset:1px}
+.sup-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px}
+.sup-err{color:var(--red);font-size:14px;min-width:0}
+.sup-note{color:var(--muted);font-size:14px;margin-top:14px}

@@ -15,7 +15,11 @@
   support.py CODE sh "getevent -pl"            a remote's keys (TV Setup newer than 0.26.3): what each remote declares; also
                                      "timeout 15 getevent -lt -c 40" (the next presses), cat/ls /vendor|system/usr/keylayout/...,
                                      and logcat -s KeyFix shows "key <code>" for each press while support looks
-  support.py --delete CODE           forget it
+  support.py CODE --reply "text"     answer the person: TV Setup shows it on the TV (it asks every 6 h), and the person answers
+                                     from the page the TV's QR opens (tvremote.pages.dev/support#code.key); one thread per TV, so
+                                     any of its codes reaches it. What they write: `support.py CODE` (the thread under the facts)
+  support.py --said                  what people wrote in the last 7 days (crashwatch tells the session when someone does)
+  support.py --delete CODE           forget it (and its thread, once no other code of that TV is left)
   support.py --url http://127.0.0.1:8798   a local `wrangler dev`
 """
 import argparse, datetime, json, os, re, sys, time, urllib.error, urllib.parse, urllib.request
@@ -84,9 +88,19 @@ def main():
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--out")
     ap.add_argument("--delete", action="store_true")
+    ap.add_argument("--reply")
+    ap.add_argument("--said", action="store_true")
     ap.add_argument("--url", default=URL)
     a = ap.parse_args()
     base = a.url.rstrip("/")
+    if a.said:
+        r = call(base, "/v1/support/said", {"since": int(time.time() * 1000) - 7 * 86_400_000})
+        for m in r["said"]: print(f'{m["code"]}  {when(m["at"], r["now"]):>16}  {m["text"]}')
+        return
+    if a.reply is not None:
+        if not a.code: sys.exit("support.py CODE --reply \"text\"")
+        print(call(base, "/v1/support/reply", body={"code": a.code, "text": a.reply}, method="POST"))
+        return
     if not a.code:
         r = call(base, "/v1/support")
         for s in r["support"]:
@@ -121,6 +135,9 @@ def main():
     said = [l for l in r["report"].split("\n")[:2] if l.startswith("[said] ")]   # what the sender chose / wrote (the first lines of the report)
     print(("SENDER SAID: " + " | ".join(l[7:] for l in said) + "\n\n") if said else "(the sender said nothing)\n")
     print(r["report"])
+    if r.get("msgs"):                                         # the thread, last: what to answer
+        print("\n== THREAD (codes of this TV: " + ", ".join(c["code"] for c in r.get("codes", [])) + ")")
+        for m in r["msgs"]: print(f'{"US " if m["who"] == "us" else "THEM"}  {when(m["at"], r["now"]):>16}  {m["text"]}')
 
 
 if __name__ == "__main__":
