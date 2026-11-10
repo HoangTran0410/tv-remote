@@ -23,6 +23,7 @@ import dev.tvremote.core.ontv.SetupUpdate
 import dev.tvremote.core.ontv.Tailscale
 import dev.tvremote.setup.health.AutoUpdate
 import dev.tvremote.setup.health.Support
+import dev.tvremote.setup.health.SupportThread
 import dev.tvremote.setup.keys.HoldKeys
 import dev.tvremote.setup.keys.KeyFix
 import dev.tvremote.setup.keys.KeysAddon
@@ -914,7 +915,8 @@ class MainActivity : Activity() {
             TvUi.Item(R.drawable.ic_send, T("support.send"), T("support.send_sub")) { askSaid { supportSend(it) } },
             if (Support.open()) TvUi.Item(R.drawable.ic_stop, T("support.stop"), T("support.stop_sub", "code" to spaced(Support.code), "min" to supportLeft())) {
                 Support.stop(this); log(T("support.stopped")) }
-            else TvUi.Item(R.drawable.ic_eye, T("support.open", "min" to Support.MINUTES), T("support.open_sub")) { askSaid { supportOpen(it) } }))
+            else TvUi.Item(R.drawable.ic_eye, T("support.open", "min" to Support.MINUTES), T("support.open_sub")) { askSaid { supportOpen(it) } },
+            *(if (SupportThread.on(this)) arrayOf(TvUi.Item(R.drawable.ic_info, T("support.replies"), if (SupportThread.unread(this)) T("support.replies_new") else T("support.replies_sub")) { supportReplies() }) else emptyArray())))
     }
 
     // Support (Support.kt): a code to read out to whoever helps, and for a while their reading of this app's own state
@@ -1073,6 +1075,38 @@ class MainActivity : Activity() {
         val send = TvUi.button(this, T("said.send"), 0, ACCENT) { dlg.dismiss(); go(dev.tvremote.core.SupportRelay.Said(picked, field.text.toString())) }
         box.addView(send, android.widget.LinearLayout.LayoutParams(-1, -2).apply { topMargin = TvUi.dp(this@MainActivity, 10).toInt() })
         dlg.setOnShowListener { send.requestFocus() }
+        dlg.show()
+    }
+
+    /**
+     * Support's replies: the thread (both sides, newest last, plain text) and the QR of the page where a phone answers. The code
+     * and the QR sit first so a long reply never pushes them off; each message takes the focus so the D-pad scrolls a long one.
+     */
+    private fun supportReplies() {
+        val (dlg, box) = TvUi.sheet(this, R.style.TvSheet, 720)
+        TvUi.sheetTitle(box, T("support.replies"))
+        val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        SupportThread.pageUrl(this)?.let { url -> qr(url)?.let { top.addView(it, LinearLayout.LayoutParams(dp(150), dp(150)).apply { rightMargin = dp(18) }) } }
+        val side = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        side.addView(TvUi.text(this, T("support.scan_to_answer"), TvUi.SP_ROW), LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(12) })
+        val close = TvUi.button(this, T("common.close")) { dlg.dismiss() }
+        side.addView(close, LinearLayout.LayoutParams(-1, -2))
+        top.addView(side, LinearLayout.LayoutParams(0, -2, 1f))
+        box.addView(top, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(12) })
+        val m = SupportThread.msgs(this)
+        if (m.length() == 0) box.addView(TvUi.text(this, T("support.replies_none"), TvUi.SP_ROW, TvUi.DIM))
+        for (i in 0 until m.length()) {
+            val o = m.getJSONObject(i); val us = o.optString("who") == "us"
+            val row = TvUi.text(this, (if (us) T("support.who_us") else T("support.who_you")) + "\n" + o.optString("text"), TvUi.SP_ROW,
+                if (us) TvUi.TEXT else TvUi.DIM).apply {                // setText: plain text, never HTML
+                isFocusable = true; background = TvUi.round(if (us) TvUi.CARD else Color.TRANSPARENT, dp(10).toFloat(), 0, 0)
+                setPadding(dp(12), dp(8), dp(12), dp(8))
+                setOnFocusChangeListener { v, f -> v.background = TvUi.round(if (f) TvUi.FOCUS_FILL else if (us) TvUi.CARD else Color.TRANSPARENT, dp(10).toFloat(), 0, 0) }
+            }
+            box.addView(row, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
+        }
+        SupportThread.markRead(this)
+        dlg.setOnShowListener { close.requestFocus() }
         dlg.show()
     }
 

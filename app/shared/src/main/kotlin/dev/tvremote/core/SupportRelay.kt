@@ -54,6 +54,29 @@ class SupportRelay(
         return got
     }
 
+    /**
+     * What support wrote back to this install (the worker's thread is per install: the newest code and key see replies to older
+     * codes too): `{now, app, model, made, msgs:[{id, who: "us"|"tv", text, at}]}` with the messages after id [after]. Null when
+     * the worker cannot be reached (try again later), or when there is no code stored. A 403 means the code is gone (kept 14 days
+     * after the last word) or the key is wrong: code and key are forgotten and `{"error":403}` comes back, so nobody asks again.
+     */
+    fun thread(after: Int): JSONObject? {
+        val code = store.get("code").orEmpty(); val key = store.get("key").orEmpty()
+        if (code.isEmpty() || key.isEmpty()) return null
+        val r = post("${base()}/thread", JSONObject().put("code", code).put("key", key).put("after", after)) ?: return null
+        if (r.has("error")) {
+            if (r.optInt("error") == 403) { store.put("code", ""); store.put("key", "") }
+            else return null                                           // 404 / 429: not an answer about this code
+        }
+        return r
+    }
+
+    /** The phone page where the person answers, from the newest code and key; null when none is stored. */
+    fun pageUrl(): String? {
+        val code = store.get("code").orEmpty(); val key = store.get("key").orEmpty()
+        return if (code.isEmpty() || key.isEmpty()) null else "https://tvremote.pages.dev/support#$code.$key"
+    }
+
     /** Lets the owner read for [MINUTES], with a fresh report first (the facts of now with the code). Blocks: off the main thread. */
     fun start(said: Said = Said.NONE): String? {
         val code = send(said) ?: return null

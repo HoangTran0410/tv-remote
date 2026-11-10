@@ -30,7 +30,7 @@ object Support {
     @Volatile private var relay: SupportRelay? = null
     @Volatile private var token = ""
 
-    private fun relay(c: Context): SupportRelay = relay ?: synchronized(this) {
+    internal fun relay(c: Context): SupportRelay = relay ?: synchronized(this) {
         relay ?: run {
             val app = c.applicationContext
             val version = try { app.packageManager.getPackageInfo(app.packageName, 0).versionName ?: "" } catch (e: Exception) { "" }
@@ -60,12 +60,12 @@ object Support {
     internal fun scrub(s: String): String = Scrub.text(s, keepIps = true)
 
     /** Sends the report; the code to read out, or null. Blocks: off the main thread. */
-    fun send(c: Context, said: SupportRelay.Said = SupportRelay.Said.NONE): String? = relay(c).send(said)
+    fun send(c: Context, said: SupportRelay.Said = SupportRelay.Said.NONE): String? = relay(c).send(said).also { if (it != null) SupportThread.start(c) }   // a code now: replies may come
 
     /** Lets the owner read for [MINUTES]; [said] gets the code, or null, on its own thread. */
     fun start(c: Context, said: SupportRelay.Said = SupportRelay.Said.NONE, got: (String?) -> Unit) {
         val r = relay(c)
-        Thread({ got(r.start(said)) }, "support-start").apply { isDaemon = true }.start()
+        Thread({ got(r.start(said).also { if (it != null) SupportThread.start(c) }) }, "support-start").apply { isDaemon = true }.start()
     }
 
     /** At start: support open when TV Setup stopped (an update, a kill) goes on with the same code, else no pass is kept. */

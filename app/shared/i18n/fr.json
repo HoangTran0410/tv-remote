@@ -4839,5 +4839,14 @@
   "warn.idle_title": "Vous regardez encore ?",
   "warn.idle_body": "Aucune touche n’a été pressée depuis longtemps. Appuyez sur une touche pour garder la TV allumée.",
   "warn.idle_keep": "Je regarde encore",
-  "guard.idle_the_tv_turns": "Personne ne se sert de la TV : elle s’éteint dans 1 minute"
+  "guard.idle_the_tv_turns": "Personne ne se sert de la TV : elle s’éteint dans 1 minute",
+  "support.replied": "Le support a répondu",
+  "support.replied_where": "TV Setup → Connexion → Réponses du support",
+  "support.replies": "Réponses du support",
+  "support.replies_new": "Nouvelle réponse",
+  "support.replies_sub": "Ce que le support a écrit, et répondre depuis votre téléphone",
+  "support.replies_none": "Pas encore de réponse.",
+  "support.scan_to_answer": "Scannez pour répondre depuis votre téléphone",
+  "support.who_us": "Support",
+  "support.who_you": "Vous"
 }

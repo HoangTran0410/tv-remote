@@ -4806,5 +4806,14 @@
  "warn.idle_title": "Still watching?",
  "warn.idle_body": "No key has been pressed for a long time. Press any key to keep the TV on.",
  "warn.idle_keep": "Still watching",
- "guard.idle_the_tv_turns": "Nobody is using the TV: it turns off in 1 minute"
+ "guard.idle_the_tv_turns": "Nobody is using the TV: it turns off in 1 minute",
+ "support.replied": "Support replied",
+ "support.replied_where": "TV Setup → Connection → Support replies",
+ "support.replies": "Support replies",
+ "support.replies_new": "New reply",
+ "support.replies_sub": "What support wrote, and answering from your phone",
+ "support.replies_none": "No reply yet.",
+ "support.scan_to_answer": "Scan to answer from your phone",
+ "support.who_us": "Support",
+ "support.who_you": "You"
 }

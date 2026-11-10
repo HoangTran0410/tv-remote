@@ -4895,5 +4895,14 @@
  "warn.idle_title": "Вы ещё смотрите?",
  "warn.idle_body": "Давно не нажималась ни одна кнопка. Нажмите любую кнопку, чтобы ТВ не выключился.",
  "warn.idle_keep": "Смотрю",
- "guard.idle_the_tv_turns": "ТВ никто не смотрит: он выключится через 1 минуту"
+ "guard.idle_the_tv_turns": "ТВ никто не смотрит: он выключится через 1 минуту",
+ "support.replied": "Поддержка ответила",
+ "support.replied_where": "TV Setup → Подключение → Ответы поддержки",
+ "support.replies": "Ответы поддержки",
+ "support.replies_new": "Новый ответ",
+ "support.replies_sub": "Что написала поддержка, и ответ с телефона",
+ "support.replies_none": "Ответов пока нет.",
+ "support.scan_to_answer": "Отсканируйте, чтобы ответить с телефона",
+ "support.who_us": "Поддержка",
+ "support.who_you": "Вы"
 }

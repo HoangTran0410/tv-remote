@@ -4668,5 +4668,14 @@
  "warn.idle_title": "Còn xem không?",
  "warn.idle_body": "Lâu rồi không ai bấm phím nào. Bấm một phím để TV không tắt.",
  "warn.idle_keep": "Còn xem",
- "guard.idle_the_tv_turns": "Không ai dùng TV: TV sẽ tắt sau 1 phút"
+ "guard.idle_the_tv_turns": "Không ai dùng TV: TV sẽ tắt sau 1 phút",
+ "support.replied": "Hỗ trợ đã trả lời",
+ "support.replied_where": "TV Setup → Kết nối → Trả lời từ hỗ trợ",
+ "support.replies": "Trả lời từ hỗ trợ",
+ "support.replies_new": "Có trả lời mới",
+ "support.replies_sub": "Hỗ trợ đã viết gì, và trả lời bằng điện thoại",
+ "support.replies_none": "Chưa có trả lời.",
+ "support.scan_to_answer": "Quét mã để trả lời bằng điện thoại",
+ "support.who_us": "Hỗ trợ",
+ "support.who_you": "Bạn"
 }

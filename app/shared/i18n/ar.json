@@ -5047,5 +5047,14 @@
  "warn.idle_title": "هل ما زلت تشاهد؟",
  "warn.idle_body": "لم يُضغط أي زر منذ وقت طويل. اضغط أي زر ليبقى التلفزيون يعمل.",
  "warn.idle_keep": "ما زلت أشاهد",
- "guard.idle_the_tv_turns": "لا أحد يستخدم التلفزيون: سينطفئ بعد دقيقة"
+ "guard.idle_the_tv_turns": "لا أحد يستخدم التلفزيون: سينطفئ بعد دقيقة",
+ "support.replied": "ردّ الدعم",
+ "support.replied_where": "TV Setup ← الاتصال ← ردود الدعم",
+ "support.replies": "ردود الدعم",
+ "support.replies_new": "ردّ جديد",
+ "support.replies_sub": "ما كتبه الدعم، والردّ من هاتفك",
+ "support.replies_none": "لا يوجد ردّ بعد.",
+ "support.scan_to_answer": "امسح الرمز للردّ من هاتفك",
+ "support.who_us": "الدعم",
+ "support.who_you": "أنت"
 }

@@ -392,6 +392,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         ScenePin.publishFirst(this, scenes())
         running = this
         DimLayer.restore(this)
+        dev.tvremote.setup.health.SupportThread.start(this)           // only when a code is stored: support's replies
         Support.resume(this)                                          // support open when TV Setup stopped (an update, a kill) goes on
         MicVoice.takeAssist(this)                                     // the rule on: the mic button ours again, and watched (Google takes it back)
         dev.tvremote.core.WireLog.app = "TV Setup " + (try { packageManager.getPackageInfo(packageName, 0).versionName } catch (e: Exception) { "" }) +
@@ -478,6 +479,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         welcome?.stop()
         autoOpen?.stop()
         updates?.stop()
+        dev.tvremote.setup.health.SupportThread.stop()
         if (telegramStarted) telegram.stop()
         stats.stopNet()
         stats.stopPower()
