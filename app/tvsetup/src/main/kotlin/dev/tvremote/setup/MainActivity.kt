@@ -96,6 +96,7 @@ class MainActivity : Activity() {
     private val MUTED = Color.rgb(140, 150, 163)
     private val SCRIM = Color.argb(215, 5, 7, 10)                     // behind a popup: the screen dimmed, still there
     private val ACCENT = Color.rgb(59, 115, 246)
+    private val ACCENT_SOFT = Color.argb(64, 59, 115, 246)              // the person's bubble in Support replies, as on the phone page
     private val OK = Color.rgb(70, 210, 131)
     private val WARN = Color.rgb(240, 179, 74)
     private val BAD = Color.rgb(255, 112, 112)
@@ -1083,28 +1084,42 @@ class MainActivity : Activity() {
      * and the QR sit first so a long reply never pushes them off; each message takes the focus so the D-pad scrolls a long one.
      */
     private fun supportReplies() {
-        val (dlg, box) = TvUi.sheet(this, R.style.TvSheet, 720)
+        // Laid out like the "Control from a phone" panel: the talk on the left as bubbles (support on the left, the person on the
+        // right in the accent, as on the phone page), the QR, its words and Close in a column on the right.
+        val (dlg, box) = TvUi.sheet(this, R.style.TvSheet, 780)
         TvUi.sheetTitle(box, T("support.replies"))
-        val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        SupportThread.pageUrl(this)?.let { url -> qr(url)?.let { top.addView(it, LinearLayout.LayoutParams(dp(150), dp(150)).apply { rightMargin = dp(18) }) } }
-        val side = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        side.addView(TvUi.text(this, T("support.scan_to_answer"), TvUi.SP_ROW), LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(12) })
-        val close = TvUi.button(this, T("common.close")) { dlg.dismiss() }
-        side.addView(close, LinearLayout.LayoutParams(-1, -2))
-        top.addView(side, LinearLayout.LayoutParams(0, -2, 1f))
-        box.addView(top, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(12) })
+        val body = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(dp(12), 0, dp(4), dp(6)) }
+        val talk = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         val m = SupportThread.msgs(this)
-        if (m.length() == 0) box.addView(TvUi.text(this, T("support.replies_none"), TvUi.SP_ROW, TvUi.DIM))
+        if (m.length() == 0) talk.addView(TvUi.text(this, T("support.replies_none"), TvUi.SP_ROW, TvUi.DIM))
+        val stamp = java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.SHORT, java.text.DateFormat.SHORT)
         for (i in 0 until m.length()) {
             val o = m.getJSONObject(i); val us = o.optString("who") == "us"
-            val row = TvUi.text(this, (if (us) T("support.who_us") else T("support.who_you")) + "\n" + o.optString("text"), TvUi.SP_ROW,
-                if (us) TvUi.TEXT else TvUi.DIM).apply {                // setText: plain text, never HTML
-                isFocusable = true; background = TvUi.round(if (us) TvUi.CARD else Color.TRANSPARENT, dp(10).toFloat(), 0, 0)
-                setPadding(dp(12), dp(8), dp(12), dp(8))
-                setOnFocusChangeListener { v, f -> v.background = TvUi.round(if (f) TvUi.FOCUS_FILL else if (us) TvUi.CARD else Color.TRANSPARENT, dp(10).toFloat(), 0, 0) }
+            val fill = if (us) TvUi.PILL_REST else ACCENT_SOFT
+            val bubble = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL; isFocusable = true      // focusable: the D-pad walks (and scrolls) a long talk
+                setPadding(dp(14), dp(10), dp(14), dp(10))
+                background = TvUi.round(fill, dp(14).toFloat())
+                setOnFocusChangeListener { v, f -> v.background = TvUi.round(fill, dp(14).toFloat(), if (f) dp(2) else 0, Color.WHITE) }
+                addView(TvUi.text(context, o.optString("text"), TvUi.SP_ROW), LinearLayout.LayoutParams(-2, -2))   // setText: plain text, never HTML;
+                // -2: a vertical row's default is match_parent, which took the stamp's width and cut the words
+                val at = o.optLong("at")
+                addView(TvUi.text(context, (if (us) T("support.who_us") else T("support.who_you")) + (if (at > 0) " · " + stamp.format(java.util.Date(at)) else ""),
+                    TvUi.SP_COUNT, TvUi.DIM), LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(4) })
             }
-            box.addView(row, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
+            val row = android.widget.FrameLayout(this)
+            row.addView(bubble, android.widget.FrameLayout.LayoutParams(-2, -2, if (us) Gravity.START else Gravity.END).apply { if (us) rightMargin = dp(56) else leftMargin = dp(56) })
+            talk.addView(row, LinearLayout.LayoutParams(-1, -2).apply { if (i > 0) topMargin = dp(10) })
         }
+        body.addView(talk, LinearLayout.LayoutParams(0, -2, 1f))
+        val side = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL }
+        SupportThread.pageUrl(this)?.let { url -> qr(url)?.let { side.addView(it, LinearLayout.LayoutParams(dp(176), dp(176))) } }
+        side.addView(TvUi.text(this, T("support.scan_to_answer"), TvUi.SP_ROW, TvUi.DIM).apply { gravity = Gravity.CENTER },
+            LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(10); bottomMargin = dp(16) })
+        val close = TvUi.button(this, T("common.close"), 0, TvUi.PILL_REST) { dlg.dismiss() }
+        side.addView(close, LinearLayout.LayoutParams(-1, -2))
+        body.addView(side, LinearLayout.LayoutParams(dp(200), -2).apply { leftMargin = dp(24) })
+        box.addView(body, LinearLayout.LayoutParams(-1, -2))
         SupportThread.markRead(this)
         dlg.setOnShowListener { close.requestFocus() }
         dlg.show()

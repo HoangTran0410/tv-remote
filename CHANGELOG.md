@@ -6,7 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
-- TV Setup: support's reply to "Send to support" reaches the TV (a card, then Connection → Support replies, with a QR to answer from a phone); it asks only while a code is kept.
+- TV Setup: after "Send to support", support's replies show on the TV (a notice, then Connection → Support replies: the talk and a QR code to answer from a phone, tvremote.pages.dev/support). It checks every 6 hours, only while a code is kept.
 - Wi-Fi scan: an Android box whose media player answers like a Hisense (ports 38400 / 18400) is no longer listed as a Hisense VIDAA TV unless its remote port 36669 answers; it is reached over ADB instead.
 - Hisense VIDAA and Roku: "the TV did not answer on port …" is said in the app's language, with what to do (turn the TV on, same Wi-Fi).
 - Computer app: no error when the page was swapped while the Now playing bar ticks (census 3cefc344).

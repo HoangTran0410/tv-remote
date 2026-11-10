@@ -87,5 +87,5 @@ Remote control for Android TV / Google TV (and LG, Samsung, Roku, VIDAA) with no
 - [App settings](settings.md): Tap 🛠️ in the top corner to open Settings. _(cai dat settings giao dien sang toi theme ngon ngu language rung vibrate kiem tra ban moi cap nhat tat thoat quit)_
 - [The self-check when it will not connect](selfcheck.md): Cannot connect? The app checks by itself in under 4 seconds and gives one conclusion with the fix. No guessing. _(tu kiem tra loi diagnose khong ket noi vpn dong ho clock mang khac thu lai quet mang bat adb)_
 - [“The browser needs an update”](webview.md): The phone app's Manage screen uses Android's own browser (WebView). If it is too old, the app shows this notice. _(webview play store cap nhat trinh duyet android system webview cu old)_
-- [Send the log to get help](log.md): Open Settings (🛠️) → About. _(nhat ky log gui loi bao loi wirelog ho tro support ma 8 so)_
+- [Send the log to get help](log.md): Open Settings (🛠️) → About. _(tra loi reply nhat ky log gui loi bao loi wirelog ho tro support ma 8 so)_
 - [Common problems](faq-fix.md):  _(loi thuong gap faq khong bam duoc ma ghep hoi lai giat play protect)_

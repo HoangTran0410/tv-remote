@@ -87,5 +87,5 @@
 - [Cài đặt của app](settings.md): Bấm 🛠️ ở góc trên để mở Cài đặt. _(cai dat settings giao dien sang toi theme ngon ngu language rung vibrate kiem tra ban moi cap nhat tat thoat quit)_
 - [Tự kiểm tra khi không kết nối được](selfcheck.md): Không kết nối được? App tự kiểm tra trong chưa đầy 4 giây rồi nói một kết luận kèm cách sửa. Bạn không cần đoán. _(tu kiem tra loi diagnose khong ket noi vpn dong ho clock mang khac thu lai quet mang bat adb)_
 - [“Cần cập nhật trình duyệt”](webview.md): Màn hình Quản lý trong app điện thoại dùng trình duyệt của Android (WebView). Nếu nó quá cũ, app hiện thông báo này. _(webview play store cap nhat trinh duyet android system webview cu old)_
-- [Gửi nhật ký để được giúp](log.md): Mở Cài đặt (🛠️) → Giới thiệu. _(nhat ky log gui loi bao loi wirelog ho tro support ma 8 so)_
+- [Gửi nhật ký để được giúp](log.md): Mở Cài đặt (🛠️) → Giới thiệu. _(tra loi reply nhat ky log gui loi bao loi wirelog ho tro support ma 8 so)_
 - [Lỗi thường gặp](faq-fix.md):  _(loi thuong gap faq khong bam duoc ma ghep hoi lai giat play protect)_

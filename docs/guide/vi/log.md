@@ -10,7 +10,7 @@
 
 > 💡 Lỗi trong hộp “Có lỗi xảy ra” cũng được gửi ẩn danh (đã xóa IP, đường dẫn, khóa), nếu công tắc **Gửi thống kê ẩn danh** bật.
 
-> 💡 TV không ai với tới được (box nhà mạng, không có ADB): trên TV mở **TV Setup → Kết nối → Gửi cho hỗ trợ**, đọc mã 8 số cho tác giả.
+> 💡 TV không ai vào được (box nhà mạng, không ADB): **TV Setup → Kết nối → Gửi cho hỗ trợ**. Hỗ trợ trả lời ngay trên TV; quét mã QR để trả lời bằng điện thoại.
 
 > 💡 **Cho hỗ trợ xem 30 phút** chỉ cho đọc trạng thái, không bấm hay đổi gì; dừng được bất cứ lúc nào.
 

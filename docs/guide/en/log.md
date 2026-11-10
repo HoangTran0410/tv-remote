@@ -10,7 +10,7 @@
 
 > 💡 An error in the “Something went wrong” box is also sent anonymously (IPs, paths, keys removed) while **Send anonymous stats** is on.
 
-> 💡 A TV nobody can reach (an ISP box, no ADB): on the TV open **TV Setup → Connection → Send to support** and read the 8-digit code to the author.
+> 💡 A TV nobody can reach (ISP box, no ADB): **TV Setup → Connection → Send to support**. Support answers on the TV; scan its QR code to reply from your phone.
 
 > 💡 **Let support look for 30 min** only reads the state, never presses or changes anything; stop it any time.
 
