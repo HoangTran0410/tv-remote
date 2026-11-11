@@ -4220,14 +4220,19 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "fbed4da875a2ffa6e96f47b8|0.47.0": {
-  "at": "2026-11-10T20:00:58+07:00",
+  "at": "2026-11-11T14:06:04+07:00",
   "n": 2,
-  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
+  "note": "keyfix_refused (ADT-3, sdk 34): same class, waiting for e957a72e data"
  },
  "fbed4da875a2ffa6e96f47b8|0.49.0": {
-  "at": "2026-11-10T20:00:58+07:00",
+  "at": "2026-11-11T14:06:04+07:00",
   "n": 1,
-  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
+  "note": "keyfix_refused (ADT-3, sdk 34): same class, waiting for e957a72e data"
+ },
+ "fbed4da875a2ffa6e96f47b8|0.50.0": {
+  "at": "2026-11-11T14:06:04+07:00",
+  "n": 1,
+  "note": "keyfix_refused (ADT-3, sdk 34): same class, waiting for e957a72e data"
  },
  "fc50f4abd4e3d69b9a57334c|0.34.1": {
   "at": "2026-10-30T09:08:32+07:00",
