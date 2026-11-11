@@ -3624,6 +3624,11 @@
   "n": 1,
   "note": "watch: Fire TV AFTMA2857F (Fire OS 7, Android 9, adb_wifi_enabled=1), same model gave EOF on 0.42/0.43 (Amazon blocks local ADB); 0.45.0 'Error parsing public key' from platform conscrypt, likely AdbTls.context:146 after an STLS ask; no stack, 1 install"
  },
+ "d4ef66f9f17b25fe912ab9c0|0.50.0": {
+  "at": "2026-11-11T17:48:29+07:00",
+  "n": 1,
+  "note": "rules_no_adb (MXQ Pro Amlogic box, sdk 28): adbd runs on USB only (tcp.port 0, 5555 refused), so the sleep timer could not reach ADB; a health report of the TV's state, not a code fault"
+ },
  "d6434b998952d4ab9cc3cb26|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
