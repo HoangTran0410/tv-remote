@@ -63,7 +63,7 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
     private val healthApi by lazy { HealthApi(core) }
     private val parts by lazy { listOf(apps, files, installs, healthApi, setupApi, HomeApi(core), copy, AdbApi(core), BackupApi(core, apps)) }
 
-    private val playing = helper?.let { NowPlaying({ link.get() }, it) }      // the now playing bar: null where tvr-helper.jar is not at hand
+    val playing = helper?.let { NowPlaying({ link.get() }, it) }      // the now playing bar (and TV Home's widget, through TV Setup): null where tvr-helper.jar is not at hand
     private val kbdReader = dev.tvremote.core.adb.TvKeyboard.Reader()   // /api/tvkbd: the proto, or the text dump on a TV without it
     private val draw = Draw { link.get() }                           // strokes for TV Setup to draw over the screen
     private val video = dev.tvremote.core.ontv.Video { link.get() }  // a video or a camera in a box over the screen (VideoLayer)

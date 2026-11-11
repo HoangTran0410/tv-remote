@@ -91,7 +91,9 @@ import org.json.JSONObject
  *           shown only while one is set), "weather" (the sky now and the next days, Open-Meteo: [place] or, by itself, the device's
  *           location or the internet address's), "air" (the air quality index and PM2.5 at that place, Open-Meteo's air-quality API;
  *           a TV Home older than it drops the key), "recent" (the last apps opened, as icons that open them on OK: TV Setup's HomeInfo
- *           "recent", in the order Android's usage events came, never by the clock), "adblock" (whether Private DNS names an ad-blocking
+ *           "recent", in the order Android's usage events came, never by the clock), "playing" (what plays now, SmartTube's music behind
+ *           Home: the app, the title, OK pauses / plays; nothing playing, the last one, OK plays it again or opens it; TV Setup's HomeInfo
+ *           "playing", asked only while the widget is on the screen), "adblock" (whether Private DNS names an ad-blocking
  *           resolver, [ADBLOCK_DNS]; OK turns it on / off, which needs [WRITE_SECURE] granted over ADB; Android 9+: before it TV Home
  *           leaves it out of "wschema"), "prayer" (the five prayers and the sunrise of today at the weather's place, worked out on the TV
  *           with no network: the next one with a countdown, and the Hijri date; options: method, Asr school, Hijri adjust), "frame"
@@ -289,7 +291,7 @@ object HomeConfig {
         }
         return null
     }
-    val WIDGETS = listOf("system", "usage", "calendar", "lunar", "timer", "weather", "air", "recent", "adblock", "clock", "market", "news", "prayer", "frame") + HomeQr.KEYS
+    val WIDGETS = listOf("system", "usage", "calendar", "lunar", "timer", "weather", "air", "recent", "playing", "adblock", "clock", "market", "news", "prayer", "frame") + HomeQr.KEYS
     /**
      * One option of a widget, the single source of what the settings dialog offers (TV Home's Customize and the page render it, nobody
      * hardcodes a widget's options): [type] "choice" (one of [values]) or "toggle" ("off" / "on", drawn as a switch). [default] is what a
@@ -299,7 +301,7 @@ object HomeConfig {
      */
     class Opt(val id: String, val type: String, val values: List<String>, val default: String, val store: String = "wopt")
     private val SIZES = listOf("big", "small")
-    val TONAL = setOf("system", "weather", "lunar", "air", "calendar", "usage", "timer", "market", "news", "recent", "adblock", "prayer") + HomeQr.KEYS   // every widget but the clock has the "tonal" look (opaque warm card, app/DESIGN-TV.md "Tonal cards")
+    val TONAL = setOf("system", "weather", "lunar", "air", "calendar", "usage", "timer", "market", "news", "recent", "playing", "adblock", "prayer") + HomeQr.KEYS   // every widget but the clock has the "tonal" look (opaque warm card, app/DESIGN-TV.md "Tonal cards")
     // "solid": an opaque dark widget, the photo hidden under it; "none": no widget at all, the words on the wallpaper with a shadow
     // (a person whose own photo is the point). The clock has no tonal form (its face and theme are its look)
     val LOOKS = listOf("glass", "tonal", "solid", "none")

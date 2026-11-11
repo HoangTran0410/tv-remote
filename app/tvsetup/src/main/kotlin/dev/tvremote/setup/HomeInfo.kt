@@ -73,7 +73,7 @@ class HomeInfo : ContentProvider() {
             val token = Binder.clearCallingIdentity()
             try { return Bundle().apply { putString("result", WebViewFix.run(c)) } } finally { Binder.restoreCallingIdentity(token) }
         }
-        if (method !in setOf("usage", "timer", "cpu", "badges", "power", "keys", "tiles", "tile", "tile_do", "telegram", "app", "capture", "control", "recent")) return null
+        if (method !in setOf("usage", "timer", "cpu", "badges", "power", "keys", "tiles", "tile", "tile_do", "telegram", "app", "capture", "control", "recent", "playing")) return null
         // TV Home's package name signed by another key (built elsewhere, a fork): said as such, nothing else given, so the
         // button tells the person to install both from one place instead of "update TV Setup", which would not help
         if (!trusted(c, Binder.getCallingUid())) return if (fromHome(c, Binder.getCallingUid())) Bundle().apply { putString("result", "untrusted") } else null
@@ -90,6 +90,11 @@ class HomeInfo : ContentProvider() {
                     if (over) HomeControl.handBack(c, arg.orEmpty())?.let { putParcelable("go", it) }
                 }
             } finally { Binder.restoreCallingIdentity(token) }
+        }
+        if (method == "playing") {                                     // the "Now playing" widget: `arg` null asks, {do, pkg} acts (may wait on ADB: TV Home calls off the main thread)
+            val op = arg?.let { try { JSONObject(it) } catch (e: Exception) { null } }
+            val token = Binder.clearCallingIdentity()
+            try { return Bundle().apply { putString("json", RemoteService.playingForHome(op).toString()) } } finally { Binder.restoreCallingIdentity(token) }
         }
         if (method == "keys") return keys(c, arg)
         if (method == "capture") { KeysBridge.capture(arg == "1"); return Bundle().apply { putString("json", "{}") } }   // TV Home's "assign a key" page is open: the keys reach it instead of opening their apps

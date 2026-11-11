@@ -28,11 +28,12 @@ class NowPlaying(private val adb: () -> Adb, private val helper: () -> ByteArray
         return o
     }
 
-    /** play, pause, next, prev, or seek with [ms]. */
-    fun command(what: String, ms: Long = 0) {
+    /** play, pause, next, prev, seek with [ms], or resume [pkg] (TV Home's widget: the app in "held"). */
+    fun command(what: String, ms: Long = 0, pkg: String = "") {
         val line = when (what) {
             "play", "pause", "next", "prev" -> what
             "seek" -> "seek ${ms.coerceAtLeast(0)}"
+            "resume" -> "play " + pkg.takeIf { Regex("[A-Za-z0-9_.]+").matches(it) }.let { it ?: throw IllegalArgumentException("bad package") }   // an app paused behind Home (state "none" with "held")
             else -> throw IllegalArgumentException("unknown: $what")
         }
         asked = System.currentTimeMillis()

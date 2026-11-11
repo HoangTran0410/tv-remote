@@ -57,6 +57,7 @@ object SetupNeed {
         "sceneon" to "0.46.1",                                         // 🎯 a scene that starts when an app opens or the TV turns on (SceneTimer.onOpen / onPower, RulesReceiver "scenes" answers events; the release after 0.46.0)
         "notifylater" to "0.48.1",                                     // 🔔 a message shown later: "remind me in 10 min" (NotifyLater, NotifyReceiver "delay"; the release after 0.48.0)
         "home_usage" to "0.14.1",                                      // 📊 TV Home's card of app use and limits (HomeInfo)
+        "home_playing" to "0.50.1",                                    // 🎵 TV Home's "Now playing" widget (HomeInfo "playing"; the release after 0.50.0)
     )
 
     /** "setup:old:pic:2.21.0:2.20.0" or "setup:missing:draw:2.18.0:": the words every client looks for in an error. */
@@ -88,6 +89,7 @@ object SetupNeed {
             "dim" -> t("core.need_dim")
             "unextra" -> t("core.need_unextra")
             "home_usage" -> t("core.need_home_usage")
+            "home_playing" -> t("core.need_home_playing")
             "holdkeys" -> t("core.need_holdkeys")
             "mic" -> t("core.need_mic")
             "checkout" -> t("core.need_checkout")

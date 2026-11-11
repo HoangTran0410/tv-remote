@@ -206,6 +206,20 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         }
 
         /** TV Apps' install through our ADB link (HomeInfo "tvapps", Manage.tvApps); null: no service or no link ready, the app installs it with Android's installer. */
+        /**
+         * TV Home's "Now playing" widget (HomeInfo "playing"): [NowPlaying]'s state, plus `held` (an app paused behind Home) and
+         * `adb: false` when it cannot be read (no ADB, the service not running). [op] null only asks; `{do: play | pause | next | prev |
+         * resume, pkg}` acts first. Asking keeps the helper running 20 s, so the widget asks only while it is on the screen.
+         */
+        fun playingForHome(op: JSONObject?): JSONObject {
+            val s = running
+            val ready = s != null && (try { s.link?.state() } catch (e: Exception) { null }) == "ready"
+            val p = if (ready) s?.manage?.playing else null
+            if (p == null) return JSONObject().put("state", "none").put("adb", false)
+            if (op != null) try { p.command(op.optString("do"), 0, op.optString("pkg")) } catch (e: Exception) { }
+            return p.state().put("adb", true)
+        }
+
         fun tvApps(op: String, id: String): JSONObject? {
             val s = running ?: return null
             if (op == "install" && (try { s.link?.state() } catch (e: Exception) { null }) != "ready") return null

@@ -231,7 +231,7 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
             if (editing) addState(intArrayOf(), android.graphics.drawable.GradientDrawable().apply { cornerRadius = dp(22).toFloat(); setStroke(dp(2), HOT_FILL_EDGE) })   // at rest: the outline says "you can change this"
         }
         v.setOnFocusChangeListener { _, f -> if (k == "news") newsFocused = f; onFocus?.invoke(v, f); if (k == "recent") { recentFocused = f; recentMark() } }   // after onFocus: the pane goes on to the marked icon
-        v.setOnClickListener { if (editing) onOpen?.invoke(k) else when (k) { "recent" -> recentOpen(); "adblock" -> adblockToggle(); else -> onOpen?.invoke(k) } }   // these two act on OK; the others open their screen or their menu
+        v.setOnClickListener { if (editing) onOpen?.invoke(k) else when (k) { "recent" -> recentOpen(); "adblock" -> adblockToggle(); "playing" -> playing?.ok() ?: Unit; else -> onOpen?.invoke(k) } }   // these two act on OK; the others open their screen or their menu
         v.setOnLongClickListener { onMenu?.invoke(k, v); true }
         v.setOnKeyListener { _, code, e ->
             if (code == KeyEvent.KEYCODE_MENU) { if (e.action == KeyEvent.ACTION_UP) onMenu?.invoke(k, v); return@setOnKeyListener true }
@@ -257,8 +257,11 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
     /** The photo frame, kept from one [show] to the next (its picture and its timer go on); null while the widget is off. */
     private var frame: FrameView? = null
     /** Home left / back in front (onPause / onResume): the frame's swap timer stops and starts with it. */
-    fun paused(p: Boolean) { pausedNow = p; frame?.resumed = !p }
+    fun paused(p: Boolean) { pausedNow = p; frame?.resumed = !p; if (!p) playing?.resumed() }
     private var pausedNow = false
+    internal val pausedHome get() = pausedNow
+    /** The "Now playing" widget while it is in the row (it asks TV Setup by itself while shown). */
+    private var playing: PlayingWidget? = null
 
     init {
         orientation = HORIZONTAL; clipChildren = false; clipToPadding = false
@@ -346,7 +349,7 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
 
     fun show(want: List<String>, f: Facts, note: String, label: (String) -> String, sizes: JSONObject = JSONObject(), qrs: JSONObject = JSONObject()) {
         val keep = hot.firstOrNull { it.hasFocus() }?.tag
-        removeAllViews(); speed = null; speedUp = null; hot.clear()
+        removeAllViews(); speed = null; speedUp = null; hot.clear(); playing = null
         val timerView = if ("timer" in want) timer(f.timer) else null
         val noteView = if (note.isNotEmpty()) pill(tile(AMBER, R.drawable.ic_message), note, "", 1).apply {   // the words are the widget: large, no "Note" over them
             ((getChildAt(1) as LinearLayout).getChildAt(0) as TextView).apply { textSize = 16f; maxLines = 3; ellipsize = android.text.TextUtils.TruncateAt.END }
@@ -382,7 +385,9 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
                     (fv.parent as? ViewGroup)?.removeView(fv)                // last minute's column
                     fv.set(HomeConfig.frame(Store.get(a).optJSONArray("frame")), FrameShow.everyMs(opt("frame", "every")), w,
                         if (side) dp(col.weight) / col.keys.size else if (alone) dp(BIG_H) else (dp(BIG_H) - dp(12)) / 2)
-                } else if (tonal(k)) tonalWidget(!full).also { c -> tonalFill(k, c, f, w, !full, label, qrs) }     // one path for every widget: a figure, a caption, a badge
+                } else if (k == "playing") (if (tonal(k)) tonalWidget(!full) else widget().apply { if (!full) setPadding(dp(16), dp(8), dp(16), dp(8)) })
+                    .also { c -> playing = PlayingWidget(this, c, full, tonal(k)) }
+                else if (tonal(k)) tonalWidget(!full).also { c -> tonalFill(k, c, f, w, !full, label, qrs) }     // one path for every widget: a figure, a caption, a badge
                 else if (k in BIG) widget().also { c ->
                     if (full) when (k) {
                         "system" -> system(c, f, w)

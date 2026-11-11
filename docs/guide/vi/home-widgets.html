@@ -8,6 +8,7 @@ TV Home có thêm hai widget lấy số liệu thẳng từ nguồn, không qua 
 | Tin tức | Tiêu đề và hình từ RSS của VnExpress, Tuổi Trẻ, Thanh Niên, Dân Trí, VietnamNet (TV tiếng Anh: BBC, NPR, Guardian, Al Jazeera). Thêm tối đa 5 link RSS riêng từ điện thoại. Bấm OK mở bản đọc chữ to |
 | Thời tiết | Bấm OK: bản đồ Windy toàn màn hình tại thành phố của bạn (mưa, gió, nhiệt độ, vệ tinh, PM2.5), mỗi lớp một nút, **Xem diễn biến** chạy dự báo; Back để đóng |
 | Mở gần đây | 4-6 app vừa mở; Trái / Phải chọn, OK mở |
+| Đang phát | Nhạc, video đang phát sau Home (SmartTube, Spotify…): app, tên bài, OK dừng / phát tiếp. Không có gì phát thì hiện bài phát lần trước, OK mở lại app. Cần TV Setup đã bật ADB |
 | Chặn quảng cáo | OK bật / tắt DNS chặn quảng cáo (AdGuard…). Không chặn quảng cáo trong video YouTube. DNS không chạy thì ~10 giây sau tự trả về |
 | Giờ cầu nguyện | Buổi sắp tới kèm đếm ngược, 3 buổi kế tiếp, ngày Hijri. Theo nơi của widget Thời tiết. Tính ngay trên TV, không cần mạng. Chọn cách tính, giờ Asr, chỉnh ngày Hijri ±1 |
 | Khung ảnh | Ảnh của bạn lần lượt hiện, mỗi tấm 30 giây (⚙ đổi từ 10 giây tới 15 phút). Thêm tối đa 10 ảnh từ điện thoại: **Widget** → **Khung ảnh** |

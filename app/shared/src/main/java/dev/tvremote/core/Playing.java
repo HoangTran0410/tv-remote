@@ -160,6 +160,21 @@ public final class Playing {
         return paused;
     }
 
+    /** A paused session of an app no longer on the screen (music paused, then Home): [current] leaves it out, TV Home's
+     *  "Now playing" widget offers to play it again ("play <pkg>"). */
+    private static MediaController held() {
+        for (MediaController c : watched) {
+            PlaybackState s = c.getPlaybackState();
+            if (s != null && s.getState() == PlaybackState.STATE_PAUSED) return c;
+        }
+        return null;
+    }
+
+    private static MediaController of(String pkg) {
+        for (MediaController c : watched) if (c.getPackageName().equals(pkg)) return c;
+        return null;
+    }
+
     private static boolean inFront(String pkg) {
         try {
             android.app.ActivityManager am = (android.app.ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
@@ -177,10 +192,23 @@ public final class Playing {
         return t == null || t.length() == 0 ? null : t.toString();
     }
 
+    /** The line under the title: the artist, the channel, the album. */
+    private static String sub(MediaMetadata m) {
+        if (m != null) for (String k : new String[] { MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, MediaMetadata.METADATA_KEY_ARTIST, MediaMetadata.METADATA_KEY_ALBUM }) {
+            CharSequence v = m.getText(k);
+            if (v != null && v.length() > 0) return v.toString();
+        }
+        return null;
+    }
+
     private static void report() {
         MediaController c = current();
         String line;
-        if (c == null) line = "{\"state\":\"none\"}";
+        if (c == null) {                                              // none for the remotes' bar; TV Home's widget also names an app paused behind it
+            MediaController h = held();
+            line = h == null ? "{\"state\":\"none\"}" : "{\"state\":\"none\",\"held\":{\"pkg\":" + q(h.getPackageName()) + ",\"app\":" + q(label(h.getPackageName()))
+                + ",\"title\":" + q(title(h.getMetadata())) + ",\"sub\":" + q(sub(h.getMetadata())) + "}}";
+        }
         else {
             PlaybackState s = c.getPlaybackState();
             MediaMetadata m = c.getMetadata();
@@ -190,11 +218,7 @@ public final class Playing {
             long since = s == null ? 0 : since(c.getPackageName(), s);
             if (st == PlaybackState.STATE_PLAYING && since > 0)        // where it is now, not at its last report
                 pos += (long) ((SystemClock.elapsedRealtime() - since) * speed);
-            String sub = null;
-            if (m != null) for (String k : new String[] { MediaMetadata.METADATA_KEY_DISPLAY_SUBTITLE, MediaMetadata.METADATA_KEY_ARTIST, MediaMetadata.METADATA_KEY_ALBUM }) {
-                CharSequence v = m.getText(k);
-                if (v != null && v.length() > 0) { sub = v.toString(); break; }
-            }
+            String sub = sub(m);
             long dur = m == null ? 0 : m.getLong(MediaMetadata.METADATA_KEY_DURATION);
             line = "{\"state\":" + q(st == PlaybackState.STATE_PLAYING ? "playing" : st == PlaybackState.STATE_BUFFERING ? "buffering" : "paused")
                 + ",\"pkg\":" + q(c.getPackageName()) + ",\"app\":" + q(label(c.getPackageName())) + ",\"title\":" + q(title(m)) + ",\"sub\":" + q(sub)
@@ -214,8 +238,9 @@ public final class Playing {
     }
 
     private static void command(String c) {
-        MediaController m = current();
+        MediaController m = c.startsWith("play ") ? of(c.substring(5).trim()) : current();   // "play <pkg>": that app, even paused behind Home
         if (m == null) return;
+        if (c.startsWith("play ")) c = "play";
         MediaController.TransportControls t = m.getTransportControls();
         try {
             if (c.equals("play")) t.play();
