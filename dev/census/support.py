@@ -21,6 +21,8 @@
   support.py --said                  what people wrote in the last 7 days (crashwatch tells the session when someone does)
   support.py --delete CODE           forget it (and its thread, once no other code of that TV is left)
   support.py --url http://127.0.0.1:8798   a local `wrangler dev`
+  --app kidguard                     KidGuard's codes (it shares this worker, 2026-11-11). Without it every list leaves KidGuard
+                                     out and a KidGuard code is not opened: a child's phone, read only from the KidGuard repo
 """
 import argparse, datetime, json, os, re, sys, time, urllib.error, urllib.parse, urllib.request
 
@@ -91,10 +93,14 @@ def main():
     ap.add_argument("--reply")
     ap.add_argument("--said", action="store_true")
     ap.add_argument("--url", default=URL)
+    ap.add_argument("--app", default="")
     a = ap.parse_args()
     base = a.url.rstrip("/")
+    only = {"app": a.app} if a.app else {"app": "!kidguard"}
+    if a.code and not a.app and a.code.isdigit():           # a KidGuard code (a child's phone) is opened only with --app kidguard
+        if call(base, "/v1/support", {"code": a.code}).get("app") == "kidguard": sys.exit("a KidGuard code: read it from the KidGuard repo with --app kidguard")
     if a.said:
-        r = call(base, "/v1/support/said", {"since": int(time.time() * 1000) - 7 * 86_400_000})
+        r = call(base, "/v1/support/said", {"since": int(time.time() * 1000) - 7 * 86_400_000, **only})
         for m in r["said"]: print(f'{m["code"]}  {when(m["at"], r["now"]):>16}  {m["text"]}')
         return
     if a.reply is not None:
@@ -102,7 +108,7 @@ def main():
         print(call(base, "/v1/support/reply", body={"code": a.code, "text": a.reply}, method="POST"))
         return
     if not a.code:
-        r = call(base, "/v1/support")
+        r = call(base, "/v1/support", only)
         for s in r["support"]:
             live = "LIVE " + str(int((s["live"] - r["now"]) / 60000) + 1) + " min" if s["live"] > r["now"] else ""
             print(f'{s["code"]}  {when(s["made"], r["now"]):>16}  {s["app"]} {s["v"]:<8} {s["model"]:<28} seen {when(s["seen"], r["now"])}  {live}')

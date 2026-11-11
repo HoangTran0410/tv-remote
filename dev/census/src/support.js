@@ -28,6 +28,13 @@ export function askable(path) {
   return typeof path === "string" && path.length <= 300 && /^\/api\/[a-z0-9/_-]*(\?[\w=&%.,:-]*)?$/i.test(path);
 }
 
+// ?app=kidguard: only that app; ?app=!kidguard: all but it (KidGuard shares this worker since 2026-11-11: tv-remote's tools and
+// crashwatch leave it out, KidGuard's owner reads with --app kidguard). [app, not (0|1)]; "" = every app.
+export function appFilter(url) {
+  const v = String(url.searchParams.get("app") || "").slice(0, 17);
+  return v.startsWith("!") ? [v.slice(1), 1] : [v, 0];
+}
+
 async function body(req, max) {
   if (Number(req.headers.get("content-length") || 0) > max) return null;
   const t = await req.text();
@@ -123,7 +130,9 @@ export async function support(req, env, url, json) {
 
   if (p === "/v1/support" && req.method === "GET") {
     if (!code) {
-      const { results } = await env.DB.prepare("SELECT code, app, v, model, made, live, seen FROM support ORDER BY made DESC LIMIT 50").all();
+      const [app, not] = appFilter(url);
+      const { results } = await env.DB.prepare("SELECT code, app, v, model, made, live, seen FROM support WHERE ?1 = '' OR (?2 = 0 AND app = ?1) OR (?2 = 1 AND app IS NOT ?1) ORDER BY made DESC LIMIT 50")
+        .bind(app, not).all();
       return json({ now, support: results });
     }
     const row = await env.DB.prepare("SELECT code, h, app, v, model, report, made, live, seen FROM support WHERE code = ?1").bind(code).first();
@@ -142,8 +151,9 @@ export async function support(req, env, url, json) {
   }
   if (p === "/v1/support/said" && req.method === "GET") {             // what people wrote since (crashwatch's news)
     const since = Number(url.searchParams.get("since")) || 0;
-    const { results } = await env.DB.prepare("SELECT m.id, m.text, m.at, (SELECT code FROM support s WHERE s.h = m.h ORDER BY made DESC LIMIT 1) AS code FROM support_msg m WHERE m.who = 'tv' AND m.at > ?1 ORDER BY m.at LIMIT 50")
-      .bind(since).all();
+    const [app, not] = appFilter(url);
+    const { results } = await env.DB.prepare("SELECT * FROM (SELECT m.id, m.text, m.at, (SELECT code FROM support s WHERE s.h = m.h ORDER BY made DESC LIMIT 1) AS code, (SELECT app FROM support s WHERE s.h = m.h ORDER BY made DESC LIMIT 1) AS app FROM support_msg m WHERE m.who = 'tv' AND m.at > ?1) WHERE ?2 = '' OR (?3 = 0 AND app = ?2) OR (?3 = 1 AND app IS NOT ?2) ORDER BY at LIMIT 50")
+      .bind(since, app, not).all();
     return json({ now, said: results });
   }
   if (p === "/v1/support/ask" && req.method === "POST") {
