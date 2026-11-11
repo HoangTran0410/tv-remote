@@ -1959,6 +1959,11 @@
   "n": 1,
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
  },
+ "6bbd148d2a89a01028ee8150|0.50.0": {
+  "at": "2026-11-11T12:11:05+07:00",
+  "n": 1,
+  "note": "keyfix_refused (sdk 28): same as earlier, waiting for e957a72e data"
+ },
  "6c3b94df5aa42e57587aa4d8|0.45.0": {
   "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
