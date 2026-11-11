@@ -191,4 +191,12 @@ class KeyFixTest {
         assertEquals(1_000L, KeyFix.rearm(70_000, 0, 1))                                   // never a busy loop
         assertNull(KeyFix.rearm(10_000, 0, KeyFix.REARM))                                 // a policy that always wins: give up
     }
+
+    @Test fun refusalSaysWhatAndroidDidWithTheService() {                                   // census fbed4da8 (ADT-3)
+        val emu = "ACCESS_RESTRICTED_SETTINGS: allow; time=+18m1s92ms ago\nBound services:{Service[label=TV Setup Keys: remote buttons, feedb\n" +
+            "Binding services:{}\nCrashed services:{}"                                     // the API 34 emulator, as SEEN_CMD cuts it
+        assertEquals("rs allow, bound 1, binding 0, crashed 0", KeyFix.seen(emu))
+        assertEquals("rs ignore, bound 0, binding 0, crashed 1", KeyFix.seen("ACCESS_RESTRICTED_SETTINGS: ignore\nBound services:{}\nBinding services:{}\nCrashed services:{{dev.tvremote.setup.keys/dev.tv"))
+        assertEquals("rs -, bound ?, binding ?, crashed ?", KeyFix.seen("No operations."))
+    }
 }

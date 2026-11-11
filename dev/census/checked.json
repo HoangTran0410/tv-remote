@@ -3070,24 +3070,29 @@
   "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
  },
  "b3dbb5ec6f1c76a39a24c383|0.29.0": {
-  "at": "2026-11-11T06:02:14+07:00",
+  "at": "2026-11-11T20:05:42+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "ADB refused (AQUA MatrixTV, Android 14): adb_enabled 1, no TCP port: the TV needs Wireless debugging pairing; a state, not a fault"
  },
  "b3dbb5ec6f1c76a39a24c383|0.42.2": {
-  "at": "2026-11-11T06:02:14+07:00",
+  "at": "2026-11-11T20:05:42+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "ADB refused (AQUA MatrixTV, Android 14): adb_enabled 1, no TCP port: the TV needs Wireless debugging pairing; a state, not a fault"
  },
  "b3dbb5ec6f1c76a39a24c383|0.44.0": {
-  "at": "2026-11-11T06:02:14+07:00",
+  "at": "2026-11-11T20:05:42+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "ADB refused (AQUA MatrixTV, Android 14): adb_enabled 1, no TCP port: the TV needs Wireless debugging pairing; a state, not a fault"
  },
  "b3dbb5ec6f1c76a39a24c383|0.49.0": {
-  "at": "2026-11-11T06:02:14+07:00",
+  "at": "2026-11-11T20:05:42+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "ADB refused (AQUA MatrixTV, Android 14): adb_enabled 1, no TCP port: the TV needs Wireless debugging pairing; a state, not a fault"
+ },
+ "b3dbb5ec6f1c76a39a24c383|0.50.0": {
+  "at": "2026-11-11T20:05:42+07:00",
+  "n": 1,
+  "note": "ADB refused (AQUA MatrixTV, Android 14): adb_enabled 1, no TCP port: the TV needs Wireless debugging pairing; a state, not a fault"
  },
  "b3f651e44e8ee5e6436726b0|0.35.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -4240,9 +4245,9 @@
   "note": "keyfix_refused (ADT-3, sdk 34): same class, waiting for e957a72e data"
  },
  "fbed4da875a2ffa6e96f47b8|0.50.0": {
-  "at": "2026-11-11T14:06:04+07:00",
-  "n": 1,
-  "note": "keyfix_refused (ADT-3, sdk 34): same class, waiting for e957a72e data"
+  "at": "2026-11-11T20:05:42+07:00",
+  "n": 3,
+  "note": "keyfix_refused (ADT-3, sdk 34): known yes, others 0, a11y 0 = the API 34 emulator with the add-on's ACCESS_RESTRICTED_SETTINGS at ignore; fixed: prepare again before each rearm (next release), report now adds rs/bound/crashed"
  },
  "fc50f4abd4e3d69b9a57334c|0.34.1": {
   "at": "2026-10-30T09:08:32+07:00",

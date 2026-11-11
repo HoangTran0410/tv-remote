@@ -36,6 +36,7 @@ the app beneath stays visible and running. No service, receiver or timer of our 
 | 6 | the add-on not installed or not on (no key filter); turned off in Settings: left off, not written again (`KeyFix.addonOff`); turned on again: taken out of the list and put back 3 s later, or Android keeps it "crashed" and unbound | Home as before; the page's text says the bar needs TV Setup | |
 | 7 | screen off | the add-on does not take keys while it is off: Home wakes the TV as before | |
 | 8 | a client's Home: the TV web page (`/api/key` -> `KeysBridge.press`) or the Computer app's ADB fallback (`RulesClient.key`, only when its remote link is down) | the same decision as a real press: option on and an app in front: the bar (`KeysBridge.press` -> `homeBar`); option off: injected, Home as before. The Phone app's ADB link and `input keyevent` skip the filter: no bar there | |
+| 9 | the add-on's service taken out again within 60 s of being written (a policy, or its ACCESS_RESTRICTED_SETTINGS back to ignore: Android 14 drops it then) | with ADB up its appops are set again (`KeysAddon.prepare`) before one more look; after `REARM` tries: Home as before, `keyfix_refused` reported once with `KeyFix.seen` (the appop, bound / crashed) (KeyFixTest) | |
 
 ## In the bar
 

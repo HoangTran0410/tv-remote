@@ -283,7 +283,21 @@ object KeyFix {
         val r = c.contentResolver
         val others = (Settings.Secure.getString(r, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES) ?: "").split(":").count { it.isNotEmpty() && !isOurs(it) }
         val on = try { Settings.Secure.getInt(r, Settings.Secure.ACCESSIBILITY_ENABLED) } catch (e: Exception) { -1 }
-        return "sdk ${Build.VERSION.SDK_INT}, adb ${if (dev.tvremote.setup.RemoteService.adb() != null) "up" else "down"}, add-on by $installer, $addon, known $known, others $others, a11y $on"
+        val adb = dev.tvremote.setup.RemoteService.adb()
+        return "sdk ${Build.VERSION.SDK_INT}, adb ${if (adb != null) "up" else "down"}, add-on by $installer, $addon, known $known, others $others, a11y $on" +
+            (adb?.let { a -> try { ", " + seen(a.shell(SEEN_CMD, 5000)) } catch (e: Exception) { "" } } ?: "")
+    }
+
+    // ADT-3 (sdk 34, census fbed4da8): known yes, add-on running and allowed, yet taken out with nothing else in the list. Whether Android
+    // bound it, marked it crashed, and the appop as the TV holds it tell a crash loop from a policy. 0.13 s, ~3 KB filtered on the TV (API 34 emulator)
+    private val SEEN_CMD = "appops get ${KeysProtocol.ADDON} ACCESS_RESTRICTED_SETTINGS 2>&1 | head -1; " +
+        "dumpsys accessibility 2>/dev/null | grep -oE '(Bound|Binding|Crashed) services:\\{.{0,60}' | head -3"
+
+    /** Pure: "rs allow, bound 1, binding 0, crashed 0" from [SEEN_CMD]'s lines (a service's entry in a dump starts "Service[" or "{"). */
+    internal fun seen(out: String): String {
+        val rs = Regex("ACCESS_RESTRICTED_SETTINGS:\\s*(\\w+)").find(out)?.groupValues?.get(1) ?: "-"
+        fun n(what: String) = Regex("$what services:\\{(.*)").find(out)?.groupValues?.get(1)?.let { if (it.isEmpty() || it.startsWith("}")) "0" else "1" } ?: "?"
+        return "rs $rs, bound ${n("Bound")}, binding ${n("Binding")}, crashed ${n("Crashed")}"
     }
 
     /** The add-on is installed but turned off (pm disable-user, or Settings → Apps → Disable); our own code never does that (Setup.PROTECTED). */
@@ -337,8 +351,12 @@ object KeyFix {
             val t = System.currentTimeMillis()
             if (need && !old && !back && t - wrote < 60000) {                // the system took it out again just now (a policy): not every few seconds
                 val wait = rearm(t, wrote, refused)
-                if (wait == null) dev.tvremote.setup.health.AdbReport.once(c, "keyfix_refused", "service taken out ${REARM}x; ${refusedWhy(c)}")
-                else { refused++; later?.invoke(wait) }
+                if (wait == null) "service taken out ${REARM}x; ${refusedWhy(c)}".let { android.util.Log.w("KeyFix", "refused: $it"); dev.tvremote.setup.health.AdbReport.once(c, "keyfix_refused", it) }
+                else {                                                // the add-on's ACCESS_RESTRICTED_SETTINGS may be back to ignore since the link's prepare
+                    refused++                                         // (ADT-3, census fbed4da8: the same signature as the API 34 emulator with it set to ignore)
+                    dev.tvremote.setup.RemoteService.adb()?.let { KeysAddon.prepare(it) }
+                    later?.invoke(wait)
+                }
                 return
             }
             if (need) wrote = t

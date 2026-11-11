@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Setup: on Android 14 boxes (ADT-3) where the key add-on lost its "restricted settings" permission, dead keys, the mic button and the Home bar stopped working after three tries; TV Setup now gives that permission back over ADB before trying again.
 - TV Home: a "Now playing" widget. Music or a video playing behind Home (SmartTube, Spotify...) shows its app and title; OK pauses or plays it, and an app paused behind Home plays again. With nothing playing it shows the last one played (OK opens that app), never a blank box. Read by TV Setup over ADB (needs TV Setup 0.50.1).
 
 ## 0.52.0 - 2026-11-11
