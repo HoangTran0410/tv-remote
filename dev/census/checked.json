@@ -2630,9 +2630,14 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "96b65c49f591338245132433|0.49.0": {
-  "at": "2026-11-09T23:16:47+07:00",
+  "at": "2026-11-12T01:04:07+07:00",
   "n": 1,
-  "note": "keyfix_refused 0.49.0 SMOON_300 sdk 34, add-on running by shell (2nd sdk 34 like aaa561ab); report now says known/others/a11y to tell a firmware filter from a wiped list"
+  "note": "SMOON_300 sdk 34 again on 0.50.0 (known/others/a11y not in this row's msg); sdk 34 like ADT-3: 8f344ac1 gives the add-on its restricted-settings appop back before each look, not released yet; recheck after the release"
+ },
+ "96b65c49f591338245132433|0.50.0": {
+  "at": "2026-11-12T01:04:07+07:00",
+  "n": 1,
+  "note": "SMOON_300 sdk 34 again on 0.50.0 (known/others/a11y not in this row's msg); sdk 34 like ADT-3: 8f344ac1 gives the add-on its restricted-settings appop back before each look, not released yet; recheck after the release"
  },
  "97e17829dc7affa466571ee0|0.38.3": {
   "at": "2026-11-02T22:17:48+07:00",
