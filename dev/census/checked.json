@@ -319,6 +319,11 @@
   "n": 1,
   "note": "ICONE G-Two Box sdk 31 on 0.49.0 (seen on 0.47.0 too), add-on running: firmware takes the service out; next TV Setup reports known/others/a11y (e957a72e)"
  },
+ "1246e79da13b1f97f2bdb7fc|0.50.0": {
+  "at": "2026-11-11T22:54:01+07:00",
+  "n": 1,
+  "note": "keyfix_refused (ICONE G-Two Box, Android 12): same signature as ADT-3 (known yes, others 0, a11y 0) but sdk 31 has no restricted-settings appop, so a firmware policy here; waiting for 8f344ac1's rs/bound/crashed data"
+ },
  "13b5562e22b1aff18d3e7207|0.15.0": {
   "at": "2026-10-30T09:07:55+07:00",
   "n": 1,
