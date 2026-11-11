@@ -310,19 +310,19 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "1246e79da13b1f97f2bdb7fc|0.47.0": {
-  "at": "2026-11-09T07:39:12+07:00",
+  "at": "2026-11-11T23:59:20+07:00",
   "n": 2,
-  "note": "keyfix_refused: the box's firmware takes the key add-on out (add-on stopped/not running); KeyFix gives up after 3 as meant (f6d83e85)"
+  "note": "G-Two Box again on 0.49.0/0.50.0 (2 installs), same firmware signature; waiting for 8f344ac1's data (not released yet)"
  },
  "1246e79da13b1f97f2bdb7fc|0.49.0": {
-  "at": "2026-11-10T00:14:44+07:00",
-  "n": 1,
-  "note": "ICONE G-Two Box sdk 31 on 0.49.0 (seen on 0.47.0 too), add-on running: firmware takes the service out; next TV Setup reports known/others/a11y (e957a72e)"
+  "at": "2026-11-11T23:59:20+07:00",
+  "n": 2,
+  "note": "G-Two Box again on 0.49.0/0.50.0 (2 installs), same firmware signature; waiting for 8f344ac1's data (not released yet)"
  },
  "1246e79da13b1f97f2bdb7fc|0.50.0": {
-  "at": "2026-11-11T22:54:01+07:00",
-  "n": 1,
-  "note": "keyfix_refused (ICONE G-Two Box, Android 12): same signature as ADT-3 (known yes, others 0, a11y 0) but sdk 31 has no restricted-settings appop, so a firmware policy here; waiting for 8f344ac1's rs/bound/crashed data"
+  "at": "2026-11-11T23:59:20+07:00",
+  "n": 2,
+  "note": "G-Two Box again on 0.49.0/0.50.0 (2 installs), same firmware signature; waiting for 8f344ac1's data (not released yet)"
  },
  "13b5562e22b1aff18d3e7207|0.15.0": {
   "at": "2026-10-30T09:07:55+07:00",
@@ -450,44 +450,44 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "1b64c0fdb7081f015b2765c2|0.22.1": {
-  "at": "2026-11-07T13:06:09+07:00",
+  "at": "2026-11-11T23:59:21+07:00",
   "n": 1,
-  "note": "old pc 0.24.0; fixed in 4c5bf584 (v0.26.0): fleet.js counts the list itself"
+  "note": "old pc 0.25.0 again; fixed in 4c5bf584 (v0.26.0)"
  },
  "1b64c0fdb7081f015b2765c2|0.23.0": {
-  "at": "2026-11-07T13:06:09+07:00",
+  "at": "2026-11-11T23:59:21+07:00",
   "n": 2,
-  "note": "old pc 0.24.0; fixed in 4c5bf584 (v0.26.0): fleet.js counts the list itself"
+  "note": "old pc 0.25.0 again; fixed in 4c5bf584 (v0.26.0)"
  },
  "1b64c0fdb7081f015b2765c2|0.24.0": {
-  "at": "2026-11-07T13:06:09+07:00",
+  "at": "2026-11-11T23:59:21+07:00",
   "n": 6,
-  "note": "old pc 0.24.0; fixed in 4c5bf584 (v0.26.0): fleet.js counts the list itself"
+  "note": "old pc 0.25.0 again; fixed in 4c5bf584 (v0.26.0)"
  },
  "1b64c0fdb7081f015b2765c2|0.24.1": {
-  "at": "2026-11-07T13:06:09+07:00",
+  "at": "2026-11-11T23:59:21+07:00",
   "n": 2,
-  "note": "old pc 0.24.0; fixed in 4c5bf584 (v0.26.0): fleet.js counts the list itself"
+  "note": "old pc 0.25.0 again; fixed in 4c5bf584 (v0.26.0)"
  },
  "1b64c0fdb7081f015b2765c2|0.25.0": {
-  "at": "2026-11-07T13:06:09+07:00",
-  "n": 5,
-  "note": "old pc 0.24.0; fixed in 4c5bf584 (v0.26.0): fleet.js counts the list itself"
+  "at": "2026-11-11T23:59:21+07:00",
+  "n": 6,
+  "note": "old pc 0.25.0 again; fixed in 4c5bf584 (v0.26.0)"
  },
  "1b64c0fdb7081f015b2765c2|0.26.0": {
-  "at": "2026-11-07T13:06:09+07:00",
+  "at": "2026-11-11T23:59:21+07:00",
   "n": 1,
-  "note": "old pc 0.24.0; fixed in 4c5bf584 (v0.26.0): fleet.js counts the list itself"
+  "note": "old pc 0.25.0 again; fixed in 4c5bf584 (v0.26.0)"
  },
  "1b64c0fdb7081f015b2765c2|0.26.1": {
-  "at": "2026-11-07T13:06:09+07:00",
+  "at": "2026-11-11T23:59:21+07:00",
   "n": 8,
-  "note": "old pc 0.24.0; fixed in 4c5bf584 (v0.26.0): fleet.js counts the list itself"
+  "note": "old pc 0.25.0 again; fixed in 4c5bf584 (v0.26.0)"
  },
  "1b64c0fdb7081f015b2765c2|0.26.3": {
-  "at": "2026-11-07T13:06:09+07:00",
+  "at": "2026-11-11T23:59:21+07:00",
   "n": 8,
-  "note": "old pc 0.24.0; fixed in 4c5bf584 (v0.26.0): fleet.js counts the list itself"
+  "note": "old pc 0.25.0 again; fixed in 4c5bf584 (v0.26.0)"
  },
  "1bb957ff3a488ee2d9b284a4|0.42.0": {
   "at": "2026-11-04T06:24:38+07:00",
@@ -1905,9 +1905,14 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
  },
  "67f82331bc87f7fa012370a1|0.49.0": {
-  "at": "2026-11-11T06:02:20+07:00",
+  "at": "2026-11-11T23:59:20+07:00",
   "n": 1,
-  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
+  "note": "keyfix_refused (KOBRA BOX, sdk 29) on 0.50.0: same signature as ADT-3 / G-Two (known yes, others 0, a11y 0, add-on running); sdk 29 has no restricted-settings appop, so firmware takes the service out; waiting for 8f344ac1's rs/bound/crashed data (not released yet)"
+ },
+ "67f82331bc87f7fa012370a1|0.50.0": {
+  "at": "2026-11-11T23:59:20+07:00",
+  "n": 1,
+  "note": "keyfix_refused (KOBRA BOX, sdk 29) on 0.50.0: same signature as ADT-3 / G-Two (known yes, others 0, a11y 0, add-on running); sdk 29 has no restricted-settings appop, so firmware takes the service out; waiting for 8f344ac1's rs/bound/crashed data (not released yet)"
  },
  "6829ee79c1f5ab7a1c5a60b1|0.39.0": {
   "at": "2026-11-03T06:59:47+07:00",
