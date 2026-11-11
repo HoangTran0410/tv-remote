@@ -3069,6 +3069,11 @@
   "n": 2,
   "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
  },
+ "b3d8070136a6d4aa43ecd9bb|0.50.0": {
+  "at": "2026-11-11T22:04:05+07:00",
+  "n": 1,
+  "note": "rules_no_adb (Chromecast with Google TV, sdk 34): Wireless debugging on, no 5555 (closed since a reboot until a paired client opens it): the TV's state, TV Setup already shows the no-port howto"
+ },
  "b3dbb5ec6f1c76a39a24c383|0.29.0": {
   "at": "2026-11-11T20:05:42+07:00",
   "n": 1,
