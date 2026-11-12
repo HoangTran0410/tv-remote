@@ -46,21 +46,25 @@ object Keys {
             val said = try { app.contentResolver.call(Uri.parse(HomeConfig.USAGE), "keys", arg, null)?.getString("json")?.let { JSONObject(it) } } catch (e: Exception) { null }
             // null: no TV Setup, or one from before this (it answers nothing to a word it does not know)
             prefs(app).edit().putBoolean("setup", said != null).putString("free", (said?.optJSONArray("free") ?: JSONArray()).toString())
-                .putBoolean("can", said?.optBoolean("can") ?: false).putBoolean("all", said?.optBoolean("all") ?: false).putBoolean("last", said?.optBoolean("last") ?: false).apply()
+                .putBoolean("can", said?.optBoolean("can") ?: false).putBoolean("all", said?.optBoolean("all") ?: false).putBoolean("last", said?.optBoolean("last") ?: false)
+                .putBoolean("refused", said?.optBoolean("refused") ?: false).apply()
             ui.post { onState?.invoke() }
         }, "home-keys").apply { isDaemon = true }.start()
     }
 
-    /** What the last answer said, for the config the clients read: {keysOk, keysSetup, keysDead [codes]}. */
+    /** What the last answer said, for the config the clients read: {keysOk, keysSetup, keysRefused, keysDead [codes]}. */
     fun report(c: Context, conf: JSONObject): JSONObject {
         val p = prefs(c)
         return conf.put("keysOk", true).put("keysSetup", p.getBoolean("setup", false)).put("keysAll", p.getBoolean("all", false)).put("keysLast", p.getBoolean("last", false))
+            .put("keysRefused", p.getBoolean("refused", false))
             .put("keysDead", try { JSONArray(p.getString("free", "[]")) } catch (e: Exception) { JSONArray() })
     }
 
     fun setup(c: Context) = prefs(c).getBoolean("setup", false)
     /** TV Setup may run its key filter (the grant over ADB): without it the keys work on TV Home's screen only. */
     fun can(c: Context) = prefs(c).getBoolean("can", false)
+    /** The TV keeps switching TV Setup's key filter off (KeyFix gave up): the keys work on TV Home's screen only. */
+    fun refused(c: Context) = prefs(c).getBoolean("refused", false)
     /** TV Setup takes "autoall" (power-on opens its app even over the one the TV woke into): an older one ignores it. */
     fun all(c: Context) = prefs(c).getBoolean("all", false)
     /** TV Setup takes "autolast" (the power-on app is the last one used): an older one ignores it, so the choice is not offered. */

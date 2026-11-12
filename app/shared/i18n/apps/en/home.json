@@ -381,6 +381,7 @@
   "k_need_setup": "Works only while on TV Home. Install TV Setup to use it everywhere.",
   "k_need_adb": "TV Setup needs ADB (USB debugging) to use keys outside TV Home.",
   "k_everywhere": "Color keys and unresponsive buttons work in every app. 0-9 work in TV Home only.",
+  "k_refused": "This TV keeps switching off TV Setup's key filter, so these keys work only on TV Home.",
   "k_auto_need_setup": "Needs TV Setup on this TV. Install it to use this.",
   "k_auto_note": "Once per power-on. Not if the TV woke into another app.",
   "k_red": "Red key",

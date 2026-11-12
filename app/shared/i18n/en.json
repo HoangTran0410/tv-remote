@@ -3368,6 +3368,7 @@
  "home.keys_old": "⬆️ Update TV Home to use it",
  "home.keys_need_setup": "Works only while on TV Home. Install TV Setup to use it everywhere.",
  "home.keys_everywhere": "Color keys and unresponsive buttons work in every app; 0-9 only on TV Home.",
+ "home.keys_refused": "This TV keeps switching off TV Setup's key filter, so these keys work only on TV Home.",
  "home.auto_need_setup": "Needs TV Setup on this TV. Install it to use this.",
  "home.auto_all": "Auto-open TV Home (or the “At power-on” app) at power-on, even if the TV woke into another app or input",
  "home.auto_all_old": "Update TV Setup on the TV to use this.",

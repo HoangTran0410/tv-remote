@@ -107,7 +107,7 @@ object QuickKeys {
             // where it goes, in the words: "Luôn về khi bật TV" did not say to what
             val to = Keys.powerApp(c).let { if (it.isNotEmpty()) Targets.label(a, it) else if (Keys.powerLast(c)) a.getString(R.string.qk_last).lowercase() else "TV Home" }
             always.pillText(a.getString(R.string.qk_always, to, said(always.isSelected)))
-            hint.text = a.getString(if (!Keys.setup(a)) R.string.k_need_setup else if (!Keys.can(a)) R.string.k_need_adb else R.string.k_everywhere)
+            hint.text = a.getString(if (!Keys.setup(a)) R.string.k_need_setup else if (!Keys.can(a)) R.string.k_need_adb else if (Keys.refused(a)) R.string.k_refused else R.string.k_everywhere)
         }
 
         fun redraw(keepFocus: Int?) {

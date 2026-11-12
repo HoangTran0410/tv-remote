@@ -1303,7 +1303,7 @@ object Customize {
             panelDialog?.dismiss(); onHome(a, HomeConfig.ADD) { it.addPanel(back = { backTo(it, 0) }) }
         }
         if (!quick) door(R.drawable.ic_pen, a.getString(R.string.el_edit), { a.getString(R.string.el_edit_sub) }) { panelDialog?.dismiss(); onHome(a, HomeConfig.EDIT) { it.edit(back = { backTo(it, 1) }) } }
-        if (quick) door(R.drawable.ic_keyboard, a.getString(R.string.c_quickkeys), { a.getString(if (Keys.setup(a)) R.string.k_everywhere else R.string.k_need_setup) }) { QuickKeys.show(a) }
+        if (quick) door(R.drawable.ic_keyboard, a.getString(R.string.c_quickkeys), { a.getString(if (!Keys.setup(a)) R.string.k_need_setup else if (Keys.refused(a)) R.string.k_refused else R.string.k_everywhere) }) { QuickKeys.show(a) }
         return doors
     }
 

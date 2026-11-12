@@ -219,7 +219,7 @@ class HomeInfo : ContentProvider() {
             }, "home-keys").apply { isDaemon = true }.start()
         }
         val free = KeyFix.offered(KeyFix.keyMap(c)) { KeyFix.alive(c, it) }   // the dead keys and the app buttons
-        return Bundle().apply { putString("json", JSONObject().put("free", JSONArray(free.sorted())).put("can", KeyFix.can(c)).put("all", true).put("last", true).put("wanted", KeyFix.wanted(c)).toString()) }
+        return Bundle().apply { putString("json", JSONObject().put("free", JSONArray(free.sorted())).put("can", KeyFix.can(c)).put("all", true).put("last", true).put("wanted", KeyFix.wanted(c)).put("refused", KeyFix.refusedByTv(c)).toString()) }
     }
 
     /** One second of /proc/stat through the shell, on its own thread, never two at once (a dial may wait minutes for the TV's question). */

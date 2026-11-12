@@ -3263,6 +3263,7 @@
  "home.keys_old": "⬆️ Cập nhật TV Home để dùng",
  "home.keys_need_setup": "Chỉ chạy khi đang ở TV Home — cài TV Setup để dùng mọi nơi",
  "home.keys_everywhere": "Phím màu và nút điều khiển đã hỏng chạy mọi app; phím 0-9 chỉ ở TV Home.",
+ "home.keys_refused": "TV này cứ tự tắt bộ lọc phím của TV Setup, nên các phím này chỉ chạy khi đang ở TV Home.",
  "home.auto_need_setup": "Cần TV Setup trên TV này — hãy cài để dùng.",
  "home.auto_all": "Tự mở TV Home khi bật TV (hoặc app ở ô “Khi bật TV”), kể cả khi TV tự vào app hay cổng HDMI khác",
  "home.auto_all_old": "Cần cập nhật TV Setup trên TV để dùng.",

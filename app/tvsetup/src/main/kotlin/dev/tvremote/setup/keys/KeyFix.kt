@@ -220,6 +220,9 @@ object KeyFix {
     fun wanted(c: Context): Boolean = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean("on", true)
     fun want(c: Context, on: Boolean) { c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean("on", on).apply(); sync(c) }
     fun can(c: Context): Boolean = c.packageManager.checkPermission(PERM, c.packageName) == PackageManager.PERMISSION_GRANTED
+    /** The TV took the service out [REARM] times and KeyFix gave up (keyfix_refused): kept so TV Home and the page say why the keys work on Home only. */
+    fun refusedByTv(c: Context): Boolean = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean("refused", false)
+    private fun refusedByTv(c: Context, on: Boolean) { if (refusedByTv(c) != on) c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean("refused", on).apply() }
 
     /**
      * The list with [SERVICE] put in or taken out, the others (KeyCatch while the screen is off, TalkBack) as they were. The entries
@@ -347,11 +350,11 @@ object KeyFix {
                 later?.invoke(3000) ?: run { Thread.sleep(3000); sync(c) }
                 return
             }
-            if (need == has && !old && !back) { if (has && System.currentTimeMillis() - wrote >= 60000) refused = 0; return }   // it stayed past the guard: the policy let go
+            if (need == has && !old && !back) { if (has && System.currentTimeMillis() - wrote >= 60000) { refused = 0; refusedByTv(c, false) }; return }   // it stayed past the guard: the policy let go
             val t = System.currentTimeMillis()
             if (need && !old && !back && t - wrote < 60000) {                // the system took it out again just now (a policy): not every few seconds
                 val wait = rearm(t, wrote, refused)
-                if (wait == null) "service taken out ${REARM}x; ${refusedWhy(c)}".let { android.util.Log.w("KeyFix", "refused: $it"); dev.tvremote.setup.health.AdbReport.once(c, "keyfix_refused", it) }
+                if (wait == null) "service taken out ${REARM}x; ${refusedWhy(c)}".also { refusedByTv(c, true) }.let { android.util.Log.w("KeyFix", "refused: $it"); dev.tvremote.setup.health.AdbReport.once(c, "keyfix_refused", it) }
                 else {                                                // the add-on's ACCESS_RESTRICTED_SETTINGS may be back to ignore since the link's prepare
                     refused++                                         // (ADT-3, census fbed4da8: the same signature as the API 34 emulator with it set to ignore)
                     dev.tvremote.setup.RemoteService.adb()?.let { KeysAddon.prepare(it) }

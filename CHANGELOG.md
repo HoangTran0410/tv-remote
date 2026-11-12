@@ -4,6 +4,10 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- TV Setup, TV Home: on boxes that keep switching TV Setup's key filter off (many cheap Android 10 boxes), TV Home's Quick keys and the web page now say the keys work only on TV Home, instead of claiming they work in every app.
+
 ## 0.53.0 - 2026-11-12
 
 Web 0.53.0 · Phone app 0.50.0 · TV app 0.51.0 · TV Home 0.33.0 · TV Channels 0.23.0 · TV Games 0.24.0 · TV Apps 0.8.0

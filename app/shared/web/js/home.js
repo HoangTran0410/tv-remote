@@ -760,7 +760,7 @@ async function homeOpen() {
     const ka = c.keyapps || {}, kOk = !!c.keysOk;                     // an older TV Home has neither: shown, with its update
     keyOn.checked = !!c.keyon;
     keyOn.disabled = !kOk; keysOld.hidden = kOk;
-    keysNote.textContent = kOk ? T(!c.keysSetup ? 'home.keys_need_setup' : 'home.keys_everywhere') : '';
+    keysNote.textContent = kOk ? T(!c.keysSetup ? 'home.keys_need_setup' : c.keysRefused ? 'home.keys_refused' : 'home.keys_everywhere') : '';
     autoNote.textContent = kOk ? T(!c.keysSetup ? 'home.auto_need_setup' : 'home.auto_note') : '';
     keysList.hidden = !kOk;
     autoAll.checked = !!c.autoall;

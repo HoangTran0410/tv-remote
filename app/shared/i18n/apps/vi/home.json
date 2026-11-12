@@ -381,6 +381,7 @@
   "k_need_setup": "Chỉ chạy khi đang ở TV Home — cài TV Setup để dùng mọi nơi",
   "k_need_adb": "TV Setup cần ADB (gỡ lỗi USB) để dùng phím ngoài TV Home.",
   "k_everywhere": "Phím màu, nút hỏng: mọi app. Phím 0-9: chỉ TV Home.",
+  "k_refused": "TV này cứ tự tắt bộ lọc phím của TV Setup, nên các phím này chỉ chạy khi đang ở TV Home.",
   "k_auto_need_setup": "Cần TV Setup trên TV này — hãy cài để dùng.",
   "k_auto_note": "Mỗi lần bật TV chỉ mở một lần. Không mở nếu TV đã vào app khác.",
   "k_red": "Phím đỏ",
