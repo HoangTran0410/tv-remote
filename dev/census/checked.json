@@ -4060,9 +4060,14 @@
   "note": "TV Setup ADB health report (refused = debugging off; EOF on Fire TV = Amazon blocks local ADB; scrcpy did-not-start), not a code fault"
  },
  "ef46e92b5921045e1e901a58|0.49.0": {
-  "at": "2026-11-11T06:02:24+07:00",
+  "at": "2026-11-12T23:11:37+07:00",
   "n": 1,
-  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
+  "note": "sdk 29 X99Q PRO (Allwinner, fake google fp): firmware takes the a11y service out, never bound, no appop; nothing to fix in the app. Clients now say keys work on TV Home only (e9452995)"
+ },
+ "ef46e92b5921045e1e901a58|0.51.0": {
+  "at": "2026-11-12T23:11:37+07:00",
+  "n": 1,
+  "note": "sdk 29 X99Q PRO (Allwinner, fake google fp): firmware takes the a11y service out, never bound, no appop; nothing to fix in the app. Clients now say keys work on TV Home only (e9452995)"
  },
  "efa52b83207b258b74e55757|0.34.1": {
   "at": "2026-10-30T09:08:30+07:00",
