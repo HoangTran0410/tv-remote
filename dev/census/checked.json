@@ -125,24 +125,29 @@
   "note": "keyfix_refused on VISION XS100MINI+, 6th box (WS, ADT-3, G-Two, SWTV, X96mini): cause logged from the next TV Setup (a20c4155), left"
  },
  "0bea8243f97640450535da70|0.47.0": {
-  "at": "2026-11-11T16:41:07+07:00",
+  "at": "2026-11-12T23:22:07+07:00",
   "n": 1,
-  "note": "keyfix_refused (JmGO K920 projector, sdk 28): add-on 'stopped', installer not the shell, the other a11y entry kept, a11y on: a force-stop (the box's RAM cleaner) makes Android drop only our service; a vendor cleaner, not our fault; nothing to fix until a whitelist route is known"
+  "note": "keyfix_refused (JmGO K920 projector, sdk 28) again on 0.51.0: add-on 'stopped', the box's RAM cleaner force-stops it and Android drops the a11y entry; same as before, nothing to fix in the app. Clients now say keys work on TV Home only (e9452995)"
  },
  "0bea8243f97640450535da70|0.48.0": {
-  "at": "2026-11-11T16:41:07+07:00",
+  "at": "2026-11-12T23:22:07+07:00",
   "n": 1,
-  "note": "keyfix_refused (JmGO K920 projector, sdk 28): add-on 'stopped', installer not the shell, the other a11y entry kept, a11y on: a force-stop (the box's RAM cleaner) makes Android drop only our service; a vendor cleaner, not our fault; nothing to fix until a whitelist route is known"
+  "note": "keyfix_refused (JmGO K920 projector, sdk 28) again on 0.51.0: add-on 'stopped', the box's RAM cleaner force-stops it and Android drops the a11y entry; same as before, nothing to fix in the app. Clients now say keys work on TV Home only (e9452995)"
  },
  "0bea8243f97640450535da70|0.49.0": {
-  "at": "2026-11-11T16:41:07+07:00",
+  "at": "2026-11-12T23:22:07+07:00",
   "n": 1,
-  "note": "keyfix_refused (JmGO K920 projector, sdk 28): add-on 'stopped', installer not the shell, the other a11y entry kept, a11y on: a force-stop (the box's RAM cleaner) makes Android drop only our service; a vendor cleaner, not our fault; nothing to fix until a whitelist route is known"
+  "note": "keyfix_refused (JmGO K920 projector, sdk 28) again on 0.51.0: add-on 'stopped', the box's RAM cleaner force-stops it and Android drops the a11y entry; same as before, nothing to fix in the app. Clients now say keys work on TV Home only (e9452995)"
  },
  "0bea8243f97640450535da70|0.50.0": {
-  "at": "2026-11-11T16:41:07+07:00",
+  "at": "2026-11-12T23:22:07+07:00",
   "n": 1,
-  "note": "keyfix_refused (JmGO K920 projector, sdk 28): add-on 'stopped', installer not the shell, the other a11y entry kept, a11y on: a force-stop (the box's RAM cleaner) makes Android drop only our service; a vendor cleaner, not our fault; nothing to fix until a whitelist route is known"
+  "note": "keyfix_refused (JmGO K920 projector, sdk 28) again on 0.51.0: add-on 'stopped', the box's RAM cleaner force-stops it and Android drops the a11y entry; same as before, nothing to fix in the app. Clients now say keys work on TV Home only (e9452995)"
+ },
+ "0bea8243f97640450535da70|0.51.0": {
+  "at": "2026-11-12T23:22:07+07:00",
+  "n": 1,
+  "note": "keyfix_refused (JmGO K920 projector, sdk 28) again on 0.51.0: add-on 'stopped', the box's RAM cleaner force-stops it and Android drops the a11y entry; same as before, nothing to fix in the app. Clients now say keys work on TV Home only (e9452995)"
  },
  "0cc42fae2aa5fd9fed3c6839|0.31.0": {
   "at": "2026-11-05T17:16:53+07:00",
