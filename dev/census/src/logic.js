@@ -124,6 +124,9 @@ export const CRASH_PER_DAY = 20;
 export const CRASH_ROWS = 5000;
 export const CRASH_IDS = 200;                                         // distinct installs counted per (sig, v)
 const WHERE = ["kotlin", "page"];
+// KidGuard (another repo, same owner) shares the crash table since 2026-11-12; tv-remote's own tools leave its rows out
+// (crashes.py without --app kidguard, crashwatch: a separate macOS notice, never news.txt). Pings stay tv-remote only.
+const CRASH_APPS = [...APPS, "kidguard"];
 
 // Text with its line breaks kept (a stack), no other control characters, cut to max.
 export function text(x, max) {
@@ -138,7 +141,7 @@ export function validateCrash(body) {
   try { b = JSON.parse(body); } catch { return null; }
   if (!b || typeof b !== "object" || Array.isArray(b)) return null;
   if (typeof b.id !== "string" || !UUID4.test(b.id)) return null;
-  if (!APPS.includes(b.app) || !WHERE.includes(b.where)) return null;
+  if (!CRASH_APPS.includes(b.app) || !WHERE.includes(b.where)) return null;
   const d = b.dev && typeof b.dev === "object" && !Array.isArray(b.dev) ? b.dev : {};
   if (emulator(d)) return null;
   const kind = str(b.kind, 120);

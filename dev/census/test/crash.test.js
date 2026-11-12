@@ -63,3 +63,10 @@ test("sameSecret", async () => {
 test("validateCrash: TV Home, Channels and Games report too", () => {
   for (const app of ["home", "channels", "games", "tvapps"]) assert.equal(validateCrash(body({ app })).app, app);
 })
+
+test("validateCrash: KidGuard's crashes are taken (shared table), its pings are not", async () => {
+  assert.equal(validateCrash(body({ app: "kidguard" })).app, "kidguard");
+  assert.equal(validateCrash(body({ app: "nope" })), null);
+  const { validate } = await import("../src/logic.js");
+  assert.equal(validate(JSON.stringify({ id: "0f8fad5b-d9cb-469f-a165-70867728950e", app: "kidguard" })), null);
+});

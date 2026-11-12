@@ -11,6 +11,7 @@
   crashes.py --mark SIG|all [--note "why"]   marks it (all = what --new lists) looked at (its count now), in checked.json (committed: every session and machine sees it)
   crashes.py SIG --frames       adds repo path:line for each stack frame that maps to a file here (also with --json: "frames")
   crashes.py --url http://127.0.0.1:8787   a local `wrangler dev`
+  crashes.py --app kidguard ... KidGuard's crashes (same worker, another repo); left out of every other listing
 """
 import argparse, json, os, re, sys, urllib.parse, urllib.request
 
@@ -27,14 +28,21 @@ def token():
     return t
 
 
+OTHER = "kidguard"
+
+
 def call(base, path, params, method="GET"):
     q = urllib.parse.urlencode({k: v for k, v in params.items() if v})
     req = urllib.request.Request(f"{base}{path}?{q}", method=method, headers={"Authorization": "Bearer " + token(), "User-Agent": "tvr-crashes"})
     try:
         with urllib.request.urlopen(req, timeout=20) as r:
-            return json.load(r)
+            d = json.load(r)
     except urllib.error.HTTPError as e:
         sys.exit(f"{e.code} {e.read().decode()[:200]}")
+    # KidGuard (its own repo) shares the crash table: its rows show only with --app kidguard, never in tv-remote's lists / --new / --mark all
+    if isinstance(d, dict) and isinstance(d.get("crashes"), list) and params.get("app") != OTHER:
+        d["crashes"] = [r for r in d["crashes"] if r.get("app") != OTHER]
+    return d
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -181,7 +189,7 @@ def main():
 
 def full(o, prefix):
     """The sig column shows 8 characters: find the whole one."""
-    hits = {r["sig"] for r in call(o.url, "/v1/crashes", {})["crashes"] if r["sig"].startswith(prefix)}
+    hits = {r["sig"] for r in call(o.url, "/v1/crashes", {"app": o.app})["crashes"] if r["sig"].startswith(prefix)}
     if len(hits) != 1:
         sys.exit(f"{len(hits)} crashes start with {prefix!r}")
     return hits.pop()
