@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.53.0 - 2026-11-12
+
+Web 0.53.0 · Phone app 0.50.0 · TV app 0.51.0 · TV Home 0.33.0 · TV Channels 0.23.0 · TV Games 0.24.0 · TV Apps 0.8.0
 
 - TV Setup: on Android 14 boxes (ADT-3) where the key add-on lost its "restricted settings" permission, dead keys, the mic button and the Home bar stopped working after three tries; TV Setup now gives that permission back over ADB before trying again.
 - TV Home: a "Now playing" widget. Music or a video playing behind Home (SmartTube, Spotify...) shows its app and title; OK pauses or plays it, and an app paused behind Home plays again. With nothing playing it shows the last one played (OK opens that app), never a blank box. Read by TV Setup over ADB (needs TV Setup 0.50.1).
