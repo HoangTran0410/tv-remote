@@ -1319,6 +1319,11 @@
   "n": 1,
   "note": "state, not a crash: Polytron/HKC 2K AI Smart TV (Android 11) firmware removes the key filter's accessibility service; KeyFix gives up after 3 tries by design (no fight loop). Device policy, left"
  },
+ "4c31f555de7497001ad68768|0.50.0": {
+  "at": "2026-11-12T14:57:16+07:00",
+  "n": 1,
+  "note": "rules_no_adb (ZTE B860H V5.0) on 0.50.0: an app limit could not close YouTube without ADB; same model reported 'ADB allow' unanswered (52b902df), so ADB was never allowed on this box: user state, the TV already shows the message to open TV Setup"
+ },
  "4c9f22508e678c8d48ee59f1|0.34.1": {
   "at": "2026-10-30T09:08:11+07:00",
   "n": 1,
@@ -1455,9 +1460,14 @@
   "note": "not our code: minified script the browser injected into the TV web page; errbox now drops stacks whose every frame is the page itself"
  },
  "52b902dfab9195f27703bb1b|0.49.0": {
-  "at": "2026-11-10T20:01:01+07:00",
+  "at": "2026-11-12T14:57:17+07:00",
   "n": 1,
-  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+  "note": "user state: ZTE B860H V5.0 Allow question not answered (the same box's rules_no_adb 4c31f555); TV Setup points to Wireless debugging after it"
+ },
+ "52b902dfab9195f27703bb1b|0.50.0": {
+  "at": "2026-11-12T14:57:17+07:00",
+  "n": 1,
+  "note": "user state: ZTE B860H V5.0 Allow question not answered (the same box's rules_no_adb 4c31f555); TV Setup points to Wireless debugging after it"
  },
  "535993e358ec33bffb4a2ab7|0.27.0": {
   "at": "2026-11-04T03:07:28+07:00",
