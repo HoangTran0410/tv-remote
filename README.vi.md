@@ -3,8 +3,8 @@
 <h1 align="center">TV Remote</h1>
 
 <p align="center">
-  <b>Remote TV trên điện thoại hoặc máy tính. Không máy chủ, không tài khoản, không dây cáp.</b><br>
-  Android TV / Google TV · LG · Samsung · Roku · VIDAA &nbsp;·&nbsp; không cần root &nbsp;·&nbsp; mọi thay đổi đều hoàn tác được
+  <b>Lấy lại chiếc Android TV của bạn: màn hình chính không quảng cáo, tắt app rác, remote ngay trên điện thoại hoặc máy tính.</b><br>
+  Android TV / Google TV · LG · Samsung · Roku · VIDAA &nbsp;·&nbsp; không cần root &nbsp;·&nbsp; không tài khoản &nbsp;·&nbsp; mọi thay đổi đều hoàn tác được
 </p>
 
 <p align="center">
@@ -28,6 +28,8 @@
 <!-- aio-desktop-badge:start -->
 [![AIO Desktop](https://img.shields.io/badge/Try-AIO_Desktop-7c3aed?style=for-the-badge&logo=googlechrome&logoColor=white)](https://fbaio.org/#/desktop)
 <!-- aio-desktop-badge:end -->
+
+<p align="center"><img src="docs/img/hero-vi.webp" width="720" alt="Màn hình chính Google TV đầy quảng cáo đổi thành TV Home, không quảng cáo"></p>
 
 <table>
 <tr>

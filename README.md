@@ -3,8 +3,8 @@
 <h1 align="center">TV Remote</h1>
 
 <p align="center">
-  <b>Your TV remote on your phone or computer. No server, no account, no cable.</b><br>
-  Android TV / Google TV · LG · Samsung · Roku · VIDAA &nbsp;·&nbsp; no root &nbsp;·&nbsp; every change undoable
+  <b>Take back your Android TV: a home screen with no ads, the bloat switched off, the remote on your phone or computer.</b><br>
+  Android TV / Google TV · LG · Samsung · Roku · VIDAA &nbsp;·&nbsp; no root &nbsp;·&nbsp; no account &nbsp;·&nbsp; every change undoable
 </p>
 
 <p align="center">
@@ -24,6 +24,8 @@
   <img src="https://img.shields.io/badge/apps-Android%20·%20Mac%20·%20Windows%20·%20Linux%20·%20web-3b82f6?style=flat-square&labelColor=15181e" alt="Android, Mac, Windows, Linux, web">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3b82f6?style=flat-square&labelColor=15181e" alt="MIT"></a>
 </p>
+
+<p align="center"><img src="docs/img/hero-en.webp" width="720" alt="Google TV's home screen full of ads turns into TV Home, with no ads"></p>
 
 <table>
 <tr>
