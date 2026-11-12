@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "updated": "2026-11-10",
+  "updated": "2026-11-12",
   "about": "Optimize TV's additions to Bloat.kt, read from the site: suggest (package -> name, ticked by default), drop (no longer suggested), keep and factory (Java regexes, only added). Edit, run dev/sign/sign_bloat.py, commit both files.",
   "suggest": {
     "android.autoinstalls.config.askey.tvbox": "Askey app installer",
@@ -130,7 +130,8 @@
     "com.jio.systemstats": "Jio box stats",
     "com.rjil.podlogservice": "Jio box logs upload",
     "com.haier.apps.evoSmart": "Haier promo",
-    "com.sony.dtv.kenhchonloc": "Sony shop promo"
+    "com.sony.dtv.kenhchonloc": "Sony shop promo",
+    "com.android.ext.adservices.api": "Ad tracking (Privacy Sandbox)"
   },
   "drop": [
     "com.xm.webcontent",
@@ -180,7 +181,8 @@
     "com\\.(hispeech\\.ai\\.area|iflytek\\.xiri|intelligent\\.speech|vt\\.permission\\.manager)",
     "com\\.keylab\\.speech\\..*",
     "com\\.hisense\\.(aiot|aiod|raycodereceiver|hiservice|msvoicetome|vidaaassistant|widget\\.pro|tv\\.globalui)",
-    "com\\.tcl\\.assistant"
+    "com\\.tcl\\.assistant",
+    "com\\.amazon\\.providers\\.contentsupport"
   ],
   "factory": [
     "com\\.skyworth\\.testtime",
