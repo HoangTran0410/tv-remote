@@ -1135,9 +1135,14 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "3fd52ef15449ebe1bb5ee526|0.49.0": {
-  "at": "2026-11-10T20:00:59+07:00",
+  "at": "2026-11-12T08:52:42+07:00",
   "n": 1,
-  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
+  "note": "keyfix_refused (MBOX, sdk 29) on 0.50.0: known yes, others 0, a11y 0, add-on running: same firmware signature as KOBRA/Z1/G-Two; waiting for 8f344ac1's rs/bound/crashed data (not released yet)"
+ },
+ "3fd52ef15449ebe1bb5ee526|0.50.0": {
+  "at": "2026-11-12T08:52:42+07:00",
+  "n": 1,
+  "note": "keyfix_refused (MBOX, sdk 29) on 0.50.0: known yes, others 0, a11y 0, add-on running: same firmware signature as KOBRA/Z1/G-Two; waiting for 8f344ac1's rs/bound/crashed data (not released yet)"
  },
  "41dd31f77cb49ce98c2242e0|0.28.0": {
   "at": "2026-10-27T09:37:26+07:00",
@@ -1180,24 +1185,39 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "4664ee61b8bdc5497e1638b0|0.32.1": {
-  "at": "2026-11-05T10:40:16+07:00",
+  "at": "2026-11-12T08:52:42+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "user state, handled: TCL Smart TV Pro, Allow question not answered (crashwatch: 6 installs on this model, was 3); TV Setup points to Wireless debugging after it (828f06d1 path). If it keeps rising, look at one TCL live (support code) to see whether the prompt shows at all"
  },
  "4664ee61b8bdc5497e1638b0|0.35.0": {
-  "at": "2026-11-05T10:40:16+07:00",
+  "at": "2026-11-12T08:52:42+07:00",
   "n": 2,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "user state, handled: TCL Smart TV Pro, Allow question not answered (crashwatch: 6 installs on this model, was 3); TV Setup points to Wireless debugging after it (828f06d1 path). If it keeps rising, look at one TCL live (support code) to see whether the prompt shows at all"
  },
  "4664ee61b8bdc5497e1638b0|0.37.0": {
-  "at": "2026-11-05T10:40:16+07:00",
+  "at": "2026-11-12T08:52:42+07:00",
   "n": 2,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "user state, handled: TCL Smart TV Pro, Allow question not answered (crashwatch: 6 installs on this model, was 3); TV Setup points to Wireless debugging after it (828f06d1 path). If it keeps rising, look at one TCL live (support code) to see whether the prompt shows at all"
+ },
+ "4664ee61b8bdc5497e1638b0|0.38.4": {
+  "at": "2026-11-12T08:52:42+07:00",
+  "n": 1,
+  "note": "user state, handled: TCL Smart TV Pro, Allow question not answered (crashwatch: 6 installs on this model, was 3); TV Setup points to Wireless debugging after it (828f06d1 path). If it keeps rising, look at one TCL live (support code) to see whether the prompt shows at all"
  },
  "4664ee61b8bdc5497e1638b0|0.42.0": {
-  "at": "2026-11-05T10:40:16+07:00",
+  "at": "2026-11-12T08:52:42+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "user state, handled: TCL Smart TV Pro, Allow question not answered (crashwatch: 6 installs on this model, was 3); TV Setup points to Wireless debugging after it (828f06d1 path). If it keeps rising, look at one TCL live (support code) to see whether the prompt shows at all"
+ },
+ "4664ee61b8bdc5497e1638b0|0.49.0": {
+  "at": "2026-11-12T08:52:42+07:00",
+  "n": 1,
+  "note": "user state, handled: TCL Smart TV Pro, Allow question not answered (crashwatch: 6 installs on this model, was 3); TV Setup points to Wireless debugging after it (828f06d1 path). If it keeps rising, look at one TCL live (support code) to see whether the prompt shows at all"
+ },
+ "4664ee61b8bdc5497e1638b0|0.50.0": {
+  "at": "2026-11-12T08:52:42+07:00",
+  "n": 1,
+  "note": "user state, handled: TCL Smart TV Pro, Allow question not answered (crashwatch: 6 installs on this model, was 3); TV Setup points to Wireless debugging after it (828f06d1 path). If it keeps rising, look at one TCL live (support code) to see whether the prompt shows at all"
  },
  "46a201947cd09f30b640db42|0.32.7": {
   "at": "2026-10-30T09:08:10+07:00",
