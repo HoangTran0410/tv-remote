@@ -2980,6 +2980,7 @@
  "launcher.why_cast": "On a Chromecast or Google TV Streamer the new home screen needs the first-run setup app turned off, and casting from a phone then fails with \"Untrusted device\". The TV keeps its own home screen.",
  "launcher.why_zte": "This ZTE box resets itself to factory settings when its own home screen is off. The TV keeps its own home screen.",
  "launcher.why_users": "This TV has several profiles: with its home screen off, it crashes and resets itself. The TV keeps its own home screen.",
+ "launcher.why_mitv": "On this Xiaomi TV, turning its home screen off makes the volume keys blank the screen. The TV keeps its own home screen.",
  "launcher.key_wifi": "Home opens TV Home through TV Setup. For a full change: forget this Wi-Fi (Settings → Network), join it again, run Optimize TV again.",
  "launcher.why_board": "MOKA boards (Kalley, PRISM+) re-enable their setup app each boot: a new home screen would stick on the logo.",
  "launcher.why_boot": "This TV has no fallback home screen at startup: a new home screen could leave a black screen. The TV keeps its own.",

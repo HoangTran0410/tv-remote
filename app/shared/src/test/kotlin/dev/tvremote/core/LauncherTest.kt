@@ -31,6 +31,7 @@ class LauncherTest {
         var chosen: String? = null
         var focus: String? = null                                      // what the Home key really opens, when not the home (a Google TV Streamer)
         var maker = "Google\nGoogle"
+        var sdk = "33"                                                 // ro.build.version.sdk
         var users = "Users:\n\tUserInfo{0:Owner:c13} running"           // pm list users
         var bootAware: String? = null                                  // dumpsys's count of DIRECT_BOOT_AWARE; null: the TV says nothing
         var rec = ""
@@ -62,6 +63,7 @@ class LauncherTest {
                 cmd.startsWith("logcat -b crash") -> crash
                 cmd == LauncherSwap.WIFI_OWNERS -> wifi
                 cmd == "getprop ro.product.device" -> device
+                cmd == "getprop ro.build.version.sdk" -> sdk
                 cmd == "pm list users" -> users
                 cmd.startsWith("pm path ") -> cmd.removePrefix("pm path ").substringBefore(' ').let { if (it in installed) "package:/system_ext/app/$it.apk" else "" }
                 cmd.startsWith("dumpsys package ${RulesClient.SETUP}") -> "    versionName=$setup"
@@ -226,6 +228,16 @@ class LauncherTest {
         assertTrue(two.said.none { it.startsWith("pm disable") })
         keyWay(two, s, "users")
         assertEquals(2, LauncherSwap.users("Users:\n\tUserInfo{0:Owner:c13} running\n\tUserInfo{10:new_user:410}"))
+    }
+
+    @Test fun aXiaomiOnAndroid14KeepsPatchWallOnForItsVolumeKeys() {   // MiTvSystemUI reads PatchWall per volume press: off = a crash, a blank screen
+        val old = Tv().apply { installed += LauncherSwap.MI_HOME; homes[LauncherSwap.MI_HOME] = 2 }
+        assertTrue(LauncherSwap({ old.sh(it) }).take("com.new.home"))
+        assertTrue(LauncherSwap.MI_HOME in old.disabled)               // Android 13 and older: the swap is fine
+        val tv = Tv().apply { installed += LauncherSwap.MI_HOME; homes[LauncherSwap.MI_HOME] = 2; sdk = "34" }; val s = LauncherSwap({ tv.sh(it) })
+        assertTrue(s.take("com.new.home", 30))
+        assertTrue(tv.said.none { it.startsWith("pm disable") })
+        keyWay(tv, s, "mitv")
     }
 
     @Test fun aChromecastSentByAnOlderVersionWithNoRecordStillLetsHomePass() {   // 0.32.1 and older kept no record of the key way

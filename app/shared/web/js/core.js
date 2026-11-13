@@ -347,9 +347,9 @@ const FRIENDLY = [
   [/scrcpy-server did not start/i, T('core.fr_scrcpy_start')],
   [/^net: /, T('core.fr_net_failed')],                            // last: a download or the site failed (Errors.fromInternet), none of the above
 ];
-const LAUNCH_KEPT = ['wifi', 'wifi_unknown', 'cast', 'zte', 'users', 'board', 'boot', 'keys'];   // refused before anything changed (LauncherSwap.REFUSED)
+const LAUNCH_KEPT = ['wifi', 'wifi_unknown', 'cast', 'zte', 'users', 'mitv', 'board', 'boot', 'keys'];   // refused before anything changed (LauncherSwap.REFUSED)
 const LAUNCH_WENT = { crash: 'launcher.why_crash', home: 'launcher.why_home', timeout: 'launcher.why_timeout', interrupted: 'launcher.why_interrupted', user: 'launcher.why_user',
-  wifi: 'launcher.why_wifi', wifi_unknown: 'launcher.why_wifi_unknown', cast: 'launcher.why_cast', zte: 'launcher.why_zte', users: 'launcher.why_users', board: 'launcher.why_board', boot: 'launcher.why_boot', keys: 'launcher.why_keys' };
+  wifi: 'launcher.why_wifi', wifi_unknown: 'launcher.why_wifi_unknown', cast: 'launcher.why_cast', zte: 'launcher.why_zte', users: 'launcher.why_users', mitv: 'launcher.why_mitv', board: 'launcher.why_board', boot: 'launcher.why_boot', keys: 'launcher.why_keys' };
 const ANDROID = { 21: '5.0', 22: '5.1', 23: '6', 24: '7', 25: '7.1', 26: '8', 27: '8.1', 28: '9', 29: '10', 30: '11', 31: '12', 32: '12L', 33: '13', 34: '14', 35: '15', 36: '16' };
 const androidName = (sdk) => ANDROID[sdk] || 'SDK ' + sdk;
 const friendly = (m) => { m = String(m || ''); const f = FRIENDLY.find(([re]) => re.test(m)); return !f ? m : typeof f[1] === 'function' ? f[1](m.match(f[0])) : f[1]; };
