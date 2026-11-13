@@ -35,4 +35,24 @@ class StatsCountTest {
         assertEquals(0L, Stats.lastWake(emptyList()))
         assertEquals(7000L, Stats.lastWake(listOf(ev(Stats.SCREEN_INTERACTIVE, "", 2000), ev(Stats.SCREEN_INTERACTIVE, "", 7000), ev(fg, "a", 8000))))
     }
+
+    private fun days(vararg k: String) = org.json.JSONObject().also { o -> k.forEach { o.put(it, org.json.JSONObject().put("a", 60)) } }
+
+    @Test fun pruneDropsFutureAndOddKeys() {                       // a box that wrote 2027-04-09 before the network set its clock
+        val o = days("2026-11-10", "2026-11-12", "2027-04-09", "1970-01-01x", "junk")
+        Stats.prune(o, "2026-11-12", "2026-08-14")
+        assertEquals(setOf("2026-11-10", "2026-11-12"), o.keys().asSequence().toSet())
+    }
+
+    @Test fun pruneKeepsRealDaysWhenTheClockIsAhead() {            // today = 2027-04-09: "90 days ago" is after every real day, none may go
+        val o = days("2026-11-10", "2026-11-12", "2027-04-09")
+        Stats.prune(o, "2027-04-09", "2027-01-09")
+        assertEquals(3, o.length())
+    }
+
+    @Test fun pruneCutsOldDaysOnlyPastNinetyFive() {
+        val o = org.json.JSONObject(); for (i in 1..100) o.put("2026-%02d-%02d".format(1 + (i - 1) / 28, 1 + (i - 1) % 28), org.json.JSONObject())
+        Stats.prune(o, "2026-12-31", "2026-02-01")
+        assertEquals(72, o.length())                                // 28 days of January went, the 72 newer stay
+    }
 }
