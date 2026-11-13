@@ -1162,6 +1162,8 @@ Lệnh:
 /say Ăn cơm nhé  /speak Ăn cơm nhé  /shot  /remote  /help
 ```
 
+**/help** có nút cho việc hay dùng. Lệnh chậm hiện “đang gõ…”; TV im 20 giây hay lỗi thì bot báo.
+
 Chat mới ghép chỉ có quyền **Chỉ remote**; chủ TV nâng lên **Toàn quyền** trong danh sách chat. **/speak** giống /say nhưng TV còn đọc to lời nhắn (cần giọng đọc trên TV).
 
 YouTube, Netflix và các app phim có bản quyền chặn chụp màn hình: **/shot** ra ảnh đen, kèm một câu giải thích.

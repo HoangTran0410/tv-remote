@@ -710,4 +710,37 @@ class TelegramTest {
         assertTrue(out.contains("Netflix") && out.contains("02/11") && !out.contains("z.z") && !out.contains("q.q"))
         assertEquals(null, bot.weekText(JSONObject("""{"2027-04-09":{"z.z":99999}}"""), days, null))     // a jumped clock's day never counts
     }
+
+    // ---------------------------------------------------------------- menu, "typing…", faults
+    @Test fun helpAndAPlainSentenceCarryTheMenuAndAMenuButtonRunsItsCommand() {
+        pairChat()
+        bot.onUpdate(msg(42, "/help"))
+        val menu = api.named("sendMessage").last().getJSONObject("reply_markup").toString()
+        for (c in Telegram.MENU) assertTrue(c, menu.contains("\"m:$c\""))
+        now += 5000
+        bot.onUpdate(msg(42, "hello", 2))
+        assertTrue(api.named("sendMessage").last().has("reply_markup"))
+        now += 5000
+        bot.onUpdate(JSONObject("""{"update_id":3,"callback_query":{"id":"cb9","data":"m:status","message":{"chat":{"id":42}}}}"""))
+        assertEquals("cb9", api.named("answerCallbackQuery").last().optString("callback_query_id"))
+        assertTrue(api.sent(42).last().contains("Netflix"))              // /status ran: the app on screen
+        now += 5000
+        bot.onUpdate(JSONObject("""{"update_id":4,"callback_query":{"id":"cb10","data":"m:pair","message":{"chat":{"id":42}}}}"""))
+        assertTrue(seen.none { it.path.contains("pair") })               // only the menu's own commands
+    }
+
+    @Test fun aSlowCommandShowsTypingFirstAndAFaultIsToldNotSwallowed() {
+        pairChat()
+        bot.onUpdate(msg(42, "/off"))
+        val i = api.calls.indexOfFirst { it.first == "sendChatAction" }
+        assertTrue(i >= 0 && i < api.calls.indexOfLast { it.first == "sendMessage" })
+        assertEquals("typing", api.calls[i].second.optString("action"))
+        now += 5000; val before = api.named("sendChatAction").size
+        bot.onUpdate(msg(42, "/help", 2))
+        assertEquals(before, api.named("sendChatAction").size)          // instant ones: no "typing…"
+        now += 5000
+        answer = { throw IllegalStateException("boom") }
+        bot.onUpdate(msg(42, "/on", 3))
+        assertEquals(Words.get("en", "tg.failed"), api.sent(42).last())
+    }
 }

@@ -228,15 +228,40 @@ class Telegram(
         val secret = cmd.name in HIDDEN                                  // what was typed or said is the family's, not the log's
         WireLog.all.add("←", "telegram ${known.name}: /${cmd.name} ${if (secret) "…(${cmd.arg.length})" else cmd.arg}".trim())
         outcome.set("ok")
-        try { command(known, cmd, m.optJSONObject("from")?.optString("language_code") ?: "") } catch (e: Exception) { outcome.set("error"); throw e }
+        run(known, cmd, m.optJSONObject("from")?.optString("language_code") ?: "")
         history.add(clock(), known, "/" + cmd.name + (if (secret || cmd.arg.isEmpty()) "" else " " + cmd.arg.take(40)), outcome.get())
     }
 
     /** A plain sentence in a private chat that is paired: the way to the commands. Groups and strangers: nothing. */
     private fun onText(id: Long, chat: JSONObject) {
         if (chat.optString("type") != "private" || chats().none { it.id == id } || !limit.ok(id, clock())) return
-        send(id, w("telegram.plain"))
+        send(id, w("telegram.plain"), menu())
     }
+
+    /**
+     * [cmd] with the chat kept informed: "typing…" / "sending a photo…" first for the slow ones (ADB, a screenshot), one "still
+     * waiting" line when the TV has not answered in [SLOW_MS], and a plain "that did not work" for a fault instead of silence.
+     * The command itself is never cut: "/off" that finishes late still turns the TV off and says so.
+     */
+    private fun run(c: Chat, cmd: Cmd, lang: String = "") {
+        if (cmd.name in SLOW) try {
+            api.call(store.token, "sendChatAction", JSONObject().put("chat_id", c.id).put("action", if (cmd.name == "shot") "upload_photo" else "typing"), 5)
+        } catch (e: IOException) { }
+        val late = watchdog.schedule({ send(c.id, w("tg.slow")) }, SLOW_MS, java.util.concurrent.TimeUnit.MILLISECONDS)
+        try { command(c, cmd, lang) }
+        catch (e: Exception) {
+            outcome.set("error")
+            WireLog.all.add("·", "telegram /${cmd.name}: " + clean(e.message ?: e.javaClass.simpleName))
+            send(c.id, w("tg.failed"))
+        } finally { late.cancel(false) }
+    }
+
+    /** The buttons under /help, /start and a plain sentence: the everyday commands without typing them. */
+    private fun menu() = keyboard(grid(MENU.map { button(w(MENU_WORDS.getValue(it)), "m:$it") }, 3))
+    private val MENU_WORDS = mapOf("remote" to "tg.menu_remote", "status" to "tg.menu_status", "now" to "tg.menu_now",
+        "apps" to "tg.menu_apps", "scenes" to "tg.menu_scenes", "off" to "tg.menu_off")
+
+    private val watchdog by lazy { java.util.concurrent.Executors.newSingleThreadScheduledExecutor { r -> Thread(r, "telegram-slow").apply { isDaemon = true } } }
 
     private fun onTap(cb: JSONObject) {
         val data = cb.optString("data")
@@ -248,7 +273,9 @@ class Telegram(
         val rest = data.substringAfter(':', "")
         WireLog.all.add("←", "telegram ${known.name}: tap ${data.take(40)}")
         outcome.set("ok")
-        try { tap(known, data, rest, qid, msg, id) } finally { history.add(clock(), known, "tap " + data.substringBefore(':') + (if (data.startsWith("k:") || data.startsWith("u:")) " $rest" else ""), outcome.get()) }
+        try { tap(known, data, rest, qid, msg, id) }
+        catch (e: Exception) { outcome.set("error"); WireLog.all.add("·", "telegram tap: " + clean(e.message ?: e.javaClass.simpleName)); send(id, w("tg.failed")) }
+        finally { history.add(clock(), known, "tap " + data.substringBefore(':') + (if (data.startsWith("k:") || data.startsWith("u:")) " $rest" else ""), outcome.get()) }
     }
 
     private fun tap(known: Chat, data: String, rest: String, qid: String, msg: JSONObject?, id: Long) {
@@ -277,6 +304,7 @@ class Telegram(
             }
             "r" -> { answer(qid, ""); change(known, rest) }
             "z" -> { answer(qid, ""); undo(known, rest) }
+            "m" -> { answer(qid, ""); if (rest in MENU) run(known, Cmd(rest, "")) }   // a button of the /help menu
             "u" -> grant(known, rest, qid, msg, id)                       // a parent's answer to "ask a parent" (kids mode)
             else -> answer(qid, "")
         }
@@ -317,7 +345,7 @@ class Telegram(
     private fun command(c: Chat, cmd: Cmd, lang: String = "") {    // [lang]: the sender's Telegram language, for /speak's voice
         val a = cmd.arg
         when (cmd.name) {
-            "start", "help" -> send(c.id, help(c.scope))
+            "start", "help" -> send(c.id, help(c.scope), menu())
             "status" -> send(c.id, statusText())
             "off" -> send(c.id, done(perform(c, "power", "off"), c, w("telegram.off_done")))
             "on" -> send(c.id, done(perform(c, "power", "on"), c, w("telegram.on_done")))
@@ -951,6 +979,11 @@ class Telegram(
 
     companion object {
         const val REMOTE = "remote"
+        /** The /help menu's buttons, each a command with no argument. */
+        val MENU = listOf("remote", "status", "now", "apps", "scenes", "off")
+        /** Commands that wait on the TV (ADB, a screenshot, speech): the chat shows "typing…" meanwhile. */
+        val SLOW = setOf("off", "on", "shot", "now", "say", "speak", "channel", "type", "open", "scene", "apps", "usage", "week")
+        const val SLOW_MS = 20_000L
         const val FULL = "full"
         const val VIEW = "view"                         // /status and /shot only; the router refuses the rest
         private val SCOPES = listOf(FULL, REMOTE, VIEW)

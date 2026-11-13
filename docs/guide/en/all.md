@@ -1162,6 +1162,8 @@ Commands:
 /say Ăn cơm nhé  /speak Ăn cơm nhé  /shot  /remote  /help
 ```
 
+**/help** has buttons for everyday things. Slow commands show “typing…”; a TV silent for 20 s or a failure is told.
+
 A new chat gets **Remote only** rights; the owner can raise it to **Full access** in the chat list. **/speak** is /say, and the TV also reads the message aloud (it needs a voice engine on the TV).
 
 YouTube, Netflix and other apps with protected video block screenshots: **/shot** sends a black picture, with a line saying why.
