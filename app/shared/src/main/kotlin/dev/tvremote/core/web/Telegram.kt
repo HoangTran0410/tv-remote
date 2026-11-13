@@ -168,6 +168,7 @@ class Telegram(
             status = "ok"; lastError = ""; backoff = 0; lastOk = clock()
             val got = r.body.optJSONArray("result") ?: JSONArray()
             quiet = got.length() == 0
+            if (stopping || !store.enabled || store.token.isEmpty()) return -1   // switched off while the poll was out: its answers are not acted on
             handle(got)
             return 0
         } catch (e: IOException) {

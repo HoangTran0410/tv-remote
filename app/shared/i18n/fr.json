@@ -2765,7 +2765,6 @@
   "keys_only.could_not_pair_with": "Impossible d’associer la TV : {error}",
   "keys_only.cannot_reach_the_tv": "Impossible de joindre la TV à cette adresse. Est-elle allumée ? Le téléphone doit être sur le Wi-Fi de la TV, ou les deux doivent avoir Tailscale (utilisez alors l’adresse IP 100.x de la TV).",
   "keys_only.if_the_tv_is": "Si la TV est éteinte, appuyez sur le bouton marche/arrêt à côté pour la réveiller.",
-  "keys_only.error": "Erreur : {error}",
   "listen.only_the_phone": "Téléphone seulement",
   "listen.tv_and_phone": "TV et téléphone",
   "managing.could_not_open_the": "Impossible d’ouvrir la page de gestion : {error}",

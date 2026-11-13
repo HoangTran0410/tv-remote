@@ -174,7 +174,8 @@ class Tv(
             a.open("exec:screencap -p").use {
                 while (true) {
                     val n = it.read(buf, 0, buf.size, 15000)
-                    if (n <= 0) break
+                    if (n < 0) break
+                    if (n == 0) throw IOException("screencap: no data for 15 s")   // a stalled TV is not the end of the picture
                     out.write(buf, 0, n)
                 }
             }

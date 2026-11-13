@@ -150,6 +150,7 @@ internal fun MainActivity.watchAdb(a: Atv, ip: String) {
     Thread {
         while (basic === a && !isFinishing) {
             Thread.sleep(4000)
+            if (!foreground) continue                              // no probing (Wi-Fi radio awake) while the app is away
             if (basic === a && adbPortUp(ip, 1200) > 0) {
                 ui.post {
                     if (basic !== a || isFinishing) return@post
@@ -198,7 +199,8 @@ internal fun MainActivity.pair(ip: String) {
                         ui.post { startBasic(ip, true) }
                     } catch (e: Exception) {
                         p.close()
-                        ui.post { message(T("keys_only.wrong_code_tap_the"), true) }
+                        val net = e is java.io.IOException && e.message != "pairing refused" && e.message != "the TV closed the pairing"   // a dropped link is not a wrong code
+                        ui.post { message(if (net) explain(e.message) else T("keys_only.wrong_code_tap_the"), true) }
                     }
                 }.start()
             }
@@ -215,5 +217,5 @@ internal fun MainActivity.explain(err: String?): String {
     if (e.contains("timed out") || e.contains("timeout") || e.contains("unreachable") || e.contains("no route") || e.contains("failed to connect"))
         return T("keys_only.cannot_reach_the_tv") + "\n\n" +
             T("keys_only.if_the_tv_is") + "\n\n(" + err + ")"
-    return T("keys_only.error", "error" to err)
+    return dev.tvremote.core.Errors.say(java.io.IOException(err), dev.tvremote.core.Words.lang)
 }

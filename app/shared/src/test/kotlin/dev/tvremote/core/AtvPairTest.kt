@@ -2,7 +2,9 @@ package dev.tvremote.core
 
 import dev.tvremote.core.remote.Atv
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.math.BigInteger
 import java.security.KeyFactory
@@ -29,5 +31,17 @@ class AtvPairTest {
 
     @Test fun ourKeyComesFirst() {
         assertNull(Atv.secret(theirs, mine, "021A2B"))
+    }
+
+    @Test fun onlyACertificateAlertMeansNotPaired() {
+        assertTrue(Atv.certRejected(javax.net.ssl.SSLHandshakeException("Received fatal alert: certificate_unknown")))
+        assertFalse(Atv.certRejected(javax.net.ssl.SSLException("Connection reset")))
+        assertFalse(Atv.certRejected(javax.net.ssl.SSLException("Remote host terminated the handshake")))
+    }
+
+    @Test fun keysThatWaitedTooLongAreDropped() {
+        assertTrue(Atv.isStale(0, 2_000_000_000L, Atv.KEY_STALE_MS))
+        assertFalse(Atv.isStale(0, 1_000_000_000L, Atv.KEY_STALE_MS))
+        assertFalse(Atv.isStale(0, 60_000_000_000L, 0))               // 0: never (voice, text, links)
     }
 }

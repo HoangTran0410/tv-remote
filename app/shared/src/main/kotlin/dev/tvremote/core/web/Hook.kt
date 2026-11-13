@@ -186,8 +186,13 @@ class Hook(
 
     private fun power(via: (HttpServer.Request) -> HttpServer.Response, v: String): HttpServer.Response = when (v.lowercase(Locale.ROOT)) {
         "on" -> {                                                  // Wake-on-LAN for a TV in deep standby, then the key for one that only sleeps
-            if (routes.wake != null) try { send(via, routes.wake, JSONObject()) } catch (e: Exception) { }
-            send(via, "/api/key", JSONObject().put("key", "WAKE"))
+            if (routes.wake != null) {                             // that route waits up to 60 s for the TV: Home Assistant / Shortcuts would time out
+                Thread({
+                    try { send(via, routes.wake, JSONObject()) } catch (e: Exception) { }
+                    try { send(via, "/api/key", JSONObject().put("key", "WAKE")) } catch (e: Exception) { }
+                }, "hook-wake").apply { isDaemon = true }.start()
+                HttpServer.Response.json(JSONObject().put("ok", true).put("waking", true))
+            } else send(via, "/api/key", JSONObject().put("key", "WAKE"))
         }
         "off" -> send(via, "/api/key", JSONObject().put("key", "SLEEP"))
         "toggle" -> send(via, "/api/key", JSONObject().put("key", "POWER"))

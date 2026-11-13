@@ -40,7 +40,7 @@ class TelegramHttp(private val base: String = "https://api.telegram.org") : Tele
             c.doOutput = true
             c.setRequestProperty("Content-Type", type)
             c.setFixedLengthStreamingMode(body.size)
-            live = c
+            if (method == "getUpdates") live = c                    // only the long poll is cut by abort(): a send from another thread (an alert) must finish
             c.outputStream.use { it.write(body) }
             val code = c.responseCode
             val text = (if (code in 200..299) c.inputStream else c.errorStream)?.use { it.readBytes().toString(Charsets.UTF_8) } ?: ""

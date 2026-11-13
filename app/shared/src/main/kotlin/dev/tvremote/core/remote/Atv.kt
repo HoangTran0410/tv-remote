@@ -119,8 +119,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
      * the connection ends for good: a TV that drops it (some do after a link they cannot open) is simply dialled again.
      */
     override fun connect(onClosed: () -> Unit) {
-        var s = try { open() } catch (e: Exception) { WireLog.all.add("·", "remote $host $e"); throw e }
-            ?: run { WireLog.all.add("·", "remote $host not paired"); throw NotPaired() }
+        var s = try { open() } catch (e: Exception) { WireLog.all.add("·", "remote $host " + (if (e is NotPaired) "not paired" else e.toString())); throw e }
         WireLog.all.add("·", "remote $host connected: $vendor $model $version")
         Thread({
             while (true) {
@@ -142,19 +141,34 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
         }, "atv").apply { isDaemon = true }.start()
     }
 
-    /** Dials and answers the TV's greeting. null when the TV lets us in and then drops us without a word: it does not know this phone. */
-    private fun open(): SSLSocket? {
-        val s = try { dial(6466) } catch (e: javax.net.ssl.SSLException) { return null }
+    /**
+     * Dials and answers the TV's greeting. [NotPaired] only when the TV rejects our certificate or lets us in and drops us before
+     * a single word: it does not know this phone. Any other drop (a weak link, a TV part-way through starting) is an
+     * [java.io.IOException]: callers dial again.
+     */
+    private fun open(): SSLSocket {
+        val s = try { dial(6466) } catch (e: javax.net.ssl.SSLException) {
+            if (certRejected(e)) throw NotPaired()
+            throw java.io.IOException("TLS: " + e.message, e)
+        }
         sock = s
         s.soTimeout = 8000
+        var frames = 0
         try {
-            while (!live) handle(s, frame(s.inputStream) ?: break)
+            while (!live) { val f = frame(s.inputStream) ?: break; frames++; handle(s, f) }
         } catch (slow: java.net.SocketTimeoutException) {             // a weak link is not a reason to ask for a new code
             try { s.close() } catch (ignored: Exception) { }
             throw java.io.IOException("timed out")
-        } catch (ignored: Exception) {
+        } catch (e: Exception) {
+            try { s.close() } catch (ignored: Exception) { }
+            if (e is javax.net.ssl.SSLException && certRejected(e)) throw NotPaired()
+            throw if (e is java.io.IOException) e else java.io.IOException(e)
         }
-        if (!live) { try { s.close() } catch (ignored: Exception) { }; return null }
+        if (!live) {
+            try { s.close() } catch (ignored: Exception) { }
+            if (frames == 0) throw NotPaired()                        // let in, then dropped without a word: the TV does not know this phone
+            throw java.io.IOException("the TV dropped the connection before it was ready")
+        }
         s.soTimeout = SILENT_MS                                       // the TV pings every 5 s: silence = a pulled plug or a lost Wi-Fi with no FIN; connect()'s reader dials again
         return s
     }
@@ -205,7 +219,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
     /** [direction]: [DOWN] and [UP] for a held key, [SHORT] for a tap. */
     override fun key(code: Int, direction: Int) {
         WireLog.all.add("→", "remote $host key $code " + (if (direction == SHORT) "tap" else if (direction == DOWN) "down" else "up"))
-        post(Pb().msg(10, Pb().int(1, code.toLong()).int(2, direction.toLong()).bytes()).bytes())
+        post(Pb().msg(10, Pb().int(1, code.toLong()).int(2, direction.toLong()).bytes()).bytes(), KEY_STALE_MS)
     }
 
     /**
@@ -283,12 +297,15 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
         post(Pb().msg(90, Pb().str(1, full).bytes()).bytes())
     }
 
-    private fun post(message: ByteArray) {
+    /** [staleMs] > 0: dropped if it waited longer than that (keys: 8 queued VOL_UP must not all fire when the link is back). */
+    private fun post(message: ByteArray, staleMs: Long = 0) {
         if (closed || sock == null) return
+        val queued = System.nanoTime()
         out.execute {
             for (i in 0 until 30) { if (live || closed) break; try { Thread.sleep(200) } catch (e: InterruptedException) { return@execute } }   // being dialled again
             val s = sock
             if (!live || s == null) return@execute
+            if (isStale(queued, System.nanoTime(), staleMs)) return@execute
             try { send(s, message) } catch (e: Exception) { try { s.close() } catch (ignored: Exception) { } }
         }
     }
@@ -369,6 +386,16 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
     }
 
     companion object {
+        /** Keys older than this when the link is back are dropped, not fired all at once (see [post]) */
+        internal const val KEY_STALE_MS = 1500L
+
+        internal fun isStale(queuedNs: Long, nowNs: Long, staleMs: Long) = staleMs > 0 && (nowNs - queuedNs) / 1_000_000 > staleMs
+
+        /** The TV's TLS alert that it does not know our certificate, as Java and Conscrypt word it: the only drop that means "not paired". */
+        internal fun certRejected(e: Throwable): Boolean =
+            Regex("certificate_unknown|bad_certificate|unknown_ca|certificate_required|unknown ca|certificate unknown", RegexOption.IGNORE_CASE)
+                .containsMatchIn(generateSequence(e) { it.cause }.joinToString(" ") { it.message ?: "" })
+
         /** One message: its length, then that many bytes. null at the end of the stream. */
         internal fun frame(i: InputStream): ByteArray? {
             var len = 0

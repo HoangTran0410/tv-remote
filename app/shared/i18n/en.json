@@ -2759,7 +2759,6 @@
  "keys_only.could_not_pair_with": "Could not pair with the TV: {error}",
  "keys_only.cannot_reach_the_tv": "Cannot reach the TV at this address. Is it on? The phone must be on the TV’s Wi-Fi, or both must have Tailscale on (then use the TV’s 100.x IP).",
  "keys_only.if_the_tv_is": "If the TV is off, tap the power button next to it to wake it.",
- "keys_only.error": "Error: {error}",
  "listen.only_the_phone": "Only the phone",
  "listen.tv_and_phone": "TV and phone",
  "managing.could_not_open_the": "Could not open the manage page: {error}",

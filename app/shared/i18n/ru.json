@@ -2820,7 +2820,6 @@
  "keys_only.could_not_pair_with": "Не удалось сопрячь с ТВ: {error}",
  "keys_only.cannot_reach_the_tv": "ТВ по этому адресу недоступен. Включён? Телефон в Wi‑Fi ТВ, или на обоих включён Tailscale (тогда IP ТВ 100.x).",
  "keys_only.if_the_tv_is": "Если ТВ выключен, нажмите кнопку питания рядом, чтобы разбудить.",
- "keys_only.error": "Ошибка: {error}",
  "listen.only_the_phone": "Только телефон",
  "listen.tv_and_phone": "ТВ и телефон",
  "managing.could_not_open_the": "Не удалось открыть страницу управления: {error}",

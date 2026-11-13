@@ -2663,7 +2663,6 @@
  "keys_only.could_not_pair_with": "Không ghép được với TV: {error}",
  "keys_only.cannot_reach_the_tv": "Không tới được TV ở địa chỉ này. TV có đang bật không? Điện thoại phải cùng Wi-Fi với TV, hoặc cả hai cùng bật Tailscale (khi đó dùng IP 100.x của TV).",
  "keys_only.if_the_tv_is": "Nếu TV đang tắt, bấm nút nguồn cạnh tên TV để bật TV.",
- "keys_only.error": "Lỗi: {error}",
  "listen.only_the_phone": "Chỉ điện thoại",
  "listen.tv_and_phone": "Cả TV và điện thoại",
  "managing.could_not_open_the": "Không mở được trang quản lý: {error}",

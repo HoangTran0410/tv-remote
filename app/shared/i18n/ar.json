@@ -2894,7 +2894,6 @@
  "keys_only.could_not_pair_with": "تعذّر الربط مع التلفزيون: {error}",
  "keys_only.cannot_reach_the_tv": "تعذّر الوصول إلى التلفزيون على هذا العنوان. هل هو شغّال؟ يجب أن يكون الجوال على Wi-Fi التلفزيون، أو أن يكون Tailscale شغّالًا على الاثنين (واستخدم حينها IP التلفزيون الذي يبدأ بـ 100.x).",
  "keys_only.if_the_tv_is": "إذا كان التلفزيون مطفأً، اضغط زر التشغيل بجانبه لتشغيله.",
- "keys_only.error": "خطأ: {error}",
  "listen.only_the_phone": "الجوال فقط",
  "listen.tv_and_phone": "التلفزيون والجوال",
  "managing.could_not_open_the": "تعذّر فتح صفحة الإدارة: {error}",
