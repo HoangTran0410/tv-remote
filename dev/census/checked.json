@@ -1780,9 +1780,14 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "657718557b80576c615cdf0a|0.50.0": {
-  "at": "2026-11-12T13:56:10+07:00",
+  "at": "2026-11-13T11:38:58+07:00",
   "n": 1,
-  "note": "keyfix_refused (Smart TV, sdk 34, add-on installed by shell) on 0.50.0: sdk 34 like ADT-3/SMOON_300, 8f344ac1 gives the add-on its restricted-settings appop back before each look; not released yet, recheck after"
+  "note": "keyfix_refused on a TCL G10 (sdk 31): add-on stopped, TCL's cleaner force-stops it and Android drops the a11y entry (like JmGO 0bea8243); told on the clients since e9452995"
+ },
+ "657718557b80576c615cdf0a|0.51.0": {
+  "at": "2026-11-13T11:38:58+07:00",
+  "n": 2,
+  "note": "keyfix_refused on a TCL G10 (sdk 31): add-on stopped, TCL's cleaner force-stops it and Android drops the a11y entry (like JmGO 0bea8243); told on the clients since e9452995"
  },
  "657db7980ca8eda492ca97eb|0.29.0": {
   "at": "2026-10-28T14:05:41+07:00",
