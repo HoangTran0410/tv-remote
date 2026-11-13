@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Clearer names for Quick keys in every language: "Quick keys & power-on" for the card, "press a remote key to open an app" for what it does.
 - TV Setup, TV Home: on boxes that keep switching TV Setup's key filter off (many cheap Android 10 boxes), TV Home's Quick keys and the web page now say the keys work only on TV Home, instead of claiming they work in every app.
 
 ## 0.53.0 - 2026-11-12

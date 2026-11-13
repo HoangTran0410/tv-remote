@@ -18,6 +18,6 @@ Cần TV Setup trên TV và ADB đang bật. Các việc dưới đây tự ch�
 
 > 💡 TV không có ADB: add-on này cũng mở menu nguồn của hệ thống cho nút Tắt TV trên TV Home ([Cài đặt nhanh](home-control.md)).
 
-> 💡 Vài hộp Android 10 giá rẻ cứ tự tắt add-on. TV Setup thử 3 lần rồi thôi; Phím nhanh và trang web sẽ ghi: phím chỉ chạy ở TV Home.
+> 💡 Vài hộp TV giá rẻ cứ tự tắt add-on. TV Setup thử 3 lần rồi thôi; Phím nhanh và trang web sẽ ghi: phím chỉ chạy ở TV Home.
 
 > 💡 Bạn tự tắt add-on trong Cài đặt của TV (Hỗ trợ tiếp cận) thì nó được để tắt, TV Setup không bật lại.

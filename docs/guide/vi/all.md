@@ -509,9 +509,9 @@ Chọn nhiều hình rồi đặt **Đổi hình nền** (30 phút → mỗi l�
 | Trên TV Home | Là gì |
 | --- | --- |
 | Thanh trên cùng | Hai nút: **Mạng** (trạng thái) và **Cài đặt** = [Cài đặt nhanh](#home-control), nơi có Nguồn vào và các nút Tắt nguồn / Khởi động lại / Tắt màn hình / Chế độ chờ. |
-| Tùy chỉnh | Danh sách nhóm, OK để vào từng nhóm: **Chủ đề**, Hình nền, **Giao diện** (cả bố cục), Widget, **Màn chờ**, **Phím & khởi động**, **Hệ thống** (**Màn hình chính**, Ngôn ngữ). |
+| Tùy chỉnh | Danh sách nhóm, OK để vào từng nhóm: **Chủ đề**, Hình nền, **Giao diện** (cả bố cục), Widget, **Màn chờ**, **Phím nhanh & khi bật TV**, **Hệ thống** (**Màn hình chính**, Ngôn ngữ). |
 | Màn hình chính | Trong **Hệ thống**: mở bộ chọn launcher của TV Setup để đổi sang launcher khác (cần TV Setup) |
-| Phím & khởi động | Phím remote mở app, app tự mở khi bật TV |
+| Phím nhanh & khi bật TV | Phím remote mở app, app tự mở khi bật TV |
 
 ### Mẹo
 
@@ -731,7 +731,7 @@ Phím nhanh mở app ngay từ màn hình chính bằng một phím số hoặc 
 - Cùng ô đó có **Ứng dụng vừa dùng**: mở app đang chạy lúc tắt TV (mặc định tắt).
 - Live widget cũng gán được và hiện icon riêng. Có cả **Lệnh giọng nói**: mở micro của TV Remote (cần TV Setup 0.46.1).
 
-Tùy chỉnh → Phím & khởi động → **Phím Home trong app: hiện thanh app** (mặc định tắt).
+Tùy chỉnh → Phím nhanh & khi bật TV → **Phím Home trong app: hiện thanh app** (mặc định tắt).
 
 Home trong app mở thanh: Trang chủ, Dock, app gần đây. OK mở, Back đóng, Home lần nữa về TV Home. Cần TV Setup Keys.
 
@@ -739,7 +739,7 @@ Home trong app mở thanh: Trang chủ, Dock, app gần đây. OK mở, Back đ�
 
 Phím màu, phím số và nút đã hết tác dụng có thể mở app bạn chọn. Cần [TV Home](#home); muốn chạy ở mọi app thì cần thêm TV Setup.
 
-1. Trên TV: biểu tượng **⚙** góc trên → **Cài đặt nhanh** → **Tùy chỉnh** → **Phím & khởi động** → **Phím nhanh**. Điện thoại, máy tính: cùng tên, trong thẻ **Phím & khởi động**.
+1. Trên TV: biểu tượng **⚙** góc trên → **Cài đặt nhanh** → **Tùy chỉnh** → **Phím nhanh & khi bật TV** → **Phím nhanh**. Điện thoại, máy tính: cùng tên, trong thẻ **Phím nhanh & khi bật TV**.
 2. Chọn ô của một phím, rồi chọn app, lối tắt hoặc live widget. Lần đầu chọn, phím tự bật. Ngoài TV Home, TV hiện "TV Setup đã mở…" để biết không phải TV lỗi.
 3. Ô **Khi bật TV**: chọn một app, hoặc **Ứng dụng vừa dùng** (app đang chạy lúc tắt TV). Mở một lần mỗi lần bật, không mở nếu TV đã vào app khác. Chọn cái này thì cái kia tắt.
 
@@ -780,7 +780,7 @@ Cần TV Setup trên TV và ADB đang bật. Các việc dưới đây tự ch�
 
 > 💡 TV không có ADB: add-on này cũng mở menu nguồn của hệ thống cho nút Tắt TV trên TV Home ([Cài đặt nhanh](#home-control)).
 
-> 💡 Vài hộp Android 10 giá rẻ cứ tự tắt add-on. TV Setup thử 3 lần rồi thôi; Phím nhanh và trang web sẽ ghi: phím chỉ chạy ở TV Home.
+> 💡 Vài hộp TV giá rẻ cứ tự tắt add-on. TV Setup thử 3 lần rồi thôi; Phím nhanh và trang web sẽ ghi: phím chỉ chạy ở TV Home.
 
 > 💡 Bạn tự tắt add-on trong Cài đặt của TV (Hỗ trợ tiếp cận) thì nó được để tắt, TV Setup không bật lại.
 

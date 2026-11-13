@@ -509,9 +509,9 @@ Pick several; **Change background** rotates them.
 | On TV Home | What it is |
 | --- | --- |
 | Top bar | Two buttons: **Network** (status) and **Settings** = the [Quick settings](#home-control), which holds Inputs and Power off / Restart / Screen off / Standby. |
-| Customize | A list of groups, OK opens each: **Themes**, Background, **Look** (layout too), Widgets, **Screensaver**, **Keys & startup**, **System** (**Home screen**, Language). |
+| Customize | A list of groups, OK opens each: **Themes**, Background, **Look** (layout too), Widgets, **Screensaver**, **Quick keys & power-onup**, **System** (**Home screen**, Language). |
 | Home screen | In **System**: opens TV Setup's launcher picker to switch to another launcher (needs TV Setup) |
-| Keys & startup | Remote keys that open apps, an app at power-on |
+| Quick keys & power-onup | Remote keys that open apps, an app at power-on |
 
 ### Tips
 
@@ -731,7 +731,7 @@ Quick keys open an app from the home screen with one number or color key on the 
 - The same slot offers **Last app used**: the app open when the TV turned off (off by default).
 - Live widgets can be assigned too and show their own icon. There is also **Voice command**: opens TV Remote's microphone (needs TV Setup 0.46.1).
 
-Customize → Keys & startup → **Home key in an app: show the app bar** (off by default).
+Customize → Quick keys & power-onup → **Home key in an app: show the app bar** (off by default).
 
 Home in an app opens a bar: Home, Dock, recent apps. OK opens, Back closes, Home again goes to TV Home. Needs TV Setup Keys.
 
@@ -739,7 +739,7 @@ Home in an app opens a bar: Home, Dock, recent apps. OK opens, Back closes, Home
 
 Color keys, number keys and buttons that no longer do anything can open the app you choose. It needs [TV Home](#home); to work in every app it also needs TV Setup.
 
-1. On the TV: the **⚙** icon at the top → **Quick settings** → **Customize** → **Keys & startup** → **Quick keys**. Phone or computer: the same name, in the **Keys & startup** card.
+1. On the TV: the **⚙** icon at the top → **Quick settings** → **Customize** → **Quick keys & power-onup** → **Quick keys**. Phone or computer: the same name, in the **Quick keys & power-onup** card.
 2. Pick a key's tile, then an app, a shortcut or a live widget. The first pick switches the keys on. Outside TV Home the TV says "TV Setup opened…", so it is not a fault.
 3. In the **At power-on** tile pick an app, or **Last app used** (the one open when the TV turned off). It opens once per power-on, not if the TV woke into another app. One choice turns the other off.
 
@@ -780,7 +780,7 @@ These need TV Setup on the TV and ADB switched on. They run by themselves once o
 
 > 💡 A TV with no ADB: this add-on also opens the system power menu for TV Home's Power off ([Quick settings](#home-control)).
 
-> 💡 Some boxes keep switching the add-on off (many cheap Android 10 boxes). TV Setup tries 3 times, then stops; TV Home's Quick keys and the web page then say the keys work only on TV Home.
+> 💡 Some cheap boxes keep switching the add-on off. TV Setup tries 3 times, then stops; TV Home's Quick keys and the web page then say the keys work only on TV Home.
 
 > 💡 Turned off by you in the TV's Settings (Accessibility), the add-on stays off: TV Setup does not turn it back on.
 

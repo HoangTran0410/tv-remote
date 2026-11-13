@@ -18,6 +18,6 @@ These need TV Setup on the TV and ADB switched on. They run by themselves once o
 
 > 💡 A TV with no ADB: this add-on also opens the system power menu for TV Home's Power off ([Quick settings](home-control.md)).
 
-> 💡 Some boxes keep switching the add-on off (many cheap Android 10 boxes). TV Setup tries 3 times, then stops; TV Home's Quick keys and the web page then say the keys work only on TV Home.
+> 💡 Some cheap boxes keep switching the add-on off. TV Setup tries 3 times, then stops; TV Home's Quick keys and the web page then say the keys work only on TV Home.
 
 > 💡 Turned off by you in the TV's Settings (Accessibility), the add-on stays off: TV Setup does not turn it back on.

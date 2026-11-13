@@ -10,6 +10,6 @@ Quick keys open an app from the home screen with one number or color key on the 
 - The same slot offers **Last app used**: the app open when the TV turned off (off by default).
 - Live widgets can be assigned too and show their own icon. There is also **Voice command**: opens TV Remote's microphone (needs TV Setup 0.46.1).
 
-Customize → Keys & startup → **Home key in an app: show the app bar** (off by default).
+Customize → Quick keys & power-onup → **Home key in an app: show the app bar** (off by default).
 
 Home in an app opens a bar: Home, Dock, recent apps. OK opens, Back closes, Home again goes to TV Home. Needs TV Setup Keys.

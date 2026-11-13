@@ -35,9 +35,9 @@ Pick several; **Change background** rotates them.
 | On TV Home | What it is |
 | --- | --- |
 | Top bar | Two buttons: **Network** (status) and **Settings** = the [Quick settings](home-control.md), which holds Inputs and Power off / Restart / Screen off / Standby. |
-| Customize | A list of groups, OK opens each: **Themes**, Background, **Look** (layout too), Widgets, **Screensaver**, **Keys & startup**, **System** (**Home screen**, Language). |
+| Customize | A list of groups, OK opens each: **Themes**, Background, **Look** (layout too), Widgets, **Screensaver**, **Quick keys & power-onup**, **System** (**Home screen**, Language). |
 | Home screen | In **System**: opens TV Setup's launcher picker to switch to another launcher (needs TV Setup) |
-| Keys & startup | Remote keys that open apps, an app at power-on |
+| Quick keys & power-onup | Remote keys that open apps, an app at power-on |
 
 ### Tips
 

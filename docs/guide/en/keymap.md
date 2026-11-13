@@ -2,7 +2,7 @@
 
 Color keys, number keys and buttons that no longer do anything can open the app you choose. It needs [TV Home](home.md); to work in every app it also needs TV Setup.
 
-1. On the TV: the **⚙** icon at the top → **Quick settings** → **Customize** → **Keys & startup** → **Quick keys**. Phone or computer: the same name, in the **Keys & startup** card.
+1. On the TV: the **⚙** icon at the top → **Quick settings** → **Customize** → **Quick keys & power-onup** → **Quick keys**. Phone or computer: the same name, in the **Quick keys & power-onup** card.
 2. Pick a key's tile, then an app, a shortcut or a live widget. The first pick switches the keys on. Outside TV Home the TV says "TV Setup opened…", so it is not a fault.
 3. In the **At power-on** tile pick an app, or **Last app used** (the one open when the TV turned off). It opens once per power-on, not if the TV woke into another app. One choice turns the other off.
 

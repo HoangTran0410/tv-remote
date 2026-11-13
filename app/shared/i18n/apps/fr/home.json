@@ -450,7 +450,7 @@
   "k_need_setup": "Ne fonctionne que dans TV Home. Installez TV Setup pour l'utiliser partout.",
   "k_need_adb": "TV Setup a besoin d'ADB (débogage USB) pour utiliser les touches hors de TV Home.",
   "k_everywhere": "Les touches de couleur et les boutons qui ne répondent pas fonctionnent dans toutes les applications. Les touches 0-9 fonctionnent seulement dans TV Home.",
-  "k_refused": "Ce téléviseur désactive sans cesse le filtre de touches de TV Setup : ces touches ne fonctionnent que dans TV Home.",
+  "k_refused": "Ce téléviseur empêche TV Setup de capter les touches dans les autres applications : ces touches ne fonctionnent que dans TV Home.",
   "k_auto_need_setup": "Nécessite TV Setup sur cette TV. Installez-le pour l'utiliser.",
   "k_auto_note": "Une fois par allumage. Pas si la TV s'est réveillée dans une autre application.",
   "k_red": "Touche rouge",
