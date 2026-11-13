@@ -3140,34 +3140,49 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "b2bad9122a9b4f430c6f151b|0.25.0": {
-  "at": "2026-11-08T09:51:02+07:00",
+  "at": "2026-11-13T23:00:51+07:00",
   "n": 1,
-  "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
+  "note": "AI PONT refused (Changhong/CHiQ, Android 11 and 14 mt5896): 5555 closed. Same as 758c0058: adbd up with no TCP port; TV Setup already sends Android 11+ to Wireless debugging (ee57e878 'not paired' on the same TV = that path, mid-pairing). Nothing new to fix"
  },
  "b2bad9122a9b4f430c6f151b|0.32.1": {
-  "at": "2026-11-08T09:51:02+07:00",
+  "at": "2026-11-13T23:00:51+07:00",
   "n": 1,
-  "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
+  "note": "AI PONT refused (Changhong/CHiQ, Android 11 and 14 mt5896): 5555 closed. Same as 758c0058: adbd up with no TCP port; TV Setup already sends Android 11+ to Wireless debugging (ee57e878 'not paired' on the same TV = that path, mid-pairing). Nothing new to fix"
  },
  "b2bad9122a9b4f430c6f151b|0.34.1": {
-  "at": "2026-11-08T09:51:02+07:00",
+  "at": "2026-11-13T23:00:51+07:00",
   "n": 1,
-  "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
+  "note": "AI PONT refused (Changhong/CHiQ, Android 11 and 14 mt5896): 5555 closed. Same as 758c0058: adbd up with no TCP port; TV Setup already sends Android 11+ to Wireless debugging (ee57e878 'not paired' on the same TV = that path, mid-pairing). Nothing new to fix"
  },
  "b2bad9122a9b4f430c6f151b|0.38.0": {
-  "at": "2026-11-08T09:51:02+07:00",
+  "at": "2026-11-13T23:00:51+07:00",
   "n": 1,
-  "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
+  "note": "AI PONT refused (Changhong/CHiQ, Android 11 and 14 mt5896): 5555 closed. Same as 758c0058: adbd up with no TCP port; TV Setup already sends Android 11+ to Wireless debugging (ee57e878 'not paired' on the same TV = that path, mid-pairing). Nothing new to fix"
  },
  "b2bad9122a9b4f430c6f151b|0.46.0": {
-  "at": "2026-11-08T09:51:02+07:00",
+  "at": "2026-11-13T23:00:51+07:00",
   "n": 1,
-  "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
+  "note": "AI PONT refused (Changhong/CHiQ, Android 11 and 14 mt5896): 5555 closed. Same as 758c0058: adbd up with no TCP port; TV Setup already sends Android 11+ to Wireless debugging (ee57e878 'not paired' on the same TV = that path, mid-pairing). Nothing new to fix"
  },
  "b2bad9122a9b4f430c6f151b|0.47.0": {
-  "at": "2026-11-08T09:51:02+07:00",
+  "at": "2026-11-13T23:00:51+07:00",
+  "n": 3,
+  "note": "AI PONT refused (Changhong/CHiQ, Android 11 and 14 mt5896): 5555 closed. Same as 758c0058: adbd up with no TCP port; TV Setup already sends Android 11+ to Wireless debugging (ee57e878 'not paired' on the same TV = that path, mid-pairing). Nothing new to fix"
+ },
+ "b2bad9122a9b4f430c6f151b|0.49.0": {
+  "at": "2026-11-13T23:00:51+07:00",
+  "n": 1,
+  "note": "AI PONT refused (Changhong/CHiQ, Android 11 and 14 mt5896): 5555 closed. Same as 758c0058: adbd up with no TCP port; TV Setup already sends Android 11+ to Wireless debugging (ee57e878 'not paired' on the same TV = that path, mid-pairing). Nothing new to fix"
+ },
+ "b2bad9122a9b4f430c6f151b|0.50.0": {
+  "at": "2026-11-13T23:00:51+07:00",
+  "n": 1,
+  "note": "AI PONT refused (Changhong/CHiQ, Android 11 and 14 mt5896): 5555 closed. Same as 758c0058: adbd up with no TCP port; TV Setup already sends Android 11+ to Wireless debugging (ee57e878 'not paired' on the same TV = that path, mid-pairing). Nothing new to fix"
+ },
+ "b2bad9122a9b4f430c6f151b|0.51.0": {
+  "at": "2026-11-13T23:00:51+07:00",
   "n": 2,
-  "note": "AI PONT refused: either ADB off (adb_enabled=0: the turn-on steps) or ADB on with no 5555 (Android 11: TV Setup already sends to Wireless debugging); both paths handled, left"
+  "note": "AI PONT refused (Changhong/CHiQ, Android 11 and 14 mt5896): 5555 closed. Same as 758c0058: adbd up with no TCP port; TV Setup already sends Android 11+ to Wireless debugging (ee57e878 'not paired' on the same TV = that path, mid-pairing). Nothing new to fix"
  },
  "b3d8070136a6d4aa43ecd9bb|0.50.0": {
   "at": "2026-11-11T22:04:05+07:00",
@@ -4090,29 +4105,34 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "ee57e878f33619a603accc6d|0.25.0": {
-  "at": "2026-11-04T08:19:13+07:00",
+  "at": "2026-11-13T23:00:51+07:00",
   "n": 1,
-  "note": "ADB refused / error: ADB off on the user's TV (known)"
+  "note": "CHiQ AI PONT 14: adb tls 'not paired' while 5555 is closed (b2bad912): the Wireless debugging path, pairing not finished; the pair step already asks for the code"
  },
  "ee57e878f33619a603accc6d|0.32.1": {
-  "at": "2026-11-04T08:19:13+07:00",
+  "at": "2026-11-13T23:00:51+07:00",
   "n": 1,
-  "note": "ADB refused / error: ADB off on the user's TV (known)"
+  "note": "CHiQ AI PONT 14: adb tls 'not paired' while 5555 is closed (b2bad912): the Wireless debugging path, pairing not finished; the pair step already asks for the code"
  },
  "ee57e878f33619a603accc6d|0.34.1": {
-  "at": "2026-11-04T08:19:13+07:00",
+  "at": "2026-11-13T23:00:51+07:00",
   "n": 1,
-  "note": "ADB refused / error: ADB off on the user's TV (known)"
+  "note": "CHiQ AI PONT 14: adb tls 'not paired' while 5555 is closed (b2bad912): the Wireless debugging path, pairing not finished; the pair step already asks for the code"
  },
  "ee57e878f33619a603accc6d|0.35.0": {
-  "at": "2026-11-04T08:19:13+07:00",
+  "at": "2026-11-13T23:00:51+07:00",
   "n": 1,
-  "note": "ADB refused / error: ADB off on the user's TV (known)"
+  "note": "CHiQ AI PONT 14: adb tls 'not paired' while 5555 is closed (b2bad912): the Wireless debugging path, pairing not finished; the pair step already asks for the code"
  },
  "ee57e878f33619a603accc6d|0.42.0": {
-  "at": "2026-11-04T08:19:13+07:00",
+  "at": "2026-11-13T23:00:51+07:00",
   "n": 1,
-  "note": "ADB refused / error: ADB off on the user's TV (known)"
+  "note": "CHiQ AI PONT 14: adb tls 'not paired' while 5555 is closed (b2bad912): the Wireless debugging path, pairing not finished; the pair step already asks for the code"
+ },
+ "ee57e878f33619a603accc6d|0.50.0": {
+  "at": "2026-11-13T23:00:51+07:00",
+  "n": 1,
+  "note": "CHiQ AI PONT 14: adb tls 'not paired' while 5555 is closed (b2bad912): the Wireless debugging path, pairing not finished; the pair step already asks for the code"
  },
  "ee5e9be7f57e6b14ec6a79d4|0.38.4": {
   "at": "2026-11-05T17:16:56+07:00",
