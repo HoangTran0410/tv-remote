@@ -4,7 +4,7 @@
 2. Bấm **Thêm giới hạn app**, chọn app và số phút mỗi ngày (30 phút đến 4 giờ).
 3. Hết giờ, TV báo trước rồi đóng app đó.
 4. **+30p** cho app thêm 30 phút hôm nay; **Đặt lại** bỏ phần cho thêm.
-5. Con hết giờ và bạn đang ở xa? Tin báo Telegram “đã đóng app” có nút **30 phút · 1 giờ · Hôm nay**: một chạm là app mở lại đến hết thời gian đó rồi tự đóng lại, không phải sửa giới hạn. Cùng nút ở [Telegram](telegram-more.md).
+5. Con hết giờ? Tin Telegram “đã đóng app” có nút **30 phút · 1 giờ · Hôm nay**: một chạm mở lại app, hết giờ tự đóng. Xem [Telegram](telegram-more.md).
 
 | Thẻ | Làm gì |
 | --- | --- |
