@@ -71,6 +71,19 @@ internal class Stats(private val ctx: Context) {
             return Pair(total, open)
         }
 
+        private val DAY_KEY = Regex("\\d{4}-\\d\\d-\\d\\d")
+
+        /**
+         * Keeps [all] (day key -> seconds per app) to the last 90 days. A key that is no date, or is after [today] (a box that
+         * booted with its clock years ahead and wrote that day before the network set it right), goes first: nothing real is there.
+         * Old days go only when more than 95 days are kept: asked by a clock that is ahead, "90 days ago" is later than the real
+         * recent days, and cutting by age would delete the history the TV really has.
+         */
+        fun prune(all: JSONObject, today: String, oldest: String) {
+            for (k in all.keys().asSequence().toList()) if (!DAY_KEY.matches(k) || k > today) all.remove(k)
+            if (all.length() > 95) for (k in all.keys().asSequence().toList()) if (k < oldest) all.remove(k)
+        }
+
         private val powerLock = Any()
 
         /** One line of power.jsonl. From any thread; TailscaleWatch calls it too. */
@@ -103,8 +116,7 @@ internal class Stats(private val ctx: Context) {
                 val f = File(dir, "usage.json")
                 val all = try { JSONObject(f.readText()) } catch (e: Exception) { JSONObject() }
                 all.put(day.format(Date(now)), usage)
-                val oldest = day.format(Date(now - 90L * 86400000))
-                for (k in all.keys().asSequence().toList()) if (k < oldest) all.remove(k)
+                prune(all, day.format(Date(now)), day.format(Date(now - 90L * 86400000)))
                 write(f, all.toString())
             }
             val mem = ActivityManager.MemoryInfo()

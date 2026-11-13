@@ -1169,12 +1169,12 @@ Screenshots pass through Telegram's servers. Stop any time: **Off**, **Remove to
 More bot commands, and the TV messages you when something happens. A paired chat is needed (see the previous topic).
 
 ```
-/apps  /usage  /now  /scenes
+/apps  /usage  /week  /now  /scenes
 /channel VTV3  /type xin chào
 /bedtime  /limits  /schedule  /alerts
 ```
 
-1. **/apps** shows today's most used apps; **/usage** gives the top 5 and the total screen time.
+1. **/apps** shows today's most used apps; **/usage** gives the top 5 and the total screen time. **/week** gives the last 7 days: hours per day (bars), the daily average and the top 5 apps.
 2. **/now** tells what is playing, with a screenshot button. **/channel** opens a channel in TV Channels.
 3. **/bedtime**, **/limits**, **/schedule** show the rules. A **Full access** chat can switch bedtime, block or unblock an app; every change has an **Undo** button.
 4. **/alerts** picks what the TV sends by itself: TV on or off, app closed, bedtime, sleep timer, a new device. At most one per kind per minute.
