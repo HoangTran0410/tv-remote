@@ -1700,8 +1700,15 @@ class HomeActivity : Activity() {
      * what scrolls under it at its bottom edge. Off: nothing runs but this one check per scroll step.
      */
     private fun held() {
-        val y = if (conf.optBoolean("fixHead", false)) scroll.scrollY.toFloat() else 0f
-        if (head.translationY != y && head.animation == null) { head.translationY = y; col.invalidate() }   // the cut follows the scroll: the column's drawing is made again
+        val on = conf.optBoolean("fixHead", false)
+        if (on || col.on) {                                           // off (and never held): head.translationY stays enter()'s alone
+            val y = if (on) scroll.scrollY.toFloat() else 0f
+            if (head.translationY != y && !(on && y == 0f && head.alpha < 1f)) {   // at the top during enter()'s slide in: the slide owns it
+                col.on = on && y > 0
+                head.translationY = y; col.invalidate()              // the cut follows the scroll: the column's drawing is made again
+                glassAt?.let { if (it === headLeft || it is BarBtn) glassTo(it, false) }   // the pane was placed mid-glide (Up pressed twice): follow the row
+            }
+        }
         slideCap?.translationY = head.translationY - scroll.scrollY   // the caption leaves with the top bar (it stayed and wrote over the widgets); kept with it
     }
     private fun headRoom() = if (conf.optBoolean("fixHead", false)) head.bottom else 0
@@ -1911,7 +1918,7 @@ class HomeActivity : Activity() {
                 gravity = Gravity.END; maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END })
         }
         root.addView(box, FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.END).apply { setMargins(dp(CAP_X * 2), dp(CAP_Y), dp(CAP_X), 0) })
-        box.translationY = -scroll.scrollY.toFloat()
+        box.translationY = head.translationY - scroll.scrollY        // with the top row held ([held]) it stays with it
         box.animate().alpha(1f).setDuration(800).start()
         slideCap = box
     }
@@ -2883,27 +2890,37 @@ class HomeActivity : Activity() {
      */
     private class Col(c: Context, private val fade: Int) : LinearLayout(c) {
         var head: View? = null
+        var on = false                                                // set by [held] only: the top row is held over a scrolled page
         init { isChildrenDrawingOrderEnabled = true }
         private var band = false                                     // drawing the faded band: the cut's top and bottom are its own
-        private val mask = android.graphics.Paint().apply { xfermode = android.graphics.PorterDuffXfermode(PorterDuff.Mode.DST_IN) }
-        private var maskAt = Float.NaN
-        private fun held() = head?.let { it.translationY != 0f && it.parent === this } == true
+        private val mask = android.graphics.Paint().apply {          // made once at 0..fade, moved to the cut (a new shader per scroll frame was GC on weak boxes)
+            xfermode = android.graphics.PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+            shader = android.graphics.LinearGradient(0f, 0f, 0f, fade.toFloat(), 0, Color.BLACK, android.graphics.Shader.TileMode.CLAMP)
+        }
+        private var toHead = false                                    // this touch began above the cut: it is the row's, never a tile's hidden under it
+        private fun held() = on && head?.parent === this
         private fun cut() = head!!.let { it.bottom + it.translationY }
         override fun getChildDrawingOrder(n: Int, i: Int): Int {
             if (!held()) return i
             val h = indexOfChild(head)
             return if (i == n - 1) h else if (i >= h) i + 1 else i
         }
+        override fun dispatchTouchEvent(e: android.view.MotionEvent): Boolean {
+            if (e.actionMasked == android.view.MotionEvent.ACTION_DOWN) toHead = held() && e.y < cut()
+            if (!toHead) return super.dispatchTouchEvent(e)
+            val h = head!!
+            val m = android.view.MotionEvent.obtain(e); m.offsetLocation(-h.left - h.translationX, -h.top - h.translationY)
+            try { return h.dispatchTouchEvent(m) } finally { m.recycle() }
+        }
         override fun dispatchDraw(canvas: android.graphics.Canvas) {
             super.dispatchDraw(canvas)
             if (!held()) return
             val top = cut(); val w = width.toFloat()
-            if (maskAt != top) { maskAt = top; mask.shader = android.graphics.LinearGradient(0f, top, 0f, top + fade, 0, Color.BLACK, android.graphics.Shader.TileMode.CLAMP) }
             @Suppress("DEPRECATION") val s = canvas.saveLayer(0f, top, w, top + fade, null, android.graphics.Canvas.ALL_SAVE_FLAG)
             band = true
             try { for (i in 0 until childCount) getChildAt(i).let { if (it !== head && it.visibility == View.VISIBLE) drawChild(canvas, it, drawingTime) } }
             finally { band = false }
-            canvas.drawRect(0f, top, w, top + fade, mask)
+            canvas.translate(0f, top); canvas.drawRect(0f, 0f, w, fade.toFloat(), mask)
             canvas.restoreToCount(s)
         }
         override fun drawChild(canvas: android.graphics.Canvas, child: View, time: Long): Boolean {
