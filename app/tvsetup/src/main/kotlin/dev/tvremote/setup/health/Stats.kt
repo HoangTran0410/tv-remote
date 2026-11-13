@@ -72,15 +72,18 @@ internal class Stats(private val ctx: Context) {
         }
 
         private val DAY_KEY = Regex("\\d{4}-\\d\\d-\\d\\d")
+        private const val SANE = "2026-11-01"                         // a real "today" is never before this code shipped
 
         /**
          * Keeps [all] (day key -> seconds per app) to the last 90 days. A key that is no date, or is after [today] (a box that
          * booted with its clock years ahead and wrote that day before the network set it right), goes first: nothing real is there.
          * Old days go only when more than 95 days are kept: asked by a clock that is ahead, "90 days ago" is later than the real
-         * recent days, and cutting by age would delete the history the TV really has.
+         * recent days, and cutting by age would delete the history the TV really has. A clock that is behind (a box that boots in
+         * 2000) would call every real day "after today": future days go only when today is not before [SANE].
          */
         fun prune(all: JSONObject, today: String, oldest: String) {
-            for (k in all.keys().asSequence().toList()) if (!DAY_KEY.matches(k) || k > today) all.remove(k)
+            val sane = today >= SANE
+            for (k in all.keys().asSequence().toList()) if (!DAY_KEY.matches(k) || (sane && k > today)) all.remove(k)
             if (all.length() > 95) for (k in all.keys().asSequence().toList()) if (k < oldest) all.remove(k)
         }
 

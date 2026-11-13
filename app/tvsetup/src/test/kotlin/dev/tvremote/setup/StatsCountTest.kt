@@ -50,6 +50,12 @@ class StatsCountTest {
         assertEquals(3, o.length())
     }
 
+    @Test fun pruneKeepsRealDaysWhenTheClockIsBehind() {           // a box that booted in 2000: every real day is "after today", none may go
+        val o = days("2026-11-10", "2026-11-12", "2000-01-01")
+        Stats.prune(o, "2000-01-01", "1999-10-03")
+        assertEquals(3, o.length())
+    }
+
     @Test fun pruneCutsOldDaysOnlyPastNinetyFive() {
         val o = org.json.JSONObject(); for (i in 1..100) o.put("2026-%02d-%02d".format(1 + (i - 1) / 28, 1 + (i - 1) % 28), org.json.JSONObject())
         Stats.prune(o, "2026-12-31", "2026-02-01")
