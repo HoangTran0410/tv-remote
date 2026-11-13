@@ -394,7 +394,20 @@ internal object Rules {
     fun allow(o: JSONObject): List<String> = o.optJSONObject("lock")?.optJSONArray("allow")?.let { a -> (0 until a.length()).map { a.optString(it) } } ?: emptyList()
 
     /** Everything is open until then (0 when not). */
-    fun unlockUntil(o: JSONObject, now: Long): Long = o.optLong("unlock_until").let { if (it > now) it else 0L }
+    fun unlockUntil(o: JSONObject, now: Long): Long = grantEnd(o.optLong("unlock_until"), now)
+
+    /**
+     * [pkg] open until then through a parent's "more time" ("unlock" with pkg: 15 min ... today), 0 when not. Honoured by the app's PIN,
+     * its daily limit and its schedule alike; it ends by itself. A grant is never longer than [MAX_GRANT_MS]: a box that booted in the
+     * wrong year and then found the real time would otherwise keep one for months, so a stamp further off than that is spent.
+     */
+    fun appGrant(o: JSONObject, pkg: String, now: Long): Long = grantEnd(o.optJSONObject("unlock_apps")?.optLong(pkg) ?: 0L, now)
+
+    /** The TV unlocked as a whole, or [pkg] granted: the app's block (PIN, limit, schedule) does not apply. */
+    fun appOpen(o: JSONObject, pkg: String, now: Long): Boolean = unlockUntil(o, now) > 0 || appGrant(o, pkg, now) > 0
+
+    const val MAX_GRANT_MS = 25 * 3_600_000L
+    internal fun grantEnd(until: Long, now: Long): Long = if (until > now && until - now <= MAX_GRANT_MS) until else 0L
 
     /**
      * Whether [pkg] on screen must be covered by [PinActivity] now. [free]: the apps never asked ([Kids.free]). Open: the whole TV
@@ -402,7 +415,7 @@ internal object Rules {
      */
     fun needsPin(o: JSONObject, pkg: String, now: Long, free: Set<String>): Boolean {
         if (pkg.isEmpty() || pkg == SELF) return false
-        if (unlockUntil(o, now) > 0 || (o.optJSONObject("unlock_apps")?.optLong(pkg) ?: 0L) > now) return false
+        if (appOpen(o, pkg, now)) return false
         return pkg in locked(o) || (kidsMode(o) && pkg !in free && pkg !in allow(o))
     }
 
@@ -557,12 +570,12 @@ internal object Rules {
         val limits = JSONArray()
         o.optJSONObject("limits")?.let { l ->
             for (pkg in l.keys()) limits.put(JSONObject().put("pkg", pkg).put("label", label(c, pkg)).put("minutes", l.optInt(pkg))
-                .put("extra", extra(o, pkg, now)).put("used", used.optLong(pkg) / 60))
+                .put("extra", extra(o, pkg, now)).put("used", used.optLong(pkg) / 60).put("open_until", appGrant(o, pkg, now)))
         }
         val sched = JSONArray()
         o.optJSONObject("sched")?.let { l ->
             for (pkg in l.keys()) sched.put(JSONObject(l.getJSONObject(pkg).toString()).also { if (!it.optBoolean("block")) it.put("windows", windows(it)) }.put("pkg", pkg)   // data saved before windows reads as one.put("label", label(c, pkg))
-                .put("now", allowedNow(o, pkg, now)).put("used", used.optLong(pkg) / 60).put("extra", extra(o, pkg, now)))
+                .put("now", allowedNow(o, pkg, now)).put("used", used.optLong(pkg) / 60).put("extra", extra(o, pkg, now)).put("open_until", appGrant(o, pkg, now)))
         }
         val sleepAt = o.optLong("sleep_at").let { if (it > now) it else 0L }
         return JSONObject().put("ok", true).put("now", now).put("sleep_at", sleepAt)

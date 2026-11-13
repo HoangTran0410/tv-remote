@@ -3127,6 +3127,7 @@
  "core.need_lock": "قفل التطبيقات برمز PIN",
  "core.need_dim": "تعتيم الشاشة",
  "core.need_unextra": "إلغاء الوقت الإضافي",
+ "core.need_appgrant": "وقت إضافي لتطبيق واحد",
  "core.need_home_usage": "أدوات استخدام التطبيقات والمؤقت في TV Home",
  "core.need_home_playing": "أداة «قيد التشغيل الآن» في TV Home",
  "errors.launcher_list_bad": "قائمة الواجهات الرئيسية لا تحمل توقيع المشروع، فلم تُستخدم. أعد المحاولة لاحقًا.",

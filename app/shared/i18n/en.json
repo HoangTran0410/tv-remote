@@ -3001,6 +3001,7 @@
  "core.need_lock": "Locking apps with a PIN",
  "core.need_dim": "Dimming the screen",
  "core.need_unextra": "Resetting the extra time",
+ "core.need_appgrant": "A parent's extra time for one app",
  "core.need_home_usage": "TV Home's app use and timer widgets",
  "core.need_home_playing": "TV Home's Now playing widget",
  "errors.launcher_list_bad": "The launcher list does not carry the project's signature, so it was not used. Try again later.",

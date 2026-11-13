@@ -1056,6 +1056,7 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 2. Tap **Add an app limit**, pick the app and minutes per day (30 min to 4 h).
 3. When time is up the TV warns, then closes that app.
 4. **+30 min** gives the app 30 more minutes today; **Reset** takes them back.
+5. Child out of time? The Telegram “app closed” alert has **30 min · 1 hour · Today** buttons: one tap reopens the app, which closes again by itself. See [Telegram](#telegram-more).
 
 | Card | What it does |
 | --- | --- |
@@ -1105,7 +1106,7 @@ For example: YouTube opens only Monday to Friday, 16:00 to 18:00, at most 30 min
 
 A window that runs past midnight (22:00 to 02:00) belongs to the day it starts on.
 
-No PIN is asked inside the window, unless the app also has a [PIN lock](#lock). For more minutes today use **+30 min** on the app's row.
+No PIN is asked inside the window, unless the app also has a [PIN lock](#lock). For more minutes today use **+30 min** on the app's row. Outside the window **+30 min** opens it for 30 minutes.
 
 > 💡 Needs a recent TV Setup (several windows need a newer one). The schedule runs on the TV itself, no phone needs to stay on. It cannot block YouTube Shorts alone, only the whole app.
 
@@ -1179,7 +1180,7 @@ More bot commands, and the TV messages you when something happens. A paired chat
 1. **/apps** shows today's most used apps; **/usage** gives the top 5 and the total screen time. **/week** gives the last 7 days: hours per day (bars), the daily average and the top 5 apps.
 2. **/now** tells what is playing, with a screenshot button. **/channel** opens a channel in TV Channels.
 3. **/bedtime**, **/limits**, **/schedule** show the rules. A **Full access** chat can switch bedtime, block or unblock an app; every change has an **Undo** button.
-4. **/alerts** picks what the TV sends by itself: TV on or off, app closed, bedtime, sleep timer, a new device. At most one per kind per minute.
+4. **/alerts** picks what the TV sends by itself: TV on or off, app closed, bedtime, sleep timer, a new device. At most one per kind per minute. The “app closed” alert has more-time buttons (see [limits](#limits)).
 
 In **🛠️ Settings** you see the bot's status, a QR to pair with one scan, each chat with its rights and alerts, and a 7-day history. The words of /type and /say are never kept.
 

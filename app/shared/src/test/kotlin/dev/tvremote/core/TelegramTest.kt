@@ -460,6 +460,17 @@ class TelegramTest {
         tap(42, "l:on", 52); now += 61_000; bot.alert("on"); assertEquals(n + 3, api.sent(42).size)   // switched off again
     }
 
+    @Test fun aLimitAlertCarriesMoreTimeButtonsForFullChatsOnly() {
+        pairChat(42, "full"); pairChat(43, "remote")
+        tap(42, "l:limit"); tap(43, "l:limit", 51)
+        bot.alert("limit", "app" to "Netflix", "why" to "limit", "pkg" to "com.netflix.ninja")
+        val kb = api.named("sendMessage").filter { it.optLong("chat_id") == 42L }.last().toString()
+        for (d in listOf("u:30:com.netflix.ninja", "u:60:com.netflix.ninja", "u:d:com.netflix.ninja")) assertTrue(d, kb.contains(d))
+        assertFalse(api.named("sendMessage").filter { it.optLong("chat_id") == 43L }.last().has("reply_markup"))   // a Remote chat cannot grant
+        tap(42, "u:30:com.netflix.ninja", 5)
+        assertEquals(JSONObject("""{"do":"unlock","minutes":30,"pkg":"com.netflix.ninja"}""").toString(), rulesPosts().last().toString())
+    }
+
     @Test fun anUnoptedAlertDoesNotStartTheMinute() {
         pairChat(42)
         bot.alert("bed")

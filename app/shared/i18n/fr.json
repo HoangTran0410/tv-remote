@@ -3007,6 +3007,7 @@
   "core.need_lock": "Verrouillage d’applications par code PIN",
   "core.need_dim": "Assombrissement de l’écran",
   "core.need_unextra": "Réinitialisation du temps supplémentaire",
+  "core.need_appgrant": "Du temps en plus pour une seule appli",
   "core.need_home_usage": "Widgets d’utilisation des applications et de minuteur de TV Home",
   "core.need_home_playing": "Widget En cours de lecture de TV Home",
   "errors.launcher_list_bad": "La liste des lanceurs ne porte pas la signature du projet, elle n’a donc pas été utilisée. Réessayez plus tard.",

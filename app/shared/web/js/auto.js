@@ -96,9 +96,11 @@ function renderRules() {
     const icon = appIcon(x.pkg); onMeta(x.pkg, (m) => icon.fill(m));
     const name = x.label || appName(x.pkg), total = (x.max || 0) + (x.extra || 0);
     const when = x.block ? T('auto.sched_never') : schedText(x) + (x.max ? ' · ' + T('auto.sched_max', { time: minsShort(x.max) }) : '');
-    const now = x.block ? '' : !x.now ? T('auto.sched_closed_now') : x.max ? T('auto.limit_used', { used: minsShort(x.used), total: minsShort(total) }) : T('auto.sched_open_now');
+    const open = x.open_until > r.now;                                  // a parent's "more time" for this app (Rules.appGrant)
+    const now = open ? T('auto.kids_open_until', { at: clock(x.open_until) }) : x.block ? '' : !x.now ? T('auto.sched_closed_now') : x.max ? T('auto.limit_used', { used: minsShort(x.used), total: minsShort(total) }) : T('auto.sched_open_now');
     return el('div', { className: 'item' }, icon, el('div', { className: 'name' }, el('span', { textContent: name }), el('small', { textContent: when }), now ? el('small', { textContent: now }) : null),
       el('div', { className: 'acts' },
+        !x.block && !x.now && !open ? act(T('auto.plus_30_today'), async () => { if (await setupFor('appgrant')) { await loadRules({ do: 'unlock', pkg: x.pkg, minutes: 30 }); toast(T('auto.plus_30_done', { name })); } }) : null,   // closed now: open for 30 min, then closed again
         x.max && x.now ? act(T('auto.plus_30_today'), async () => { await loadRules({ do: 'extra', pkg: x.pkg, minutes: 30 }); toast(T('auto.plus_30_done', { name })); }) : null,
         act('✏️', () => openSched(x), '', T('auto.edit')),
         act('🗑', async () => { if (await ask(T('auto.sched_drop_ask', { name }), { ok: T('auto.sched_drop') })) await loadRules({ do: 'sched', pkg: x.pkg, on: false }); }, 'danger', T('auto.sched_drop'))));

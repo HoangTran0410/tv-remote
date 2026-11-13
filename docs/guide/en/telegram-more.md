@@ -11,6 +11,6 @@ More bot commands, and the TV messages you when something happens. A paired chat
 1. **/apps** shows today's most used apps; **/usage** gives the top 5 and the total screen time. **/week** gives the last 7 days: hours per day (bars), the daily average and the top 5 apps.
 2. **/now** tells what is playing, with a screenshot button. **/channel** opens a channel in TV Channels.
 3. **/bedtime**, **/limits**, **/schedule** show the rules. A **Full access** chat can switch bedtime, block or unblock an app; every change has an **Undo** button.
-4. **/alerts** picks what the TV sends by itself: TV on or off, app closed, bedtime, sleep timer, a new device. At most one per kind per minute.
+4. **/alerts** picks what the TV sends by itself: TV on or off, app closed, bedtime, sleep timer, a new device. At most one per kind per minute. The “app closed” alert has more-time buttons (see [limits](limits.md)).
 
 In **🛠️ Settings** you see the bot's status, a QR to pair with one scan, each chat with its rights and alerts, and a 7-day history. The words of /type and /say are never kept.

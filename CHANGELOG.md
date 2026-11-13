@@ -8,6 +8,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 - Telegram `/week`: screen time of the last 7 days (bars per day, daily average, top 5 apps). TV Setup drops usage days dated in the future (a box that booted with a wrong year) and no longer cuts real history when its clock is ahead.
 - TV Home screensaver: a photo slideshow (Customize → Screensaver, or the web page) from the wallpaper photos you sent, the TV's Pictures or DCIM folder, or a USB stick; crossfade every 20 s, optional clock, off by default.
+- More time for kids: the Telegram "app closed" / "TV time is up" alert has 30 min / 1 hour / Today buttons (Full chats), and a parent's grant for one app now also lifts that app's daily limit and its schedule until it ends (it only lifted the PIN before); on the page, an app outside its schedule window gets "+30 min" and shows "Open until". A grant never lasts more than a day, so a TV clock jump cannot keep it. Needs TV Setup 0.51.1 or newer.
 - Xiaomi TVs on Android 14: a new home screen no longer turns PatchWall off (with it off, every volume press blanked the screen); Home reaches it through TV Setup's key filter instead.
 - TV Home: a switch to keep the clock, date and top buttons in place while the apps scroll under them (off by default; Customize > Look, the header's menu and the page). Apps and widgets fade out as they pass under it.
 - Clearer names for Quick keys in every language: "Quick keys & power-on" for the card, "press a remote key to open an app" for what it does.
