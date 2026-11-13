@@ -476,6 +476,7 @@ async function homeOpen() {
   const watchAtHead = el('h3', { textContent: T('home.watch_at') }), watchAt = el('div', { className: 'fchips' });   // where the Play Next items go (HomeConfig "watchAt"); only a TV Home that reports it
   const anim = el('input', { type: 'checkbox', onchange: () => send({ anim: anim.checked }) });
   const showInputs = el('input', { type: 'checkbox', onchange: () => send({ showInputs: showInputs.checked }) });   // HomeConfig "showInputs", default off
+  const fixHead = el('input', { type: 'checkbox', onchange: () => send({ fixHead: fixHead.checked }) });   // HomeConfig "fixHead", default off
   const infold = el('input', { type: 'checkbox', onchange: () => send({ infold: infold.checked }) });   // HomeConfig "infold", default off
   const lockLayout = el('input', { type: 'checkbox', onchange: () => send({ lockLayout: lockLayout.checked }) });   // HomeConfig "lockLayout", default off: the TV asks TV Setup's PIN before its layout changes; this page does not
   const homebar = el('input', { type: 'checkbox', onchange: async () => { if (homebar.checked && !await setupFor('homebar')) { homebar.checked = false; return; } send({ homebar: homebar.checked }); } });   // HomeConfig "homebar", default off; an older TV Setup would ignore it: asked to update first
@@ -722,6 +723,7 @@ async function homeOpen() {
     lockLayout.checked = c.lockLayout === true; lockLayout.closest('label').hidden = c.lockLayout === undefined;   // an older TV Home does not report it
     shift.checked = c.shift === true; shift.closest('label').hidden = c.shift === undefined;
     showInputs.checked = c.showInputs === true; showInputs.closest('label').hidden = c.showInputs === undefined;   // an older TV Home does not report it
+    fixHead.checked = c.fixHead === true; fixHead.closest('label').hidden = c.fixHead === undefined;   // an older TV Home does not report it
     infold.checked = c.infold === true; infold.closest('label').hidden = c.infold === undefined;   // an older TV Home does not report it
     for (const k of SHOWS) { shows[k].checked = c[k] !== false; shows[k].closest('label').hidden = c[k] === undefined; }
     showHead.hidden = c.showClock === undefined;
@@ -1129,7 +1131,7 @@ async function homeOpen() {
       hScenes, wScenes, hColours, walls, ownHead, ownStops, ownDirHead, ownDir, ownNote]],
     ['look', 'sparkle', 180, 'home.g_look', [
       sect('home.sec_head', check(clock, 'home.clock24'), check(greet, 'home.greet'), gstyleHead, gstyle, gnameLine, gtextLine, gtokens, gtype, hsplit, dstyleHead, dstyle, dtextLine, dtokens, dtype),
-      sect(showHead, check(shows.showClock, 'home.show_clock'), check(shows.showDate, 'home.show_date'), check(shows.showNet, 'home.show_net'), check(showInputs, 'home.show_inputs'), check(shows.showGear, 'home.show_gear'),
+      sect(showHead, check(shows.showClock, 'home.show_clock'), check(shows.showDate, 'home.show_date'), check(fixHead, 'home.fix_head'), check(shows.showNet, 'home.show_net'), check(showInputs, 'home.show_inputs'), check(shows.showGear, 'home.show_gear'),
         check(shows.showAdd, 'home.show_add'), check(shows.showSuggest, 'home.show_suggest'), check(shows.showWatch, 'home.show_watch'), check(infold, 'home.show_infold'), watchAtHead, watchAt),
       sect('home.sec_motion', check(anim, 'home.anim'), motionHead, motion, focusHead, focus, tstyleHead, tstyle, accentHead, accent),
       sect('home.sec_grid', colsHead, cols, check(center, 'home.center'), wplaceHead, wplace, rowsHead, rowsLine, rowsNote),

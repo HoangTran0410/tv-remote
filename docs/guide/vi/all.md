@@ -691,6 +691,8 @@ Nút **Màu lớp phủ** cạnh đó: Tối, Lọc ánh sáng xanh, Vàng, Nâu
 
 Nút **Nguồn vào** riêng trên thanh trên (mặc định tắt): Tùy chỉnh → Giao diện → **Hiện trên màn hình chính**.
 
+Tùy chỉnh → Giao diện → **Cố định giờ và ngày khi cuộn** (mặc định tắt): giờ, ngày và các nút đứng yên khi cuộn app.
+
 Tùy chỉnh → Giao diện → **Chỉ hiện cổng HDMI/AV đang cắm** (mặc định tắt): cổng trống nằm trong Nguồn vào khác.
 
 Cài đặt TV vẫn mở được trên TV giấu màn Cài đặt chuẩn (máy chiếu HY300, Xiaomi, TCL, Fire TV).

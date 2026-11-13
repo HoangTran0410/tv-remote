@@ -42,8 +42,9 @@ test('no new raw colour in the TV apps\' views: a colour is a named constant or 
 const DRAWN = {
   tvsetup: { 'DrawLayer.kt': 1, 'MicLevel.kt': 1 },                       // drawing over the TV: strokes; the voice card's live sound graph: nothing to reuse
   tvhome: { 'CalendarWidget.kt': 1, 'ClockWidget.kt': 1, 'LunarWidget.kt': 1, 'UsageWidget.kt': 1, 'WeatherWidget.kt': 1,
-    'WidgetViews.kt': 2, 'HomeActivity.kt': 1, 'QrView.kt': 1, 'Zoom.kt': 1, 'Customize.kt': 1, 'LiveWidgets.kt': 1,
+    'WidgetViews.kt': 2, 'HomeActivity.kt': 2, 'QrView.kt': 1, 'Zoom.kt': 1, 'Customize.kt': 1, 'LiveWidgets.kt': 1,
     'Tonal.kt': 2 },                                                  // the scalloped badge and the bar with its dot: no stock view has either
+  // HomeActivity 2: its Col fades the page out under the kept top row ("fixHead"): a mask over the column's own children, no component draws that
   android: { 'RemoteScreen.kt': 1, 'IconButton.kt': 1, 'AirMouse.kt': 2, 'Drawing.kt': 1 },
 };
 

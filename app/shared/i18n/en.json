@@ -3353,6 +3353,7 @@
  "home.show_suggest": "Get TV Setup tile",
  "home.show_watch": "Play Next row",
  "home.show_infold": "Show only plugged-in HDMI/AV inputs",
+ "home.fix_head": "Keep clock and date in place",
  "home.lock_layout": "Ask for the PIN to change TV Home",
  "home.show_shift": "Move the screen a little every minute (OLED care)",
  "home.show_homebar": "Home key in an app: show the app bar",

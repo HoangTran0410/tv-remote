@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: a switch to keep the clock, date and top buttons in place while the apps scroll under them (off by default; Customize > Look, the header's menu and the page). Apps and widgets fade out as they pass under it.
 - Clearer names for Quick keys in every language: "Quick keys & power-on" for the card, "press a remote key to open an app" for what it does.
 - TV Setup, TV Home: on boxes that keep switching TV Setup's key filter off (many cheap Android 10 boxes), TV Home's Quick keys and the web page now say the keys work only on TV Home, instead of claiming they work in every app.
 

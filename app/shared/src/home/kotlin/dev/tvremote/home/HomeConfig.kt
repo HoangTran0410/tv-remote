@@ -159,6 +159,7 @@ import org.json.JSONObject
  *           keeps them ([themeUses], Videos.refs)
  *   infold  the Inputs list shows the connected HDMI ports first and folds the rest (jacks always; a port only when the TV says "disconnected" and its
  *           answers can be trusted) behind a "More inputs" row; default off (nothing new runs)
+ *   fixHead the top row (clock, day, greeting, buttons) stays in place while the apps scroll under it; default off (the row scrolls away)
  *   autoon  open [autoapp] (a [Target] too) once each time the TV is turned on (boot or wake from standby); default off. TV Setup does it
  *           (TV Home is not running in standby), so it needs TV Setup, said in the setting ("keysSetup")
  *   autolast the power-on app is "the app that was open when the TV turned off" instead of a fixed [autoapp]; its own setting, default
@@ -794,6 +795,7 @@ object HomeConfig {
             .also { n -> for (k in SHOWS) n.put(k, o.optBoolean(k, true)) }
             .put("showInputs", o.optBoolean("showInputs", false))   // the one switch that starts off: an extra button nobody asked for
             .put("infold", o.optBoolean("infold", false))
+            .put("fixHead", o.optBoolean("fixHead", false))           // the top row stays while the page scrolls (HomeActivity.held)
             .put("lockLayout", o.optBoolean("lockLayout", false))      // the PIN before the layout changes (HomeActivity.layoutGate)
             .put("watchAt", o.optString("watchAt").takeIf { it in WATCH_AT } ?: WATCH_AT[0])
             .put("anim", o.optBoolean("anim", true))

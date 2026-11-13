@@ -892,6 +892,7 @@ object Customize {
             section(a.getString(R.string.g_sec_shown))                // nothing on the first screen is forced: each can go (HomeConfig.SHOWS)
             tile(R.drawable.ic_timer, a.getString(R.string.show_clock), null, "showClock")
             tile(R.drawable.ic_calendar, a.getString(R.string.show_date), null, "showDate")
+            tile(R.drawable.ic_updown, a.getString(R.string.fix_head), null, "fixHead")   // default off (HomeConfig "fixHead")
             tile(R.drawable.ic_wifi, a.getString(R.string.show_net), null, "showNet")
             tile(R.drawable.ic_input, a.getString(R.string.show_inputs), null, "showInputs")   // default off (HomeConfig "showInputs")
             tile(R.drawable.ic_settings, a.getString(R.string.show_gear), null, "showGear")

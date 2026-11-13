@@ -357,6 +357,7 @@
   "show_suggest": "Gợi ý TV Setup",
   "show_watch": "Hàng Xem tiếp",
   "show_infold": "Chỉ hiện cổng HDMI/AV đang cắm",
+  "fix_head": "Cố định giờ và ngày khi cuộn",
   "show_shift": "Nhích nhẹ màn hình mỗi phút (chống burn-in OLED)",
   "show_homebar": "Phím Home trong app: hiện thanh app",
   "show_lock_layout": "Hỏi mã PIN khi sửa TV Home",

@@ -16,6 +16,8 @@ The **Tint color** button beside it: Dark, Blue light filter, Yellow, Sepia, Nig
 
 An **Inputs button** of its own in the top bar (off by default): Customize → Look → **On the home screen**.
 
+Customize → Look → **Keep clock and date in place** (off by default): they stay while the apps scroll.
+
 Customize → Look → **Show only plugged-in HDMI/AV inputs** (off by default): empty ports go in More inputs.
 
 TV settings opens even on TVs that hide the standard Settings screen (HY300 projectors, Xiaomi, TCL, Fire TV).
