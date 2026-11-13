@@ -3074,6 +3074,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
+ "b04354d6c45614d9aa8603d4|0.51.0": {
+  "at": "2026-11-13T09:18:35+07:00",
+  "n": 1,
+  "note": "STREAM STR-D2 G4K (SEI Robotics operator Google TV box, sdk 34) on 0.51.0: rs allow (appop fine), add-on running, another a11y service enabled (others 1) and something bound ('bound' counts any service, likely the other one); ours taken out 3x by the operator's firmware/app. Nothing to fix; clients say keys work on TV Home only since e9452995"
+ },
  "b10448044da52feadeb9ccdb|0.26.2": {
   "at": "2026-10-28T14:05:21+07:00",
   "n": 1,
