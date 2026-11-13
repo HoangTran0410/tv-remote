@@ -363,6 +363,7 @@ class HomeActivity : Activity() {
     override fun onResume() {
         super.onResume()
         if (locked) return
+        dreamPaused = false                                           // the ticks start again below
         wantStart?.let { i -> wantStart = null; bar.post { if (!isDestroyed) startAction(i) } }   // started for one menu (the Input key, the Control Center over an app): once the home is up
         dev.tvremote.home.ui.ControlCenter.warm(this)
         layoutBack()
@@ -676,7 +677,23 @@ class HomeActivity : Activity() {
     }
 
     override fun onPause() { if (locked) { super.onPause(); return }   // before the first unlock nothing below was made; unlocking recreate()s through here (census 91a5ee66)
-        if (moving != null) endMove(false); zoom.paused(); widgets.paused(true); ui.removeCallbacks(widgetTick); ui.removeCallbacks(clockTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick); ui.removeCallbacks(slideTick); ui.removeCallbacks(liveTick); ui.removeCallbacks(skyTick); ui.removeCallbacks(shiftTick); super.onPause() }
+        if (moving != null) endMove(false); zoom.paused(); ticksOff(); super.onPause() }
+
+    /** Every repeating look of the home screen stopped: left (onPause), or a screensaver laid over it on a TV that does not pause it. */
+    private fun ticksOff() {
+        widgets.paused(true); ui.removeCallbacks(widgetTick); ui.removeCallbacks(clockTick); ui.removeCallbacks(netTick); ui.removeCallbacks(wallTick)
+        ui.removeCallbacks(slideTick); ui.removeCallbacks(liveTick); ui.removeCallbacks(skyTick); ui.removeCallbacks(shiftTick)
+    }
+
+    /** [ticksOff] undone when the screensaver over a home screen that stayed resumed ends (onResume does the same for a real return). */
+    private fun ticksOn() {
+        ui.removeCallbacks(liveTick); ui.post(liveTick)
+        widgetsDrawn = ""; ui.removeCallbacks(widgetTick); ui.post(widgetTick); widgets.paused(false)
+        ui.removeCallbacks(clockTick); if (Build.VERSION.SDK_INT < 31) ui.postDelayed(clockTick, 61_000 - System.currentTimeMillis() % 60_000)
+        ui.removeCallbacks(netTick); ui.postDelayed(netTick, Widgets.SAMPLE_MS)
+        slideGo(); wallTimer()
+    }
+    private var dreamPaused = false                                  // ticksOff by DREAMING_STARTED while Home stayed resumed (Android 10 and older)
 
     private var cpuAgain = false
 
@@ -1019,8 +1036,9 @@ class HomeActivity : Activity() {
     private val tick = object : BroadcastReceiver() {
         override fun onReceive(c: Context, i: Intent) {
             // a screensaver over Home: Android 11+ stops the activity, older TVs only lay a window over it and the video went on decoding
-            when (i.action) { Intent.ACTION_DREAMING_STARTED -> { video?.stop(); WebWall.sleep(web); return }
-                Intent.ACTION_DREAMING_STOPPED -> { if (!away) { video?.start(); WebWall.wake(web) }; return } }   // the live page sleeps under it too: it was drawing frames nobody sees
+            // ...and the live widgets, the network meter, the slides and the widgets' own timers went on all night: stopped with it
+            when (i.action) { Intent.ACTION_DREAMING_STARTED -> { video?.stop(); WebWall.sleep(web); if (!away && !locked) { ticksOff(); dreamPaused = true }; return }
+                Intent.ACTION_DREAMING_STOPPED -> { if (!away) { video?.start(); WebWall.wake(web) }; if (dreamPaused) { dreamPaused = false; if (!away) ticksOn() }; return } }   // the live page sleeps under it too: it was drawing frames nobody sees
             if (i.action == Intent.ACTION_TIME_TICK) ticked = android.os.SystemClock.elapsedRealtime()
             clockAndDay(); bingCheck()                                // Bing: a new day's picture seen while Home stays on
         }

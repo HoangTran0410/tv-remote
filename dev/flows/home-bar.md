@@ -3,7 +3,7 @@
 Read [README.md](README.md) first: change the row a fault belongs to, and this file in the same commit. Next to
 [home-screen.md](home-screen.md): that one decides which launcher Home opens; this one decides whether Home first shows a bar.
 
-**Code:** `app/tvsetup/src/main/kotlin/dev/tvremote/setup/home/HomeBar.kt`, `app/tvsetup/src/main/kotlin/dev/tvremote/setup/KeysBridge.kt`,
+**Code:** `app/tvsetup/src/main/kotlin/dev/tvremote/setup/home/HomeBar.kt`, `app/tvsetup/src/main/kotlin/dev/tvremote/setup/KeysBridge.kt`, `app/tvsetup/src/main/kotlin/dev/tvremote/setup/rules/Usage.kt`,
 `app/tvsetup/src/main/kotlin/dev/tvremote/setup/home/HomeKeys.kt`, `app/tvsetup/src/main/kotlin/dev/tvremote/setup/keys/KeyFix.kt`,
 `app/tvhome/src/main/kotlin/dev/tvremote/home/DockBarActivity.kt`.
 
@@ -29,7 +29,7 @@ the app beneath stays visible and running. No service, receiver or timer of our 
 | # | Told apart by | Then | Test |
 |---|---|---|---|
 | 1 | option off | `KeysBridge` plan has no bar: Home as before (the swap, or the key way's rule `homekey`) | |
-| 2 | option on, an app in front | the bar (`KeyFix.BAR`) | `anAppInFrontGetsTheBar` |
+| 2 | option on, an app in front (`Usage.front`: the last 15 min of usage events, else the last 6 h, so a film watched for an hour still counts) | the bar (`KeyFix.BAR`) | `anAppInFrontGetsTheBar` |
 | 3 | option on, TV Home in front (home screen, or the bar itself) | Home as before: the rule `homekey`'s launcher, else the HOME intent; from the bar this is the second Home, the bar closes in `onStop` | `aHomeScreenInFrontLetsHomeThrough` |
 | 4 | option on, nothing known in front, or the system's bars | Home as before | `nothingKnownOrTheSystemsBarsLetHomeThrough` |
 | 5 | Home held 500 ms | the TV's own long press, as in the key way (`HomeKey.longPress`) | |

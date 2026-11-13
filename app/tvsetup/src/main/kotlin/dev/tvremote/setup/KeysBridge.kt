@@ -224,9 +224,9 @@ class KeysBridge : Service() {
         if (action == KeyEvent.ACTION_UP || o.fire != null) ui.removeCallbacks(multiHold)
         if (action == KeyEvent.ACTION_DOWN) ui.removeCallbacks(multiDbl)
         o.fire?.let { f -> ui.post { fire(f, code) } }
-        when (o.timer) {
-            MultiKey.Timer.HOLD -> { multiCode = code; ui.postDelayed(multiHold, MultiKey.HOLD_MS) }
-            MultiKey.Timer.DOUBLE -> { multiCode = code; ui.postDelayed(multiDbl, MultiKey.DOUBLE_MS) }
+        when (o.timer) {                                              // one timer at a time: a second key down while the first is held (rollover) posted it twice
+            MultiKey.Timer.HOLD -> { ui.removeCallbacks(multiHold); multiCode = code; ui.postDelayed(multiHold, MultiKey.HOLD_MS) }
+            MultiKey.Timer.DOUBLE -> { ui.removeCallbacks(multiDbl); multiCode = code; ui.postDelayed(multiDbl, MultiKey.DOUBLE_MS) }
             MultiKey.Timer.NONE -> { }
         }
         return if (o.eat) true else null

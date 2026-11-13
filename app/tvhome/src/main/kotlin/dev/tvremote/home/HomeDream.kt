@@ -184,6 +184,8 @@ class DreamBody(private val c: Context) {
     }
 
     /** The next picture: read at screen size off the main thread, then crossfaded over the one shown; then the one underneath is let go. */
+    private var bad = 0                                               // unreadable pictures in a row
+
     private fun nextSlide() {
         val v = slides ?: return
         if (pics.isEmpty()) return
@@ -193,7 +195,10 @@ class DreamBody(private val c: Context) {
             val b = Wall.load(f, dm.widthPixels, dm.heightPixels)
             ui.post {
                 val s = slides ?: return@post
-                if (b == null) { ui.postDelayed({ nextSlide() }, 500); return@post }   // unreadable: the next one at once (a list of only such files waits 0.5 s each)
+                if (b == null) {                                      // unreadable: the next one soon; a whole round of them (a USB stick pulled) waits a slide's time
+                    bad++; ui.postDelayed({ nextSlide() }, if (bad >= pics.size) PhotoShow.EVERY_MS else 500); if (bad >= pics.size) bad = 0; return@post
+                }
+                bad = 0
                 val inn = s[1 - front]; val out = s[front]
                 inn.setImageBitmap(b); inn.animate().alpha(1f).setDuration(if (motion) 1200 else 0).withEndAction { out.setImageDrawable(null) }.start()
                 out.animate().alpha(0f).setDuration(if (motion) 1200 else 0).start()

@@ -36,8 +36,8 @@ internal class PlayingWidget(private val w: Widgets, private val box: LinearLayo
 
     private val tick = object : Runnable {
         override fun run() {
-            if (!on) return
-            if (!w.pausedHome && box.isShown) ask(null)
+            if (!on || w.pausedHome) return                           // Home left: no wake-ups every 3 s all evening; [resumed] starts it again
+            if (box.isShown) ask(null)
             ui.postDelayed(this, EVERY_MS)
         }
     }
@@ -51,7 +51,7 @@ internal class PlayingWidget(private val w: Widgets, private val box: LinearLayo
     }
 
     /** Home came back in front: read at once, not at the next tick. */
-    fun resumed() { if (on) ask(null) }
+    fun resumed() { if (on) { ui.removeCallbacks(tick); ui.post(tick) } }
 
     /** OK on the widget. */
     fun ok() {

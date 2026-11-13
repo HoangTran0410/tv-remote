@@ -191,7 +191,8 @@ internal class Guard private constructor(private val c: Context, private val adb
         val at = o.optLong("sleep_at")
         if (at > 0) {
             val left = at - now
-            if (left <= 0) {
+            if (left > 2 * 86_400_000L) Rules.clearSleep(c, at)        // set while the box's clock ran ahead, then corrected: years away, never firing
+            else if (left <= 0) {
                 if (!on) Rules.clearSleep(c, at)                      // already off
                 else if (standby()) { Rules.clearSleep(c, at); RemoteService.alert("sleep") }
                 else if (-left > 10 * 60_000L) Rules.clearSleep(c, at)   // no ADB for ten minutes: not at some later hour, when someone turns the TV on

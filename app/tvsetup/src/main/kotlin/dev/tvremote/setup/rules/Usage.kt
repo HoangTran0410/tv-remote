@@ -23,14 +23,24 @@ internal object Usage {
 
     fun ahead() = AHEAD
 
-    /** The app on screen from the last quarter hour of usage events (usage access is TV Setup's, granted over ADB); "" when none or not known. */
+    /**
+     * The app on screen from the usage events (usage access is TV Setup's, granted over ADB); "" when none or not known. The last
+     * quarter hour first (cheap); a film watched longer leaves no event in it, so a quarter hour with none reads the last [LONG_MS].
+     */
     fun front(c: Context): String = try {
         val now = System.currentTimeMillis()
-        var front = ""
-        events(c, now - 15 * 60_000L, now) { e ->
-            if (e.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND) front = e.packageName ?: ""
-            else if (e.eventType == UsageEvents.Event.MOVE_TO_BACKGROUND && front == e.packageName) front = ""
-        }
-        front
+        front(c, now - 15 * 60_000L, now) ?: front(c, now - LONG_MS, now) ?: ""
     } catch (e: Exception) { "" }
+
+    private const val LONG_MS = 6 * 3_600_000L
+
+    /** The front app from the events in [from]..[to]; null when there were none. */
+    private fun front(c: Context, from: Long, to: Long): String? {
+        var front: String? = null
+        events(c, from, to) { e ->
+            if (e.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND) front = e.packageName ?: ""
+            else if (e.eventType == UsageEvents.Event.MOVE_TO_BACKGROUND) front = if (front == e.packageName) "" else front ?: ""
+        }
+        return front
+    }
 }

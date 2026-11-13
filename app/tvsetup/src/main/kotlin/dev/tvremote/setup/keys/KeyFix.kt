@@ -363,7 +363,7 @@ object KeyFix {
                 }
                 return
             }
-            if (need) wrote = t
+            wrote = if (need) t else 0L                                  // taken out by us: put back within a minute is not "the system took it out"
             val now = list(was, need)
             Settings.Secure.putString(r, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, now.ifEmpty { null })
             Settings.Secure.putInt(r, Settings.Secure.ACCESSIBILITY_ENABLED, if (now.isEmpty()) 0 else 1)
