@@ -483,6 +483,9 @@ async function homeOpen() {
   const shift = el('input', { type: 'checkbox', onchange: () => send({ shift: shift.checked }) });   // HomeConfig "shift", default off
   const dream = el('input', { type: 'checkbox', onchange: () => send({ dream: dream.checked }) });
   const dfaceHead = el('h3', { textContent: T('home.dface') }), dface = el('div', { className: 'fchips' });   // the screensaver's look (HomeConfig "dface"); only a TV Home that reports it
+  // the screensaver as a photo slideshow (HomeConfig "dphoto": "" = off, mine / pictures / dcim / usb; "dpclock" = the clock over it); only a TV Home that reports it
+  const dphotoHead = el('h3', { textContent: T('home.dphoto') }), dphoto = el('div', { className: 'fchips' });
+  const dpclock = el('input', { type: 'checkbox', onchange: () => send({ dpclock: dpclock.checked }) });
   // black screen in the night hours (HomeConfig "ddark": "" = off, else "HH:MM-HH:MM", 30-minute steps); only a TV Home that reports it
   const DARK_ON = '22:00-06:00';
   const ddarkOn = el('input', { type: 'checkbox', onchange: () => send({ ddark: ddarkOn.checked ? DARK_ON : '' }) });
@@ -751,6 +754,10 @@ async function homeOpen() {
     dfaceHead.hidden = dface.hidden = c.dface === undefined;
     dface.replaceChildren(...[['big', 'home.dface_big'], ['modern', 'home.ov_modern'], ['digital', 'home.ov_digital']].map(([k, id]) =>
       el('button', { type: 'button', className: c.dface === k ? 'on' : '', 'aria-pressed': String(c.dface === k), onclick: () => send({ dface: k }) }, T(id))));
+    dphotoHead.hidden = dphoto.hidden = c.dphoto === undefined;
+    dphoto.replaceChildren(...[['', 'home.dphoto_off'], ['mine', 'home.dphoto_mine'], ['pictures', 'home.dphoto_pictures'], ['dcim', 'home.dphoto_dcim'], ['usb', 'home.dphoto_usb']].map(([k, id]) =>
+      el('button', { type: 'button', className: (c.dphoto || '') === k ? 'on' : '', 'aria-pressed': String((c.dphoto || '') === k), onclick: () => send({ dphoto: k }) }, T(id))));
+    dpclock.checked = c.dpclock !== false; dpclock.closest('label').hidden = c.dphoto === undefined || !c.dphoto;
     ddarkOn.closest('label').hidden = c.ddark === undefined;
     const dk = /^(\d\d:\d\d)-(\d\d:\d\d)$/.exec(c.ddark || '');
     ddarkOn.checked = !!dk; ddarkTimes.hidden = c.ddark === undefined || !dk;
@@ -1142,7 +1149,7 @@ async function homeOpen() {
       sect(null, picsHead, pics)]],
     ['widgets', 'chart', 210, 'home.g_widgets', [sect(null, wHead, wList, ...wLines), sect(null, packHead, packBox, packNote), sect(null, layHead, lay, layNote, placeHead, placeLine),
       sect(null, feedHead, feedLine, feedList, feedNote), sect(null, frameHead, frameList, frameNote), sect(null, noteHead, noteLine), sect(null, qrHead, qrList, qrNote)]],
-    ['dream', 'moon', 260, 'home.g_dream', [sect(null, check(dream, 'home.dream'), dfaceHead, dface, check(ddarkOn, 'home.ddark'), ddarkTimes, check(shift, 'home.show_shift'))]],
+    ['dream', 'moon', 260, 'home.g_dream', [sect(null, check(dream, 'home.dream'), dfaceHead, dface, dphotoHead, dphoto, check(dpclock, 'home.dpclock'), check(ddarkOn, 'home.ddark'), ddarkTimes, check(shift, 'home.show_shift'))]],
     ['keys', 'keyboard', 230, 'home.keys', [keysOld, check(keyOn, 'home.keys_on'), keysNote, keysList, autoNote, autoAllBox, autoAllNote, check(homebar, 'home.show_homebar')]],
     ['system', 'power', 200, 'home.g_system', [langHead, langs]],                 // the TV's System page also has the launcher row (TV Setup's picker): TV only
   ];

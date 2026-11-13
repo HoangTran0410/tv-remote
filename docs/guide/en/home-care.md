@@ -7,3 +7,5 @@ Two options for TV Home's look, worked out on the TV with no network.
 3. OLED screen: pick the **Black** background, then turn on **Move the screen a little every minute** (Customize → Screensaver). Off by default.
 4. The whole home screen moves 1 dp a minute inside a 6 dp square, with no visible jump; the wallpaper stays.
 5. Black screensaver at night (Customize → Screensaver): turn it on, then set **From** and **To** in 30-minute steps (OK or Right on the TV). Inside them, a plain black screen. Off by default.
+6. **Screensaver photos** (Customize → Screensaver, or the web page): a slow slideshow, one picture every 20 seconds. Sources: the wallpaper photos you sent, the Pictures or DCIM folder, or a USB stick. Off by default.
+7. A folder needs the photo permission (granted over ADB, or the TV asks once). The clock can be hidden.

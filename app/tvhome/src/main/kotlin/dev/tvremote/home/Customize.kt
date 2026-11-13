@@ -952,6 +952,10 @@ object Customize {
         groups[4].fill = {
             tile(R.drawable.ic_moon, a.getString(R.string.dream), a.getString(R.string.dream_sub), "dream")
             tile(R.drawable.ic_clock, a.getString(R.string.dface), null, "dface", HomeConfig.DFACES.map { it to a.getString(when (it) { "modern" -> R.string.home_ov_modern; "digital" -> R.string.home_ov_digital; else -> R.string.dface_big }) })
+            // photo slideshow (default off: the wallpaper and the clock as before); a folder needs the storage permission, asked here when no client granted it
+            tile(R.drawable.ic_image, a.getString(R.string.dphoto), null, "dphoto", HomeConfig.DPHOTOS.map { it to a.getString(when (it) { "mine" -> R.string.dphoto_mine; "pictures" -> R.string.dphoto_pictures; "dcim" -> R.string.dphoto_dcim; "usb" -> R.string.dphoto_usb; else -> R.string.dphoto_off }) },
+                then = { PhotoShow.ask(a, Store.get(a).optString("dphoto")) })
+            tile(R.drawable.ic_clock, a.getString(R.string.dpclock), null, "dpclock")
             // dark hours (OLED care, default off): a switch, and when on the From and To tiles, OK opens a stepper (timeStepper)
             fun span() = HomeConfig.dark(Store.get(a).optString("ddark")).ifEmpty { null }?.split("-")
             fun setSpan(from: String, to: String) { Store.change(a, JSONObject().put("ddark", if (from == to) "" else "$from-$to")) }

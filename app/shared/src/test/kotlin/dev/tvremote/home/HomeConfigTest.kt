@@ -15,6 +15,13 @@ class HomeConfigTest {
     private fun dock(c: JSONObject) = c.getJSONArray("dock").let { a -> List(a.length()) { a.getString(it) } }
     private fun hidden(c: JSONObject) = c.getJSONArray("hidden").let { a -> List(a.length()) { a.getString(it) } }
 
+    @Test fun screensaverPhotosDefaultOffAndOnlyKnownModes() {
+        assertEquals("", HomeConfig.clean(JSONObject()).getString("dphoto"))
+        assertEquals(true, HomeConfig.clean(JSONObject()).getBoolean("dpclock"))
+        assertEquals("usb", HomeConfig.clean(JSONObject().put("dphoto", "usb")).getString("dphoto"))
+        assertEquals("", HomeConfig.clean(JSONObject().put("dphoto", "/etc")).getString("dphoto"))
+    }
+
     @Test fun darkHoursWrapMidnightAndDefaultOff() {
         fun cl(v: String) = HomeConfig.clean(JSONObject().put("ddark", v)).getString("ddark")
         assertEquals("", HomeConfig.clean(JSONObject()).getString("ddark"))

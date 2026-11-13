@@ -7,3 +7,5 @@ Hai tùy chọn cho nền của TV Home, tính trên TV, không cần mạng.
 3. Màn OLED: chọn nền **Đen**, rồi bật **Nhích nhẹ màn hình mỗi phút** (Tùy chỉnh → Màn chờ). Mặc định tắt.
 4. Cả màn hình chính dịch 1 dp mỗi phút trong ô vuông 6 dp, không thấy giật; hình nền đứng yên.
 5. Màn chờ tối đen ban đêm (Tùy chỉnh → Màn chờ): bật, rồi chọn **Từ** và **Đến**, mỗi bước 30 phút (trên TV: OK hoặc Phải). Trong giờ đó chỉ còn màn đen. Mặc định tắt.
+6. **Ảnh cho màn chờ** (Tùy chỉnh → Màn chờ, hoặc trang web): chiếu ảnh chậm, 20 giây một tấm, mờ dần. Nguồn: ảnh nền bạn đã gửi, thư mục Pictures, DCIM hoặc USB. Mặc định tắt.
+7. Thư mục cần quyền đọc ảnh (cấp qua ADB, hoặc TV hỏi một lần). Có thể giấu đồng hồ.
