@@ -32,7 +32,7 @@ dev.tvremote.setup/.X`, `HomeInfo`'s authority, appops): the Application, activi
 |---|---|
 | `rules/` | `Rules`, `Guard`, `IdleOff`, `Clock`, `Kids` (+ `Lockout`), `Totp`, `Usage`: sleep timer, bedtime, limits, the PIN lock, "turn off when nobody uses it" |
 | `home/` | `HomeApp`, `HomeCompile`, `HomeControl`, `HomeKey`, `HomeKeys` (+ `AutoOpen`), `HomePower`, `LiveWidgets`, `LauncherGuard`, `Reoptimize`: what TV Home asks of TV Setup, the home screen swap |
-| `keys/` | `KeyFix`, `KeyList`, `KeyLog`, `KeysAddon`, `HoldKeys`: the key filter and its add-on |
+| `keys/` | `KeyFix`, `KeyList`, `KeyLog`, `KeysAddon`, `HoldKeys`, `MultiKey` (double press and hold per key, flow home-bar K1-K5): the key filter and its add-on |
 | `link/` | `Paired`, `PairBackoff`, `Scope`, `Tls`, `LinkFailure`, `OnPhone`, `DnsWatch`, `KeepAdb`, `KeepAwake`, `TailscaleWatch`: who may reach the TV and keeping the link up |
 | `health/` | `AdbReport`, `AutoUpdate`, `Nightly`, `Stats`, `Support`, `SupportDump`: updates, nightly work, stats, support |
 

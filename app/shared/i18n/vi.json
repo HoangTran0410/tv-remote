@@ -4687,5 +4687,14 @@
  "find.title": "Tìm tính năng",
  "find.placeholder": "Tìm: hẹn giờ, khóa app, chụp màn hình…",
  "find.none": "Không thấy. Thử từ khác.",
- "find.guide": "Hướng dẫn"
+ "find.guide": "Hướng dẫn",
+ "home.key_menu": "Phím Menu",
+ "home.key_info": "Phím Thông tin",
+ "home.key_guide": "Phím Hướng dẫn",
+ "home.multi_head": "Bấm đúp và giữ",
+ "home.multi_note": "Việc khác cho bấm đúp hoặc giữ. Chỉ phím có bấm đúp mới chờ một chút; còn lại chạy ngay.",
+ "home.multi_dbl": "Bấm đúp",
+ "home.multi_hold": "Giữ",
+ "home.multi_none": "Chưa đặt",
+ "core.need_keymulti": "bấm đúp hoặc giữ một phím remote"
 }

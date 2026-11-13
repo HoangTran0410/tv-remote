@@ -148,7 +148,7 @@ object Store {
         if (change.has("anim") || applied) e.putBoolean("anim_chosen", true)  // from now on the choice is theirs
         if (change.has("wall") || change.has("walls") || change.has("wevery") || applied) e.putLong("wlast", System.currentTimeMillis())   // a new choice gets its whole turn
         e.apply()
-        if (listOf("keyon", "keyapps", "autoon", "autoapp", "autoall", "autolast", "homebar").any { change.has(it) }) Keys.push(c)   // TV Setup does the keys everywhere, the power-on app and the Home bar
+        if (listOf("keyon", "keyapps", "keydbl", "keyhold", "autoon", "autoapp", "autoall", "autolast", "homebar").any { change.has(it) }) Keys.push(c)   // TV Setup does the keys everywhere, the power-on app and the Home bar
         synchronized(this) { themeKey = null }                    // [raw] is still the text before this change
         val out = effective(c, JSONObject(n.toString()))
         change.optJSONObject("theme")?.let { ThemeShots.after(c, it, n) }   // the previews' pictures: taken when a theme is saved, dropped when it goes

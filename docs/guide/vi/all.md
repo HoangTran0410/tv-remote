@@ -744,6 +744,7 @@ Phím màu, phím số và nút đã hết tác dụng có thể mở app bạn 
 1. Trên TV: biểu tượng **⚙** góc trên → **Cài đặt nhanh** → **Tùy chỉnh** → **Phím nhanh & khi bật TV** → **Phím nhanh**. Điện thoại, máy tính: cùng tên, trong thẻ **Phím nhanh & khi bật TV**.
 2. Chọn ô của một phím, rồi chọn app, lối tắt hoặc live widget. Lần đầu chọn, phím tự bật. Ngoài TV Home, TV hiện "TV Setup đã mở…" để biết không phải TV lỗi.
 3. Ô **Khi bật TV**: chọn một app, hoặc **Ứng dụng vừa dùng** (app đang chạy lúc tắt TV). Mở một lần mỗi lần bật, không mở nếu TV đã vào app khác. Chọn cái này thì cái kia tắt.
+4. Cũng trong thẻ đó, mục **Bấm đúp và giữ**: mỗi phím màu, nút YouTube/Netflix/Prime, Menu, Info, Guide có thể mở một app, lối tắt (cả cảnh) khi bấm đúp hoặc giữ 0,6 giây. Phím có bấm đúp chờ 0,3 giây xem có bấm lần hai không; phím không có vẫn chạy ngay. Phím có giữ chạy khi nhả tay. Không dùng được cho Home, Back, mũi tên, OK, âm lượng và phím số. Cần TV Setup mới nhất; phím chưa có việc riêng cần ADB để trả lại lần bấm thường.
 
 | Phím | Gán được khi nào |
 | --- | --- |

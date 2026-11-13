@@ -4825,5 +4825,14 @@
  "find.title": "Find a feature",
  "find.placeholder": "Try: sleep, lock apps, screenshot…",
  "find.none": "Nothing found. Try another word.",
- "find.guide": "User guide"
+ "find.guide": "User guide",
+ "home.key_menu": "Menu key",
+ "home.key_info": "Info key",
+ "home.key_guide": "Guide key",
+ "home.multi_head": "Double press and hold",
+ "home.multi_note": "Another action for a double press or a hold. Only keys with a double press wait a moment; the rest stay instant.",
+ "home.multi_dbl": "Double press",
+ "home.multi_hold": "Hold",
+ "home.multi_none": "Not set",
+ "core.need_keymulti": "a double press or hold on a remote key"
 }

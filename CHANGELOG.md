@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Remote keys: a double press and a hold per key (color keys, YouTube / Netflix / Prime buttons, Menu, Info, Guide) can each open an app, a shortcut or a scene, set in Quick keys on the page. Off by default; only a key with a double press waits 0.3 s, the others stay instant. Needs TV Setup 0.51.1.
+
 - Xiaomi TVs on Android 14: a new home screen no longer turns PatchWall off (with it off, every volume press blanked the screen); Home reaches it through TV Setup's key filter instead.
 - TV Home: a switch to keep the clock, date and top buttons in place while the apps scroll under them (off by default; Customize > Look, the header's menu and the page). Apps and widgets fade out as they pass under it.
 - Clearer names for Quick keys in every language: "Quick keys & power-on" for the card, "press a remote key to open an app" for what it does.

@@ -7,7 +7,7 @@
   const LOOK = ['wall', 'walls', 'wurl', 'wcol', 'wdir', 'wmode', 'wsnap', 'wkeep', 'wevery', 'shade', 'wfit', 'wfade',
     'widgets', 'wsize', 'wopt', 'wplace', 'cols', 'center', 'rows', 'focus', 'tstyle', 'accent', 'motion', 'anim', 'clock24', 'greet'];
   const GRID = ['dock', 'hidden', 'order', 'folders', 'tiles', 'names'];
-  const KEYS = ['keyon', 'keyapps', 'autoon', 'autoapp', 'autolast', 'autoall'];
+  const KEYS = ['keyon', 'keyapps', 'keydbl', 'keyhold', 'autoon', 'autoapp', 'autolast', 'autoall'];
   const isQr = (w) => /^qr[0-9]+$/.test(w);                              // HomeQr.KEYS: a code (a Wi-Fi password) is not copied
   // id, where it lives (home: TV Home's settings, rules: TV Setup's), the words (tvcopy.g_<id>)
   const GROUPS = [
@@ -95,7 +95,7 @@
           if (id === 'look' && k === 'widgets') v = (v || []).filter((w) => !isQr(w));
           if (id === 'look' && k === 'wsize') { const o = {}; Object.keys(v || {}).forEach((w) => { if (!isQr(w)) o[w] = v[w]; }); v = o; }
           if (k === 'dock' || k === 'hidden' || k === 'order' || k === 'tiles') { const kept = keep(v); kept.length !== v.length && v.filter((t) => !kept.includes(t)).forEach((t) => row.dropped.push(targetPkg(t) || t)); v = kept; }
-          if (k === 'names' || k === 'keyapps') {
+          if (k === 'names' || k === 'keyapps' || k === 'keydbl' || k === 'keyhold') {
             const o = {}; Object.keys(v || {}).forEach((x) => { if (k === 'names' ? present(have, x, avail) : present(have, v[x], avail)) o[x] = v[x]; else row.dropped.push(targetPkg(k === 'names' ? x : v[x]) || x); }); v = o;
           }
           if (k === 'folders') {

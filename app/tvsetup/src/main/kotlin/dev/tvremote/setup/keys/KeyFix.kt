@@ -339,6 +339,7 @@ object KeyFix {
             android.util.Log.i("KeyFix", "global keys ${map.size}, to bring back ${now0.keys}, service on=$has")   // adb logcat -s KeyFix
             val need = (wanted(c) && now0.isNotEmpty()) || HoldKeys.on(c) || MicVoice.on(c)   // a dead key to bring back, "hold to use Input" (HoldKeys), or the mic button (MicVoice)
                 || KeyTest.live()                                     // the key tester is open: Home and the app buttons are shown through the filter
+                || HomeKeys.multiOn(c)                                // a key with a double press or a hold of its own (MultiKey)
                 || HomeKeys.bar(c)                                    // Home over an app shows TV Home's bar ([HomeBar])
                 || HomeKey.pkg(c) != null                             // Home to the launcher picked: asked for on the page, not by the dead-key switch
             if (need && !KeysAddon.current(c)) { KeysAddon.installThen(c) { sync(c) }; return }   // the service is in the add-on: put it on the TV first (it comes back here)
