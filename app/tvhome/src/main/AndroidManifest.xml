@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Android 12+ wants it beside FINE -->
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />     <!-- Android TV's pairing screen (Control Center's Bluetooth) needs it: ADB grants it (HomeConfig.GRANT_WIFI), else asked on the first press -->
     <uses-permission android:name="android.permission.READ_TV_LISTINGS" />       <!-- other apps' Play Next and channels (apps/Watch.kt): granted over ADB (HomeConfig.GRANT_WIFI) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />   <!-- the screensaver's photo folders (PhotoShow): granted over ADB (HomeConfig.GRANT_WIFI) or asked once in Customize -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />      <!-- the same on Android 13+ -->
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />   <!-- only ever granted over ADB (Dream.kt): the screensaver switch -->
     <queries>                                                         <!-- the apps it lists, and TV Setup for the usage widget -->
         <package android:name="dev.tvremote.setup" />

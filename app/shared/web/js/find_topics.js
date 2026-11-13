@@ -31,7 +31,7 @@ const FIND_TOPICS = [
   ["home-folders","Thư mục trên lưới","Folders on the grid","thu muc folder nhom app luoi gom"],
   ["home-pin","Ghim link, deeplink lên TV Home","Pin a link or deep link to TV Home","youtube ghim pin kenh channel video playlist danh sach phat link deeplink deep link sua link doi link edit change chia se share mo tren tv open"],
   ["home-themes","Chủ đề TV Home","TV Home themes","chu de themes giao dien look preview xem truoc luu save ruong bac thang sapa video nen web"],
-  ["home-care","Bầu trời và màn OLED","Sun sky and OLED care","bau troi theo gio sky mat troi mon binh minh hoang hon sun dawn dusk den thuan pure black oled burn-in in hang nhich man hinh pixel shift"],
+  ["home-care","Bầu trời và màn OLED","Sun sky and OLED care","anh man cho slideshow photo screensaver usb pictures dcim bau troi theo gio sky mat troi mon binh minh hoang hon sun dawn dusk den thuan pure black oled burn-in in hang nhich man hinh pixel shift"],
   ["home-control","Cài đặt nhanh (TV Home)","Quick settings (TV Home)","trung tam dieu khien control center nhanh mang am thanh hen gio khoa tre em khoi dong lai don ram"],
   ["home-app-menu","Giữ OK trên app ở TV Home","Hold OK on an app in TV Home","giu ok long press menu app doi ten rename khoa lock gioi han limit pin gan phim assign key bao tri force stop cache go uninstall"],
   ["home-quickkeys","Phím nhanh của TV Home","TV Home Quick keys","phim nhanh quick keys ban phim keypad 1-9 phim mau khi bat tv power on gan phim"],

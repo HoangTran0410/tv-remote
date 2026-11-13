@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home screensaver: a photo slideshow (Customize → Screensaver, or the web page) from the wallpaper photos you sent, the TV's Pictures or DCIM folder, or a USB stick; crossfade every 20 s, optional clock, off by default.
 - Xiaomi TVs on Android 14: a new home screen no longer turns PatchWall off (with it off, every volume press blanked the screen); Home reaches it through TV Setup's key filter instead.
 - TV Home: a switch to keep the clock, date and top buttons in place while the apps scroll under them (off by default; Customize > Look, the header's menu and the page). Apps and widgets fade out as they pass under it.
 - Clearer names for Quick keys in every language: "Quick keys & power-on" for the card, "press a remote key to open an app" for what it does.

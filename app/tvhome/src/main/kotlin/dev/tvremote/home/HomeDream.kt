@@ -17,6 +17,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextClock
 import android.widget.TextView
+import java.io.File
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -82,6 +83,11 @@ class DreamBody(private val c: Context) {
     private val minute = object : Runnable { override fun run() { refresh(); if (!dark()) moveClock(); ui.postDelayed(this, untilNextMinute()) } }
     private var darkSpan = ""                                      // "ddark": the night hours the screen is black ("" = off: no view, no check)
     private var blackout: View? = null
+    private var slides: Array<ImageView>? = null                   // the photo slideshow's two layers: the one shown and the one fading in (at most two pictures in memory)
+    private var pics: List<File> = emptyList()
+    private var at = 0
+    private var front = 0
+    private var clockOn = true
 
     fun build(): View {
         Font.load(c)
@@ -93,17 +99,32 @@ class DreamBody(private val c: Context) {
         val root = FrameLayout(c)
         root.background = conf.optString("wall").let { wallDrawable(wallColors(it, conf), wallDir(it, conf)) }
         val id = conf.optString("wall")
-        if (Walls.isPicture(id) || WallArt.has(id)) {                 // a photo, Bing's picture or a drawn scene: all become one bitmap here
-            val v = ImageView(c).apply { scaleType = ImageView.ScaleType.CENTER_CROP; alpha = 0f }
+        val mode = conf.optString("dphoto")
+        clockOn = mode.isEmpty() || conf.optBoolean("dpclock", true)
+        fun loadWall() {
+            if (!(Walls.isPicture(id) || WallArt.has(id))) return
+            val v = ImageView(c).apply { scaleType = ImageView.ScaleType.CENTER_CROP; alpha = 0f }   // a photo, Bing's picture or a drawn scene: all become one bitmap here
             wall = v
-            root.addView(v, FrameLayout.LayoutParams(-1, -1))
+            root.addView(v, 0, FrameLayout.LayoutParams(-1, -1))
             bg.execute {
                 val (bw, bh) = Wall.want(dm.widthPixels, dm.heightPixels)
                 val b = if (WallArt.has(id)) Walls.small(c, id, bw, bh, false) else Walls.bitmap(c, id, dm.widthPixels, dm.heightPixels)   // the dim below is its veil
                 ui.post { if (b != null && shown == null && wall != null) { shown = b; v.setImageBitmap(b); v.animate().alpha(1f).setDuration(if (motion) 900 else 0).start(); startDrift(v) } }
             }
         }
-        if (id == HomeConfig.WEB) {                                   // the page, full-screen: no drift (it moves by itself); gone if it cannot load
+        if (mode.isEmpty()) loadWall()
+        else {                                                        // photos: the list is read off the main thread; none found = the wallpaper as before
+            slides = Array(2) { ImageView(c).apply { scaleType = ImageView.ScaleType.CENTER_CROP; alpha = 0f }.also { root.addView(it, FrameLayout.LayoutParams(-1, -1)) } }
+            bg.execute {
+                val files = PhotoShow.list(c, mode)
+                val ord = PhotoShow.order(files.size, System.nanoTime())
+                ui.post {
+                    if (files.isEmpty()) { slides?.forEach { root.removeView(it) }; slides = null; loadWall() }
+                    else { pics = ord.map { files[it] }; nextSlide() }
+                }
+            }
+        }
+        if (id == HomeConfig.WEB && mode.isEmpty()) {                                   // the page, full-screen: no drift (it moves by itself); gone if it cannot load
             web = WebWall.make(c, conf.optString("wurl"), { WebWall.stop(web); web = null })
             web?.let { root.addView(it, FrameLayout.LayoutParams(-1, -1)) }
         }
@@ -145,8 +166,9 @@ class DreamBody(private val c: Context) {
             root.addView(blackout, FrameLayout.LayoutParams(-1, -1))   // on top of everything: a pure black pixel is an unlit pixel on an OLED
             dark()
         }
+        if (!clockOn) block.visibility = View.INVISIBLE
         refresh()
-        ui.postDelayed(minute, untilNextMinute())
+        if (clockOn || darkSpan.isNotEmpty()) ui.postDelayed(minute, untilNextMinute())   // photos alone and no dark hours: no minute tick at all
         return root
     }
 
@@ -156,13 +178,34 @@ class DreamBody(private val c: Context) {
         val on = HomeConfig.darkAt(darkSpan, Calendar.getInstance().let { it.get(Calendar.HOUR_OF_DAY) * 60 + it.get(Calendar.MINUTE) })
         if ((b.visibility == View.VISIBLE) == on) return on
         b.visibility = if (on) View.VISIBLE else View.GONE
-        block.visibility = if (on) View.INVISIBLE else View.VISIBLE
+        block.visibility = if (on || !clockOn) View.INVISIBLE else View.VISIBLE
         drift?.let { if (on) it.pause() else it.resume() }
         return on
     }
 
+    /** The next picture: read at screen size off the main thread, then crossfaded over the one shown; then the one underneath is let go. */
+    private fun nextSlide() {
+        val v = slides ?: return
+        if (pics.isEmpty()) return
+        val f = pics[at++ % pics.size]
+        val dm = c.resources.displayMetrics
+        bg.execute {
+            val b = Wall.load(f, dm.widthPixels, dm.heightPixels)
+            ui.post {
+                val s = slides ?: return@post
+                if (b == null) { ui.postDelayed({ nextSlide() }, 500); return@post }   // unreadable: the next one at once (a list of only such files waits 0.5 s each)
+                val inn = s[1 - front]; val out = s[front]
+                inn.setImageBitmap(b); inn.animate().alpha(1f).setDuration(if (motion) 1200 else 0).withEndAction { out.setImageDrawable(null) }.start()
+                out.animate().alpha(0f).setDuration(if (motion) 1200 else 0).start()
+                front = 1 - front
+                if (pics.size > 1 || at < 2) ui.postDelayed({ if (blackout?.visibility == View.VISIBLE) ui.postDelayed({ nextSlide() }, 60_000) else nextSlide() }, PhotoShow.EVERY_MS)
+            }
+        }
+    }
+
     fun stop() {
         ui.removeCallbacksAndMessages(null)
+        slides?.forEach { it.animate().cancel(); it.setImageDrawable(null) }; slides = null
         drift?.cancel(); drift = null
         wall?.setImageDrawable(null); wall = null; shown = null
         WebWall.stop(web); web = null

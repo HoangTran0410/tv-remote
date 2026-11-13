@@ -124,6 +124,11 @@ import org.json.JSONObject
  *           ADB) and puts the previous screensaver back when this is switched off
  *   dface   the screensaver's look ([DFACES]): "big" (the big clock and the day, as before), "modern" (StandBy: the Modern clock
  *           face beside the day, the clock widget's own drawing), "digital" (the Digital face, filling the screen)
+ *   dphoto  the screensaver as a slow slideshow ([DPHOTOS]): "" = off (default: the wallpaper and the clock), "mine" = the wallpaper photos the person
+ *           sent to TV Home, "pictures" / "dcim" = the TV's /sdcard/Pictures or /sdcard/DCIM, "usb" = a USB stick. Crossfade every 20 s, pictures read at
+ *           screen size; nothing runs unless the screensaver is on screen. Folders need READ_MEDIA_IMAGES / READ_EXTERNAL_STORAGE ([GRANT_WIFI]); an empty
+ *           or unreadable source shows the wallpaper as before
+ *   dpclock the clock and the day over the slideshow, default true (false = the pictures alone; [dphoto] on only)
  *   ddark   dark hours of the screensaver: "" = off (default), else "HH:MM-HH:MM" (start-end, minutes 00 or 30, wraps midnight; start == end = off,
  *           [dark] cleans it; the older "22-6" is read as "22:00-06:00"): the screen is fully black then (OLED care, a TV left on at night).
  *           Checked by the screensaver's once-a-minute tick; not a theme key
@@ -182,8 +187,8 @@ object HomeConfig {
     const val WRITE_SECURE = "android.permission.WRITE_SECURE_SETTINGS"
     /** Granted over ADB when TV Home is installed or set up, never asked on the TV: the Wi-Fi's name is location to Android (8.1+), and
      *  Android TV's "pair an accessory" screen (Control Center's Bluetooth) refuses to open for an app without BLUETOOTH_CONNECT (12+),
-     *  and other apps' Play Next and channels are READ_TV_LISTINGS (apps/Watch.kt); WRITE_SECURE_SETTINGS lets the Ad blocking widget set Private DNS. */
-    const val GRANT_WIFI = "pm grant $PKG android.permission.ACCESS_FINE_LOCATION >/dev/null 2>&1; pm grant $PKG android.permission.BLUETOOTH_CONNECT >/dev/null 2>&1; pm grant $PKG android.permission.READ_TV_LISTINGS >/dev/null 2>&1; pm grant $PKG $WRITE_SECURE >/dev/null 2>&1; "
+     *  and other apps' Play Next and channels are READ_TV_LISTINGS (apps/Watch.kt); WRITE_SECURE_SETTINGS lets the Ad blocking widget set Private DNS; READ_EXTERNAL_STORAGE (to Android 12) / READ_MEDIA_IMAGES (13+) the screensaver's photo folders (a grant of the one a version lacks is a silent no-op). */
+    const val GRANT_WIFI = "pm grant $PKG android.permission.ACCESS_FINE_LOCATION >/dev/null 2>&1; pm grant $PKG android.permission.BLUETOOTH_CONNECT >/dev/null 2>&1; pm grant $PKG android.permission.READ_TV_LISTINGS >/dev/null 2>&1; pm grant $PKG $WRITE_SECURE >/dev/null 2>&1; pm grant $PKG android.permission.READ_EXTERNAL_STORAGE >/dev/null 2>&1; pm grant $PKG android.permission.READ_MEDIA_IMAGES >/dev/null 2>&1; "
     /**
      * Private DNS names that block ads (DNS-over-TLS, host names only), the first is what the "adblock" widget turns on. The page's
      * `DNS_SETS.ads` in js/tvset.js is the same list (tests/home_adblock.test.js keeps the two equal).
@@ -471,6 +476,7 @@ object HomeConfig {
     const val GNAME_MAX = 24
     const val GTEXT_MAX = 60
     val DFACES = listOf("big", "modern", "digital")
+    val DPHOTOS = listOf("", "mine", "pictures", "dcim", "usb")
     const val DARK_ON = "22:00-06:00"                                // what switching the dark hours on starts with
     /** [v] as "HH:MM-HH:MM" in half hours, or "" when it is off, bad or start == end. Reads the older "22-6" (hours) too. */
     fun dark(v: String): String {
@@ -809,6 +815,8 @@ object HomeConfig {
             .put("rows", rows(o.optDouble("rows", 0.0)))
             .put("dream", o.optBoolean("dream", false))
             .put("dface", o.optString("dface").takeIf { it in DFACES } ?: "big")
+            .put("dphoto", o.optString("dphoto").takeIf { it in DPHOTOS } ?: "")
+            .put("dpclock", o.optBoolean("dpclock", true))
             .put("ddark", dark(o.optString("ddark")))
             .put("center", o.optBoolean("center", false))
             .put("wplace", o.optString("wplace").takeIf { it in WPLACES } ?: WPLACES[0])
