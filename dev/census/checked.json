@@ -2774,6 +2774,11 @@
   "n": 1,
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
+ "a0ef02bfc8edf9bdb3f78d1d|0.51.0": {
+  "at": "2026-11-13T10:14:42+07:00",
+  "n": 1,
+  "note": "keyfix_refused on an Amlogic t950s box (sdk 33, fake redfin fps, rs allow, another a11y app on): firmware drops our a11y entry; told on the clients since e9452995"
+ },
  "a11df287c4b27a276b8f644e|0.27.0": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
