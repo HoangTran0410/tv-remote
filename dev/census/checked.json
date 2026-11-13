@@ -2239,6 +2239,16 @@
   "n": 1,
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
+ "758c005882cb2cbebf891004|0.47.0": {
+  "at": "2026-11-13T20:32:22+07:00",
+  "n": 1,
+  "note": "rules_no_adb on a CHiQ AI PONT (mt5896, sdk 34): a rule could not turn the TV off, ADB still connecting and 5555 closed (adbd up, no TCP port). A user state, the message already says what to do; not a fault"
+ },
+ "758c005882cb2cbebf891004|0.51.0": {
+  "at": "2026-11-13T20:32:22+07:00",
+  "n": 1,
+  "note": "rules_no_adb on a CHiQ AI PONT (mt5896, sdk 34): a rule could not turn the TV off, ADB still connecting and 5555 closed (adbd up, no TCP port). A user state, the message already says what to do; not a fault"
+ },
  "768f27f158deb2344eee289b|0.33.1": {
   "at": "2026-10-29T17:19:46+07:00",
   "n": 1,
