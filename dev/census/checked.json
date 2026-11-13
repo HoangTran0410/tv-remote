@@ -1289,6 +1289,11 @@
   "n": 1,
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
+ "49e38a61f2ba4601370c010f|0.51.0": {
+  "at": "2026-11-13T15:07:19+07:00",
+  "n": 1,
+  "note": "keyfix_refused on a Skyworth SWTV-21SA (sdk 34, rs allow): add-on stopped, a cleaner force-stops it and Android drops the a11y entry (like TCL 65771855); told on the clients since e9452995"
+ },
  "4a0f884eb44a53afe877b904|0.34.1": {
   "at": "2026-10-30T09:08:10+07:00",
   "n": 1,
