@@ -4055,14 +4055,29 @@
   "note": "fixed: Marks.text keeps the character when the drawable file is gone (APK replaced under a running app)"
  },
  "ec713a7fc15e852dcdb0ef7b|0.38.0": {
-  "at": "2026-11-03T06:59:49+07:00",
+  "at": "2026-11-13T21:02:40+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB refused on a Skyworth SW3_ATV TV (Android 9): ADB debugging on but no network port 5555 (no Wireless debugging before Android 11). TV Setup already says so (adb_no_port + adb_no_port_howto, MainActivity adbOn branch); a health report, not a code fault"
  },
  "ec713a7fc15e852dcdb0ef7b|0.40.0": {
-  "at": "2026-11-03T06:59:49+07:00",
+  "at": "2026-11-13T21:02:40+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TV Setup ADB refused on a Skyworth SW3_ATV TV (Android 9): ADB debugging on but no network port 5555 (no Wireless debugging before Android 11). TV Setup already says so (adb_no_port + adb_no_port_howto, MainActivity adbOn branch); a health report, not a code fault"
+ },
+ "ec713a7fc15e852dcdb0ef7b|0.47.0": {
+  "at": "2026-11-13T21:02:40+07:00",
+  "n": 2,
+  "note": "TV Setup ADB refused on a Skyworth SW3_ATV TV (Android 9): ADB debugging on but no network port 5555 (no Wireless debugging before Android 11). TV Setup already says so (adb_no_port + adb_no_port_howto, MainActivity adbOn branch); a health report, not a code fault"
+ },
+ "ec713a7fc15e852dcdb0ef7b|0.49.0": {
+  "at": "2026-11-13T21:02:40+07:00",
+  "n": 2,
+  "note": "TV Setup ADB refused on a Skyworth SW3_ATV TV (Android 9): ADB debugging on but no network port 5555 (no Wireless debugging before Android 11). TV Setup already says so (adb_no_port + adb_no_port_howto, MainActivity adbOn branch); a health report, not a code fault"
+ },
+ "ec713a7fc15e852dcdb0ef7b|0.51.0": {
+  "at": "2026-11-13T21:02:40+07:00",
+  "n": 2,
+  "note": "TV Setup ADB refused on a Skyworth SW3_ATV TV (Android 9): ADB debugging on but no network port 5555 (no Wireless debugging before Android 11). TV Setup already says so (adb_no_port + adb_no_port_howto, MainActivity adbOn branch); a health report, not a code fault"
  },
  "ee16781ca31682bbe27f8af8|0.42.0": {
   "at": "2026-11-04T03:07:32+07:00",
