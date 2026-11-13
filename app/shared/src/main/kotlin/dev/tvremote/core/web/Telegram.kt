@@ -477,7 +477,10 @@ class Telegram(
         val text = w("telegram.al_" + (args.firstOrNull { it.first == "why" }?.second ?: kind), *args)
         WireLog.all.add("→", "telegram alert $kind → ${to.size} chat(s)")
         history.add(now, null, "alert $kind", "ok", to.map { it.name })
-        val job = Runnable { for (c in to) send(c.id, text) }
+        // "limit" says which app (or the TV's total: pkg ""): a parent with Full rights answers with one tap, the same buttons and grant as a child's question
+        val more = args.firstOrNull { it.first == "pkg" }?.second?.toString()?.takeIf { kind == "limit" && it.length <= 50 && (it.isEmpty() || PKG.matches(it)) }
+        val markup = more?.let { p -> keyboard(listOf(listOf(button(w("tg.btn_30"), "u:30:$p"), button(w("tg.btn_60"), "u:60:$p"), button(w("tg.btn_today"), "u:d:$p")))) }
+        val job = Runnable { for (c in to) send(c.id, text, if (c.scope == FULL) markup else null) }
         if (background) speaker.execute { try { job.run() } catch (e: Exception) { WireLog.all.add("·", "telegram alert: " + clean(e.message ?: "")) } } else job.run()
     }
 

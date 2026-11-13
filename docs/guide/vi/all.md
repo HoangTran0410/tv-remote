@@ -1054,6 +1054,7 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 2. Bấm **Thêm giới hạn app**, chọn app và số phút mỗi ngày (30 phút đến 4 giờ).
 3. Hết giờ, TV báo trước rồi đóng app đó.
 4. **+30p** cho app thêm 30 phút hôm nay; **Đặt lại** bỏ phần cho thêm.
+5. Con hết giờ và bạn đang ở xa? Tin báo Telegram “đã đóng app” có nút **30 phút · 1 giờ · Hôm nay**: một chạm là app mở lại đến hết thời gian đó rồi tự đóng lại, không phải sửa giới hạn. Cùng nút ở [Telegram](#telegram-more).
 
 | Thẻ | Làm gì |
 | --- | --- |
@@ -1103,7 +1104,7 @@ Ví dụ: YouTube chỉ mở từ thứ Hai đến thứ Sáu, 16:00 đến 18:0
 
 Giờ qua nửa đêm (22:00 đến 02:00) tính cho ngày bắt đầu.
 
-Trong giờ không hỏi PIN, trừ app đã khóa bằng [mã PIN](#lock). Cho thêm phút hôm nay: **＋30 phút** ở dòng của app.
+Trong giờ không hỏi PIN, trừ app đã khóa bằng [mã PIN](#lock). Cho thêm phút hôm nay: **＋30 phút** ở dòng của app. Ngoài giờ, **＋30 phút** mở app 30 phút rồi tự đóng lại.
 
 > 💡 Cần TV Setup bản mới (nhiều khung giờ cần bản mới hơn). Lịch chạy ngay trên TV, không cần điện thoại bật. Không chặn được riêng YouTube Shorts: chỉ chặn được cả app.
 
@@ -1177,7 +1178,7 @@ Thêm lệnh cho bot, và TV tự nhắn khi có việc. Cần đã ghép đôi 
 1. **/apps** hiện app dùng nhiều nhất hôm nay; **/usage** cho 5 app dùng lâu nhất và tổng giờ màn hình.
 2. **/now** cho biết đang phát gì, kèm nút chụp màn hình. **/channel** mở kênh trong TV Channels.
 3. **/bedtime**, **/limits**, **/schedule** cho xem luật. Chat **Toàn quyền** bật/tắt giờ ngủ, chặn hoặc mở app; mỗi thay đổi có nút **Hoàn tác**.
-4. **/alerts** chọn tin TV tự gửi: bật/tắt TV, app bị đóng, giờ ngủ, hẹn giờ tắt, thiết bị mới ghép. Tối đa một tin mỗi loại mỗi phút.
+4. **/alerts** chọn tin TV tự gửi: bật/tắt TV, app bị đóng, giờ ngủ, hẹn giờ tắt, thiết bị mới ghép. Tối đa một tin mỗi loại mỗi phút. Tin “đã đóng app” có nút **30 phút · 1 giờ · Hôm nay** (chat quyền Đầy đủ): một chạm cho con thêm giờ, tự hết.
 
 Trong **🛠️ Cài đặt** bạn thấy trạng thái bot, mã QR để ghép đôi bằng một lần quét, từng chat với quyền và loại tin, và lịch sử 7 ngày. Nội dung /type và /say không được lưu.
 

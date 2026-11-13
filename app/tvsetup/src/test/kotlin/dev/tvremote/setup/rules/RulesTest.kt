@@ -249,6 +249,27 @@ class RulesTest {
         assertTrue(Rules.windowsText(JSONObject("""{"days":[1,2],"from":"16:00","to":"18:00"}""")).endsWith(" 16:00–18:00"))   // the words of the days come from the language files
     }
 
+    @Test fun anAppGrantLiftsThatAppOnlyAndEndsByItself() {
+        val o = JSONObject()
+        Rules.apply(o, d("""{"do":"unlock","pkg":"$yt","minutes":30}"""), now)
+        assertEquals(now + 30 * 60_000L, Rules.appGrant(o, yt, now))
+        assertTrue(Rules.appOpen(o, yt, now))
+        assertFalse(Rules.appOpen(o, "com.netflix.ninja", now))                     // another app stays closed
+        assertEquals(0L, Rules.appGrant(o, yt, now + 30 * 60_000L))                 // over by itself, nothing to clean up
+        assertFalse(Rules.appOpen(o, yt, now + 31 * 60_000L))
+        Rules.apply(o, d("""{"do":"unlock","pkg":"$yt","today":true}"""), now)
+        assertTrue(Rules.appGrant(o, yt, now) > now)
+        Rules.apply(o, d("""{"do":"unlock","minutes":0}"""), now)
+        assertEquals(0L, Rules.appGrant(o, yt, now))                                // "Lock now" takes every grant back
+    }
+
+    @Test fun aGrantFurtherOffThanADayIsSpentSoAClockJumpCannotKeepItForMonths() {
+        val o = JSONObject().put("unlock_apps", JSONObject().put(yt, now + 40 * 86_400_000L)).put("unlock_until", now + 40 * 86_400_000L)
+        assertEquals(0L, Rules.appGrant(o, yt, now))
+        assertEquals(0L, Rules.unlockUntil(o, now))
+        assertFalse(Rules.appOpen(o, yt, now))
+    }
+
     @Test fun windowsAreChecked() {
         bad(JSONObject(), """{"do":"sched","pkg":"$yt","windows":[]}""")
         bad(JSONObject(), """{"do":"sched","pkg":"$yt","windows":[{"days":[1],"from":"16:00","to":"18:00"},{"days":[],"from":"16:00","to":"18:00"}]}""")

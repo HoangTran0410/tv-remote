@@ -2902,6 +2902,7 @@
  "core.need_lock": "Khóa app bằng mã PIN",
  "core.need_dim": "Giảm độ sáng màn hình",
  "core.need_unextra": "Đặt lại thời gian cho thêm",
+ "core.need_appgrant": "Cho thêm giờ cho một app",
  "core.need_home_usage": "Widget thời gian dùng app và hẹn giờ trên TV Home",
  "core.need_home_playing": "Widget Đang phát của TV Home",
  "errors.launcher_list_bad": "Danh sách launcher không đúng chữ ký của dự án nên không dùng. Thử lại sau.",

@@ -244,7 +244,7 @@ internal class Guard private constructor(private val c: Context, private val adb
             val left = Rules.totalLeftSec(o, usedToday().first, Kids.free(c, now), now) ?: 1L
             val warnMin = o.optJSONObject("total")?.optInt("warn", 5) ?: 5
             if (left <= 0) {
-                if (totalWarnedAt == 0L) { totalWarnedAt = now; warn("total", now + 60_000, ""); RemoteService.alert("limit", "app" to T("kids.total_name"), "why" to "limit") }
+                if (totalWarnedAt == 0L) { totalWarnedAt = now; warn("total", now + 60_000, ""); RemoteService.alert("limit", "app" to T("kids.total_name"), "why" to "limit", "pkg" to "") }
                 else if (now - totalWarnedAt >= 60_000) { if (standby()) totalWarnedAt = 0 }
                 next = minOf(next, 5_000)
             } else {
@@ -261,7 +261,7 @@ internal class Guard private constructor(private val c: Context, private val adb
         if (on && Rules.unlockUntil(o, now) == 0L && (limits != null && limits.length() > 0 || capped)) {
             val (used, front) = usedToday()
             val limit = Rules.budget(o, front, now) ?: 0
-            if (front.isNotEmpty() && limit > 0) {
+            if (front.isNotEmpty() && limit > 0 && Rules.appGrant(o, front, now) == 0L) {   // a parent's "more time" for this app: no limit until it ends
                 val allowed = (limit + Rules.extra(o, front, now)) * 60L
                 val left = allowed - used.optLong(front)
                 val key = front + " " + Rules.day(now)
@@ -319,7 +319,7 @@ internal class Guard private constructor(private val c: Context, private val adb
             return 2_000
         }
         val app = frontApp(now)
-        if (app in sched && !Rules.allowedNow(o, app, now) && Rules.unlockUntil(o, now) == 0L && now - (lastStop[app] ?: 0L) > 15_000) {
+        if (app in sched && !Rules.allowedNow(o, app, now) && !Rules.appOpen(o, app, now) && now - (lastStop[app] ?: 0L) > 15_000) {
             lastStop[app] = now                                       // outside its window: closed here, before any PIN could be asked
             close(app, "sched")
         }
@@ -410,7 +410,7 @@ internal class Guard private constructor(private val c: Context, private val adb
     private fun close(pkg: String, kind: String = "limit") {
         if (sh("input keyevent 3; am force-stop " + q(pkg)) == null) { noAdb(T("guard.no_adb_close", "name" to label(pkg))); return }   // tried again at the next look
         warn(kind, 0, pkg)
-        RemoteService.alert("limit", "app" to label(pkg), "why" to (if (kind == "sched") "sched" else "limit"))
+        RemoteService.alert("limit", "app" to label(pkg), "why" to (if (kind == "sched") "sched" else "limit"), "pkg" to pkg)
     }
 
     /** The warning screen over whatever is on the TV. Since Android 10 a service may not open a screen by itself; ADB's shell may. */
