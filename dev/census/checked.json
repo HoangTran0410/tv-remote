@@ -3449,6 +3449,11 @@
   "n": 2,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "c72299faad487700633d5e82|0.51.0": {
+  "at": "2026-11-13T18:49:22+07:00",
+  "n": 1,
+  "note": "keyfix_refused on a Xiaomi MiTV-MZTU0 (mt5896, sdk 34, rs allow): add-on stopped, the TV's cleaner force-stops it within 60 s of each re-arm. Measured on the API 34 emulator: one force-stop is re-armed in 7 s and stays bound, so a shell-installed add-on is fine; nothing to fix; told on the clients since e9452995"
+ },
  "c72b1cc15e0a7d87e1b728a1|0.24.1": {
   "at": "2026-11-05T19:34:28+07:00",
   "n": 1,
