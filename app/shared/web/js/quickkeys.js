@@ -118,3 +118,29 @@ function quickKeysDraw(host, c, apps, send) {
   host.className = c.focus === 'ring' ? 'qkgrid focus-ring' : 'qkgrid focus-glass';
   host.replaceChildren(...[...QK_NUMBERS, ...Object.keys(QK_COLOURS).map(Number), QK_POWER, ...extra].map(slot));
 }
+
+// Double press and hold per key (HomeConfig keydbl / keyhold, the same {code: target} shape as keyapps; TV Setup's MultiKey does them).
+// [host] gets a note and a row per key: its name, then one button for the double press and one for the hold; the first one chosen switches the keys on.
+const QK_MULTI = [183, 184, 185, 186, 190, 191, 195, 82, 165, 172];   // HomeConfig.KEY_MULTI without the PatchWall / All apps buttons, which show only where this TV has them dead
+function quickKeysMulti(host, c, apps, send) {
+  const have = Array.isArray(c.keysHave) ? c.keysHave : null;
+  const codes = [...QK_MULTI, ...(c.keysDead || []).filter((k) => k === 192 || k === 284)].filter((k) => !QK_COLOURS[k] || !have || have.includes(k) || (c.keydbl || {})[k] || (c.keyhold || {})[k]);
+  const pick = async (field, code, words, label) => {
+    const cur = c[field] || {};
+    const p = await pickTarget(words + ' · ' + label, cur[code] || '', c, apps, { none: true, actions: true });
+    if (p === null) return;
+    if (!await setupFor('keymulti')) return;                         // an older TV Setup would ignore the key
+    if (p === 'do:voice' && !await setupFor('voicekey')) return;
+    const n = { ...cur }; if (p) n[code] = p; else delete n[code];
+    send({ [field]: n, ...(p ? { keyon: true } : {}) });
+  };
+  const btn = (field, code, words, label) => {
+    const t = (c[field] || {})[code] || '';
+    return el('button', { type: 'button', className: 'small qkmulti' + (t ? ' on' : ''), onclick: () => pick(field, code, words, label), 'aria-label': words + ' · ' + label + ': ' + (t ? qkLabel(c, apps, t) : T('home.multi_none')) },
+      el('span', { className: 'qkmlab', textContent: label }), el('span', { className: 'qkmval', textContent: t ? qkLabel(c, apps, t) : T('home.multi_none') }));
+  };
+  host.replaceChildren(el('h4', { textContent: T('home.multi_head') }), el('p', { className: 'note', textContent: T('home.multi_note') }),
+    ...codes.map((code) => { const words = homeKeyName(code);
+      return el('div', { className: 'qkmrow' }, el('span', { className: 'qkmkey' + (QK_COLOURS[code] ? ' ' + QK_COLOURS[code] : ''), textContent: words }),
+        btn('keydbl', code, words, T('home.multi_dbl')), btn('keyhold', code, words, T('home.multi_hold'))); }));
+}

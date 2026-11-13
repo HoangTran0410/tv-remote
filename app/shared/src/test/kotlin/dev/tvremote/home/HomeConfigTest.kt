@@ -531,6 +531,14 @@ class HomeConfigTest {
         assertFalse(HomeConfig.clean(JSONObject().put("autoon", false).put("autolast", true)).getBoolean("autolast"))
     }
 
+    @Test fun doubleAndHoldKeysKeepOnlyAllowedKeysAndGoodTargets() {
+        val c = HomeConfig.clean(JSONObject().put("keydbl", JSONObject().put("183", "x.y").put("3", "x.z").put("4", "x.z").put("7", "x.z").put("82", "pin:a.b/c").put("186", "bad"))
+            .put("keyhold", JSONObject().put("190", "do:voice").put("24", "x.y")))
+        assertEquals(mapOf(183 to "x.y", 82 to "pin:a.b/c"), HomeConfig.keyMulti(c.getJSONObject("keydbl")))   // Home, Back, a number, a bad target: dropped
+        assertEquals(mapOf(190 to "do:voice"), HomeConfig.keyMulti(c.getJSONObject("keyhold")))
+        assertEquals(0, HomeConfig.clean(JSONObject()).getJSONObject("keydbl").length())                       // default: none
+    }
+
     @Test fun keysSurviveTheForwardAndTheMerge() {
         val f = HomeConfig.forward(JSONObject().put("keyon", true).put("keyapps", JSONObject().put("185", "a.b")))
         assertEquals("a.b", f.getJSONObject("keyapps").getString("185"))

@@ -53,3 +53,14 @@ link sets. Without TV Setup nothing starts it, so there is no bar and Home is th
 
 A key given "Voice command" (target `do:voice`, `KeyFix.VOICE`, `SetupNeed` "voicekey") opens TV Setup's `MicActivity` from the key
 filter, the same way the bar is started; the key is taken only when a voice recognizer is on the TV. Home is never such a key.
+
+A key can also have a **double press** and a **hold** of its own (`keydbl` / `keyhold`, `HomeConfig.KEY_MULTI`; never Home, Back, arrows, OK, volume, power, numbers).
+`KeysBridge.multi` runs them through `app/tvsetup/src/main/kotlin/dev/tvremote/setup/keys/MultiKey.kt` (`SetupNeed` "keymulti", test `MultiKeyTest`):
+
+| # | Told apart by | Then |
+|---|---|---|
+| K1 | the key has neither, or "keyon" is off | passes at once, nothing waits |
+| K2 | a double press only | its up is eaten and `DOUBLE_MS` (300 ms) waited: a second down is the double; else the plain press (the key's rule, else `input keyevent` over ADB) |
+| K3 | a hold (with or without a double) | acts on release, not on press: held `HOLD_MS` (600 ms) is the hold, shorter is the plain press |
+| K4 | no rule of its own and no ADB link | passes at once (the plain press cannot be given back); nothing more happens |
+| K5 | another key during the wait | the waiting key's plain press runs first |

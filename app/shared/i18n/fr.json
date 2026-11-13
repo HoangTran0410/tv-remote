@@ -4869,5 +4869,14 @@
  "find.title": "Trouver une fonction",
  "find.placeholder": "Ex. : veille, verrou, capture d’écran…",
  "find.none": "Rien trouvé. Essayez un autre mot.",
- "find.guide": "Guide"
+ "find.guide": "Guide",
+  "home.key_menu": "Touche Menu",
+  "home.key_info": "Touche Info",
+  "home.key_guide": "Touche Guide",
+  "home.multi_head": "Double appui et appui long",
+  "home.multi_note": "Donnez à une touche une autre action sur double appui ou appui long. Seules les touches avec double appui attendent un instant ; les autres restent immédiates.",
+  "home.multi_dbl": "Double appui",
+  "home.multi_hold": "Appui long",
+  "home.multi_none": "Non défini",
+  "core.need_keymulti": "un double appui ou un appui long sur une touche de la télécommande"
 }

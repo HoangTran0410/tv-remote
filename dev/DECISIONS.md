@@ -31,6 +31,7 @@ under the file of its part (one `## ` heading each), and a line here. Code point
 ## [TV Setup features](decisions/tv-setup.md)
 
 - Hold to use Input / Settings (HoldKeys)
+- Double press and hold per key (MultiKey)
 - Check-out (Trả phòng) for homestays and hotels
 - Live widgets in TV Home's app grid (TV Setup provides them)
 - Telegram bot in TV Setup (issue #4: `core/web/Telegram.kt`, `TelegramHttp.kt`, `web/js/telegram.js`, `/api/telegram`)

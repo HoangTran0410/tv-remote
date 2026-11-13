@@ -744,8 +744,9 @@ Home trong app mở thanh: Trang chủ, Dock, app gần đây. OK mở, Back đ�
 Phím màu, phím số và nút đã hết tác dụng có thể mở app bạn chọn. Cần [TV Home](#home); muốn chạy ở mọi app thì cần thêm TV Setup.
 
 1. Trên TV: biểu tượng **⚙** góc trên → **Cài đặt nhanh** → **Tùy chỉnh** → **Phím nhanh & khi bật TV** → **Phím nhanh**. Điện thoại, máy tính: cùng tên, trong thẻ **Phím nhanh & khi bật TV**.
-2. Chọn ô của một phím, rồi chọn app, lối tắt hoặc live widget. Lần đầu chọn, phím tự bật. Ngoài TV Home, TV hiện "TV Setup đã mở…" để biết không phải TV lỗi.
-3. Ô **Khi bật TV**: chọn một app, hoặc **Ứng dụng vừa dùng** (app đang chạy lúc tắt TV). Mở một lần mỗi lần bật, không mở nếu TV đã vào app khác. Chọn cái này thì cái kia tắt.
+2. Chọn ô của một phím, rồi chọn app, lối tắt hoặc live widget. Lần đầu chọn, phím tự bật.
+3. Ô **Khi bật TV**: chọn một app, hoặc **Ứng dụng vừa dùng** (app đang chạy lúc tắt TV). Mở một lần mỗi lần bật, không mở nếu TV đã vào app khác.
+4. **Bấm đúp và giữ**: phím màu, YouTube/Netflix/Prime, Menu, Info, Guide mở một app hay cảnh khi bấm đúp hoặc giữ 0,6 giây. Chỉ phím có bấm đúp mới chờ 0,3 giây.
 
 | Phím | Gán được khi nào |
 | --- | --- |
@@ -761,7 +762,7 @@ Phím màu, phím số và nút đã hết tác dụng có thể mở app bạn 
 
 ### Mẹo
 
-- Ô của app đã gán hiện phím ở góc trên (chấm màu, số hoặc biểu tượng), tắt phím nhanh thì ẩn.
+- Ô của app đã gán hiện phím ở góc trên.
 - Phím nhanh dùng chung bàn phím này: xem [Phím nhanh](#home-quickkeys).
 
 ## Sửa phím chết, giữ để đổi

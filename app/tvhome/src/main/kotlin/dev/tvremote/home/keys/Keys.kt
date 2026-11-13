@@ -41,7 +41,7 @@ object Keys {
     fun push(c: Context) {
         val app = c.applicationContext
         val conf = Store.get(app)
-        val arg = JSONObject().also { o -> for (k in listOf("keyon", "keyapps", "autoon", "autoapp", "autoall", "autolast", "homebar")) o.put(k, conf.get(k)) }.toString()
+        val arg = JSONObject().also { o -> for (k in listOf("keyon", "keyapps", "keydbl", "keyhold", "autoon", "autoapp", "autoall", "autolast", "homebar")) o.put(k, conf.get(k)) }.toString()
         Thread({
             val said = try { app.contentResolver.call(Uri.parse(HomeConfig.USAGE), "keys", arg, null)?.getString("json")?.let { JSONObject(it) } } catch (e: Exception) { null }
             // null: no TV Setup, or one from before this (it answers nothing to a word it does not know)

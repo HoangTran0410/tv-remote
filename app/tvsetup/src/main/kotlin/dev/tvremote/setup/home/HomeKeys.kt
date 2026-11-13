@@ -40,6 +40,13 @@ internal object HomeKeys {
     /** The key → app map the person wants; empty while the switch is off. */
     fun keys(c: Context): Map<Int, String> = all(c).filterValues { Target.kind(it).let { k -> k == Target.Kind.APP || k == Target.Kind.ACTION } }   // apps and TV Home's actions: the key filter's rule can start nothing else (KeyFix); see [open] for the others
 
+    /** The double press ("keydbl") or hold ("keyhold") targets by key; empty while the switch is off (nothing then waits for a second press). */
+    fun multi(c: Context, field: String): Map<Int, String> =
+        load(c).let { if (it.optBoolean("keyon")) HomeConfig.keyMulti(it.optJSONObject(field)) else emptyMap() }
+
+    /** A key has a double press or a hold of its own: the key filter has to run. */
+    fun multiOn(c: Context): Boolean = multi(c, "keydbl").isNotEmpty() || multi(c, "keyhold").isNotEmpty()
+
     /** Every target the person gave a key, shortcuts and live widgets too. */
     fun all(c: Context): Map<Int, String> = load(c).let { if (it.optBoolean("keyon")) HomeConfig.keyApps(it.optJSONObject("keyapps")) else emptyMap() }
 
@@ -82,7 +89,7 @@ internal object HomeKeys {
     fun bar(c: Context): Boolean = load(c).optBoolean("homebar")
 
     /** The service has to run for these: the key filter's list is kept by [KeyFixWatch], waking is heard by [AutoOpenWatch]. */
-    fun active(c: Context): Boolean = all(c).isNotEmpty() || bar(c) || auto(c).let { it.first && (it.second.isNotEmpty() || always(c) || last(c)) }
+    fun active(c: Context): Boolean = all(c).isNotEmpty() || multiOn(c) || bar(c) || auto(c).let { it.first && (it.second.isNotEmpty() || always(c) || last(c)) }
 }
 
 /**

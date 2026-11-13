@@ -23,6 +23,8 @@ import dev.tvremote.setup.keys.HoldKeys
 import dev.tvremote.setup.keys.KeyFix
 import dev.tvremote.setup.keys.KeyList
 import dev.tvremote.setup.keys.KeysProtocol
+import dev.tvremote.setup.keys.MultiKey
+import dev.tvremote.home.Target
 import dev.tvremote.setup.rules.Usage
 
 /**
@@ -50,14 +52,22 @@ class KeysBridge : Service() {
     @Volatile private var extraOf: KeyList.All? = null                // KeysProtocol.TX_CODES: worked out again only when the site's list changed
     @Volatile private var extra: Set<Int> = emptySet()
     @Volatile private var extraRev = 0
+    private var extraMulti: Set<Int> = emptySet()
+    @Volatile private var dbls: Map<Int, String> = emptyMap()         // keydbl / keyhold of HomeKeys: read in refresh(), no disk in the key path
+    @Volatile private var holds: Map<Int, String> = emptyMap()
+    @Volatile private var multiKeys: Set<Int> = emptySet()
+    private val multiGate = MultiKey.Gate()
+    @Volatile private var multiCode = -1
+    private val multiHold = Runnable { val c = multiCode; synchronized(multiGate) { multiGate.timer(MultiKey.Timer.HOLD, c) }?.let { fire(it, c) } }
+    private val multiDbl = Runnable { val c = multiCode; synchronized(multiGate) { multiGate.timer(MultiKey.Timer.DOUBLE, c) }?.let { fire(it, c) } }
 
     /** The keys the site's list gives this TV that the add-on does not ask about; in memory, so cheap on the key path. */
     private fun extras(): Int {
         val l = KeyList.now
-        if (l !== extraOf) {
-            extra = KeyFix.forDevice(Build.MODEL, Build.DEVICE, l.keys).keys - KeysProtocol.INTEREST - KeyList.NEVER
+        if (l !== extraOf || multiKeys !== extraMulti) {
+            extra = (KeyFix.forDevice(Build.MODEL, Build.DEVICE, l.keys).keys + multiKeys) - KeysProtocol.INTEREST - KeyList.NEVER
             extraRev = if (extra.isEmpty()) 0 else extra.hashCode() or 1
-            extraOf = l
+            extraOf = l; extraMulti = multiKeys
         }
         return extraRev
     }
@@ -154,10 +164,13 @@ class KeysBridge : Service() {
             try { for ((k, v) in KeyFix.digits(this)) d.put(k, v) } catch (e: Exception) { }
             plan = p
             digits = d
+            dbls = HomeKeys.multi(this, "keydbl").filterValues { HomeKeys.can(this, it) }
+            holds = HomeKeys.multi(this, "keyhold").filterValues { HomeKeys.can(this, it) }
+            multiKeys = (dbls.keys + holds.keys).toSet()
             hold = HoldKeys.on(this)
             mic = MicVoice.on(this) && micAvailable()
             if (mic) MicVoice.warm(this)                                       // the first press finds the list read and the names kept
-            if (p.size() == 0 && d.size() == 0) KeyFix.sync(this)                      // nothing left to bring back (and no hold): out of the key filter
+            if (p.size() == 0 && d.size() == 0 && multiKeys.isEmpty()) KeyFix.sync(this)                      // nothing left to bring back (and no hold): out of the key filter
         }, "keyfix").apply { isDaemon = true }.start()
     }
 
@@ -191,11 +204,49 @@ class KeysBridge : Service() {
             HoldKeys.Step.EAT -> { if (action == KeyEvent.ACTION_UP) ui.removeCallbacks(fire); return true }   // released early: the timer must not act
         }
         if (android.os.SystemClock.elapsedRealtime() < captureUntil) return false   // TV Home is asking which key to give an app: it hears the key, nothing opens
+        if (code in multiKeys) multi(code, action, repeat, downTime, eventTime)?.let { return it }
         if (code in HomeKey.DIGITS) return number(code, action, repeat)
         val rule = plan.get(code) ?: return false
         if (code == HomeKey.CODE) return home(rule, action, repeat, downTime)
         if (action == KeyEvent.ACTION_DOWN && repeat == 0) ui.post { act(rule, code) }
         return true                                                   // its up and its repeats too, or the app under would see half a press
+    }
+
+    /**
+     * A key with a double press or a hold ([MultiKey]): true = taken. Null: not ours now, the plain way goes on. A key with no action of its own
+     * (not in [plan]) needs the ADB link to give its plain press back after the wait; without one it passes at once and does nothing more.
+     */
+    private fun multi(code: Int, action: Int, repeat: Int, downTime: Long, at: Long): Boolean? {
+        val d = dbls.containsKey(code); val h = holds.containsKey(code)
+        val usable = plan.get(code) != null || RemoteService.adb() != null
+        val o = synchronized(multiGate) { multiGate.onKey(d && usable, h && usable, code, action, repeat, downTime, at) }
+        if (o.flush >= 0) ui.post { fire(MultiKey.Do.SINGLE, o.flush) }
+        if (action == KeyEvent.ACTION_UP || o.fire != null) ui.removeCallbacks(multiHold)
+        if (action == KeyEvent.ACTION_DOWN) ui.removeCallbacks(multiDbl)
+        o.fire?.let { f -> ui.post { fire(f, code) } }
+        when (o.timer) {
+            MultiKey.Timer.HOLD -> { multiCode = code; ui.postDelayed(multiHold, MultiKey.HOLD_MS) }
+            MultiKey.Timer.DOUBLE -> { multiCode = code; ui.postDelayed(multiDbl, MultiKey.DOUBLE_MS) }
+            MultiKey.Timer.NONE -> { }
+        }
+        return if (o.eat) true else null
+    }
+
+    /** What a press, a double press or a hold of [code] does (on the main thread). */
+    private fun fire(w: MultiKey.Do, code: Int) {
+        when (w) {
+            MultiKey.Do.SINGLE -> plan.get(code)?.let { act(it, code) } ?: Thread({           // no action of its own: the press is given back, injected after the filter
+                try { RemoteService.adb()?.shell("input keyevent $code", 5000) } catch (e: Exception) { } }, "multi-back").apply { isDaemon = true }.start()
+            MultiKey.Do.DOUBLE -> dbls[code]?.let { target(it, code) }
+            MultiKey.Do.HOLD -> holds[code]?.let { target(it, code) }
+        }
+    }
+
+    /** An app or TV Home's action goes through the dead-key rule (and says what opened); a shortcut or a live widget through TV Home. */
+    private fun target(t: String, code: Int) {
+        val k = Target.kind(t)
+        if (k == Target.Kind.APP || k == Target.Kind.ACTION) act(KeyFix.userRule(t), code)
+        else Thread({ HomeKeys.open(this, t) }, "multi-open").apply { isDaemon = true }.start()
     }
 
     /** Home with [HomeKey]'s rule: eaten whole; let go before [HomeKey.LONG_MS] opens the launcher, held is the TV's own long press. */
@@ -263,7 +314,8 @@ class KeysBridge : Service() {
         hold = false
         bar = false
         mic = false
-        ui.removeCallbacks(fire); ui.removeCallbacks(homeHeld); ui.removeCallbacks(digitHeld)
+        ui.removeCallbacks(fire); ui.removeCallbacks(homeHeld); ui.removeCallbacks(digitHeld); ui.removeCallbacks(multiHold); ui.removeCallbacks(multiDbl)
+        dbls = emptyMap(); holds = emptyMap(); multiKeys = emptySet()
         if (running === this) running = null
         if (watching) try { unregisterReceiver(packages) } catch (e: Exception) { }
         watching = false

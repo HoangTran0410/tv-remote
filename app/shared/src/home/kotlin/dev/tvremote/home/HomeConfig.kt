@@ -155,6 +155,8 @@ import org.json.JSONObject
  *   keyon   remote keys that open something (default off); keyapps: {"183": target} the key code to its [Target] (a package, "pin:pkg/id"
  *           or "tile:provider/id"; a plain package is how older configs saved it), only keys [keyFree] allows. TV Home answers them on its own screen; TV Setup's key filter answers them everywhere (HomeInfo "keys").
  *           A TV Home that has this reports "keysOk": true, "keysSetup" (TV Setup took the map) and "keysDead" (the keys it found dead)
+ *   keydbl / keyhold   the same shape as keyapps ({"183": target}), for a double press and for a hold of the key; only keys [keyMultiAllowed] allows. TV Setup's
+ *           key filter alone answers them (TV Home never sees a key the filter takes) and only while "keyon" is on. Default empty: a key without one stays instant
  *   themes  the person's own themes, [THEMES_MAX]: [{id, name, conf}], conf = the look at the moment of saving ([THEME_KEYS]: background and its
  *           set, shade, video sound, widgets with sizes and looks, grid, focus, motion, clock; NOT the apps, the QR widgets (a Wi-Fi password),
  *           keys, language, screensaver, power button). Kept on the TV with the rest. Changed by ONE field every client sends,
@@ -448,6 +450,23 @@ object HomeConfig {
     /** The keys the stock launcher answered (app/tvsetup KeyFix.RULES; a test there holds the two lists equal): free once their handler is gone; the app buttons (190, 191, 195: KeyFix.APP_KEYS) even while it works. */
     val KEY_DEAD = listOf(170, 178, 190, 191, 195, 192, 284, 176)
     fun keyAllowed(code: Int) = code in KEY_COLOURS || code in KEY_NUMBERS || code in KEY_DEAD
+    /**
+     * Keys that may have a double press or a hold of their own: the colour keys and the app buttons (nothing else answers them), the
+     * PatchWall / All apps buttons, Menu, Info, Guide. Never Home, Back, the arrows, OK, volume or power (navigation and the system: a key
+     * that waits for a second press makes them feel broken) and never the numbers (channel numbers and typing; they have their own 2 s hold).
+     */
+    val KEY_MULTI = KEY_COLOURS + listOf(190, 191, 195, 192, 284, 82, 165, 172)
+    fun keyMultiAllowed(code: Int) = code in KEY_MULTI
+    /** "keydbl" / "keyhold" as code to target, the codes allowed and the targets real. */
+    fun keyMulti(o: JSONObject?): Map<Int, String> {
+        val out = LinkedHashMap<Int, String>()
+        if (o != null) for (k in o.keys()) {
+            val code = k.toIntOrNull() ?: continue
+            val p = o.optString(k)
+            if (keyMultiAllowed(code) && Target.valid(p)) out[code] = p
+        }
+        return out
+    }
     /** "keyapps" as code to package, the codes allowed and the packages real names. */
     fun keyApps(o: JSONObject?): Map<Int, String> {
         val out = LinkedHashMap<Int, String>()
@@ -825,6 +844,8 @@ object HomeConfig {
             .put("feeds", JSONArray(feeds(o.optJSONArray("feeds"))))
             .put("keyon", o.optBoolean("keyon", false))
             .put("keyapps", JSONObject().also { m -> keyApps(o.optJSONObject("keyapps")).toSortedMap().forEach { (k, v) -> m.put(k.toString(), v) } })
+            .put("keydbl", JSONObject().also { m -> keyMulti(o.optJSONObject("keydbl")).toSortedMap().forEach { (k, v) -> m.put(k.toString(), v) } })
+            .put("keyhold", JSONObject().also { m -> keyMulti(o.optJSONObject("keyhold")).toSortedMap().forEach { (k, v) -> m.put(k.toString(), v) } })
             .put("autoon", o.optBoolean("autoon", false))
             .put("autoapp", if (o.optBoolean("autoon", false)) Target.clean(o.optString("autoapp")) else "")   // one meaning: an app here opens at power-on; "autoon" stays for TV Setups that read it
             .put("autolast", o.optBoolean("autoon", false) && o.optBoolean("autolast", false) && Target.clean(o.optString("autoapp")).isEmpty())   // its own setting, default off; a fixed app wins if both arrive (the clients clear one when the other is chosen)
