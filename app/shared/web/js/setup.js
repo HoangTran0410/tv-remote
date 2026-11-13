@@ -163,7 +163,11 @@ function showUpdate(u) {
   clearTimeout(updPoll); updPoll = null;
   if (u.state === 'downloading' || u.state === 'installing') updPoll = setTimeout(pollUpdate, 1000);
 }
-const pollUpdate = () => fetch('/api/update').then((x) => x.json()).then(showUpdate).catch(() => { updPoll = setTimeout(pollUpdate, 2000); });   // gone while it swaps
+let updFails = 0;
+const pollUpdate = () => fetch('/api/update').then((x) => x.json()).then((u) => { updFails = 0; showUpdate(u); }).catch(() => {   // gone while it swaps
+  if (document.hidden || ++updFails > 8) { updPoll = null; return; }     // the app quit for good, or nobody looks: the 30-minute tick asks again
+  updPoll = setTimeout(pollUpdate, Math.min(30000, 2000 * updFails));
+});
 if (CORE === 'pc') { pollUpdate(); setInterval(() => { if (!updPoll) pollUpdate(); }, 30 * 60000); }
 $('#updlater').addEventListener('click', () => { updLater = true; put('#update', 'hidden', true); });
 $('#updgo').addEventListener('click', async () => {

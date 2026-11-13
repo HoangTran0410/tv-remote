@@ -4,6 +4,7 @@
 let tgNow = null, tgAt = 0, tgWant = false, tgPoll = 0, tgChat = null, tgItems = [], tgTotal = 0;
 let tgGen = 0, tgReads = 0;                                           // the history: a fresh read (another chat, the poll, another TV) drops older answers; More waits for none in flight
 const tgMin = (s) => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+const TG_HIST_KINDS = { wrong3: 'telegram_ui.k_wrong3' };   // in the history only: no chip, every Full chat hears it
 const TG_KINDS = { on: 'telegram_ui.k_on', off: 'telegram_ui.k_off', limit: 'telegram_ui.k_limit', bed: 'telegram_ui.k_bed', sleep: 'telegram_ui.k_sleep', pair: 'telegram_ui.k_pair' };   // Telegram.ALERTS, in the order /alerts lists them
 const tgWhen = (t) => new Date(t).toLocaleString(LOCALE, { dateStyle: 'short', timeStyle: 'short' });
 const tgAgo = (ms) => { const s = Math.max(0, Math.round(ms / 1000)); return s < 90 ? T('telegram_ui.ago_s', { n: s }) : s < 5400 ? T('telegram_ui.ago_m', { n: Math.round(s / 60) }) : T('telegram_ui.ago_h', { n: Math.round(s / 3600) }); };
@@ -86,7 +87,8 @@ function tgFilter(chats) {
 
 function tgHistRow(h) {
   const res = { ok: T('telegram_ui.r_ok'), scope: T('telegram_ui.r_scope'), error: T('telegram_ui.r_error') }[h.res] || h.res;
-  const who = h.cmd.startsWith('alert ') ? T('telegram_ui.h_alert', { kind: T(TG_KINDS[h.cmd.slice(6)]), to: (h.to || []).join(', ') }) : (h.name || '');
+  const kind = h.cmd.startsWith('alert ') ? h.cmd.slice(6) : '', kid = TG_KINDS[kind] || TG_HIST_KINDS[kind];   // an alert the TV sent by itself that no chat can switch off (Telegram.wrongCodes) is not in TG_KINDS; an unknown one shows its own words
+  const who = kind ? T('telegram_ui.h_alert', { kind: kid ? T(kid) : kind, to: (h.to || []).join(', ') }) : (h.name || '');
   return UI.item({ name: h.cmd.startsWith('alert ') ? who : h.cmd, sub: [tgWhen(h.t), h.cmd.startsWith('alert ') ? '' : who, res].filter(Boolean).join(' · ') });
 }
 
@@ -97,18 +99,27 @@ async function tgHist(fresh) {
   tgReads++;
   const j = await api(q, null, true).finally(() => tgReads--);
   if (!j || gen !== tgGen) return;                                    // another chat or TV picked meanwhile: its rows are not these
+  const same = fresh && tgItems.length > 0 && j.total === tgTotal && JSON.stringify(j.items) === JSON.stringify(tgItems);   // the poll found nothing new: no redraw
   tgItems = fresh ? j.items : tgItems.concat(j.items); tgTotal = j.total;
+  if (same) return;
   $('#tghist').replaceChildren(UI.list(tgItems.map(tgHistRow), T('telegram_ui.h_none')));
   put('#tgmore', 'hidden', tgItems.length >= tgTotal);
   put('#tgclear', 'hidden', !tgTotal && !tgItems.length);
 }
 
 // While Settings is open the page asks every few seconds: a chat that just paired, or Telegram answering, shows up by itself
+let tgSeen = '';                                                    // the last answer, as text: the same one draws nothing again
 function tgLoop() {
   clearTimeout(tgPoll);
   if (!$('#about').open || SCOPE !== 'full') return;
-  tgPoll = setTimeout(async () => { const j = await api('/api/telegram', null, true); if (j) { tgShow(j); if (!tgItems.length || tgItems.length <= 20) tgHist(true); } tgLoop(); }, CORE === 'tv' ? 3000 : 5000);
+  tgPoll = setTimeout(async () => {
+    if (document.hidden) return;                                      // looked at no more: visibilitychange asks again
+    const j = await api('/api/telegram', null, true);
+    if (j) { const k = JSON.stringify(j); if (k !== tgSeen) { tgSeen = k; tgShow(j); } if (!tgItems.length || tgItems.length <= 20) tgHist(true); }   // the history has its own check below
+    tgLoop();
+  }, CORE === 'tv' ? 3000 : 5000);
 }
+document.addEventListener('visibilitychange', () => { if (!document.hidden && $('#about').open) tgLoop(); });
 
 async function tgLoad() {
   put('#tggroup', 'hidden', SCOPE !== 'full'); put('#tghint', 'hidden', true);
@@ -118,12 +129,12 @@ async function tgLoad() {
   // the Phone and Computer apps: TV Setup on the TV missing, too old, or not answering yet -> the hint with its Install / Update button instead of the card
   put('#tggroup', 'hidden', !j); put('#tghint', 'hidden', !!j || CORE === 'tv');
   if (!j) return;
-  tgShow(j); tgHist(true);
+  tgSeen = JSON.stringify(j); tgShow(j); tgHist(true);
   tgLoop();
 }
 
 $('#aboutbtn').addEventListener('click', tgLoad);
-onTvChange(() => { tgNow = null; tgChat = null; tgItems = []; tgGen++; tgTotal = 0; $('#tgqr').replaceChildren(); clearTimeout(tgPoll); if ($('#about').open) tgLoad(); });
+onTvChange(() => { tgNow = null; tgSeen = ''; tgChat = null; tgItems = []; tgGen++; tgTotal = 0; $('#tgqr').replaceChildren(); clearTimeout(tgPoll); if ($('#about').open) tgLoad(); });
 setInterval(() => { if ($('#about').open && tgNow) { tgCodeLine(); if (tgNow.on && tgNow.has_token) tgStatus(tgNow); } }, 1000);
 $('#tgpick').addEventListener('click', async (e) => {
   const b = e.target.closest('button'); if (!b) return;
@@ -140,7 +151,7 @@ $('#tgform').addEventListener('submit', async (e) => {
   if (j) { tgWant = false; $('#tgtoken').value = ''; toast(T('telegram_ui.saved')); }
 });
 $('#tgcode').addEventListener('click', () => tgDo({ do: 'code' }));
-$('#tglang').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b && b.dataset.v !== (tgNow.lang || '')) tgDo({ do: 'lang', lang: b.dataset.v }); });
+$('#tglang').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b && tgNow && b.dataset.v !== (tgNow.lang || '')) tgDo({ do: 'lang', lang: b.dataset.v }); });
 $('#tgmore').addEventListener('click', () => tgHist(false));
 $('#tgclear').addEventListener('click', async () => {
   if (await ask(T('telegram_ui.h_clear_ask'), { ok: T('telegram_ui.h_clear'), danger: true })) tgDo({ do: 'clear_history' });

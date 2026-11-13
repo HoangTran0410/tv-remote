@@ -225,7 +225,7 @@ function runPlay(t, s, seen) {
   if (!seen || !s.ms) return;
   const w = s.textContent, ms = s.ms;
   if (!runT0.has(w)) { if (runT0.size > 300) runT0.clear(); runT0.set(w, performance.now()); }
-  s.run = s.animate([{ transform: 'none', offset: 0 }, { transform: 'none', offset: RUN_REST / ms }, { transform: 'translateX(' + -s.dist + 'px)', offset: 1 }],
+  s.run = s.animate([{ transform: 'none', offset: 0 }, { transform: 'none', offset: RUN_REST / ms }, { transform: 'translateX(' + (document.documentElement.dir === 'rtl' ? s.dist : -s.dist) + 'px)', offset: 1 }],
     { duration: ms, iterations: RUN_ROUNDS });
   s.run.currentTime = Math.min(performance.now() - runT0.get(w), ms * RUN_ROUNDS);   // after its rounds it stays at rest
 }

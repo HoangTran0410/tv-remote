@@ -15,7 +15,7 @@ function page() {
     T: (id) => id, CORE: 'pc', SCOPE: 'full', LANG: 'en', LOCALE: 'en',
     $: () => stub(), el: () => stub(), put() {}, toast() {}, ask: async () => false, setupFor: async () => false,
     UI: { list: () => stub(), item: () => stub(), chips: () => stub() },
-    onTvChange: (f) => resets.push(f), setInterval() {}, setTimeout() {}, clearTimeout() {},
+    document: { addEventListener() {}, hidden: false }, onTvChange: (f) => resets.push(f), setInterval() {}, setTimeout() {}, clearTimeout() {},
     // each call waits until the test answers it
     api: (q) => new Promise((done) => calls.push({ q, done })),
   };

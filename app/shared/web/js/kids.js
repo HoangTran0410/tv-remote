@@ -15,6 +15,7 @@ const groupSecret = (s) => s.replace(/(.{4})(?=.)/g, '$1 ');
 const TOTAL_DAYS_ALL = [1, 2, 3, 4, 5, 6, 7];
 const UNLOCKS = [[30, 'auto.kids_open_30'], [60, 'auto.kids_open_60'], [120, 'auto.kids_open_120']];
 let tgFull = null, tgFullAt = 0;                                       // does a Telegram chat with the FULL scope exist (the "ask a parent" method needs one)
+if (typeof onTvChange === 'function') onTvChange(() => { tgFull = null; tgFullAt = 0; });   // another TV has its own chats (node tests load this file alone)
 const kidsOf = (r) => (r.lock && r.lock.methods) ? r.lock : null;      // a TV Setup before kids mode has no methods in its answer
 
 async function kidsTelegram() {                                         // asked at most every 20 s: the card is drawn on every tick of the rules
@@ -118,7 +119,7 @@ function renderTotal(r) {
     const all = min + extra, left = Math.max(0, all - used), pct = Math.min(100, Math.round(used * 100 / Math.max(1, all)));
     const meter = el('div', { className: 'bar' + (pct >= 100 ? ' full' : '') }, el('i')); meter.firstChild.style.width = pct + '%';
     body.push(UI.item({ name: T('auto.kids_total_per_day', { time: mins(min) }), sub: T(extra ? 'auto.kids_total_used_extra' : 'auto.kids_total_used', { used: minsShort(used), left: minsShort(left), extra: minsShort(extra) }),
-      extra: [meter], acts: [act(T('auto.plus_30_today'), async () => { await kidsSend({ do: 'total_extra', minutes: 30 }); toast(T('auto.kids_plus_done')); }),
+      extra: [meter], acts: [act(T('auto.plus_30_today'), async () => { if (await kidsSend({ do: 'total_extra', minutes: 30 })) toast(T('auto.kids_plus_done')); }),
         act('✏️', () => totalAsk(days), '', T('auto.edit')),
         act('🗑', async () => { if (await ask_(T('auto.kids_total_drop_ask'), T('auto.drop_limit'))) await kidsSend({ do: 'total', min: 0 }); }, 'danger', T('auto.drop_limit'))] }));
     const dc = el('div', { className: 'fchips schedays' }, ...TOTAL_DAYS_ALL.map((d) => el('button', { type: 'button', className: days.includes(d) ? 'on' : '', textContent: dayName(d), 'aria-pressed': days.includes(d),

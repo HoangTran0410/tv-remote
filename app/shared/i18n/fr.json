@@ -4278,6 +4278,7 @@
   "telegram_ui.k_bed": "Coucher",
   "telegram_ui.k_sleep": "Minuteur de veille",
   "telegram_ui.k_pair": "Nouvel appareil",
+  "telegram_ui.k_wrong3": "Codes erronés",
   "telegram_ui.hist_h": "Ce que le bot a fait",
   "telegram_ui.h_all": "Toutes les discussions",
   "telegram_ui.h_none": "Rien pour l'instant",

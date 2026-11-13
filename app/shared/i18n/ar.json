@@ -163,7 +163,13 @@
  "recents.switched": "تم التبديل إلى {name}",
  "recents.on_screen": "على الشاشة",
  "recents.just_now": "الآن",
- "recents.min_ago": "قبل {n} دقيقة",
+ "recents.min_ago": {
+  "one": "قبل دقيقة",
+  "two": "قبل دقيقتين",
+  "few": "قبل {n} دقائق",
+  "many": "قبل {n} دقيقة",
+  "other": "قبل {n} دقيقة"
+ },
  "recents.h_ago": "قبل {n} ساعة",
  "recents.d_ago": {
   "one": "قبل يوم ({n})",
@@ -652,7 +658,13 @@
  "auto.kids_total_days_one": "اختر يومًا واحدًا على الأقل.",
  "auto.kids_total_drop_ask": "إزالة حد مدة التلفزيون الكاملة؟",
  "auto.kids_plus_done": "30 دقيقة إضافية اليوم",
- "auto.kids_recovery_left": "باقي {n} رموز احتياطية",
+ "auto.kids_recovery_left": {
+  "one": "باقي رمز احتياطي واحد",
+  "two": "باقي رمزان احتياطيان",
+  "few": "باقي {n} رموز احتياطية",
+  "many": "باقي {n} رمزًا احتياطيًا",
+  "other": "باقي {n} رمزًا احتياطيًا"
+ },
  "auto.kids_recovery_new": "أنشئ رموزًا جديدة",
  "auto.kids_m_pin_keep": "لا يمكن إيقافه إلا بعد تشغيل Google Authenticator وحفظ رموزه الاحتياطية.",
  "auto.kids_methods_why": "خلّ مفعّلًا فقط ما لا يعرفه الطفل. أوقف رمز PIN إذا شككت أنه شافه، وعندها لا يفتح إلا رمز Google Authenticator.",
@@ -4226,7 +4238,13 @@
   "many": "تم سحب {n} صلاحية من {name}",
   "other": "تم سحب {n} صلاحية من {name}"
  },
- "priv.revoked_some": "تم سحب {n} صلاحيات من {name}؛ والنظام يحتفظ بالباقي",
+ "priv.revoked_some": {
+  "one": "تم سحب صلاحية واحدة من {name}؛ والنظام يحتفظ بالباقي",
+  "two": "تم سحب صلاحيتين من {name}؛ والنظام يحتفظ بالباقي",
+  "few": "تم سحب {n} صلاحيات من {name}؛ والنظام يحتفظ بالباقي",
+  "many": "تم سحب {n} صلاحية من {name}؛ والنظام يحتفظ بالباقي",
+  "other": "تم سحب {n} صلاحية من {name}؛ والنظام يحتفظ بالباقي"
+ },
  "priv.regranted": "تمت إعادة صلاحيات {name}",
  "priv.revoked_chip": "مسحوبة",
  "priv.off_chip": "متوقف",
@@ -4464,6 +4482,7 @@
  "telegram_ui.k_bed": "وقت النوم",
  "telegram_ui.k_sleep": "مؤقت النوم",
  "telegram_ui.k_pair": "جهاز جديد",
+ "telegram_ui.k_wrong3": "رموز خاطئة",
  "telegram_ui.hist_h": "ما فعله البوت",
  "telegram_ui.h_all": "كل المحادثات",
  "telegram_ui.h_none": "لا شيء بعد",

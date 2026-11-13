@@ -4251,6 +4251,7 @@
  "telegram_ui.k_bed": "Bedtime",
  "telegram_ui.k_sleep": "Sleep timer",
  "telegram_ui.k_pair": "New device",
+ "telegram_ui.k_wrong3": "Wrong codes",
  "telegram_ui.hist_h": "What the bot did",
  "telegram_ui.h_all": "All chats",
  "telegram_ui.h_none": "Nothing yet",

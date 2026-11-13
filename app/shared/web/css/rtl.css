@@ -20,7 +20,7 @@
 
 /* small gaps beside an icon, a count or a badge */
 [dir=rtl] .fchips button b { margin-left:0; margin-right:4px; }
-[dir=rtl] .sl-leg i { margin-right:0; margin-left:5px; }
+[dir=rtl] .sl-leg i, [dir=rtl] .lc-v i { margin-right:0; margin-left:5px; }
 [dir=rtl] .kintro h2 .badge { margin-left:0; margin-right:8px; }
 [dir=rtl] .badge { margin-left:0; margin-right:6px; }
 [dir=rtl] .tvstat .badge, [dir=rtl] .item .name .badges .badge { margin-right:0; }
@@ -29,6 +29,9 @@
 [dir=rtl] .ui-ic { margin-right:0; margin-left:.4em; }
 [dir=rtl] .homewalls small.badge span + .ui-ic { margin-left:0; margin-right:6px; }
 [dir=rtl] .homewalls small.badge .ui-ic { margin-right:0; margin-left:.25em; }
+
+/* a running line (ui.js runPlay slides it to the right): the words start at the right, the overflow is on the left, the copy that follows sits there */
+[dir=rtl] .run > .rin[data-t]::after { left:auto; right:100%; padding-left:0; padding-right:var(--gap); }
 
 /* a switch: the knob starts on the right and slides left when on */
 [dir=rtl] .check > input[type=checkbox]::after { left:auto; right:3px; }
