@@ -24,6 +24,13 @@ Why some code looks odd ([the list](../DECISIONS.md)).
   press opened the app TV Home gave key 170 (TV Games) at 2 s; switched off, a 0.3 s press opened it at once.
 - Not covered: a TV whose firmware handles Input before the Android input pipeline (some boxes' own OSD): the filter never sees that key.
 
+## Double press and hold per key (MultiKey)
+
+- **Same shape as the key's app, two more maps:** `keydbl` / `keyhold` = `{code: target}` in TV Home's config next to `keyapps`, same `Target`s (an app, a shortcut or scene pin, a live widget, TV Home's actions), same "keyon" switch (off = nothing runs, no key waits). No parallel rule store: TV Home keeps them, TV Setup's `HomeKeys.multi` reads them from the copy it already gets.
+- **A key with neither passes at once;** only a key with a double press waits `DOUBLE_MS` (300 ms) after its release, only one with a hold acts on release (600 ms). The timing is the pure `MultiKey.Gate` (tested); `KeysBridge.multi` runs it. The plain press that waited is the key's own rule, else `input keyevent` over TV Setup's ADB link (injected after the filter, so it is not caught again). A key with no rule of its own and no ADB link is not held back (it could not be given back).
+- **Allowed keys (`HomeConfig.KEY_MULTI`):** colour keys, the app buttons (190, 191, 195), PatchWall / All apps (192, 284), Menu, Info, Guide. Never Home, Back, arrows, OK, volume, power: navigation and the system, a wait makes them feel broken (Home has its own long press, `HomeKey`); never the numbers: channel numbers and typing, and they have their 2 s hold. Menu / Info / Guide are not in the add-on's fixed `INTEREST`: they reach the filter through the `TX_CODES` list (`KeysBridge.extras`), so the add-on needs no update.
+- **Not mirrored natively:** TV Home's own Quick keys screen does not edit them (it keeps and forwards them); the page does (`quickKeysMulti`, one place for the Phone app, TV web page and Computer app). A Home Assistant hook or a key as the target is not built: a scene (pin) covers both.
+
 ## Check-out (Trả phòng) for homestays and hotels
 
 - Where: "Several TVs" on the phone (`ManyTvs.kt`) and the computer (`Fleets.checkout`, `/api/fleet/checkout`, `js/checkout.js`). One run per TV: `pm clear` of the chosen apps, volume, forget the browsers paired with TV Setup's web page, Home. The chosen apps and volume are remembered (computer: `tvs.json` "checkout"; phone: prefs "checkout"); never chosen = the suggested apps that are installed (`Checkout.SUGGEST`).
