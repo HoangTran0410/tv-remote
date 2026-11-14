@@ -2839,6 +2839,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
+ "a216e51fefcf2051073411f5|0.51.0": {
+  "at": "2026-11-14T08:47:30+07:00",
+  "n": 1,
+  "note": "Xiaomi MiTV-AFKR0 sdk 30, 2 other a11y services on, ours dropped 3x by the firmware (same kind as MiTV-MZTU0 c72299fa); nothing to fix, clients say keys work only on TV Home (e9452995)"
+ },
  "a301db96eb9605ab2e155ea0|0.30.0": {
   "at": "2026-10-30T09:08:22+07:00",
   "n": 1,
