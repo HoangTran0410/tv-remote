@@ -272,7 +272,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
     internal var quiet = false                                         // the box is being changed by the app, not typed in
 
     // ---- KeysOnly.kt, AdbHelp.kt
-    internal val adbFailed: MutableSet<String> = java.util.concurrent.ConcurrentHashMap.newKeySet()                        // TVs whose ADB port answers but would not let us in, this session
+    internal val adbFailed: MutableSet<String> = java.util.Collections.newSetFromMap(java.util.concurrent.ConcurrentHashMap<String, Boolean>())                        // TVs whose ADB port answers but would not let us in, this session
     // Getting to the TV's Settings without ADB. Most TVs open them on the Settings key. Operator boxes may ignore it and hide
     // Settings on their own home screen; then the way in is another home screen app from the Play Store, which the TV opens
     // when asked for the app's package (the app itself when it is installed, its store page when it is not).
