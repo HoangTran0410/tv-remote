@@ -3200,9 +3200,9 @@
   "note": "left: NPE inside system_server, platform"
  },
  "b1ccd0d29d66cdd753d27562|0.27.0": {
-  "at": "2026-11-06T17:03:04+07:00",
-  "n": 6,
-  "note": "phone 0.27.0 on a Meizu Android 6 (released 0.44.0): NoClassDefFoundError of an R8 lambda on old ART, no newer version affected; still the one install"
+  "at": "2026-11-15T01:00:35+07:00",
+  "n": 9,
+  "note": "phone 0.27.0 on a Meizu Android 6 (latest 0.51.0): R8 lambda NoClassDefFoundError on old ART, no newer version affected; still the one install that never updates"
  },
  "b2b52cae0dafc491fb1e1cd6|0.34.0": {
   "at": "2026-10-30T09:08:25+07:00",
