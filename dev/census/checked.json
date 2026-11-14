@@ -664,6 +664,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "28ba1fad4840c7abb5a59bf4|0.51.0": {
+  "at": "2026-11-14T14:01:06+07:00",
+  "n": 1,
+  "note": "Smarttech Apollo Premium2K sdk 30: running, bound 0, a11y 0, no other service: the firmware drops the a11y entry (Allwinner kind); nothing to fix, clients say keys work only on TV Home (e9452995)"
+ },
  "295939b8f46236dcdb43011b|0.29.0": {
   "at": "2026-10-27T09:37:03+07:00",
   "n": 1,
