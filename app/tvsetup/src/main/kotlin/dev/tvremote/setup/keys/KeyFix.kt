@@ -287,8 +287,9 @@ object KeyFix {
         val others = (Settings.Secure.getString(r, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES) ?: "").split(":").count { it.isNotEmpty() && !isOurs(it) }
         val on = try { Settings.Secure.getInt(r, Settings.Secure.ACCESSIBILITY_ENABLED) } catch (e: Exception) { -1 }
         val adb = dev.tvremote.setup.RemoteService.adb()
-        return "sdk ${Build.VERSION.SDK_INT}, adb ${if (adb != null) "up" else "down"}, add-on by $installer, $addon, known $known, others $others, a11y $on" +
-            (adb?.let { a -> try { ", " + seen(a.shell(SEEN_CMD, 5000)) } catch (e: Exception) { "" } } ?: "")
+        // the fields that tell the kinds apart first: the census keeps 150 characters, and "com.android.shell" pushed rs / bound past them (5b2afde4)
+        val seen = adb?.let { a -> try { seen(a.shell(SEEN_CMD, 5000)) + ", " } catch (e: Exception) { "" } } ?: ""
+        return "${seen}sdk ${Build.VERSION.SDK_INT}, adb ${if (adb != null) "up" else "down"}, add-on by ${installer.removePrefix("com.android.")}, $addon, known $known, others $others, a11y $on"
     }
 
     // ADT-3 (sdk 34, census fbed4da8): known yes, add-on running and allowed, yet taken out with nothing else in the list. Whether Android

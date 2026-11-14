@@ -1629,6 +1629,11 @@
   "n": 1,
   "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
  },
+ "5b2afde4cbf4c38088649d4c|0.51.0": {
+  "at": "2026-11-14T15:10:36+07:00",
+  "n": 1,
+  "note": "HAKO Pro sdk 34, add-on by shell, running, a11y 0: kind not told (rs / bound cut by the 150-char limit); report reordered so they come first; likely firmware like the operator boxes; clients say keys work only on TV Home (e9452995)"
+ },
  "5b47665e5391015e7bcf0337|0.23.0": {
   "at": "2026-10-29T17:19:33+07:00",
   "n": 1,
