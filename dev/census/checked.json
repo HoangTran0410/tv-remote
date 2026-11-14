@@ -3115,14 +3115,19 @@
   "note": "ADB key file cut short: Adb.kt now makes a new key and writes keys whole (tmp + rename)"
  },
  "aaa561abf78db4410f816c4c|0.49.0": {
-  "at": "2026-11-13T00:20:45+07:00",
+  "at": "2026-11-14T21:49:38+07:00",
   "n": 1,
-  "note": "keyfix_refused on a RockChip android-tv-stick (sdk 34, fake redfin fp), TV Setup 0.50.0: same shape as fbed4da8 (ADT-3, add-on by shell, a11y 0): the add-on's ACCESS_RESTRICTED_SETTINGS; 8f344ac1 gives it back over ADB, out in 0.51.0 (AutoUpdate brings it, adb up)"
+  "note": "0.51.0: rs allow now (appop fix worked), still running/bound 0/crashed 0: cheap RK3528 stick with fake redfin fingerprint drops the a11y entry, firmware kind; clients say keys work only on TV Home (e9452995)"
  },
  "aaa561abf78db4410f816c4c|0.50.0": {
-  "at": "2026-11-13T00:20:45+07:00",
+  "at": "2026-11-14T21:49:38+07:00",
   "n": 1,
-  "note": "keyfix_refused on a RockChip android-tv-stick (sdk 34, fake redfin fp), TV Setup 0.50.0: same shape as fbed4da8 (ADT-3, add-on by shell, a11y 0): the add-on's ACCESS_RESTRICTED_SETTINGS; 8f344ac1 gives it back over ADB, out in 0.51.0 (AutoUpdate brings it, adb up)"
+  "note": "0.51.0: rs allow now (appop fix worked), still running/bound 0/crashed 0: cheap RK3528 stick with fake redfin fingerprint drops the a11y entry, firmware kind; clients say keys work only on TV Home (e9452995)"
+ },
+ "aaa561abf78db4410f816c4c|0.51.0": {
+  "at": "2026-11-14T21:49:38+07:00",
+  "n": 1,
+  "note": "0.51.0: rs allow now (appop fix worked), still running/bound 0/crashed 0: cheap RK3528 stick with fake redfin fingerprint drops the a11y entry, firmware kind; clients say keys work only on TV Home (e9452995)"
  },
  "ac1f05f98ad5126b3167283a|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
