@@ -51,6 +51,7 @@ object Errors {
             all.contains("pin_no_app") -> t("errors.pin_no_app")
             all.contains("pin_failed") -> t("errors.pin_failed")
             all.contains("home:missing") -> t("core.fr_home_missing")
+            all.contains(dev.tvremote.core.ontv.PlayProtect.REFUSED) -> t("core.fr_play_protect")   // TV Setup's own screen showed "launcher:install:INSTALL_FAILED_VERIFICATION_FAILURE" (FPT, 2026-11-14)
             Regex("INSUFFICIENT_STORAGE|No space|not enough space", RegexOption.IGNORE_CASE).containsMatchIn(all) -> t("errors.tv_out_storage")
             // installing an APK: the same words as friendly() in js/core.js
             Regex("apk needs sdk (\\d+), the tv has sdk (\\d+)").containsMatchIn(all) -> {

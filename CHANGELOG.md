@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Setup's screen: an app update blocked by Google Play Protect says so in words instead of showing "launcher:install:INSTALL_FAILED_VERIFICATION_FAILURE".
 - TV Home's bar over an app now opens after an hour in the same film too (it looked only at the last 15 minutes)
 - TV Home stops its timers under a screensaver on Android 10 and older; the photo screensaver no longer retries unreadable pictures every half second
 - A sleep timer set while the TV's clock ran ahead is dropped once the clock is corrected; double press / hold timers no longer fire twice when two keys are held

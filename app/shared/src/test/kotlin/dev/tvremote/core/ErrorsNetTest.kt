@@ -20,5 +20,11 @@ class ErrorsNetTest {
         assertFalse(e.toString(), Errors.fromInternet(e))
     }
 
+    @Test fun playProtectIsWorded() {                                     // the page had it (friendly()); the native screens showed the code
+        val said = Errors.say(IOException("launcher:install:INSTALL_FAILED_VERIFICATION_FAILURE"), "en")
+        assertFalse(said, said.contains("INSTALL_FAILED"))
+        assertTrue(said, said.contains("Play Protect"))
+    }
+
     @Test fun ownWordsAreNot() = assertFalse(Errors.fromInternet(IOException("home:missing")))
 }
