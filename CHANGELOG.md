@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.54.0 - 2026-11-14
+
+Web 0.54.0 · Phone app 0.51.0 · TV app 0.52.0 · TV Home 0.34.0 · TV Channels 0.24.0 · TV Games 0.24.0 · TV Apps 0.8.0
 
 - TV Channels: "Pin to home screen" is always offered. When the home screen is another launcher (Google TV's own after a reset), it says so and offers "Use TV Home": TV Setup switches the home screen, and the channel is pinned on return
 - TV Setup's screen: an app update blocked by Google Play Protect says so in words instead of showing "launcher:install:INSTALL_FAILED_VERIFICATION_FAILURE".
