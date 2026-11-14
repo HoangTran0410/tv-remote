@@ -694,6 +694,11 @@
   "n": 1,
   "note": "another FPT Play 650 (Android 11, not the owner's 14): adb_enabled=0, adbd stopped; FPT locks Developer options (memory fpt-isp-box-support), TV Setup already asks to turn ADB on"
  },
+ "2a6f32b7626c956e23ec6576|0.45.1": {
+  "at": "2026-11-14T17:01:42+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report: 5555 refused (debugging off on LE-Y7), not a code fault"
+ },
  "2a920a01f1a672f5b5e3208a|0.38.2": {
   "at": "2026-11-04T18:44:10+07:00",
   "n": 1,
@@ -1493,6 +1498,11 @@
   "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
+ },
+ "528c24f735b0a54eb1661878|0.45.1": {
+  "at": "2026-11-14T17:01:41+07:00",
+  "n": 3,
+  "note": "Allwinner LE-Y7 on old TV Setup 0.45.1: scrcpy did-not-start with no reason (newer builds add the server's own reason, serverSaid); same kind as before, not a new fault"
  },
  "52ad8714d4c28394d69bd949|0.32.1": {
   "at": "2026-10-29T18:31:17+07:00",
