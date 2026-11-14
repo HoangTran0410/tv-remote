@@ -1804,6 +1804,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "61a06c29a2989b59aa4eda04|0.52.0": {
+  "at": "2026-11-15T06:21:02+07:00",
+  "n": 1,
+  "note": "0.52.0 Xiaomi MiTV-AFMU0 sdk 34: rs allow, running, bound 0, crashed 0: Xiaomi's firmware drops the a11y entry (like MiTV-AFKR0 / MZTU0); clients say keys work only on TV Home"
+ },
  "61f0c1075aa0504c636e08b5|0.38.4": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
