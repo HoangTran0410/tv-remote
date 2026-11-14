@@ -38,6 +38,19 @@ object Pins {
     fun can(c: Context): Boolean =
         Build.VERSION.SDK_INT >= 26 && (c.getSystemService(Context.SHORTCUT_SERVICE) as? ShortcutManager)?.isRequestPinShortcutSupported == true
 
+    /**
+     * When the home screen in use takes no pins but TV Home is on the TV: TV Setup's launcher list, swapping to TV Home at once (the TV
+     * still asks Keep / Go back). The Home key can reach TV Home through TV Setup while Android's home screen is another (a Chromecast's
+     * setup "recovery" home, 11948009), and only that one takes pins: the menu entry stays, and says why. Null: nothing to offer.
+     */
+    fun setHome(c: Context): Intent? {
+        if (Build.VERSION.SDK_INT < 26 || !has(c, HomeInfo.HOME) || !has(c, SETUP)) return null
+        return Intent().setClassName(SETUP, "$SETUP.MainActivity").putExtra("open", "launchers").putExtra("auto", HomeInfo.HOME)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+    }
+    private const val SETUP = "dev.tvremote.setup"
+    private fun has(c: Context, pkg: String) = try { c.packageManager.getApplicationInfo(pkg, 0).enabled } catch (e: Exception) { false }
+
     @android.annotation.TargetApi(26)   // [can] is checked first
     fun pin(c: Context, ch: Channel, logo: Bitmap?): Boolean {
         if (!can(c)) return false

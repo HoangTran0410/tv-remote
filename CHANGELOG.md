@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Channels: "Pin to home screen" is always offered. When the home screen is another launcher (Google TV's own after a reset), it says so and offers "Use TV Home": TV Setup switches the home screen, and the channel is pinned on return
 - TV Setup's screen: an app update blocked by Google Play Protect says so in words instead of showing "launcher:install:INSTALL_FAILED_VERIFICATION_FAILURE".
 - TV Home's bar over an app now opens after an hour in the same film too (it looked only at the last 15 minutes)
 - TV Home stops its timers under a screensaver on Android 10 and older; the photo screensaver no longer retries unreadable pictures every half second

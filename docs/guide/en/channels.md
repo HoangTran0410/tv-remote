@@ -11,6 +11,7 @@ An app on the TV that plays channels from iptv-org's public lists and VieON's fr
 
 | On the TV | How |
 | --- | --- |
+| 📌 **Pin to home screen** | Home screen not TV Home yet: press “Use TV Home”, TV Setup switches it, and the channel is pinned when you come back. |
 | 🔍 **Search channels** | First row on the left, OK, type a name. The chosen country comes first, then “Other countries”. The first search downloads about 3 MB. |
 | 🔔 **Reminders** | In the guide, OK on a programme to come (OK again removes it). Two minutes before, a card shows in the corner: OK watches, Back dismisses. |
 | 🔔 **Over other apps** | Needs “display over other apps”: the phone / computer app turns it on when you use the TV channels card. Screen off: no reminder. |

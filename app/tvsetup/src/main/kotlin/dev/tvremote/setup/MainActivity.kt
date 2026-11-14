@@ -88,6 +88,7 @@ class MainActivity : Activity() {
     private var adb: Adb? = null
     /** Opened by TV Home's "Home screen" (extra open=launchers): the launcher picker as soon as ADB is up. */
     private var openLaunchers = false
+    private var autoLauncher: String? = null
     private var setup: Setup? = null
     private var busy = false
     private var focusedOnce = false
@@ -230,6 +231,9 @@ class MainActivity : Activity() {
     override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         openLaunchers = intent?.getStringExtra("open") == "launchers"
+        // TV Channels' "Pin to Home screen" when the home screen takes no pins: the list swaps to TV Home at once (the TV still asks
+        // Keep / Go back). Only TV Home: this screen is open to any app, and another launcher is never picked for the person
+        autoLauncher = intent?.getStringExtra("auto")?.takeIf { openLaunchers && it == dev.tvremote.home.HomeConfig.PKG }
         dev.tvremote.core.adb.Adb.holdFirstAsk(10000)                       // a phone turning ADB on asks first, then allows us too (AdbPrompt.helpSetup)
         val page = LinearLayout(this)
         page.setBackgroundColor(TvUi.BG)
@@ -810,7 +814,7 @@ class MainActivity : Activity() {
                 bundle(s)
                 showStatus(s)
                 connecting = false
-                ui { setEnabled(true); ecoPaint(); if (openLaunchers) { openLaunchers = false; chooseLauncher() } }
+                ui { setEnabled(true); ecoPaint(); if (openLaunchers) { openLaunchers = false; chooseLauncher(autoLauncher); autoLauncher = null } }
             } catch (e: Exception) {
                 adb = null; setup = null
                 connecting = false

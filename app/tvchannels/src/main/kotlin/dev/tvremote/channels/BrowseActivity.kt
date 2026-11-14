@@ -162,7 +162,7 @@ class BrowseActivity : Activity() {
     }
 
     override fun onResume() {
-        super.onResume(); cards.notifyDataSetChanged(); if (homeShown()) shelves.refreshCards() else if (mine(group) != null) { buildRail(); filter() }
+        super.onResume(); pinPending(); cards.notifyDataSetChanged(); if (homeShown()) shelves.refreshCards() else if (mine(group) != null) { buildRail(); filter() }
         upd.check({ askUpdate(it) }, { updating(it) })
     }
 
@@ -484,6 +484,31 @@ class BrowseActivity : Activity() {
         startActivity(Intent(Intent.ACTION_VIEW, Pins.link(ch.first().id)).setClass(this, PlayActivity::class.java))
     }
 
+    /** Pin to Home screen is offered when the home screen takes pins, or TV Setup can make TV Home the home screen ([Pins.setHome]). */
+    private fun pinnable() = Pins.can(this) || Pins.setHome(this) != null
+
+    /**
+     * [pin] at once when the home screen takes pins; otherwise says another home screen is in use and offers TV Setup's swap to TV Home.
+     * The pin is kept for 10 minutes and made when this screen comes back with TV Home as the home screen ([onResume]).
+     */
+    private var pendingPin: (() -> Unit)? = null
+    private var pendingAt = 0L
+    private fun pinOr(pin: () -> Unit) {
+        if (Pins.can(this)) { pin(); return }
+        val go = Pins.setHome(this) ?: run { Toast.makeText(this, R.string.pin_refused, Toast.LENGTH_LONG).show(); return }
+        TvUi.confirm(this, R.style.Dialog, getString(R.string.pin), getString(R.string.pin_other_home), getString(R.string.pin_set_home),
+            getString(R.string.upd_cancel)) {
+            pendingPin = pin; pendingAt = android.os.SystemClock.elapsedRealtime()
+            try { startActivity(go) } catch (e: Exception) { pendingPin = null; Toast.makeText(this, R.string.pin_refused, Toast.LENGTH_LONG).show() }
+        }
+    }
+    private fun pinPending() {
+        val p = pendingPin ?: return
+        pendingPin = null
+        if (android.os.SystemClock.elapsedRealtime() - pendingAt > 10 * 60_000L) return
+        if (Pins.can(this)) p() else Toast.makeText(this, R.string.pin_not_home_yet, Toast.LENGTH_LONG).show()
+    }
+
     /** What can be done with one channel: on a TV the Menu key or a long OK, on a phone a long press. */
     private var actionsDlg: android.app.Dialog? = null
     fun actions(ch: List<Channel>) {
@@ -499,12 +524,14 @@ class BrowseActivity : Activity() {
         })
         box.addView(TvUi.row(this, R.drawable.ic_folder, getString(R.string.to_group)) { dlg.dismiss(); groupsFor(ch) })
         box.addView(TvUi.row(this, R.drawable.ic_guide, getString(R.string.guide)) { dlg.dismiss(); guideOf(ch) })
-        if (Pins.can(this)) box.addView(TvUi.row(this, R.drawable.ic_home, getString(R.string.pin)) {
+        if (pinnable()) box.addView(TvUi.row(this, R.drawable.ic_home, getString(R.string.pin)) {
             dlg.dismiss()
-            io.execute {
-                val logo = Logos.forPin(this, c.logo, 640)
-                val ok = Pins.pin(this, c, logo)
-                main.post { if (!ok) Toast.makeText(this, R.string.pin_refused, Toast.LENGTH_LONG).show() }
+            pinOr {
+                io.execute {
+                    val logo = Logos.forPin(this, c.logo, 640)
+                    val ok = Pins.pin(this, c, logo)
+                    main.post { if (!ok) Toast.makeText(this, R.string.pin_refused, Toast.LENGTH_LONG).show() }
+                }
             }
         })
         val why = listOfNotNull(c.quality.takeIf { it.isNotEmpty() }, groupName(this, c.group),
@@ -741,13 +768,15 @@ class BrowseActivity : Activity() {
         val name = mineName(gid)
         TvUi.sheetTitle(box, name)
         box.addView(TvUi.row(this, R.drawable.ic_play, getString(R.string.open)) { dlg.dismiss(); pick(if (gid == Store.FAV) FAVS else MINE + gid) })
-        if (Pins.can(this)) box.addView(TvUi.row(this, R.drawable.ic_home, getString(R.string.pin)) {
+        if (pinnable()) box.addView(TvUi.row(this, R.drawable.ic_home, getString(R.string.pin)) {
             dlg.dismiss()
-            val logos = Store.channels(this, gid).byChannel().map { it.first().logo }.filter { it.isNotEmpty() }.take(4)
-            io.execute {
-                val bits = logos.mapNotNull { Logos.forPin(this, it, 320) }
-                val ok = Pins.pinGroup(this, gid, name, bits)
-                main.post { if (!ok) Toast.makeText(this, R.string.pin_refused, Toast.LENGTH_LONG).show() }
+            pinOr {
+                val logos = Store.channels(this, gid).byChannel().map { it.first().logo }.filter { it.isNotEmpty() }.take(4)
+                io.execute {
+                    val bits = logos.mapNotNull { Logos.forPin(this, it, 320) }
+                    val ok = Pins.pinGroup(this, gid, name, bits)
+                    main.post { if (!ok) Toast.makeText(this, R.string.pin_refused, Toast.LENGTH_LONG).show() }
+                }
             }
         })
         if (gid != Store.FAV) {

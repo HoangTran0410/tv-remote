@@ -11,6 +11,7 @@ App trên TV phát kênh từ danh sách công khai của iptv-org và các kên
 
 | Trên TV | Cách dùng |
 | --- | --- |
+| 📌 **Ghim ra màn hình chính** | Màn hình chính chưa phải TV Home: bấm “Dùng TV Home”, TV Setup đổi giúp, quay lại là kênh được ghim. |
 | 🔍 **Tìm kênh** | Dòng đầu bên trái, OK rồi gõ tên. Kênh của nước đang chọn hiện trước, rồi “Ở nước khác”. Lần đầu tải danh sách khoảng 3 MB. |
 | 🔔 **Nhắc chương trình** | Trong lịch phát sóng, OK trên chương trình sắp chiếu (OK lần nữa để bỏ). 2 phút trước giờ chiếu hiện thẻ ở góc: OK xem, Back bỏ qua. |
 | 🔔 **Trên app khác** | Cần quyền “hiển thị trên ứng dụng khác”: app điện thoại / máy tính tự bật khi dùng thẻ Kênh TV. Màn hình TV tắt thì không nhắc. |
