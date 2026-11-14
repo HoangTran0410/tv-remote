@@ -395,14 +395,14 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
  },
  "15987037e515d85bb3c833f1|0.34.0": {
-  "at": "2026-11-14T18:02:13+07:00",
+  "at": "2026-11-14T23:01:04+07:00",
   "n": 5,
-  "note": "TV Setup ADB health report: BRAVIA VU31 'Allow USB debugging?' not answered on the TV (known kind), not a code fault"
+  "note": "same BRAVIA VU31 on 0.50.0, prompt not answered while adbd hangs"
  },
  "15987037e515d85bb3c833f1|0.50.0": {
-  "at": "2026-11-14T18:02:13+07:00",
+  "at": "2026-11-14T23:01:04+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report: BRAVIA VU31 'Allow USB debugging?' not answered on the TV (known kind), not a code fault"
+  "note": "same BRAVIA VU31 on 0.50.0, prompt not answered while adbd hangs"
  },
  "15bc83da3a291a861c407efa|0.32.1": {
   "at": "2026-10-29T17:19:56+07:00",
@@ -545,9 +545,14 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
  },
  "1c570f260459c0b84513dc9d|0.34.0": {
-  "at": "2026-11-05T10:40:12+07:00",
-  "n": 4,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "at": "2026-11-14T23:01:03+07:00",
+  "n": 5,
+  "note": "0.50.0: loopback 5555 connect timeouts for 28 h (58 tries) while the probe finds 5555 open and adbd running: Sony's adbd hangs; ADB stays dead until debugging is toggled or the TV restarts. Nothing on our side; likely the user's own BRAVIA"
+ },
+ "1c570f260459c0b84513dc9d|0.50.0": {
+  "at": "2026-11-14T23:01:03+07:00",
+  "n": 1,
+  "note": "0.50.0: loopback 5555 connect timeouts for 28 h (58 tries) while the probe finds 5555 open and adbd running: Sony's adbd hangs; ADB stays dead until debugging is toggled or the TV restarts. Nothing on our side; likely the user's own BRAVIA"
  },
  "1d068b0e2ad4d8683265d6a9|0.32.1": {
   "at": "2026-11-02T22:17:48+07:00",
