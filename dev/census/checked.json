@@ -169,6 +169,11 @@
   "n": 1,
   "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
  },
+ "0ee09e20e4599e5f27129745|0.50.0": {
+  "at": "2026-11-15T16:19:22+07:00",
+  "n": 1,
+  "note": "0.50.0 BRAVIA VU31 sdk 34: add-on 'stopped' (force-stopped, Android drops the entry; cleaner kind); ADB is up again on that TV (adbd hang 1c570f26 cleared); 0.52.0 says keys work only on TV Home"
+ },
  "0f04c812319be9eca1ee7d4f|0.35.0": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
