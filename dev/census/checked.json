@@ -1870,14 +1870,14 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "657718557b80576c615cdf0a|0.50.0": {
-  "at": "2026-11-13T11:38:58+07:00",
+  "at": "2026-11-16T01:02:35+07:00",
   "n": 1,
-  "note": "keyfix_refused on a TCL G10 (sdk 31): add-on stopped, TCL's cleaner force-stops it and Android drops the a11y entry (like JmGO 0bea8243); told on the clients since e9452995"
+  "note": "TCL G10 a12: add-on 'stopped' (RAM cleaner kind); nothing to fix"
  },
  "657718557b80576c615cdf0a|0.51.0": {
-  "at": "2026-11-13T11:38:58+07:00",
-  "n": 2,
-  "note": "keyfix_refused on a TCL G10 (sdk 31): add-on stopped, TCL's cleaner force-stops it and Android drops the a11y entry (like JmGO 0bea8243); told on the clients since e9452995"
+  "at": "2026-11-16T01:02:35+07:00",
+  "n": 3,
+  "note": "TCL G10 a12: add-on 'stopped' (RAM cleaner kind); nothing to fix"
  },
  "657db7980ca8eda492ca97eb|0.29.0": {
   "at": "2026-10-28T14:05:41+07:00",
@@ -2330,14 +2330,14 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "758c005882cb2cbebf891004|0.47.0": {
-  "at": "2026-11-13T20:32:22+07:00",
+  "at": "2026-11-16T01:02:34+07:00",
   "n": 1,
-  "note": "rules_no_adb on a CHiQ AI PONT (mt5896, sdk 34): a rule could not turn the TV off, ADB still connecting and 5555 closed (adbd up, no TCP port). A user state, the message already says what to do; not a fault"
+  "note": "CHiQ AI PONT 0.51.0: 5555 not answering (adb still connecting); wording names the last error since d7671a0a"
  },
  "758c005882cb2cbebf891004|0.51.0": {
-  "at": "2026-11-13T20:32:22+07:00",
-  "n": 1,
-  "note": "rules_no_adb on a CHiQ AI PONT (mt5896, sdk 34): a rule could not turn the TV off, ADB still connecting and 5555 closed (adbd up, no TCP port). A user state, the message already says what to do; not a fault"
+  "at": "2026-11-16T01:02:34+07:00",
+  "n": 2,
+  "note": "CHiQ AI PONT 0.51.0: 5555 not answering (adb still connecting); wording names the last error since d7671a0a"
  },
  "768f27f158deb2344eee289b|0.33.1": {
   "at": "2026-10-29T17:19:46+07:00",
@@ -2715,9 +2715,9 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "91a5ee662f21120ec67e968e|0.30.0": {
-  "at": "2026-11-09T07:39:11+07:00",
-  "n": 19,
-  "note": "TV Home 0.30.0 only: onPause on a locked Home, fixed in 5de6ba6f (0.31.0, v0.50.0)"
+  "at": "2026-11-16T01:02:34+07:00",
+  "n": 20,
+  "note": "TV Home 0.30.0 only, again 1x: fixed in 5de6ba6f (0.31.0); that TV still on 0.30.0"
  },
  "91edf9043da787065b68c466|0.38.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -3225,9 +3225,19 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "b14376f49ad285f8b2deab96|0.37.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-16T01:02:33+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Amlogic p291 MXQ clone: 5555 ECONNREFUSED, adbd not on TCP (ADB off); nothing to fix, client asks to turn ADB on"
+ },
+ "b14376f49ad285f8b2deab96|0.50.0": {
+  "at": "2026-11-16T01:02:33+07:00",
+  "n": 2,
+  "note": "Amlogic p291 MXQ clone: 5555 ECONNREFUSED, adbd not on TCP (ADB off); nothing to fix, client asks to turn ADB on"
+ },
+ "b14376f49ad285f8b2deab96|0.52.0": {
+  "at": "2026-11-16T01:02:33+07:00",
+  "n": 1,
+  "note": "Amlogic p291 MXQ clone: 5555 ECONNREFUSED, adbd not on TCP (ADB off); nothing to fix, client asks to turn ADB on"
  },
  "b1999d21c00cbbc951ce9906|0.10.0": {
   "at": "2026-10-28T14:05:22+07:00",
@@ -4535,29 +4545,29 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "fbed4da875a2ffa6e96f47b8|0.47.0": {
-  "at": "2026-11-15T20:23:36+07:00",
+  "at": "2026-11-16T01:02:35+07:00",
   "n": 2,
-  "note": "Allwinner sun50iw15p1 (ADT-3 clone, a14 userdebug) firmware drops the a11y entry even with rs allow, a11y 0; same kind as Allwinner/JmGO, nothing to fix"
+  "note": "Allwinner sun50iw15p1 ADT-3 clone again: firmware drops the a11y entry"
  },
  "fbed4da875a2ffa6e96f47b8|0.49.0": {
-  "at": "2026-11-15T20:23:36+07:00",
+  "at": "2026-11-16T01:02:35+07:00",
   "n": 1,
-  "note": "Allwinner sun50iw15p1 (ADT-3 clone, a14 userdebug) firmware drops the a11y entry even with rs allow, a11y 0; same kind as Allwinner/JmGO, nothing to fix"
+  "note": "Allwinner sun50iw15p1 ADT-3 clone again: firmware drops the a11y entry"
  },
  "fbed4da875a2ffa6e96f47b8|0.50.0": {
-  "at": "2026-11-15T20:23:36+07:00",
+  "at": "2026-11-16T01:02:35+07:00",
   "n": 5,
-  "note": "Allwinner sun50iw15p1 (ADT-3 clone, a14 userdebug) firmware drops the a11y entry even with rs allow, a11y 0; same kind as Allwinner/JmGO, nothing to fix"
+  "note": "Allwinner sun50iw15p1 ADT-3 clone again: firmware drops the a11y entry"
  },
  "fbed4da875a2ffa6e96f47b8|0.51.0": {
-  "at": "2026-11-15T20:23:36+07:00",
+  "at": "2026-11-16T01:02:35+07:00",
   "n": 4,
-  "note": "Allwinner sun50iw15p1 (ADT-3 clone, a14 userdebug) firmware drops the a11y entry even with rs allow, a11y 0; same kind as Allwinner/JmGO, nothing to fix"
+  "note": "Allwinner sun50iw15p1 ADT-3 clone again: firmware drops the a11y entry"
  },
  "fbed4da875a2ffa6e96f47b8|0.52.0": {
-  "at": "2026-11-15T20:23:36+07:00",
-  "n": 1,
-  "note": "Allwinner sun50iw15p1 (ADT-3 clone, a14 userdebug) firmware drops the a11y entry even with rs allow, a11y 0; same kind as Allwinner/JmGO, nothing to fix"
+  "at": "2026-11-16T01:02:35+07:00",
+  "n": 2,
+  "note": "Allwinner sun50iw15p1 ADT-3 clone again: firmware drops the a11y entry"
  },
  "fc50f4abd4e3d69b9a57334c|0.34.1": {
   "at": "2026-10-30T09:08:32+07:00",
