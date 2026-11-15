@@ -57,7 +57,7 @@ internal object DrawLayer {
     private fun accept(s: ServerSocket) {
         while (!s.isClosed) {
             val k = try { s.accept() } catch (e: Exception) { return }
-            Thread({ serve(k) }, "draw").apply { isDaemon = true }.start()
+            Thread({ try { serve(k) } catch (e: java.io.IOException) { } }, "draw").apply { isDaemon = true }.start()   // a sender dropping (Connection reset) ends only its own thread (census 6fd12ce4)
         }
     }
 

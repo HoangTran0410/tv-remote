@@ -790,9 +790,14 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "2f7b4a5845c32315a71d9ed8|0.48.0": {
-  "at": "2026-11-10T20:00:58+07:00",
+  "at": "2026-11-16T06:26:58+07:00",
   "n": 1,
-  "note": "keyfix_refused: firmware takes the key add-on's accessibility service out; the next TV Setup reports known/others/a11y (e957a72e, unreleased): wait for that data"
+  "note": "Allwinner sun50iw12p1 projector (fake adt3, a11): firmware drops the a11y entry; nothing to fix"
+ },
+ "2f7b4a5845c32315a71d9ed8|0.52.0": {
+  "at": "2026-11-16T06:26:58+07:00",
+  "n": 1,
+  "note": "Allwinner sun50iw12p1 projector (fake adt3, a11): firmware drops the a11y entry; nothing to fix"
  },
  "304d571eb8351582e87856f4|0.26.3": {
   "at": "2026-10-26T21:47:43+07:00",
@@ -2244,6 +2249,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "6fd12ce4975f43e7ddc5a3f4|0.52.0": {
+  "at": "2026-11-16T06:31:53+07:00",
+  "n": 1,
+  "note": "DrawLayer.serve readLine (R8 map: Adb lambda0 line 204 = DrawLayer.kt:70): a sender's reset reached Guard as an uncaught thread error; fixed: draw/video threads catch IOException"
+ },
  "70ce0f419f77afe2a702668d|0.25.0": {
   "at": "2026-10-27T09:37:16+07:00",
   "n": 1,
@@ -2658,6 +2668,11 @@
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "8d176ce1e9c94e8638a81670|0.52.0": {
+  "at": "2026-11-16T06:26:59+07:00",
+  "n": 1,
+  "note": "Chromecast a14, rs allow, others 1: another a11y app enabled, ours dropped; nothing to fix"
  },
  "8d19b0bf4fbfe9ad10c5143b|0.34.1": {
   "at": "2026-10-30T09:08:20+07:00",
@@ -4543,6 +4558,11 @@
   "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "fbcdebf9099ea493b3b61d33|0.52.0": {
+  "at": "2026-11-16T06:26:59+07:00",
+  "n": 1,
+  "note": "MOKA R3G Realtek rtd2841a a14, rs allow, a11y 0: firmware drops the a11y entry; nothing to fix"
  },
  "fbceab7d03188e5e17141936|0.28.0": {
   "at": "2026-10-27T09:37:25+07:00",

@@ -79,7 +79,7 @@ internal object VideoLayer {
     private fun accept(s: ServerSocket) {
         while (!s.isClosed) {
             val k = try { s.accept() } catch (e: Exception) { return }
-            Thread({ serve(k) }, "video").apply { isDaemon = true }.start()
+            Thread({ try { serve(k) } catch (e: java.io.IOException) { } }, "video").apply { isDaemon = true }.start()   // a sender dropping (Connection reset) ends only its own thread (census 6fd12ce4)
         }
     }
 
