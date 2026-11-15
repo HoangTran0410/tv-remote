@@ -2634,6 +2634,11 @@
   "n": 1,
   "note": "ADB refused / error: ADB off on the user's TV (known)"
  },
+ "8b454ce2f884181ea89722e1|0.52.0": {
+  "at": "2026-11-15T20:21:29+07:00",
+  "n": 1,
+  "note": "Allwinner H713 (sun50iw12p1) projector firmware drops the a11y entry, a11y 0, rs -; same kind as Allwinner/JmGO, nothing to fix, clients say so since e9452995"
+ },
  "8baf906db5be83b7065a065b|0.35.0": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
