@@ -97,7 +97,7 @@
     apps: { setup: ["App TV (TV Setup)", "TV app (TV Setup)"], phone: ["App điện thoại", "Phone app"], pc: ["App máy tính", "Computer app"], home: ["TV Home", "TV Home"], other: ["Khác", "Other"] }
   };
   var ORDER = ["setup", "phone", "pc", "home", "other"], COLOR = { setup: "var(--blue)", phone: "var(--orange)", pc: "var(--green)", home: "#e06ad6", other: "var(--dim)" };
-  var MAXDAYS = 60;
+  var MAXDAYS = 7;
   var ct = function(k){ return CW[k][lang()]; };
   function perApp(o){ var r = {}, any = 0; for (var k in o || {}) { var n = +o[k] || 0; any += n; r[ORDER.indexOf(k) >= 0 ? k : "other"] = (r[ORDER.indexOf(k) >= 0 ? k : "other"] || 0) + n; } r._ = any; return r; }
   function dayLabel(d){ var p = d.split("-"); return lang() ? p[1] + "/" + p[2] : p[2] + "/" + p[1]; }
