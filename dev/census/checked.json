@@ -4544,6 +4544,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "ff598fd52ae7ab8545756b95|0.52.0": {
+  "at": "2026-11-15T08:14:41+07:00",
+  "n": 1,
+  "note": "0.52.0 PrismPlus 2KA (Skyworth-made, sdk 34): add-on 'stopped': the TV's RAM cleaner force-stops it, Android drops the entry (like Skyworth SWTV-21SA); clients say keys work only on TV Home"
+ },
  "ff70d6a71cc97237a376e01a|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
