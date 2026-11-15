@@ -3940,14 +3940,19 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "da6214721e9abe7601758e7a|0.26.3": {
-  "at": "2026-11-01T20:54:31+07:00",
+  "at": "2026-11-15T15:35:59+07:00",
   "n": 1,
-  "note": "fixed: contains() guarded in core.js popover"
+  "note": "Safari: stack 'contains@[native code]' then '@', no file of ours (our own contains() calls were made safe in cdaa4c2d, 0.40.1): a script Safari or an add-on put in; errbox ignores native-only stacks now"
  },
  "da6214721e9abe7601758e7a|0.38.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-15T15:35:59+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "Safari: stack 'contains@[native code]' then '@', no file of ours (our own contains() calls were made safe in cdaa4c2d, 0.40.1): a script Safari or an add-on put in; errbox ignores native-only stacks now"
+ },
+ "da6214721e9abe7601758e7a|0.52.0": {
+  "at": "2026-11-15T15:35:59+07:00",
+  "n": 1,
+  "note": "Safari: stack 'contains@[native code]' then '@', no file of ours (our own contains() calls were made safe in cdaa4c2d, 0.40.1): a script Safari or an add-on put in; errbox ignores native-only stacks now"
  },
  "db1680a09090e1bebbd561b8|0.47.0": {
   "at": "2026-11-08T07:30:43+07:00",

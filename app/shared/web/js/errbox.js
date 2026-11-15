@@ -18,6 +18,7 @@
   const injected = (stack) => {
     const doc = typeof location !== 'undefined' ? String(location.href).split('#')[0] : '';
     const files = String(stack || '').split('\n').map((l) => (/(\S+?):\d+:\d+\)?\s*$/.exec(l.replace(/^.*?[@(]/, '')) || [])[1]).filter(Boolean);
+    if (!files.length) return /\[native code\]/.test(String(stack || ''));   // only native frames and nameless ones: no file of ours (Safari, census da621472: contains@[native code] then @)
     return !!doc && files.length > 0 && files.every((f) => f === doc || f === '<anonymous>');   // <anonymous>: evaluated by the app hosting the page (Zalo's zaloJSV2, census 11e6a1d8)
   };
   const ignored = (e) => {
