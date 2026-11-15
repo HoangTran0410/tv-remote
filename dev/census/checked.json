@@ -474,6 +474,11 @@
   "n": 1,
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
+ "1a256e72249eab88b09b7ad8|0.51.0": {
+  "at": "2026-11-15T14:05:56+07:00",
+  "n": 1,
+  "note": "0.51.0 SWTV Android 9: sleep rule could not turn the TV off: adbd running but 5555 refused (network ADB off, e.g. after a restart); 'still connecting' was getQuiet's wait, the next TV Setup names the dial error (d7671a0a)"
+ },
  "1b64c0fdb7081f015b2765c2|0.22.1": {
   "at": "2026-11-14T14:55:26+07:00",
   "n": 1,
