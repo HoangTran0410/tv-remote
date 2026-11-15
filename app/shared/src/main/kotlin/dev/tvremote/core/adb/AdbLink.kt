@@ -9,6 +9,7 @@ class AdbLink(val keyDir: File, val host: String) {
     @Volatile private var dialing: Adb? = null                        // being connected right now: it may sit for minutes waiting for the person at the TV
     @Volatile private var waiting = false                             // the TV is showing "Allow USB debugging?"
     @Volatile private var failed = false                              // the last attempt did not get through
+    @Volatile private var lastErr = ""                                // why it did not: getQuiet's refusal names it (census rules_no_adb said only "still connecting")
     @Volatile private var dialStart = 0L                              // nanoTime: it stops while the device sleeps, so a dial it froze in is not "stuck"
     @Volatile private var lastTry = 0L                                // state() dials again at most this often after a failure
     @Volatile private var gen = 0                                     // bumped by reconnect(): a dial of an older generation was cut on purpose, not a failure
@@ -48,12 +49,12 @@ class AdbLink(val keyDir: File, val host: String) {
                 return got
             } catch (e: IOException) {
                 WireLog.all.add("·", "adb $host $e")
-                if (mine == gen) failed = true
+                if (mine == gen) { failed = true; lastErr = e.message ?: e.javaClass.simpleName }
                 try { a.close() } catch (ignored: Exception) { }      // the socket of a refused attempt, not left to the GC
                 throw e
             } catch (e: Exception) {
                 WireLog.all.add("·", "adb $host $e")
-                if (mine == gen) failed = true
+                if (mine == gen) { failed = true; lastErr = e.message ?: e.javaClass.simpleName }
                 try { a.close() } catch (ignored: Exception) { }
                 throw IOException(e.message ?: e.javaClass.simpleName)
             } finally {
@@ -74,7 +75,7 @@ class AdbLink(val keyDir: File, val host: String) {
     @Throws(IOException::class)
     fun getQuiet(): Adb {
         adb?.let { if (!it.isDead()) return it }
-        if (failed && dialing == null && System.currentTimeMillis() - lastTry < QUIET_MS) throw IOException(STILL)
+        if (failed && dialing == null && System.currentTimeMillis() - lastTry < QUIET_MS) throw IOException("$STILL, last try: $lastErr")
         return get()
     }
 

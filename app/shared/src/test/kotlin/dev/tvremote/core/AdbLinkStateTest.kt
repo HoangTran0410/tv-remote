@@ -26,9 +26,9 @@ class AdbLinkStateTest {
         val l = AdbLink(Files.createTempDirectory("keys").toFile(), "127.0.0.1:1")
         try { l.get() } catch (e: java.io.IOException) { }                 // refused
         val msg = try { l.getQuiet(); "dialed" } catch (e: java.io.IOException) { e.message }
-        assertEquals(AdbLink.STILL, msg)                                  // no new dial within QUIET_MS
+        org.junit.Assert.assertTrue(msg, msg!!.startsWith(AdbLink.STILL + ", last try: ") && msg.length > (AdbLink.STILL + ", last try: ").length)   // no new dial within QUIET_MS; names why the last failed
         AdbLink::class.java.getDeclaredField("lastTry").apply { isAccessible = true }.setLong(l, 0L)   // a minute later
         val again = try { l.getQuiet(); "dialed" } catch (e: java.io.IOException) { e.message }
-        org.junit.Assert.assertNotEquals(AdbLink.STILL, again)            // it dials (and fails on port 1 for its own reason)
+        org.junit.Assert.assertFalse(again, again!!.startsWith(AdbLink.STILL))   // it dials (and fails on port 1 for its own reason)
     }
 }
