@@ -4653,5 +4653,10 @@
   "at": "2026-10-29T17:19:54+07:00",
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+ },
+ "aaa561abf78db4410f816c4c|0.52.0": {
+  "at": "2026-11-16T18:30:00+07:00",
+  "n": 1,
+  "note": "same RK3528 stick on 0.52.0 (rs allow, bound 0, crashed 0): firmware drops the a11y entry; nothing to fix, clients say keys work only on TV Home"
  }
 }
