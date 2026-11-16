@@ -9,6 +9,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - TV Setup: a phone or computer dropping its connection while drawing on the TV or showing a video no longer shows an error box on the TV
 - When TV Setup cannot reach ADB, the message now names the last error instead of only "still connecting"
 - The web page no longer shows an error box for a browser add-on's own script errors
+- The web page's now playing bar no longer throws when something else took it off the page
 
 ## 0.54.0 - 2026-11-14
 

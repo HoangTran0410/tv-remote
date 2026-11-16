@@ -3449,6 +3449,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "bac19fdaa1aa27155075ee89|0.54.0": {
+  "at": "2026-11-16T09:45:30+07:00",
+  "n": 1,
+  "note": "playing.js plDraw: #pltitle gone (2nd time after 3cefc344; no code of ours removes it, Windows Chromium, likely a page translator/add-on); plDraw returns when the bar is gone"
+ },
  "bb235b5156d5dfe6f4b07f66|0.31.0": {
   "at": "2026-11-04T03:07:30+07:00",
   "n": 1,

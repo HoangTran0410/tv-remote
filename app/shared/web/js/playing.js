@@ -6,8 +6,9 @@ const mmss = (ms) => { const s = Math.floor(ms / 1000), h = Math.floor(s / 3600)
 const plPos = () => { const o = PL.o; let p = o.pos || 0; if (o.state === 'playing') p += (performance.now() - PL.at) * (o.speed || 1); return o.dur ? Math.min(p, o.dur) : p; };
 function plDraw() {
   const o = PL.o, name = o.title || o.app, on = o.state && o.state !== 'none' && !!name;   // no title (FPT Play): the app's name
-  put($('#playing'), 'hidden', !on); if (!on) return;
-  const t = $('#pltitle'); if (t.title !== name) { t.title = name; t.textContent = ''; t.append(Object.assign(document.createElement('span'), { className: 'rin', textContent: name })); }
+  const box = $('#playing'), t = $('#pltitle'); if (!box || !t) return;   // the bar gone from the page (census 3cefc344, bac19fda: not by our code; a page translator?)
+  put(box, 'hidden', !on); if (!on) return;
+  if (t.title !== name) { t.title = name; t.textContent = ''; t.append(Object.assign(document.createElement('span'), { className: 'rin', textContent: name })); }
   runFit(t);
   const sub = o.title ? o.sub || '' : ''; if ($('#plsub').textContent !== sub) put('#plsub', 'textContent', sub);   // the same words again would start its slide over            // the app is the picture beside it and "Đang mở" below, as on the phone app
   const icon = '/api/app/icon?pkg=' + encodeURIComponent(o.pkg); if ($('#plicon').dataset.src !== icon) { $('#plicon').dataset.src = icon; $('#plicon').src = icon; }
