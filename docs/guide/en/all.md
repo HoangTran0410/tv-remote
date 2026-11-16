@@ -1259,11 +1259,11 @@ Home Assistant sends the token in the `x-tvr-hook` header, out of the logs.
 
 > 💡 **🧹 Check-out** (guesthouses): clears the chosen apps' data, sets the volume, signs out paired browsers, goes Home. Asks first.
 
-> 💡 **📋 Copy settings to another TV** (Setup tab): tick groups, **Take from this TV**, switch TV, **Show what changes**, **Apply**. Save a file to carry it to another TV's web page.
+> 💡 **📦 To another TV** → **📋 Some settings**: tick groups, **Take from this TV**, switch TV, **Show what changes**, **Apply**. Save a file to carry it to another TV's web page.
 
 > 💡 Apps the other TV lacks are left out; own photo walls and QR codes are not copied. App locks need a PIN: type a new one for the other TV, the old one cannot be read back.
 
-> 💡 **📦 Move to a new TV** (Setup tab): **Save backup file** on the old TV, then on the new one **Open backup file**, tick items, **Restore**. PINs are not in the file.
+> 💡 **📦 To another TV** → **📦 The whole TV, by file**: **Save backup file** on the old TV, then on the new one **Open backup file**, tick items, **Restore**. PINs are not in the file.
 
 ## See every TV at a glance
 

@@ -60,6 +60,7 @@ function tcDraw() {
   const file = el('input', { type: 'file', accept: '.json,application/json', hidden: true, onchange: (e) => { const f = e.target.files[0]; e.target.value = ''; if (f) tcOpen(f); } });
   const pick = UI.chips(TVCOPY_GROUPS.map((g) => ({ label: T(TC_GROUP[g.id]), on: tcPick.has(g.id), fn: (e) => {
     tcPick.has(g.id) ? tcPick.delete(g.id) : tcPick.add(g.id); e.currentTarget.classList.toggle('on', tcPick.has(g.id)); } })));
+  pick.classList.add('wrap');                                         // ticks, not one choice: every group in view (a sideways row cut them at 400 px)
   const kids = [UI.note(T('tvcopy.note')), pick, UI.actions(UI.btn(T('tvcopy.take'), tcTake, 'primary'), UI.btn(T('tvcopy.open'), async () => file.click())), file];
   if (tcHeld) {
     kids.push(UI.group(T('tvcopy.held', { name: tcHeld.from || '?', date: tcHeld.date, n: tcHeld.groups.length })));

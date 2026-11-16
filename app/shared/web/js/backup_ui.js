@@ -118,3 +118,14 @@ function bkDraw() {
 }
 onTvChange(() => { bkTodo = null; bkRes = {}; bkGen++; bkDraw(); bkLoadTodo(); });   // the file stays: it is meant to cross to the other TV
 bkDraw();
+
+// 📦 To another TV holds two ways (the user, 2026-11-16: two cards for one job confused): the whole TV through a file (above), or
+// some settings straight across (js/tvcopy_ui.js); the choice shows one, and is kept in this browser only.
+function moveWay(v) {
+  for (const b of document.querySelectorAll('#moveway button')) { b.classList.toggle('on', b.dataset.v === v); b.setAttribute('aria-selected', b.dataset.v === v); }
+  put('#backup', 'hidden', v !== 'backup'); put('#tvcopy', 'hidden', v !== 'tvcopy');
+}
+document.querySelectorAll('#moveway button').forEach((b) => b.addEventListener('click', () => {
+  moveWay(b.dataset.v); try { localStorage.setItem('moveway', b.dataset.v); } catch {}
+}));
+try { if (localStorage.getItem('moveway') === 'tvcopy') moveWay('tvcopy'); } catch {}
