@@ -2119,6 +2119,16 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "6adcc5a5440291e4548ddb8f|0.50.0": {
+  "at": "2026-11-16T17:01:28+07:00",
+  "n": 3,
+  "note": "POCO X3 NFC phone running TV Setup: 5555 refused (ADB over Wi-Fi off on a phone); nothing to fix"
+ },
+ "6adcc5a5440291e4548ddb8f|0.52.0": {
+  "at": "2026-11-16T17:01:28+07:00",
+  "n": 1,
+  "note": "POCO X3 NFC phone running TV Setup: 5555 refused (ADB over Wi-Fi off on a phone); nothing to fix"
+ },
  "6b2b5368c5ee63755ac02afc|0.29.0": {
   "at": "2026-10-28T14:05:42+07:00",
   "n": 1,
@@ -3275,9 +3285,9 @@
   "note": "left: NPE inside system_server, platform"
  },
  "b1ccd0d29d66cdd753d27562|0.27.0": {
-  "at": "2026-11-15T01:00:35+07:00",
-  "n": 9,
-  "note": "phone 0.27.0 on a Meizu Android 6 (latest 0.51.0): R8 lambda NoClassDefFoundError on old ART, no newer version affected; still the one install that never updates"
+  "at": "2026-11-16T17:01:28+07:00",
+  "n": 11,
+  "note": "same Meizu Android 6 on phone 0.27.0 again; never updates"
  },
  "b2b52cae0dafc491fb1e1cd6|0.34.0": {
   "at": "2026-10-30T09:08:25+07:00",
