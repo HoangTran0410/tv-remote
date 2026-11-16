@@ -48,7 +48,7 @@ object SetupNeed {
         "family" to "0.38.5",                                          // 🛡️ Family mode's record kept on the TV (Rules "family"; the release after 0.38.4)
         "video" to "0.42.0",                                           // 🎬 a video or a camera in a box over the screen (VideoLayer; the release after 0.41.0)
         "videocopy" to "0.47.1",                                       // 🎬 a video file handed to TV Setup where the shell may not write its folder (HomeInfo.openFile, a TCL on Android 11)
-        "videoaudio" to "0.52.1",                                      // 🎬 the camera's sound with its picture (VideoLayer.Sound; the release after 0.52.0)
+        "videoaudio" to "0.53.0",                                      // 🎬 the camera's sound with its picture (VideoLayer.Sound; the release after 0.52.0)
         "videorot" to "0.47.1",                                        // 🎬 the video box's picture turned on its side ("rot", VideoLayer; the release after 0.47.0)
         "speak" to "0.42.3",                                           // 🔊 a message read aloud (NotifyReceiver "speak"; the release after 0.42.2)
         "voicekey" to "0.46.1",                                        // 🎙️ a remote key that opens the voice command (Target "do:voice", KeyFix.VOICE; the release after 0.46.0)
