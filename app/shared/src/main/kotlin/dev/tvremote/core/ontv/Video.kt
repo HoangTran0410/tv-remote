@@ -11,7 +11,8 @@ import dev.tvremote.core.B64
  * on 127.0.0.1 and a secret, then ADB opens that port on the TV ("tcp:"), so nothing listens beyond the TV itself.
  *   control: [op] sends one JSON operation (VideoLayer lists them) and gives back the state the TV answered
  *   a file: [file] copies one already on the TV into TV Setup's own folder (TV Setup has no storage permission) and plays it
- *   a camera: [start] opens a second connection for its frames, [frame] sends each one, [stop] ends it (the box goes)
+ *   a camera: [start] opens a second connection for its frames, [frame] sends each one (and each piece of its sound, when the
+ *     head has "ar"), [stop] ends it (the box goes)
  */
 class Video(private val adb: () -> Adb) {
     companion object {
@@ -77,13 +78,13 @@ class Video(private val adb: () -> Adb) {
         }
     }
 
-    /** One encoded frame (Annex B); false when no stream is open (it ended on the TV: the page starts again). */
+    /** One encoded frame (Annex B), or with [sound] a piece of 16-bit PCM; false when no stream is open (it ended on the TV: the page starts again). */
     @Throws(IOException::class)
-    fun frame(data: ByteArray, len: Int, key: Boolean, us: Long): Boolean {
+    fun frame(data: ByteArray, len: Int, key: Boolean, us: Long, sound: Boolean = false): Boolean {
         synchronized(camLock) {
             val s = cam ?: return false
             if (len <= 0 || len > MAX_FRAME) throw IllegalArgumentException("bad frame")
-            val h = java.nio.ByteBuffer.allocate(13).putInt(len).put(if (key) 1 else 0).putLong(us).array()
+            val h = java.nio.ByteBuffer.allocate(13).putInt(len).put(((if (key) 1 else 0) or (if (sound) 2 else 0)).toByte()).putLong(us).array()
             try { s.write(h); s.write(data, 0, len) } catch (e: IOException) { stopCam(); return false }
             return true
         }

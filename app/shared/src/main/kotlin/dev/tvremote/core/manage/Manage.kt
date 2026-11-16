@@ -228,12 +228,12 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
                     val d = r.json()
                     HttpServer.Response.json(if (d.optString("o") == "file") video.file(TvPaths.safePath(d.optString("path")), d) else video.op(d))
                 }
-                "videobox/start" -> { video.start(r.json()); HttpServer.Response.json(JSONObject().put("ok", true)) }   // a camera: {w, h, x, y, s}
-                "videobox/frame" -> {                                    // one H.264 frame (Annex B) as the body; ?k=1 a key frame, ?t= its µs
+                "videobox/start" -> { video.start(r.json()); HttpServer.Response.json(JSONObject().put("ok", true)) }   // a camera: {w, h, x, y, s, ar: its sound's rate}
+                "videobox/frame" -> {                                    // one H.264 frame (Annex B) as the body; ?k=1 a key frame, ?t= its µs; ?a=1 a piece of sound
                     if (r.length <= 0 || r.length > dev.tvremote.core.ontv.Video.MAX_FRAME) throw IllegalArgumentException("bad frame")
                     val b = ByteArray(r.length.toInt()); var off = 0
                     while (off < b.size) { val n = r.body.read(b, off, b.size - off); if (n < 0) break; off += n }
-                    HttpServer.Response.json(JSONObject().put("ok", video.frame(b, off, r.q("k") == "1", r.q("t").toLongOrNull() ?: 0)))
+                    HttpServer.Response.json(JSONObject().put("ok", video.frame(b, off, r.q("k") == "1", r.q("t").toLongOrNull() ?: 0, r.q("a") == "1")))
                 }
                 "videobox/stop" -> { video.stop(); HttpServer.Response.json(JSONObject().put("ok", true)) }
                 "adb/allow" -> {                                      // only for the key named: see AdbPrompt

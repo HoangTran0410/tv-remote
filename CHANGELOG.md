@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Video on the TV: a 🔊 Sound switch sends the phone's or computer's microphone along with its camera (off at first; needs TV Setup 0.52.1)
+- Feature search: Video on the TV, Send a notification, the TV's clipboard and Screen off now open the feature itself, also in the phone app's Manage screen (it used to open the guide there)
 - TV Setup: a phone or computer dropping its connection while drawing on the TV or showing a video no longer shows an error box on the TV
 - When TV Setup cannot reach ADB, the message now names the last error instead of only "still connecting"
 - The web page no longer shows an error box for a browser add-on's own script errors

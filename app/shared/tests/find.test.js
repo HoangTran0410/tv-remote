@@ -9,6 +9,7 @@ const web = path.join(__dirname, '../web');
 const gen = require('../../../dev/gen/find_topics.js');
 const html = fs.readFileSync(path.join(web, 'index.html'), 'utf8');
 const src = fs.readFileSync(path.join(web, 'js/find.js'), 'utf8');
+const spec = fs.readFileSync(path.join(web, 'js/remote_spec.js'), 'utf8');   // REMOTE_DO: what a 'do:' place opens
 const FIND_AT = Function(src.match(/const FIND_AT = (\{[\s\S]*?\n\});/)[0] + 'return FIND_AT;')();
 const FIND_TABS = Function(src.match(/const FIND_TABS = \[[^\]]*\];/)[0] + 'return FIND_TABS;')();
 
@@ -24,6 +25,7 @@ test('FIND_AT names guide topics, and places that are on the page', () => {
   const bad = [];
   for (const [topic, at] of Object.entries(FIND_AT)) {
     if (!ids.has(topic)) bad.push(topic + ': no such guide topic');
+    if (at.startsWith('do:')) { if (!new RegExp('^  ' + at.slice(3) + ': ', 'm').test(spec)) bad.push(topic + ': no REMOTE_DO ' + at); continue; }
     if (at[0] === '@') { if (!about.includes('<details class="sect" id="' + at.slice(1) + '"')) bad.push(topic + ': no Settings section ' + at); continue; }
     const [tab, card] = at.split('#');
     if (!FIND_TABS.includes(tab)) bad.push(topic + ': no tab ' + tab);

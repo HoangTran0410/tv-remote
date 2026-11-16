@@ -1014,7 +1014,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
                 Toast.makeText(this, T("notification_remote.allow"), Toast.LENGTH_LONG).show()
             }
         }
-        if (request == Managing.CAMERA_ASK && ::managing.isInitialized) managing.cameraAnswer(results.isNotEmpty() && results[0] == android.content.pm.PackageManager.PERMISSION_GRANTED)
+        if (request == Managing.CAMERA_ASK && ::managing.isInitialized) managing.cameraAnswer()   // it reads what Android now allows
     }
 
     // ---------------------------------------------------------------- speaking to the TV

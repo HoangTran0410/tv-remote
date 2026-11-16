@@ -7,6 +7,8 @@ let vbCam = null;                                                     // the cam
 
 const vbPlace = () => ({ x: Math.round(VB.x), y: Math.round(VB.y), s: Math.round(VB.s), rot: VB.rot });   // rot: an older TV Setup ignores it
 const vbShape = () => VB.rot % 180 ? 1 / VB.aspect : VB.aspect;      // width / height of the box
+const vbCanSound = () => !!(window.AudioContext && window.AudioWorkletNode);
+const vbSoundOn = () => { try { return localStorage.getItem('vbsound') === '1'; } catch { return false; } };   // the camera's sound: off until chosen
 const vbCanCam = () => !!(window.isSecureContext && window.VideoEncoder && window.VideoFrame && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 
 function vbFit() {                                                    // the box inside the stage (16:9), its height from the video's shape
@@ -37,12 +39,20 @@ async function videoOpen() {
     if (st.rot === undefined && !await setupFor('videorot')) return;   // an older TV Setup would leave the picture as it is
     VB.rot = (VB.rot + 90) % 360; draw(); move();
   } }, '↷ ', el('span', { className: 'lbl', textContent: T('vbox.rotate') }));   // the word goes on a narrow phone (remote.css)
+  const sound = el('button', { type: 'button', onclick: async () => {
+    const on = !vbSoundOn();
+    if (on && !await setupFor('videoaudio')) return;                  // an older TV Setup would take the sound for picture
+    try { localStorage.setItem('vbsound', on ? '1' : '0'); } catch {}
+    if (vbCam) camStart(); else draw();                               // the camera starts again with the microphone, or without it
+  } });
   const flip = el('button', { type: 'button', className: 'small', textContent: '🔄 ' + T('vbox.flip'), hidden: true, onclick: () => { facing = facing === 'user' ? 'environment' : 'user'; camStart(); } });
   const playb = el('button', { type: 'button', onclick: () => op({ o: st.playing ? 'pause' : 'play' }) });
   const muteb = el('button', { type: 'button', onclick: () => op({ o: 'mute', on: !st.muted }) });
   const stopb = el('button', { type: 'button', className: 'danger', textContent: '⏹ ' + T('vbox.stop'), onclick: async () => { camStop(); await op({ o: 'close' }); prev.removeAttribute('src'); prev.srcObject = null; } });
   let facing = 'user', url = '';
   if (!vbCanCam()) { cam.disabled = true; cam.title = T('vbox.cam_no'); }
+  if (!vbCanCam()) { sound.disabled = true; sound.title = T('vbox.cam_no'); }
+  sound.hidden = !vbCanSound();                                       // a browser with no AudioWorklet: the camera alone
 
   function draw() {
     const h = vbFit();
@@ -60,7 +70,10 @@ async function videoOpen() {
     muteb.textContent = st.muted ? '🔇 ' + T('vbox.sound_on') : '🔊 ' + T('vbox.sound_off');
     cam.textContent = vbCam ? '⏹ ' + T('vbox.camera_stop') : '📷 ' + T('vbox.camera');
     put(flip, 'hidden', !vbCam);
-    say.textContent = st.err ? friendly(st.err) : vbCam ? T('vbox.cam_on') : !st.shown ? '' : st.playing ? T('vbox.on_tv') : T('vbox.paused');
+    const snd = vbSoundOn() && vbCanSound();
+    sound.textContent = (snd ? '🔊 ' : '🔇 ') + T('vbox.cam_sound'); sound.classList.toggle('on', snd); sound.setAttribute('aria-pressed', snd);
+    if (!sound.disabled) sound.title = T(snd ? 'vbox.cam_sound_on' : 'vbox.cam_sound_off');
+    say.textContent = st.err ? friendly(st.err) : vbCam ? T(st.nomic ? 'vbox.cam_nomic' : 'vbox.cam_on') : !st.shown ? '' : st.playing ? T('vbox.on_tv') : T('vbox.paused');
     if (file && prev.src) { if (st.playing) prev.play().catch(() => {}); else prev.pause(); }   // the small copy follows the TV
     say.classList.toggle('bad', !!st.err);
   }
@@ -123,12 +136,13 @@ async function videoOpen() {
     prev.removeAttribute('src');
     say.textContent = T('vbox.cam_asking'); say.classList.remove('bad');
     try {
-      vbCam = await vbCamera(prev, facing, (aspect) => { VB.aspect = aspect; draw(); }, (why) => {
+      if (vbSoundOn() && vbCanSound() && !await setupFor('videoaudio')) { try { localStorage.setItem('vbsound', '0'); } catch {} }
+      vbCam = await vbCamera(prev, facing, vbSoundOn() && vbCanSound(), (aspect) => { VB.aspect = aspect; draw(); }, (why) => {
         vbCam = null; st = { ...st, shown: false, live: false, err: why === 'gone' ? '' : why }; draw();
       });
-      st = { ...st, shown: true, live: true, playing: true, err: '' };
+      st = { ...st, shown: true, live: true, playing: true, err: '', nomic: vbCam.nomic };
     } catch (e) {
-      vbCam = null; st = { ...st, err: e && e.name === 'NotAllowedError' ? 'video:camdenied' : 'video:cam ' + (e && e.message || e) };
+      vbCam = null; st = { ...st, err: e && e.name === 'NotAllowedError' ? (vbSoundOn() ? 'video:camdenied_mic' : 'video:camdenied') : 'video:cam ' + (e && e.message || e) };
     }
     draw();
   }
@@ -136,7 +150,7 @@ async function videoOpen() {
   const d = el('dialog', { className: 'ask menu vboxdlg' }, el('div', { className: 'card' },
     el('div', { className: 'card-head' }, el('h2', { textContent: '📹 ' + T('vbox.title') }),
       el('button', { className: 'small iconbtn', textContent: '✕', title: T('common.close'), 'aria-label': T('common.close'), onclick: () => d.close() })),
-    el('div', { className: 'actions' }, pick, cam, flip, turn),
+    el('div', { className: 'actions' }, pick, cam, sound, flip, turn),
     stage, say,
     el('div', { className: 'actions' }, playb, muteb, stopb),
     el('p', { className: 'note', textContent: T('vbox.note') })));
@@ -146,12 +160,41 @@ async function videoOpen() {
 }
 
 // The camera, encoded here (WebCodecs, H.264) and sent frame by frame in order; frames are skipped, never queued, when the
-// link is slower than the camera, so the TV shows now, not a growing delay.
-async function vbCamera(prev, facing, onAspect, onEnd) {
-  const ms = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30, max: 30 } } });
-  let ended = false, enc = null, chain = Promise.resolve(), waiting = 0, n = 0, timer = 0;
+// link is slower than the camera, so the TV shows now, not a growing delay. With [sound] the microphone goes too: 16-bit mono
+// PCM in 40 ms pieces (24 kHz where the browser can, else its own rate: "ar"), on its own line of requests, skipped the same way.
+const VB_PCM = `registerProcessor('tvr-pcm', class extends AudioWorkletProcessor {
+  constructor(o) { super(); this.size = o.processorOptions.size; this.b = new Int16Array(this.size); this.n = 0; }
+  process(inputs) {
+    const c = inputs[0] && inputs[0][0]; if (!c) return true;
+    for (let i = 0; i < c.length; i++) {
+      const v = Math.max(-1, Math.min(1, c[i])); this.b[this.n++] = v < 0 ? v * 32768 : v * 32767;
+      if (this.n === this.size) { this.port.postMessage(this.b.buffer, [this.b.buffer]); this.b = new Int16Array(this.size); this.n = 0; }
+    }
+    return true;
+  }
+});`;
+async function vbMic(ms, onPiece) {
+  let ctx; try { ctx = new AudioContext({ sampleRate: 24000 }); } catch { ctx = new AudioContext(); }   // a browser that will not resample: its own rate
+  const url = URL.createObjectURL(new Blob([VB_PCM], { type: 'text/javascript' }));
+  try { await ctx.audioWorklet.addModule(url); } finally { URL.revokeObjectURL(url); }
+  const node = new AudioWorkletNode(ctx, 'tvr-pcm', { processorOptions: { size: Math.round(ctx.sampleRate * 0.04) } });
+  node.port.onmessage = (e) => onPiece(new Uint8Array(e.data));
+  ctx.createMediaStreamSource(ms).connect(node);                     // not on to the speakers: the TV plays it
+  if (ctx.state !== 'running') await ctx.resume().catch(() => {});
+  return { rate: ctx.sampleRate, stop: () => { node.port.onmessage = null; ctx.close().catch(() => {}); } };
+}
+async function vbCamera(prev, facing, sound, onAspect, onEnd) {
+  const video = { facingMode: facing, width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30, max: 30 } };
+  let ms, nomic = false;
+  try { ms = await navigator.mediaDevices.getUserMedia({ audio: sound ? { echoCancellation: true, noiseSuppression: true, channelCount: 1 } : false, video }); }
+  catch (e) {                                                       // a microphone held by a call, or none: the camera alone, said once
+    if (!sound || e.name === 'NotAllowedError') throw e;
+    ms = await navigator.mediaDevices.getUserMedia({ video }); sound = false; nomic = true;
+  }
+  let ended = false, enc = null, chain = Promise.resolve(), waiting = 0, n = 0, timer = 0, mic = null, aWaiting = 0;
   const stop = (why) => {
     if (ended) return; ended = true;
+    if (mic) mic.stop();
     clearTimeout(timer); ms.getTracks().forEach((t) => t.stop()); prev.srcObject = null;
     try { if (enc && enc.state !== 'closed') enc.close(); } catch {}
     chain.then(() => fetch('/api/videobox/stop', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).catch(() => {});
@@ -166,8 +209,17 @@ async function vbCamera(prev, facing, onAspect, onEnd) {
       latencyMode: 'realtime', avc: { format: 'annexb' } };
     const ok = await VideoEncoder.isConfigSupported(cfg).catch(() => ({ supported: false }));
     if (!ok.supported) throw new Error('video:codec');
-    const r = await fetch('/api/videobox/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ w, h, ...vbPlace() }) });
+    let started = false, achain = Promise.resolve();                // pieces before the TV is ready are dropped; the rest go in order
+    if (sound) mic = await vbMic(ms, (b) => {
+      if (ended || !started || aWaiting > 3) return;                  // behind: this piece is skipped
+      aWaiting++;
+      achain = achain.then(() => ended ? null : fetch('/api/videobox/frame?a=1', { method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: b })
+        .then((x) => x.json()).then((x) => { if (!x.ok) stop('gone'); }))
+        .catch(() => stop('video:link')).finally(() => aWaiting--);
+    }).catch(() => { nomic = true; return null; });
+    const r = await fetch('/api/videobox/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ w, h, ...vbPlace(), ...(mic ? { ar: mic.rate } : {}) }) });
     if (!r.ok) { let e = r.statusText; try { e = (await r.json()).error || e; } catch {} throw new Error(isStale(r.status, e) ? STALE : adbWords(r.status, e)); }
+    started = true;
     enc = new VideoEncoder({
       output: (chunk) => {
         const b = new Uint8Array(chunk.byteLength); chunk.copyTo(b);
@@ -191,5 +243,5 @@ async function vbCamera(prev, facing, onAspect, onEnd) {
     };
     tick();
   } catch (e) { stop(); throw e; }
-  return { stop: () => stop() };
+  return { stop: () => stop(), nomic };
 }

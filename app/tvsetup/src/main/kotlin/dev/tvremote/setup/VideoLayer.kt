@@ -8,6 +8,9 @@ import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.Point
 import android.graphics.SurfaceTexture
+import android.media.AudioAttributes
+import android.media.AudioFormat
+import android.media.AudioTrack
 import android.media.MediaCodec
 import android.media.MediaFormat
 import android.media.MediaPlayer
@@ -39,7 +42,8 @@ import org.json.JSONObject
  * as before. Nothing runs until a video is sent; Close, the end of a camera's stream or a decoder error takes it all away.
  *
  * Each connection: the secret, then one JSON line. {"o":"live","w":1280,"h":720,"x":..,"y":..,"s":..} makes the rest of
- * that connection the camera's frames ([int length][byte flags: 1 key][long µs][bytes], Annex B); any other line makes it a
+ * that connection the camera's frames ([int length][byte flags: 1 key, 2 sound][long µs][bytes], Annex B; with "ar":24000
+ * in the line, flag 2 pieces are its microphone, 16-bit mono PCM at that rate); any other line makes it a
  * control connection, one operation per line, each answered with the state ({"shown","playing","muted","pos","dur","err"}):
  *   {"o":"file","name":"v.mp4","x":5000,"y":5000,"s":3500}  plays files/video/<name>, looped, centred at x,y, s wide (0..10000)
  *   {"o":"move","x":..,"y":..,"s":..,"rot":90} · {"o":"pause"} · {"o":"play"} · {"o":"mute","on":true} · {"o":"close"} · {"o":"q"}
@@ -271,7 +275,7 @@ internal object VideoLayer {
             place(head)
             val w = head.optInt("w", 1280); val h = head.optInt("h", 720)
             if (w > 0 && h > 0) aspect = w.toFloat() / h
-            muted = true; err = ""
+            muted = head.optInt("ar") <= 0; err = ""                  // "ar": the page sends its microphone too (Video.kt)
             if (show()) live = k
             ready.countDown()
         }
@@ -279,6 +283,7 @@ internal object VideoLayer {
         if (live !== k) return
         try { k.soTimeout = 6000 } catch (e: Exception) { }                // the page went (a tab closed, a phone asleep): the box goes too
         var codec: MediaCodec? = null
+        val sound = Sound(head.optInt("ar"))
         try {
             var waited = 0
             while (surface == null && waited < 3000 && live === k) { Thread.sleep(20); waited += 20 }
@@ -298,6 +303,7 @@ internal object VideoLayer {
                 if (len <= 0 || len > 8_000_000) break
                 if (buf.size < len) buf = ByteArray(len)
                 inp.readFully(buf, 0, len)
+                if (flags and 2 != 0) { sound.play(buf, len); continue }     // a piece of the page's sound, not a frame
                 val i = c.dequeueInputBuffer(100_000)
                 if (i >= 0) {
                     val ib = (if (Build.VERSION.SDK_INT >= 21) c.getInputBuffer(i) else null) ?: continue
@@ -321,7 +327,62 @@ internal object VideoLayer {
         } finally {
             try { codec?.stop() } catch (e: Exception) { }
             try { codec?.release() } catch (e: Exception) { }
+            sound.end()
             ui.post { if (live === k) close() }
+        }
+    }
+
+    /**
+     * The camera's sound: 16-bit mono PCM at [rate] Hz, played as it comes. A piece is dropped, never queued, when the track's
+     * buffer (about 0.3 s) is full (the page's clock runs a little faster than the TV's, or the Wi-Fi brought a burst): the
+     * sound stays as close to the picture as the picture is to now. The buffer is filled to the brim before play: Android
+     * starts a streaming track only once it is full (else it is dropped as never ready, seen on the API 34 emulator).
+     */
+    private class Sound(private val rate: Int) {
+        private var track: AudioTrack? = null
+        private var room = 0L                                         // the track's buffer, in frames
+        private var written = 0L                                      // frames handed to the track
+        private var started = false
+        private var stuck = 0L                                        // when the track was first found full
+        private var failed = rate !in 8000..48000
+
+        fun play(b: ByteArray, len: Int) {
+            if (failed || len < 2) return
+            val t = track ?: open() ?: return
+            val waiting = written - (t.playbackHeadPosition.toLong() and 0xffffffffL)
+            val n = minOf(len / 2L, room - waiting)                      // what fits; the rest of the piece is dropped
+            if (n <= 0) {
+                if (!started) return
+                if (stuck == 0L) stuck = System.nanoTime()
+                else if (System.nanoTime() - stuck > 2_000_000_000L) {   // full for 2 s: the TV's output stalled, start over
+                    stuck = 0; started = false; written = 0
+                    try { t.pause(); t.flush() } catch (e: Exception) { }
+                }
+                return
+            }
+            stuck = 0
+            val w = if (Build.VERSION.SDK_INT >= 23) t.write(b, 0, (n * 2).toInt(), AudioTrack.WRITE_NON_BLOCKING)
+                else t.write(b, 0, (n * 2).toInt())                   // never waits: a full track drops the piece, the video goes on
+            if (w > 0) written += w / 2
+            if (!started && (written >= room || w in 0 until n * 2)) {   // full (or taking no more): it starts only then
+                started = true; try { t.play(); Log.i(TAG, "camera sound: $rate Hz, ${room} frames") } catch (e: Exception) { failed = true } }
+        }
+
+        private fun open(): AudioTrack? = try {
+            val min = AudioTrack.getMinBufferSize(rate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT)
+            val bytes = maxOf(min, rate * 3 / 5)                      // 0.3 s: a loaded emulator still ran dry 1 s in 9 at 0.25 s
+            AudioTrack(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build(),
+                AudioFormat.Builder().setSampleRate(rate).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).setEncoding(AudioFormat.ENCODING_PCM_16BIT).build(),
+                bytes, AudioTrack.MODE_STREAM, android.media.AudioManager.AUDIO_SESSION_ID_GENERATE).also {
+                room = if (Build.VERSION.SDK_INT >= 23) it.bufferSizeInFrames.toLong() else bytes / 2L
+                track = it
+            }
+        } catch (e: Exception) { Log.w(TAG, "camera sound: $e"); failed = true; null }
+
+        fun end() {
+            val t = track ?: return
+            track = null
+            try { t.pause(); t.flush(); t.release() } catch (e: Exception) { }
         }
     }
 }

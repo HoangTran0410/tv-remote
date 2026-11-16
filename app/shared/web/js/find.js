@@ -3,10 +3,12 @@
 // show is listed), plus the user guide's words (js/find_topics.js) so "sleep" finds "Bedtime" too. A pick opens the tab and
 // lights the card (goTo); a guide topic with no place on this page opens the guide.
 
-// guide topic → where it is on the page: 'tab' (the tab), 'tab#id' (a card), '@id' (a Settings section). Kept true by find.test.js.
+// guide topic → where it is on the page: 'tab' (the tab), 'tab#id' (a card), '@id' (a Settings section), or 'do:name': a
+// dialog of its own, opened at once by the remote's handler (REMOTE_DO, remote.json): found where no tab holds it (the Phone
+// app's Manage screen has no Remote tab: "video" opened the guide). Kept true by find.test.js.
 const FIND_AT = {
-  remote: 'remote', typing: 'remote', clipboard: 'remote', voice: 'remote', picture: 'remote#screencard', quality: 'remote#screencard',
-  listen: 'remote', screenshot: 'remote#screencard', notify: 'remote', draw: 'remote', photo: 'remote', video: 'remote', 'screen-dim': 'remote',
+  remote: 'remote', typing: 'remote', clipboard: 'do:clip', voice: 'remote', picture: 'remote#screencard', quality: 'remote#screencard',
+  listen: 'remote', screenshot: 'remote#screencard', notify: 'do:notify', draw: 'remote', photo: 'remote', video: 'do:vbox', 'screen-dim': 'do:dim',
   apps: 'apps', tvapps: 'apps#tvappscard', files: 'files#filescard', health: 'health', privacy: 'health',
   optimize: 'tv#optcard', launchers: 'tv#launchcard', home: 'tv#launchcard', 'home-widgets': 'tv#launchcard', 'home-qr': 'tv#launchcard',
   'home-tiles': 'tv#launchcard', 'home-add': 'tv#launchcard', 'home-folders': 'tv#launchcard', 'home-pin': 'tv#launchcard',
@@ -60,8 +62,16 @@ function findItems() {
     });
   }
   const guide = T('find.guide');
+  const entry = (d) => Object.values(REMOTE.menus).flat().find((e) => e.do === d);   // its needs ("adb"), its "when"
   for (const [id, vi, en, kw] of FIND_TOPICS) {
-    const to = FIND_AT[id] || '', at = byKey[to] || (to[0] !== '@' && byKey[to.split('#')[0]]);   // its card hidden now (no ADB yet): its tab
+    const to = FIND_AT[id] || '';
+    if (to.startsWith('do:')) {
+      const d = to.slice(3), e = entry(d);
+      if (e && !remoteCan(e)) continue;                              // this TV cannot (an LG has no ADB), nor can a guest
+      items.push({ title: (LANG === 'vi' ? vi : en), where: T('find.open'), words: [vi, en, kw], go: () => REMOTE_DO[d]() });
+      continue;
+    }
+    const at = byKey[to] || (to[0] !== '@' && byKey[to.split('#')[0]]);   // its card hidden now (no ADB yet): its tab
     if (at) { at.words.push(vi, en, kw); continue; }
     if (window.ONTV) continue;                                       // TV Setup's screen opens no web pages
     items.push({ title: (LANG === 'vi' ? vi : en), guide: true, where: guide, words: [vi, en, kw],

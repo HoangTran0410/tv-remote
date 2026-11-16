@@ -51,7 +51,7 @@ const FIND_TOPICS = [
   ["draw","Vẽ lên TV","Draw on the TV","ve len tv but pen anh chu text hinh draw"],
   ["photo","Đưa ảnh lên TV","Put a picture on the TV","dua anh len tv hinh anh phu len man hinh pic phat anh video"],
   ["screenshot","Chụp màn hình TV","TV screenshot","chup man hinh screenshot anh png"],
-  ["video","Video trên TV","Video on the TV","video tren tv camera webcam khung phu overlay keo doi co video box pip"],
+  ["video","Video trên TV","Video on the TV","video tren tv camera webcam khung phu overlay keo doi co video box pip tieng micro am thanh sound microphone"],
   ["screen-dim","Tắt màn hình, giảm độ sáng","Screen off, dim the screen","tat man hinh giam do sang loc anh sang xanh toi screen off dim night"],
   ["sleep","Hẹn giờ tắt TV","Sleep timer","hen gio tat sleep timer tat man hinh van nghe"],
   ["bedtime","Giờ đi ngủ","Bedtime","gio di ngu bedtime tre em tat tv ban dem"],
