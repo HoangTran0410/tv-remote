@@ -1885,14 +1885,19 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "657718557b80576c615cdf0a|0.50.0": {
-  "at": "2026-11-16T01:02:35+07:00",
+  "at": "2026-11-16T21:03:09+07:00",
   "n": 1,
-  "note": "TCL G10 a12: add-on 'stopped' (RAM cleaner kind); nothing to fix"
+  "note": "TCL G10 sdk 31 again on 0.53.0: add-on stopped, the TV's cleaner force-stops it; nothing to fix, clients say keys work only on TV Home"
  },
  "657718557b80576c615cdf0a|0.51.0": {
-  "at": "2026-11-16T01:02:35+07:00",
+  "at": "2026-11-16T21:03:09+07:00",
   "n": 3,
-  "note": "TCL G10 a12: add-on 'stopped' (RAM cleaner kind); nothing to fix"
+  "note": "TCL G10 sdk 31 again on 0.53.0: add-on stopped, the TV's cleaner force-stops it; nothing to fix, clients say keys work only on TV Home"
+ },
+ "657718557b80576c615cdf0a|0.53.0": {
+  "at": "2026-11-16T21:03:09+07:00",
+  "n": 2,
+  "note": "TCL G10 sdk 31 again on 0.53.0: add-on stopped, the TV's cleaner force-stops it; nothing to fix, clients say keys work only on TV Home"
  },
  "657db7980ca8eda492ca97eb|0.29.0": {
   "at": "2026-10-28T14:05:41+07:00",
@@ -3209,6 +3214,11 @@
   "n": 1,
   "note": "0.51.0: rs allow now (appop fix worked), still running/bound 0/crashed 0: cheap RK3528 stick with fake redfin fingerprint drops the a11y entry, firmware kind; clients say keys work only on TV Home (e9452995)"
  },
+ "aaa561abf78db4410f816c4c|0.52.0": {
+  "at": "2026-11-16T18:30:00+07:00",
+  "n": 1,
+  "note": "same RK3528 stick on 0.52.0 (rs allow, bound 0, crashed 0): firmware drops the a11y entry; nothing to fix, clients say keys work only on TV Home"
+ },
  "ac1f05f98ad5126b3167283a|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
@@ -4009,6 +4019,11 @@
   "n": 2,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "da50a2a97ce344aacdf69023|0.53.0": {
+  "at": "2026-11-16T21:03:10+07:00",
+  "n": 1,
+  "note": "SHARP AQUOS-TVX22A sdk 34, rs allow, add-on by shell, stopped: the TV's cleaner force-stops it (like TCL 65771855, Skyworth 49e38a61); nothing to fix, clients say keys work only on TV Home"
+ },
  "da6214721e9abe7601758e7a|0.26.3": {
   "at": "2026-11-15T15:35:59+07:00",
   "n": 1,
@@ -4653,10 +4668,5 @@
   "at": "2026-10-29T17:19:54+07:00",
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
- },
- "aaa561abf78db4410f816c4c|0.52.0": {
-  "at": "2026-11-16T18:30:00+07:00",
-  "n": 1,
-  "note": "same RK3528 stick on 0.52.0 (rs allow, bound 0, crashed 0): firmware drops the a11y entry; nothing to fix, clients say keys work only on TV Home"
  }
 }
