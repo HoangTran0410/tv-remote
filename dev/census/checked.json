@@ -1954,6 +1954,11 @@
   "n": 1,
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
+ "67bc1f2dbd1b0c64f4cfb26b|0.53.1": {
+  "at": "2026-11-17T21:01:26+07:00",
+  "n": 1,
+  "note": "keyfix_refused on Skyworth SWTV (sdk 30) on 0.53.1: firmware takes the key add-on's service out (rs -, by -, crashed 0), same as earlier SWTV boxes; nothing to fix, clients already say so (e9452995)"
+ },
  "67c022dfb5a21bcb3a3560b8|0.24.1": {
   "at": "2026-11-04T16:11:40+07:00",
   "n": 1,
