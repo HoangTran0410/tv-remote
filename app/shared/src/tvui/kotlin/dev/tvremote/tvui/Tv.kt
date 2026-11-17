@@ -96,9 +96,10 @@ object TvUi {
 
     /** A background that is [normal] at rest and a light fill when focused or pressed (D-pad and touch); [edge] adds the ring. */
     fun states(c: Context, normal: Int, r: Float, on: Int = FOCUS_FILL, edge: Boolean = true) = StateListDrawable().apply {
-        val sel = if (edge) ring(c, on, r) else round(on, r)
-        addState(intArrayOf(android.R.attr.state_focused), sel)
-        addState(intArrayOf(android.R.attr.state_pressed), sel)
+        // one drawable per state: a LayerDrawable shared by two states logs "already belongs to another owner" (a vivo, Android 14)
+        fun sel() = if (edge) ring(c, on, r) else round(on, r)
+        addState(intArrayOf(android.R.attr.state_focused), sel())
+        addState(intArrayOf(android.R.attr.state_pressed), sel())
         addState(intArrayOf(android.R.attr.state_activated), round(ACTIVE_TINT, r))   // the selected row: a tint, under the focus's fill
         addState(intArrayOf(), round(normal, r))
     }
