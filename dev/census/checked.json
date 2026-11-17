@@ -4440,49 +4440,59 @@
   "note": "Safari with stale HTML + new JS (auto.js stopped at #supgo); 1 install, left"
  },
  "f450a91c33294b34be468f07|0.30.0": {
-  "at": "2026-11-11T06:02:25+07:00",
+  "at": "2026-11-17T13:01:44+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "HiSilicon Hi3798MV200 box (Android 9, operator IPTV kind): network ADB on 5555 not listening; ADB off or locked by the operator, TV Setup's own steps to turn it on apply; nothing to fix"
  },
  "f450a91c33294b34be468f07|0.31.0": {
-  "at": "2026-11-11T06:02:25+07:00",
+  "at": "2026-11-17T13:01:44+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "HiSilicon Hi3798MV200 box (Android 9, operator IPTV kind): network ADB on 5555 not listening; ADB off or locked by the operator, TV Setup's own steps to turn it on apply; nothing to fix"
  },
  "f450a91c33294b34be468f07|0.32.1": {
-  "at": "2026-11-11T06:02:25+07:00",
+  "at": "2026-11-17T13:01:44+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "HiSilicon Hi3798MV200 box (Android 9, operator IPTV kind): network ADB on 5555 not listening; ADB off or locked by the operator, TV Setup's own steps to turn it on apply; nothing to fix"
  },
  "f450a91c33294b34be468f07|0.33.1": {
-  "at": "2026-11-11T06:02:25+07:00",
+  "at": "2026-11-17T13:01:44+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "HiSilicon Hi3798MV200 box (Android 9, operator IPTV kind): network ADB on 5555 not listening; ADB off or locked by the operator, TV Setup's own steps to turn it on apply; nothing to fix"
  },
  "f450a91c33294b34be468f07|0.38.1": {
-  "at": "2026-11-11T06:02:25+07:00",
+  "at": "2026-11-17T13:01:44+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "HiSilicon Hi3798MV200 box (Android 9, operator IPTV kind): network ADB on 5555 not listening; ADB off or locked by the operator, TV Setup's own steps to turn it on apply; nothing to fix"
  },
  "f450a91c33294b34be468f07|0.38.2": {
-  "at": "2026-11-11T06:02:25+07:00",
+  "at": "2026-11-17T13:01:44+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "HiSilicon Hi3798MV200 box (Android 9, operator IPTV kind): network ADB on 5555 not listening; ADB off or locked by the operator, TV Setup's own steps to turn it on apply; nothing to fix"
  },
  "f450a91c33294b34be468f07|0.42.0": {
-  "at": "2026-11-11T06:02:25+07:00",
+  "at": "2026-11-17T13:01:44+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "HiSilicon Hi3798MV200 box (Android 9, operator IPTV kind): network ADB on 5555 not listening; ADB off or locked by the operator, TV Setup's own steps to turn it on apply; nothing to fix"
  },
  "f450a91c33294b34be468f07|0.47.0": {
-  "at": "2026-11-11T06:02:25+07:00",
+  "at": "2026-11-17T13:01:44+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "HiSilicon Hi3798MV200 box (Android 9, operator IPTV kind): network ADB on 5555 not listening; ADB off or locked by the operator, TV Setup's own steps to turn it on apply; nothing to fix"
  },
  "f450a91c33294b34be468f07|0.49.0": {
-  "at": "2026-11-11T06:02:25+07:00",
+  "at": "2026-11-17T13:01:44+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "HiSilicon Hi3798MV200 box (Android 9, operator IPTV kind): network ADB on 5555 not listening; ADB off or locked by the operator, TV Setup's own steps to turn it on apply; nothing to fix"
+ },
+ "f450a91c33294b34be468f07|0.52.0": {
+  "at": "2026-11-17T13:01:44+07:00",
+  "n": 2,
+  "note": "HiSilicon Hi3798MV200 box (Android 9, operator IPTV kind): network ADB on 5555 not listening; ADB off or locked by the operator, TV Setup's own steps to turn it on apply; nothing to fix"
+ },
+ "f450a91c33294b34be468f07|0.53.0": {
+  "at": "2026-11-17T13:01:44+07:00",
+  "n": 1,
+  "note": "HiSilicon Hi3798MV200 box (Android 9, operator IPTV kind): network ADB on 5555 not listening; ADB off or locked by the operator, TV Setup's own steps to turn it on apply; nothing to fix"
  },
  "f47e3e4ff3e9c81406ab9094|0.31.0": {
   "at": "2026-10-29T17:19:52+07:00",
