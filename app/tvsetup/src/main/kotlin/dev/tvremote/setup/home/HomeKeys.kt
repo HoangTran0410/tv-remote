@@ -185,7 +185,7 @@ internal object AutoOpen {
     } catch (e: Exception) { "" }
 
     private fun defaultHome(c: Context): String = try {
-        c.packageManager.resolveActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0)?.activityInfo?.packageName ?: ""
+        c.packageManager.resolveActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), android.content.pm.PackageManager.MATCH_DEFAULT_ONLY)?.activityInfo?.packageName ?: ""
     } catch (e: Exception) { "" }
 
     private fun homes(c: Context): Set<String> = try {

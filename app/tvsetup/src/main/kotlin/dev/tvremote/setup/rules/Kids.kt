@@ -37,7 +37,7 @@ internal object Kids {
         cached?.let { if (now - it.first in 0..30_000L) return it.second }
         val pm = c.packageManager
         val homes = try { pm.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0).map { it.activityInfo.packageName } } catch (e: Exception) { emptyList() }
-        val inUseHome = try { pm.resolveActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0)?.activityInfo?.packageName } catch (e: Exception) { null }
+        val inUseHome = try { pm.resolveActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), android.content.pm.PackageManager.MATCH_DEFAULT_ONLY)?.activityInfo?.packageName } catch (e: Exception) { null }
         val keyboards = try {
             (c.getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager).inputMethodList.map { it.packageName }
         } catch (e: Exception) { emptyList() }

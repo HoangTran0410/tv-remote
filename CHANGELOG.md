@@ -4,6 +4,10 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- TV Home stays the home screen on TVs with a hidden HOME entry (a remote's updater, cleanyourtv #4068): every "which app is Home?" now asks with MATCH_DEFAULT_ONLY, so Android no longer drops the saved Home and opens its picker.
+
 ## 0.55.0 - 2026-11-16
 
 Web 0.55.0 · Phone app 0.52.0 · TV app 0.53.0 · TV Home 0.34.0 · TV Channels 0.24.0 · TV Games 0.24.0 · TV Apps 0.8.0

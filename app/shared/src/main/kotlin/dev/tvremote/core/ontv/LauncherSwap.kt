@@ -28,11 +28,15 @@ class LauncherSwap(private val sh: (String) -> String, private val log: (String)
         /**
          * The home screen in use, its component on the last line. Android 10+ keeps it as the HOME role: resolve-activity answered
          * Android's picker on an FPT box (Android 14) right after another launcher was installed, while Home still opened TV Home, and
-         * a swap took the picker for "the one before". resolve-activity only where there is no role (Android 9 and older).
+         * a swap took the picker for "the one before". resolve-activity only where there is no role (Android 9 and older), and with
+         * MATCH_DEFAULT_ONLY (0x10000; then without it where an older Android lacks the flag): without it a HOME entry that is not DEFAULT (a remote's updater,
+         * `com.telink.lt/.BtOtaUpdate` on a Haier) makes Android drop the saved Home on the spot, Home = the picker (cleanyourtv #4068,
+         * measured on the API 34 emulator 2026-11-17).
          */
         const val RESOLVE_HOME = "p=\$(cmd role get-role-holders android.app.role.HOME 2>/dev/null); " +
             "c=\$([ -n \"\$p\" ] && cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2>/dev/null | grep -m1 \"^ *\$p/\"); " +
-            "if [ -n \"\$c\" ]; then echo \$c; else cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN; fi"
+            "if [ -n \"\$c\" ]; then echo \$c; else r=\$(cmd package resolve-activity --brief --query-flags 0x10000 -c android.intent.category.HOME -a android.intent.action.MAIN 2>/dev/null); " +
+            "case \"\$r\" in */*) echo \"\$r\";; *) cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN;; esac; fi"
         private val PKG = Regex("[A-Za-z][\\w]*(\\.[\\w]+)+")
 
         /** What is on screen: Android 10+ names it mFocusedApp, older ones only the resumed activity. */

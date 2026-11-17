@@ -8,7 +8,7 @@ set -u
 TV="$1"; shift
 ADB="${ADB:-adb}"
 HOME_ACT="dev.tvremote.home/.HomeActivity"
-was_home=$("$ADB" -s "$TV" shell cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN 2>/dev/null | tail -1 | tr -d '\r')
+was_home=$("$ADB" -s "$TV" shell cmd package resolve-activity --brief --query-flags 0x10000 -c android.intent.category.HOME -a android.intent.action.MAIN 2>/dev/null | tail -1 | tr -d '\r')
 for apk in "$@"; do
   "$ADB" -s "$TV" install -r "$apk" | tail -1 | sed "s|^|$(basename "$apk") → $TV: |"
 done

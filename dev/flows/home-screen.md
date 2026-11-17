@@ -100,3 +100,13 @@ reads it or where Home is pressed for them: Optimize's log, the Settings page (`
 "TV frozen" (`app/shared/src/main/kotlin/dev/tvremote/core/ontv/Rescue.kt:run`: `input keyevent` passes the filter by, so it opens TV Home itself).
 Checkout's "never wipe the home screen" and uninstall's "never the home screen" read the role: in the key way the TV's own launcher
 is still the system's home.
+
+## Asking Android which app is Home
+
+Every question goes with MATCH_DEFAULT_ONLY: `LauncherSwap.RESOLVE_HOME`'s fallback (`--query-flags 0x10000`, then without it
+where an older Android lacks the flag) and TV Setup's own `resolveActivity(HOME)` (`app/tvsetup/src/main/kotlin/dev/tvremote/setup/home/HomeBar.kt:homes`,
+`app/tvsetup/src/main/kotlin/dev/tvremote/setup/home/HomeKeys.kt:defaultHome`, `app/tvsetup/src/main/kotlin/dev/tvremote/setup/rules/Kids.kt:free`).
+A TV with a HOME entry that is not DEFAULT (a remote's updater, `com.telink.lt/.BtOtaUpdate` on a Haier, cleanyourtv #4068):
+the shell's question without the flag drops the saved Home, Home then opens Android's picker; an app's answers the picker
+("android"), so kids mode locked the launcher picked and the Home bar took it for an app. Measured on the API 34 emulator
+2026-11-17; `app/shared/tests/home_resolve.test.js` fails on a question without the flag.

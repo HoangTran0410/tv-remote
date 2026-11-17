@@ -21,7 +21,7 @@ internal object HomeBar {
         val out = HashSet<String>()
         out += HomeKey.TV_HOME; out += Setup.LAUNCHER
         HomeKey.pkg(c)?.let { out += it }
-        try { c.packageManager.resolveActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0)?.activityInfo?.packageName?.let { out += it } } catch (e: Exception) { }
+        try { c.packageManager.resolveActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), android.content.pm.PackageManager.MATCH_DEFAULT_ONLY)?.activityInfo?.packageName?.let { out += it } } catch (e: Exception) { }
         return out
     }
 }
