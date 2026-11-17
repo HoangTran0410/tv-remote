@@ -1,6 +1,6 @@
 {
   "v": 1,
-  "updated": "2026-11-12",
+  "updated": "2026-11-17",
   "about": "Optimize TV's additions to Bloat.kt, read from the site: suggest (package -> name, ticked by default), drop (no longer suggested), keep and factory (Java regexes, only added). Edit, run dev/sign/sign_bloat.py, commit both files.",
   "suggest": {
     "android.autoinstalls.config.askey.tvbox": "Askey app installer",
@@ -115,7 +115,6 @@
     "com.android.adservices.api": "Ad tracking (Privacy Sandbox)",
     "com.android.ondevicepersonalization.services": "Ad personalisation service",
     "com.android.federatedcompute.services": "Ad learning service",
-    "com.google.android.partnersetup": "Google partner attribution",
     "com.xiaomi.mitv.manualhelp": "Xiaomi TV manual",
     "com.haier.emanual": "Haier TV manual",
     "com.hisense.hotelmenu": "Hisense hotel mode menu",
@@ -175,14 +174,18 @@
     "com\\.ztestb\\.basecomp",
     "tv\\.upgrade\\.service",
     "com\\.youview\\.poa",
-    "com\\.android\\.sdksandbox",
+    "com\\.(google\\.)?android\\.sdksandbox",
     "io\\.mimi\\.(sdk\\.service|tvapp)",
     "com\\.airoha\\.ble\\.ota",
     "com\\.(hispeech\\.ai\\.area|iflytek\\.xiri|intelligent\\.speech|vt\\.permission\\.manager)",
     "com\\.keylab\\.speech\\..*",
     "com\\.hisense\\.(aiot|aiod|raycodereceiver|hiservice|msvoicetome|vidaaassistant|widget\\.pro|tv\\.globalui)",
     "com\\.tcl\\.assistant",
-    "com\\.amazon\\.providers\\.contentsupport"
+    "com\\.amazon\\.providers\\.contentsupport",
+    "com\\.google\\.android\\.(partnersetup|sss\\.authbridge)",
+    "com\\.mediatek\\.partner\\.netflix",
+    "com\\.netflix\\.tokenmanager",
+    "com\\.jamdeo\\.tv\\.vod"
   ],
   "factory": [
     "com\\.skyworth\\.testtime",
