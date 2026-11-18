@@ -815,14 +815,19 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "2f7b4a5845c32315a71d9ed8|0.48.0": {
-  "at": "2026-11-16T06:26:58+07:00",
+  "at": "2026-11-19T02:49:00+07:00",
   "n": 1,
-  "note": "Allwinner sun50iw12p1 projector (fake adt3, a11): firmware drops the a11y entry; nothing to fix"
+  "note": "Allwinner projector (fake adt3, a11) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
  },
  "2f7b4a5845c32315a71d9ed8|0.52.0": {
-  "at": "2026-11-16T06:26:58+07:00",
+  "at": "2026-11-19T02:49:00+07:00",
   "n": 1,
-  "note": "Allwinner sun50iw12p1 projector (fake adt3, a11): firmware drops the a11y entry; nothing to fix"
+  "note": "Allwinner projector (fake adt3, a11) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+ },
+ "2f7b4a5845c32315a71d9ed8|0.53.1": {
+  "at": "2026-11-19T02:49:00+07:00",
+  "n": 1,
+  "note": "Allwinner projector (fake adt3, a11) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
  },
  "304d571eb8351582e87856f4|0.26.3": {
   "at": "2026-10-26T21:47:43+07:00",
