@@ -3694,6 +3694,11 @@
   "n": 1,
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
+ "c637d18dfed3a49bbcb1db54|0.53.1": {
+  "at": "2026-11-18T17:23:59+07:00",
+  "n": 1,
+  "note": "keyfix_refused on CHiQ AI PONT (sdk 34, rs allow) on 0.53.1: add-on 'stopped', a cleaner force-stops it, Android drops the entry (bound 1 counts any service); stopped kind, clients say so since e9452995"
+ },
  "c6a86068f3601afb5dbbefd8|0.31.0": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
