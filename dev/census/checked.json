@@ -2489,6 +2489,11 @@
   "n": 1,
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
+ "81c0e4e71323d44362a94b37|0.53.1": {
+  "at": "2026-11-18T11:54:35+07:00",
+  "n": 1,
+  "note": "keyfix_refused on onn. 4K Plus (sdk 34, rs allow) on 0.53.1: add-on 'stopped', a cleaner force-stops it and Android drops the a11y entry (JmGO/TCL/Xiaomi kind); clients say so since e9452995"
+ },
  "822b0111c9f2158f9464d890|0.32.1": {
   "at": "2026-10-29T17:20:07+07:00",
   "n": 1,
