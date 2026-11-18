@@ -1690,14 +1690,19 @@
   "note": "TV Setup ADB health report: AQUA MatrixTV not paired over Wireless debugging yet (5555 refused / tls not paired); TV Setup shows the pairing step and keeps trying; not a code fault"
  },
  "592b546d339601dd498113ae|0.47.0": {
-  "at": "2026-11-15T11:26:54+07:00",
+  "at": "2026-11-18T19:27:00+07:00",
   "n": 1,
-  "note": "0.51.0: ADB on, 5555 open, Guard said 'still connecting': that was getQuiet's 60 s wait after a failed dial, hiding the dial's error; the next TV Setup names it ('still connecting, last try: …')"
+  "note": "rules_no_adb (Xiaomi MiTV-MZTU0, 0.52.0): could not close TizenTube, the TV was still asking 'Allow USB debugging?'; the TV's state, TV Setup shows the allow step"
  },
  "592b546d339601dd498113ae|0.51.0": {
-  "at": "2026-11-15T11:26:54+07:00",
+  "at": "2026-11-18T19:27:00+07:00",
   "n": 1,
-  "note": "0.51.0: ADB on, 5555 open, Guard said 'still connecting': that was getQuiet's 60 s wait after a failed dial, hiding the dial's error; the next TV Setup names it ('still connecting, last try: …')"
+  "note": "rules_no_adb (Xiaomi MiTV-MZTU0, 0.52.0): could not close TizenTube, the TV was still asking 'Allow USB debugging?'; the TV's state, TV Setup shows the allow step"
+ },
+ "592b546d339601dd498113ae|0.52.0": {
+  "at": "2026-11-18T19:27:00+07:00",
+  "n": 1,
+  "note": "rules_no_adb (Xiaomi MiTV-MZTU0, 0.52.0): could not close TizenTube, the TV was still asking 'Allow USB debugging?'; the TV's state, TV Setup shows the allow step"
  },
  "5a3f0f3294d8f48d02e14828|0.43.0": {
   "at": "2026-11-05T10:40:20+07:00",
@@ -1760,44 +1765,54 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
  },
  "5c3d20915ff953ae9d0d2071|0.30.0": {
-  "at": "2026-11-11T06:02:19+07:00",
+  "at": "2026-11-18T19:27:01+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "ADB refused (Stream TV G4K, 0.53.0): 5555 closed for 5 min, ADB off or network ADB off after a restart; a health report of the TV's state"
  },
  "5c3d20915ff953ae9d0d2071|0.32.1": {
-  "at": "2026-11-11T06:02:19+07:00",
+  "at": "2026-11-18T19:27:01+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "ADB refused (Stream TV G4K, 0.53.0): 5555 closed for 5 min, ADB off or network ADB off after a restart; a health report of the TV's state"
  },
  "5c3d20915ff953ae9d0d2071|0.33.1": {
-  "at": "2026-11-11T06:02:19+07:00",
+  "at": "2026-11-18T19:27:01+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "ADB refused (Stream TV G4K, 0.53.0): 5555 closed for 5 min, ADB off or network ADB off after a restart; a health report of the TV's state"
  },
  "5c3d20915ff953ae9d0d2071|0.35.0": {
-  "at": "2026-11-11T06:02:19+07:00",
+  "at": "2026-11-18T19:27:01+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "ADB refused (Stream TV G4K, 0.53.0): 5555 closed for 5 min, ADB off or network ADB off after a restart; a health report of the TV's state"
  },
  "5c3d20915ff953ae9d0d2071|0.39.0": {
-  "at": "2026-11-11T06:02:19+07:00",
+  "at": "2026-11-18T19:27:01+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "ADB refused (Stream TV G4K, 0.53.0): 5555 closed for 5 min, ADB off or network ADB off after a restart; a health report of the TV's state"
  },
  "5c3d20915ff953ae9d0d2071|0.45.0": {
-  "at": "2026-11-11T06:02:19+07:00",
+  "at": "2026-11-18T19:27:01+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "ADB refused (Stream TV G4K, 0.53.0): 5555 closed for 5 min, ADB off or network ADB off after a restart; a health report of the TV's state"
  },
  "5c3d20915ff953ae9d0d2071|0.47.0": {
-  "at": "2026-11-11T06:02:19+07:00",
+  "at": "2026-11-18T19:27:01+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "ADB refused (Stream TV G4K, 0.53.0): 5555 closed for 5 min, ADB off or network ADB off after a restart; a health report of the TV's state"
  },
  "5c3d20915ff953ae9d0d2071|0.49.0": {
-  "at": "2026-11-11T06:02:19+07:00",
+  "at": "2026-11-18T19:27:01+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired / reset), not a code fault"
+  "note": "ADB refused (Stream TV G4K, 0.53.0): 5555 closed for 5 min, ADB off or network ADB off after a restart; a health report of the TV's state"
+ },
+ "5c3d20915ff953ae9d0d2071|0.51.0": {
+  "at": "2026-11-18T19:27:01+07:00",
+  "n": 1,
+  "note": "ADB refused (Stream TV G4K, 0.53.0): 5555 closed for 5 min, ADB off or network ADB off after a restart; a health report of the TV's state"
+ },
+ "5c3d20915ff953ae9d0d2071|0.53.0": {
+  "at": "2026-11-18T19:27:01+07:00",
+  "n": 1,
+  "note": "ADB refused (Stream TV G4K, 0.53.0): 5555 closed for 5 min, ADB off or network ADB off after a restart; a health report of the TV's state"
  },
  "5d45b4ecf8bcf041b9118638|0.32.1": {
   "at": "2026-10-29T17:20:03+07:00",
@@ -2170,14 +2185,24 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "6b3d724484c5bbbb774fe449|0.32.1": {
-  "at": "2026-11-04T03:07:28+07:00",
+  "at": "2026-11-18T19:27:01+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+  "note": "ADB allow (IRIS 2K SmartTV, 0.53.1): 'Allow USB debugging?' not answered for 3 min; the person's step, TV Setup shows it"
  },
  "6b3d724484c5bbbb774fe449|0.42.0": {
-  "at": "2026-11-04T03:07:28+07:00",
+  "at": "2026-11-18T19:27:01+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / Fire TV EOF (known); scrcpy did-not-start now carries the server's reason (serverSaid)"
+  "note": "ADB allow (IRIS 2K SmartTV, 0.53.1): 'Allow USB debugging?' not answered for 3 min; the person's step, TV Setup shows it"
+ },
+ "6b3d724484c5bbbb774fe449|0.47.0": {
+  "at": "2026-11-18T19:27:01+07:00",
+  "n": 1,
+  "note": "ADB allow (IRIS 2K SmartTV, 0.53.1): 'Allow USB debugging?' not answered for 3 min; the person's step, TV Setup shows it"
+ },
+ "6b3d724484c5bbbb774fe449|0.53.1": {
+  "at": "2026-11-18T19:27:01+07:00",
+  "n": 1,
+  "note": "ADB allow (IRIS 2K SmartTV, 0.53.1): 'Allow USB debugging?' not answered for 3 min; the person's step, TV Setup shows it"
  },
  "6bbd148d2a89a01028ee8150|0.50.0": {
   "at": "2026-11-11T12:11:05+07:00",
@@ -2450,9 +2475,19 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "7d486133c5a3968021adf4a8|0.42.2": {
-  "at": "2026-11-05T10:40:23+07:00",
+  "at": "2026-11-18T19:27:02+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "ADB refused (Xiaomi MiTV-MOSR4, 0.53.0): 5555 closed for 6 min; ADB off on the TV, a health report"
+ },
+ "7d486133c5a3968021adf4a8|0.50.0": {
+  "at": "2026-11-18T19:27:02+07:00",
+  "n": 1,
+  "note": "ADB refused (Xiaomi MiTV-MOSR4, 0.53.0): 5555 closed for 6 min; ADB off on the TV, a health report"
+ },
+ "7d486133c5a3968021adf4a8|0.53.0": {
+  "at": "2026-11-18T19:27:02+07:00",
+  "n": 1,
+  "note": "ADB refused (Xiaomi MiTV-MOSR4, 0.53.0): 5555 closed for 6 min; ADB off on the TV, a health report"
  },
  "7d771aa76ccffaeeca2f2333|0.45.0": {
   "at": "2026-11-06T17:03:02+07:00",
