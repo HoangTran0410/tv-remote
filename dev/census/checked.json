@@ -2120,14 +2120,19 @@
   "note": "TV Setup ADB health report: Chromecast (Google TV) not paired over Wireless debugging yet (5555 refused / tls not paired / Allow unanswered); TV Setup shows the pairing step and keeps trying; not a code fault"
  },
  "67f82331bc87f7fa012370a1|0.49.0": {
-  "at": "2026-11-11T23:59:20+07:00",
+  "at": "2026-11-19T01:26:42+07:00",
   "n": 1,
-  "note": "keyfix_refused (KOBRA BOX, sdk 29) on 0.50.0: same signature as ADT-3 / G-Two (known yes, others 0, a11y 0, add-on running); sdk 29 has no restricted-settings appop, so firmware takes the service out; waiting for 8f344ac1's rs/bound/crashed data (not released yet)"
+  "note": "keyfix_refused KOBRA BOX (sdk 29, fake google fp, Allwinner kind) on 0.53.1: firmware drops the a11y entry; nothing to fix"
  },
  "67f82331bc87f7fa012370a1|0.50.0": {
-  "at": "2026-11-11T23:59:20+07:00",
+  "at": "2026-11-19T01:26:42+07:00",
   "n": 1,
-  "note": "keyfix_refused (KOBRA BOX, sdk 29) on 0.50.0: same signature as ADT-3 / G-Two (known yes, others 0, a11y 0, add-on running); sdk 29 has no restricted-settings appop, so firmware takes the service out; waiting for 8f344ac1's rs/bound/crashed data (not released yet)"
+  "note": "keyfix_refused KOBRA BOX (sdk 29, fake google fp, Allwinner kind) on 0.53.1: firmware drops the a11y entry; nothing to fix"
+ },
+ "67f82331bc87f7fa012370a1|0.53.1": {
+  "at": "2026-11-19T01:26:42+07:00",
+  "n": 1,
+  "note": "keyfix_refused KOBRA BOX (sdk 29, fake google fp, Allwinner kind) on 0.53.1: firmware drops the a11y entry; nothing to fix"
  },
  "6829ee79c1f5ab7a1c5a60b1|0.39.0": {
   "at": "2026-11-03T06:59:47+07:00",
