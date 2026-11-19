@@ -463,7 +463,25 @@ object HomeConfig {
     val KEY_NUMBERS = (7..16).toList()                                  // KEYCODE_0 .. KEYCODE_9
     /** The keys the stock launcher answered (app/tvsetup KeyFix.RULES; a test there holds the two lists equal): free once their handler is gone; the app buttons (190, 191, 195: KeyFix.APP_KEYS) even while it works. */
     val KEY_DEAD = listOf(170, 178, 190, 191, 195, 192, 284, 176)
-    fun keyAllowed(code: Int) = code in KEY_COLOURS || code in KEY_NUMBERS || code in KEY_DEAD
+    /**
+     * Never given an app, not even on TV Home's screen: navigation and the system (Home, Back, arrows, OK / Enter, volume, mute, power,
+     * sleep / wake, Esc) and Menu, which opens TV Home's own menus. 0 = no key.
+     */
+    val KEY_NEVER = setOf(0, 3, 4, 19, 20, 21, 22, 23, 66, 160, 111, 24, 25, 164, 26, 223, 224, 82)
+    const val KEY_CODE_MAX = 400                                       // past KeyEvent's last code (Android 14: 316) with room; a vendor key above it is not offered
+    /**
+     * Any other key the remote sends ("Other key" on the Quick keys screen: media, channel, Info, Guide, a brand's own button): works on
+     * TV Home's own screen only, like the numbers. TV Setup's filter never takes it (KeyFix only takes [KEY_COLOURS] and dead keys), so in
+     * another app it keeps its job (the user, 2026-11-19).
+     */
+    fun keyOther(code: Int) = code in 1..KEY_CODE_MAX && code !in KEY_NEVER && code !in KEY_COLOURS && code !in KEY_NUMBERS && code !in KEY_DEAD
+    /** Keys TV Home acts on itself while its screen is in front: the numbers, the colours and [keyOther]. */
+    fun keyOnHome(code: Int) = code in KEY_COLOURS || code in KEY_NUMBERS || keyOther(code)
+    fun keyAllowed(code: Int) = code in KEY_COLOURS || code in KEY_NUMBERS || code in KEY_DEAD || keyOther(code)
+    /** The keys with a name of their own (string k_<name> on TV, home.key_<name> on the page: js/home.js HOME_KEY_WORDS); any other is "Key <code>". */
+    val KEY_NAMES = linkedMapOf(183 to "red", 184 to "green", 185 to "yellow", 186 to "blue", 170 to "tv", 178 to "input", 190 to "btn3", 191 to "btn4",
+        195 to "btn8", 192 to "btn5", 284 to "allapps", 176 to "settings", 82 to "menu", 165 to "info", 172 to "guide", 166 to "chup", 167 to "chdown",
+        85 to "playpause", 86 to "stop", 87 to "next", 88 to "prev", 89 to "rew", 90 to "ffwd", 175 to "captions", 222 to "audio", 229 to "lastch")
     /**
      * Keys that may have a double press or a hold of their own: the colour keys and the app buttons (nothing else answers them), the
      * PatchWall / All apps buttons, Menu, Info, Guide. Never Home, Back, the arrows, OK, volume or power (navigation and the system: a key

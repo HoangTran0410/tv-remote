@@ -752,6 +752,7 @@ Phím màu, phím số và nút đã hết tác dụng có thể mở app bạn 
 | --- | --- |
 | Đỏ, xanh lá, vàng, xanh dương | Luôn luôn: không app nào dùng chúng |
 | 0-9 | Ở TV Home: bấm. App khác: giữ 2 giây (cần TV Setup) |
+| Phím khác: phát, kênh, Info… | Chỉ ở TV Home. Trên TV: ô **Phím khác**, rồi bấm phím đó |
 | YouTube, Netflix, Prime Video | Luôn luôn: gán app khác thì nút mở app đó thay app gốc (cần TV Setup) |
 | TV, Input, PatchWall, Tất cả app, Cài đặt | Chỉ khi nút đã chết. Nút còn chạy thì không bị lấy |
 | Lệnh giọng nói (trong danh sách, cạnh app) | Cho phím màu hoặc phím app, khi nút Assistant bị hệ thống giữ (Xiaomi). Cần TV Setup 0.46.1+ |

@@ -752,6 +752,7 @@ Color keys, number keys and buttons that no longer do anything can open the app 
 | --- | --- |
 | Red, green, yellow, blue | Always: no app uses them |
 | 0-9 | On TV Home: a press. In other apps: hold 2 s (needs TV Setup) |
+| Other keys: play, channel, Info… | On TV Home only. On the TV: the **Other key** tile, then press that key |
 | YouTube, Netflix, Prime Video | Always: given another app, the button opens it instead (needs TV Setup) |
 | TV, Input, PatchWall, All apps, Settings | Only while the button is dead. A working button is never taken |
 | Voice command (in the list, next to apps) | For a color or app key when the system keeps the Assistant button (Xiaomi). Needs TV Setup 0.46.1+ |

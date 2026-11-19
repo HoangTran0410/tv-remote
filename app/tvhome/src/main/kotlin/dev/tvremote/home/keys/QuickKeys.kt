@@ -34,6 +34,7 @@ import dev.tvremote.tvui.TvScroll
 object QuickKeys {
     internal val COLOUR = mapOf(183 to 0xFFB3261E.toInt(), 184 to 0xFF2E7D32.toInt(), 185 to 0xFFB58105.toInt(), 186 to 0xFF1D5FBF.toInt())
     private const val POWER = -1                                     // the power-on slot's place among the keys
+    private const val OTHER = -2                                     // "Other key": press any key on the remote to add it (TV Home's screen only)
 
     fun show(a: Activity): Dialog {
         val d = a.resources.displayMetrics.density
@@ -79,24 +80,15 @@ object QuickKeys {
         dialog.setContentView(FrameLayout(a).apply { addView(panel, FrameLayout.LayoutParams(panelW, -1, Gravity.CENTER_HORIZONTAL)) })   // centred: a bare content view sat at the left; to the bottom edge: 64 dp short, the last row stopped on an empty band
         dialog.window?.let(::solidPage)
 
-        val extra = listOf(POWER) + Keys.dead(a).filter { it in HomeConfig.KEY_DEAD }                      // the last row: power-on, then the keys the stock launcher answered
-        val keyOrder = (HomeConfig.KEY_NUMBERS.drop(1) + HomeConfig.KEY_NUMBERS.first()) + HomeConfig.KEY_COLOURS + extra   // 1..9, 0, the colours, power-on, then keys the stock launcher answered
+        val dead = Keys.dead(a).filter { it in HomeConfig.KEY_DEAD }
+        fun others(c: JSONObject = Store.get(a)) = HomeConfig.keyApps(c.optJSONObject("keyapps")).keys.filter { HomeConfig.keyOther(it) }.sorted()
+        // the last rows: power-on, the keys the stock launcher answered, the other keys given an app, then "Other key" to add one
+        var extra = listOf(POWER) + dead + others() + OTHER
+        var keyOrder = (HomeConfig.KEY_NUMBERS.drop(1) + HomeConfig.KEY_NUMBERS.first()) + HomeConfig.KEY_COLOURS + extra
+        var armed = false                                             // "Other key" pressed: the next key on the remote is the one to add
         val tiles = HashMap<Int, PickTile>()
         var seq = 0                                                   // a redraw superseded by a newer one (two changes in a row) is dropped
 
-        fun targetOf(code: Int, c: JSONObject = Store.get(a)): String = if (code == POWER) Keys.powerApp(c) else HomeConfig.keyApps(c.optJSONObject("keyapps"))[code].orEmpty()
-        fun words(code: Int) = if (code == POWER) a.getString(R.string.qk_power) else Keys.name(a, code)
-        fun choose(code: Int) {
-            val lastNow = code == POWER && Keys.powerLast(Store.get(a))
-            Picker.show(a, Picker.Mode.TARGET, words(code), if (lastNow) Picker.LAST else targetOf(code), actions = code != POWER, last = code == POWER && Keys.last(a)) { t ->   // the power-on slot opens an app: an action needs a key press
-                if (code == POWER) { if (t == Picker.LAST) Keys.setPowerLast(a) else Keys.setPowerApp(a, t) }                 // the slot alone decides
-                else {
-                    val m = JSONObject(); for ((k, v) in HomeConfig.keyApps(Store.get(a).optJSONObject("keyapps"))) if (k != code) m.put(k.toString(), v)
-                    if (t.isNotEmpty()) m.put(code.toString(), t)
-                    Store.change(a, JSONObject().put("keyapps", m).also { if (t.isNotEmpty()) it.put("keyon", true) })   // the first one chosen switches the keys on: nobody asks twice
-                }
-            }
-        }
         fun paintHead() {
             val c = Store.get(a)
             keysOn.isSelected = c.optBoolean("keyon")
@@ -107,26 +99,47 @@ object QuickKeys {
             // where it goes, in the words: "Luôn về khi bật TV" did not say to what
             val to = Keys.powerApp(c).let { if (it.isNotEmpty()) Targets.label(a, it) else if (Keys.powerLast(c)) a.getString(R.string.qk_last).lowercase() else "TV Home" }
             always.pillText(a.getString(R.string.qk_always, to, said(always.isSelected)))
+            if (armed) { hint.text = a.getString(R.string.k_other_press); hint.setTextColor(Color.WHITE); return }
+            hint.setTextColor(PK_DIM)
             hint.text = a.getString(if (!Keys.setup(a)) R.string.k_need_setup else if (!Keys.can(a)) R.string.k_need_adb else if (Keys.refused(a)) R.string.k_refused else R.string.k_everywhere)
         }
 
+        fun targetOf(code: Int, c: JSONObject = Store.get(a)): String = if (code == POWER) Keys.powerApp(c) else HomeConfig.keyApps(c.optJSONObject("keyapps"))[code].orEmpty()
+        fun words(code: Int) = if (code == POWER) a.getString(R.string.qk_power) else if (code == OTHER) a.getString(R.string.k_other) else Keys.name(a, code)
+        fun arm(on: Boolean) { armed = on; paintHead() }
+        fun choose(code: Int) {
+            if (code == OTHER) { arm(true); return }
+            if (armed) arm(false)
+            val lastNow = code == POWER && Keys.powerLast(Store.get(a))
+            Picker.show(a, Picker.Mode.TARGET, words(code), if (lastNow) Picker.LAST else targetOf(code), actions = code != POWER, last = code == POWER && Keys.last(a)) { t ->   // the power-on slot opens an app: an action needs a key press
+                if (code == POWER) { if (t == Picker.LAST) Keys.setPowerLast(a) else Keys.setPowerApp(a, t) }                 // the slot alone decides
+                else {
+                    val m = JSONObject(); for ((k, v) in HomeConfig.keyApps(Store.get(a).optJSONObject("keyapps"))) if (k != code) m.put(k.toString(), v)
+                    if (t.isNotEmpty()) m.put(code.toString(), t)
+                    Store.change(a, JSONObject().put("keyapps", m).also { if (t.isNotEmpty()) it.put("keyon", true) })   // the first one chosen switches the keys on: nobody asks twice
+                }
+            }
+        }
         fun redraw(keepFocus: Int?) {
             val mine = ++seq
             val have = Keys.have(a)?.let { arr -> List(arr.length()) { arr.getInt(it) } }
             Thread({
                 val conf = Store.get(a)                                // once: read per key (twice each, 16 keys) it was ~400 ms on the FPT box
+                extra = listOf(POWER) + dead + others(conf) + OTHER
+                keyOrder = (HomeConfig.KEY_NUMBERS.drop(1) + HomeConfig.KEY_NUMBERS.first()) + HomeConfig.KEY_COLOURS + extra
                 val pics = HashMap<Int, App?>()
-                for (code in keyOrder) targetOf(code, conf).takeIf { it.isNotEmpty() }?.let { pics[code] = Targets.app(a, it) }
+                for (code in keyOrder) if (code != OTHER) targetOf(code, conf).takeIf { it.isNotEmpty() }?.let { pics[code] = Targets.app(a, it) }
                 a.runOnUiThread {
                     if (mine != seq || !dialog.isShowing) return@runOnUiThread
                     paintHead()
                     grid.removeAllViews(); tiles.clear()
                     fun slot(code: Int): Keypad.Slot {
+                        if (code == OTHER) return Keypad.Slot("", null, words(OTHER), false, PK_EMPTY, icon = R.drawable.ic_plus)
                         val target = targetOf(code, conf)
                         val lastApp = code == POWER && Keys.powerLast(conf)
                         val art = pics[code]
                         val missing = target.isNotEmpty() && art == null                    // the app is gone: the slot shows it, to be cleared or changed
-                        val off = code != POWER && have != null && code !in have
+                        val off = code in HomeConfig.KEY_NUMBERS + HomeConfig.KEY_COLOURS && have != null && code !in have   // have() looks only at those
                         val info = if (Target.kind(target) == Target.Kind.TILE) LiveWidgets.available(a).firstOrNull { it.key == target } else null
                         return Keypad.Slot(if (art != null) art.label else if (lastApp) a.getString(R.string.qk_last) else if (missing) Targets.label(a, target) else if (off) a.getString(R.string.qk_no_key) else "", art, words(code), target.isEmpty() && !lastApp,
                             if (art == null) COLOUR[code] ?: PK_EMPTY else 0,
@@ -148,7 +161,15 @@ object QuickKeys {
         dialog.setOnDismissListener { if (Store.onChange === mine) Store.onChange = change; Keys.onState = null; Keys.capture(a, false) }   // a Home made since keeps its own
         dialog.setOnShowListener { Keys.push(a) }                     // asks TV Setup again, so the line above is true when it answers
         dialog.setOnKeyListener { _, code, e ->                       // the real key on the remote: the tile of that key is chosen without walking to it
-            if (code in tiles.keys && code in HomeConfig.KEY_NUMBERS + HomeConfig.KEY_COLOURS) { if (e.action == android.view.KeyEvent.ACTION_DOWN && e.repeatCount == 0) choose(code); true } else false
+            val down = e.action == android.view.KeyEvent.ACTION_DOWN && e.repeatCount == 0
+            when {
+                armed && code == android.view.KeyEvent.KEYCODE_BACK -> { if (down) arm(false); true }          // Back: no key after all
+                code in tiles.keys && code in HomeConfig.KEY_NUMBERS + HomeConfig.KEY_COLOURS -> { if (down) choose(code); true }
+                code in tiles.keys && armed -> { if (down) choose(code); true }                             // a dead key or one already added
+                HomeConfig.keyOther(code) && (armed || code in tiles.keys) -> { if (down) choose(code); true }
+                armed -> { if (down) { hint.text = a.getString(R.string.k_other_bad) }; false }             // arrows, OK, volume... keep their job
+                else -> false
+            }
         }
         Keys.capture(a, true)
         paintHead(); redraw(null)

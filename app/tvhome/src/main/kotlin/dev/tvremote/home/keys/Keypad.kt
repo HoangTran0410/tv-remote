@@ -39,7 +39,7 @@ object Keypad {
         for (r in listOf(digits.subList(0, 3), digits.subList(3, 6), digits.subList(6, 9), digits.subList(9, 10)))
             pad.addView(row(r), LinearLayout.LayoutParams(-1, -2).apply { topMargin = gap })
         pad.addView(row(HomeConfig.KEY_COLOURS), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(12) })
-        if (extra.isNotEmpty()) pad.addView(row(extra), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(12) })
+        extra.chunked(5).forEachIndexed { i, r -> pad.addView(row(r), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(if (i == 0) 12 else 6) }) }   // 5 wide tiles a row: more ran off the panel
         return pad
     }
 

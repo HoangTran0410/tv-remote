@@ -4723,5 +4723,18 @@
  "home.multi_dbl": "Bấm đúp",
  "home.multi_hold": "Giữ",
  "home.multi_none": "Chưa đặt",
- "core.need_keymulti": "bấm đúp hoặc giữ một phím remote"
+ "core.need_keymulti": "bấm đúp hoặc giữ một phím remote",
+ "home.key_chup": "Kênh +",
+ "home.key_chdown": "Kênh −",
+ "home.key_playpause": "Phát / Dừng",
+ "home.key_stop": "Phím Dừng hẳn",
+ "home.key_next": "Bài tiếp",
+ "home.key_prev": "Bài trước",
+ "home.key_rew": "Tua lùi",
+ "home.key_ffwd": "Tua tới",
+ "home.key_captions": "Phím Phụ đề",
+ "home.key_audio": "Phím Âm thanh",
+ "home.key_lastch": "Kênh vừa xem",
+ "home.key_code": "Phím {n}",
+ "home.qk_other_tv": "Phím khác (phát, kênh, Thông tin…): thêm trên TV, Phím nhanh → Phím khác. Chỉ chạy ở TV Home."
 }

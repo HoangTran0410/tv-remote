@@ -114,7 +114,10 @@ function quickKeysDraw(host, c, apps, send) {
       ...(note ? [el('small', { className: 'qktag', textContent: note })] : []));
     return b;
   };
-  const extra = (c.keysDead || []).filter((k) => HOME_KEY_WORDS[k]);
+  const fixed = new Set([...QK_NUMBERS, ...Object.keys(QK_COLOURS).map(Number)]);
+  const dk = (c.keysDead || []).filter((k) => HOME_KEY_WORDS[k]);
+  const others = Object.keys(ka).map(Number).filter((k) => k > 0 && !fixed.has(k) && !dk.includes(k)).sort((x, y) => x - y);   // "Other key", added on the TV (HomeConfig.keyOther)
+  const extra = [...dk, ...others];
   host.className = c.focus === 'ring' ? 'qkgrid focus-ring' : 'qkgrid focus-glass';
   host.replaceChildren(...[...QK_NUMBERS, ...Object.keys(QK_COLOURS).map(Number), QK_POWER, ...extra].map(slot));
 }

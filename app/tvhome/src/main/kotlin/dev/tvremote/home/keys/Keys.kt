@@ -73,7 +73,7 @@ object Keys {
     /** The dead keys TV Setup found on this TV, which a person may give an app. */
     fun dead(c: Context): List<Int> = try { JSONArray(prefs(c).getString("free", "[]")).let { a -> List(a.length()) { a.getInt(it) } } } catch (e: Exception) { emptyList() }
 
-    /** A key pressed on TV Home's own screen: opens its app when one is chosen and installed. True = handled. Numbers and colours only. */
+    /** A key pressed on TV Home's own screen: opens its app when one is chosen and installed. True = handled. Numbers, colours and the other keys ([HomeConfig.keyOnHome]). */
     fun onKey(a: Activity, e: KeyEvent): Boolean {
         val code = e.keyCode
         val tcl = TclKeys.apps(code, android.os.Build.MANUFACTURER, android.os.Build.BRAND)
@@ -81,7 +81,7 @@ object Keys {
             if (e.repeatCount > 0) return true
             return open(a, tcl.firstOrNull { Targets.there(a, it) } ?: return true)   // none installed: eaten, as the stock home did
         }
-        if (code !in HomeConfig.KEY_COLOURS && code !in HomeConfig.KEY_NUMBERS) return false
+        if (!HomeConfig.keyOnHome(code)) return false
         val conf = Store.get(a)
         if (!conf.optBoolean("keyon")) return false
         val target = HomeConfig.keyApps(conf.optJSONObject("keyapps"))[code] ?: return false
@@ -116,14 +116,10 @@ object Keys {
         return if (!seen) null else JSONArray(codes.filterIndexed { i, _ -> has[i] })
     }
 
-    /** The key's words in the setting: "Red", "Green"... a number as itself, others by what the stock remote called them. */
+    /** The key's words in the setting: "Red", "Green"... a number as itself, a named one ([HomeConfig.KEY_NAMES]) by its name, any other "Key 85". */
     fun name(a: Context, code: Int): String {
-        val id = when (code) {
-            183 -> R.string.k_red; 184 -> R.string.k_green; 185 -> R.string.k_yellow; 186 -> R.string.k_blue
-            170 -> R.string.k_tv; 178 -> R.string.k_input; 190 -> R.string.k_btn3; 191 -> R.string.k_btn4; 195 -> R.string.k_btn8
-            192 -> R.string.k_btn5; 284 -> R.string.k_allapps; 176 -> R.string.k_settings
-            else -> return (code - KeyEvent.KEYCODE_0).toString()
-        }
-        return a.getString(id)
+        if (code in HomeConfig.KEY_NUMBERS) return (code - KeyEvent.KEYCODE_0).toString()
+        val id = HomeConfig.KEY_NAMES[code]?.let { a.resources.getIdentifier("k_$it", "string", a.packageName) } ?: 0
+        return if (id != 0) a.getString(id) else a.getString(R.string.k_code, code)
     }
 }

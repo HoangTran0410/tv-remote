@@ -5120,5 +5120,18 @@
  "home.multi_dbl": "ضغط مزدوج",
  "home.multi_hold": "ضغط مطوّل",
  "home.multi_none": "غير محدد",
- "core.need_keymulti": "ضغط مزدوج أو مطوّل على زر في جهاز التحكم"
+ "core.need_keymulti": "ضغط مزدوج أو مطوّل على زر في جهاز التحكم",
+ "home.key_chup": "القناة +",
+ "home.key_chdown": "القناة −",
+ "home.key_playpause": "تشغيل / إيقاف مؤقت",
+ "home.key_stop": "زر الإيقاف",
+ "home.key_next": "التالي",
+ "home.key_prev": "السابق",
+ "home.key_rew": "ترجيع",
+ "home.key_ffwd": "تقديم سريع",
+ "home.key_captions": "زر الترجمة",
+ "home.key_audio": "زر الصوت",
+ "home.key_lastch": "القناة السابقة",
+ "home.key_code": "الزر {n}",
+ "home.qk_other_tv": "أزرار أخرى (تشغيل، قناة، معلومات…): أضفها من التلفاز، الأزرار السريعة ← زر آخر. تعمل في TV Home فقط."
 }

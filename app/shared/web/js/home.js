@@ -28,8 +28,10 @@ const HOME_EVERY = { 'off': 'home.every_off', '30m': 'home.every_30m', '1h': 'ho
 // Remote keys that can open an app (HomeConfig.KEY_COLOURS / KEY_DEAD / KEY_NUMBERS), with their words; a dead key is listed only
 // when TV Setup offers it on this TV (config.keysDead: the dead keys, and the YouTube / Netflix / Prime buttons even while they work)
 const HOME_KEY_WORDS = { 183: 'home.key_red', 184: 'home.key_green', 185: 'home.key_yellow', 186: 'home.key_blue', 170: 'home.key_tv', 178: 'home.key_input',
-  190: 'home.key_btn3', 191: 'home.key_btn4', 195: 'home.key_btn8', 192: 'home.key_btn5', 284: 'home.key_allapps', 176: 'home.key_settings', 82: 'home.key_menu', 165: 'home.key_info', 172: 'home.key_guide' };
-const homeKeyName = (code) => HOME_KEY_WORDS[code] ? T(HOME_KEY_WORDS[code]) : String(code - 7);   // KEYCODE_0 is 7
+  190: 'home.key_btn3', 191: 'home.key_btn4', 195: 'home.key_btn8', 192: 'home.key_btn5', 284: 'home.key_allapps', 176: 'home.key_settings', 82: 'home.key_menu', 165: 'home.key_info', 172: 'home.key_guide',
+  166: 'home.key_chup', 167: 'home.key_chdown', 85: 'home.key_playpause', 86: 'home.key_stop', 87: 'home.key_next', 88: 'home.key_prev', 89: 'home.key_rew', 90: 'home.key_ffwd',
+  175: 'home.key_captions', 222: 'home.key_audio', 229: 'home.key_lastch' };   // HomeConfig.KEY_NAMES
+const homeKeyName = (code) => HOME_KEY_WORDS[code] ? T(HOME_KEY_WORDS[code]) : code >= 7 && code <= 16 ? String(code - 7) : T('home.key_code', { n: code });   // KEYCODE_0 is 7
 const homeThemeName = (t) => (t.names || {})[window.LANG] || (t.names || {}).en || t.id;   // a ready-made theme's name in the page's language (the signed list's)
 const HOME_THEME_KEYS = ['wall', 'walls', 'wurl', 'wcol', 'wdir', 'wmode', 'wsnap', 'wkeep', 'wevery', 'shade', 'wfit', 'wfade', 'widgets', 'wsize', 'wopt', 'wplace', 'cols', 'center', 'rows', 'focus', 'tstyle', 'accent', 'motion', 'anim', 'clock24', 'greet'];   // HomeConfig.THEME_KEYS (tvcopy.test.js keeps them equal)
 const HOME_THEME_FILE_MAX = 32768;                                 // a theme file is a few KB; more is not one
@@ -776,7 +778,7 @@ async function homeOpen() {
     const ka = c.keyapps || {}, kOk = !!c.keysOk;                     // an older TV Home has neither: shown, with its update
     keyOn.checked = !!c.keyon;
     keyOn.disabled = !kOk; keysOld.hidden = kOk;
-    keysNote.textContent = kOk ? T(!c.keysSetup ? 'home.keys_need_setup' : c.keysRefused ? 'home.keys_refused' : 'home.keys_everywhere') : '';
+    keysNote.textContent = kOk ? T(!c.keysSetup ? 'home.keys_need_setup' : c.keysRefused ? 'home.keys_refused' : 'home.keys_everywhere') + (c.keysOther ? ' ' + T('home.qk_other_tv') : '') : '';   // other keys are added on the TV: a page cannot hear the remote
     autoNote.textContent = kOk ? T(!c.keysSetup ? 'home.auto_need_setup' : 'home.auto_note') : '';
     keysList.hidden = !kOk;
     autoAll.checked = !!c.autoall;

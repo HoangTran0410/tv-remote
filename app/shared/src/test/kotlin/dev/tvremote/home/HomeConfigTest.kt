@@ -524,6 +524,13 @@ class HomeConfigTest {
         assertFalse(f.getJSONObject("wsize").has("system"))
         assertEquals(listOf("system"), HomeConfig.clean(f).getJSONArray("widgets").let { a -> (0 until a.length()).map { a.getString(it) } })   // TV Home's own decides
     }
+    @Test fun otherKeysAreKeptButNeverNavigationOrSystemKeys() {
+        val m = HomeConfig.clean(JSONObject().put("keyapps", JSONObject().put("85", "a.b").put("166", "c.d").put("165", "e.f")
+            .put("23", "no.ok").put("4", "no.back").put("3", "no.home").put("19", "no.up").put("26", "no.power").put("164", "no.mute").put("82", "no.menu").put("999", "too.big")))
+        assertEquals(mapOf(85 to "a.b", 166 to "c.d", 165 to "e.f"), HomeConfig.keyApps(m.getJSONObject("keyapps")))
+        assertTrue(HomeConfig.keyOther(85)); assertFalse(HomeConfig.keyOther(183)); assertFalse(HomeConfig.keyOther(7)); assertFalse(HomeConfig.keyOther(170))   // colours, numbers, dead keys have their own rows
+        assertTrue(HomeConfig.keyOnHome(7) && HomeConfig.keyOnHome(183) && HomeConfig.keyOnHome(85)); assertFalse(HomeConfig.keyOnHome(170))   // a dead key is TV Setup's, everywhere
+    }
     @Test fun keysAndPowerOnAppAreOffByDefaultAndKeepOnlyFreeKeys() {
         val c = HomeConfig.clean(JSONObject())
         assertFalse(c.getBoolean("keyon")); assertFalse(c.getBoolean("autoon")); assertFalse(c.getBoolean("autoall")); assertEquals("", c.getString("autoapp")); assertEquals(0, c.getJSONObject("keyapps").length())

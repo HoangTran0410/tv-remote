@@ -29,7 +29,10 @@ Why some code looks odd ([the list](../DECISIONS.md)).
   reboot with TV Home not up. The DUMP-protected Rules broadcast was not used: apps cannot call it. Without TV Setup the keys work on
   TV Home's own screen only, and the setting says so.
 - **Only free keys can be given an app:** colour keys, keys whose global component is dead (`KeyFix.plan`, same list in `HomeConfig.KEY_DEAD`,
-  a test keeps them equal) and, on TV Home's screen only, 0-9. A working key is never taken. `input keyevent` over ADB is injected after
+  a test keeps them equal) and, on TV Home's screen only, 0-9 and any "Other key" (`HomeConfig.keyOther`: media, channel, Info...,
+  added on the TV by pressing it, Quick keys → Other key; the page cannot hear the remote). Never `KEY_NEVER` (Home, Back, arrows, OK,
+  volume, mute, power, Menu). A working key is never taken: TV Setup's filter only takes colours and dead keys, so in another app an
+  Other key keeps its job (the user, 2026-11-19). `input keyevent` over ADB is injected after
   the accessibility filter, so the service cannot be tested with it; on the TV emulator `adb emu event send EV_KEY:KEY_RED` also does not
   reach it (the emulator has no such key in its layout path), so the service path was checked by its logged plan only.
 - **A key a client sends is decided by TV Setup, not injected:** measured on the TV emulator (5554, RED given an app, 178 dead): `input keyevent`

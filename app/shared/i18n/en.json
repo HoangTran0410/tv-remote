@@ -4861,5 +4861,18 @@
  "home.multi_dbl": "Double press",
  "home.multi_hold": "Hold",
  "home.multi_none": "Not set",
- "core.need_keymulti": "a double press or hold on a remote key"
+ "core.need_keymulti": "a double press or hold on a remote key",
+ "home.key_chup": "Channel +",
+ "home.key_chdown": "Channel −",
+ "home.key_playpause": "Play / Pause",
+ "home.key_stop": "Stop key",
+ "home.key_next": "Next",
+ "home.key_prev": "Previous",
+ "home.key_rew": "Rewind",
+ "home.key_ffwd": "Fast forward",
+ "home.key_captions": "Subtitles key",
+ "home.key_audio": "Audio key",
+ "home.key_lastch": "Last channel",
+ "home.key_code": "Key {n}",
+ "home.qk_other_tv": "Other keys (play, channel, Info…): add them on the TV, Quick keys → Other key. They work in TV Home only."
 }

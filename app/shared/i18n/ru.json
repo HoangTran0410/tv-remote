@@ -4965,5 +4965,18 @@
  "home.multi_dbl": "Двойное нажатие",
  "home.multi_hold": "Удержание",
  "home.multi_none": "Не задано",
- "core.need_keymulti": "двойное нажатие или удержание кнопки пульта"
+ "core.need_keymulti": "двойное нажатие или удержание кнопки пульта",
+ "home.key_chup": "Канал +",
+ "home.key_chdown": "Канал −",
+ "home.key_playpause": "Пуск / пауза",
+ "home.key_stop": "Клавиша «Стоп»",
+ "home.key_next": "Следующий",
+ "home.key_prev": "Предыдущий",
+ "home.key_rew": "Перемотка назад",
+ "home.key_ffwd": "Перемотка вперёд",
+ "home.key_captions": "Клавиша субтитров",
+ "home.key_audio": "Клавиша звуковой дорожки",
+ "home.key_lastch": "Предыдущий канал",
+ "home.key_code": "Клавиша {n}",
+ "home.qk_other_tv": "Другие кнопки (пуск, каналы, инфо…): добавьте на телевизоре, «Быстрые кнопки» → «Другая кнопка». Работают только в TV Home."
 }

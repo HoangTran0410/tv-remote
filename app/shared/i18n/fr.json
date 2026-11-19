@@ -4894,5 +4894,18 @@
   "home.multi_dbl": "Double appui",
   "home.multi_hold": "Appui long",
   "home.multi_none": "Non défini",
-  "core.need_keymulti": "un double appui ou un appui long sur une touche de la télécommande"
+  "core.need_keymulti": "un double appui ou un appui long sur une touche de la télécommande",
+  "home.key_chup": "Chaîne +",
+  "home.key_chdown": "Chaîne −",
+  "home.key_playpause": "Lecture / Pause",
+  "home.key_stop": "Touche Stop",
+  "home.key_next": "Suivant",
+  "home.key_prev": "Précédent",
+  "home.key_rew": "Retour rapide",
+  "home.key_ffwd": "Avance rapide",
+  "home.key_captions": "Touche Sous-titres",
+  "home.key_audio": "Touche Audio",
+  "home.key_lastch": "Chaîne précédente",
+  "home.key_code": "Touche {n}",
+  "home.qk_other_tv": "Autres touches (lecture, chaîne, Info…) : ajoutez-les sur la TV, Touches rapides → Autre touche. Elles ne marchent que dans TV Home."
 }
