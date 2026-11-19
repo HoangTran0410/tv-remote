@@ -479,6 +479,11 @@
   "n": 1,
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
  },
+ "1704b3870f61eb2500e2f439|0.53.1": {
+  "at": "2026-11-20T01:35:52+07:00",
+  "n": 1,
+  "note": "RockTek RT-G2 sdk 34 operator box on 0.53.1: rs allow, add-on running, entry dropped by firmware (operator kind); clients say keys work only on TV Home"
+ },
  "1767cfe49cb2205aca9b8b0e|0.45.0": {
   "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
