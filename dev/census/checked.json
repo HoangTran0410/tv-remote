@@ -2020,19 +2020,24 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "657718557b80576c615cdf0a|0.50.0": {
-  "at": "2026-11-16T21:03:09+07:00",
+  "at": "2026-11-19T23:30:18+07:00",
   "n": 1,
-  "note": "TCL G10 sdk 31 again on 0.53.0: add-on stopped, the TV's cleaner force-stops it; nothing to fix, clients say keys work only on TV Home"
+  "note": "TCL Smart TV 12 sdk 31 on 0.53.1: add-on stopped (RAM cleaner), firmware kind; clients say keys work only on TV Home"
  },
  "657718557b80576c615cdf0a|0.51.0": {
-  "at": "2026-11-16T21:03:09+07:00",
+  "at": "2026-11-19T23:30:18+07:00",
   "n": 3,
-  "note": "TCL G10 sdk 31 again on 0.53.0: add-on stopped, the TV's cleaner force-stops it; nothing to fix, clients say keys work only on TV Home"
+  "note": "TCL Smart TV 12 sdk 31 on 0.53.1: add-on stopped (RAM cleaner), firmware kind; clients say keys work only on TV Home"
  },
  "657718557b80576c615cdf0a|0.53.0": {
-  "at": "2026-11-16T21:03:09+07:00",
+  "at": "2026-11-19T23:30:18+07:00",
   "n": 2,
-  "note": "TCL G10 sdk 31 again on 0.53.0: add-on stopped, the TV's cleaner force-stops it; nothing to fix, clients say keys work only on TV Home"
+  "note": "TCL Smart TV 12 sdk 31 on 0.53.1: add-on stopped (RAM cleaner), firmware kind; clients say keys work only on TV Home"
+ },
+ "657718557b80576c615cdf0a|0.53.1": {
+  "at": "2026-11-19T23:30:18+07:00",
+  "n": 1,
+  "note": "TCL Smart TV 12 sdk 31 on 0.53.1: add-on stopped (RAM cleaner), firmware kind; clients say keys work only on TV Home"
  },
  "657db7980ca8eda492ca97eb|0.29.0": {
   "at": "2026-10-28T14:05:41+07:00",
