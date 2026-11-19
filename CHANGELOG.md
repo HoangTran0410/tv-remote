@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: "Select all" for each group of backgrounds (your photos, videos, scenes, colours) while the background changes by itself, up to 40; it says when the set is full.
 - TV Home: Quick keys has an "Other key" tile: press any remote key (play, channel, Info...) to give it an app; it works on TV Home's screen only, so in other apps the key keeps its job. Home, Back, arrows, OK, volume and power are never taken.
 - TV Home: widgets can sit in two rows above the apps (Widgets position → "Above the apps, 2 rows"), for more widgets on the first screen.
 

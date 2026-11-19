@@ -961,5 +961,8 @@
   "k_code": "Touche %1$d",
   "k_other": "Autre touche",
   "k_other_press": "Appuyez sur la touche voulue de la télécommande",
-  "k_other_bad": "Cette touche ne peut pas recevoir d’application. Appuyez sur une autre."
+  "k_other_bad": "Cette touche ne peut pas recevoir d’application. Appuyez sur une autre.",
+  "wall_all": "Tout choisir",
+  "wall_none": "Tout retirer",
+  "wall_full": "%1$d fonds d’écran au plus peuvent tourner : ajoutés jusque-là."
 }

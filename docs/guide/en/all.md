@@ -502,7 +502,7 @@ A home screen with no ads, set up from the phone or computer. Install it from th
 | Your photos | Up to 10; a portrait one: **Whole photo**, blurred sides |
 | Web page | Paste an http/https link; the TV tries it first |
 
-Pick several; **Change background** rotates them.
+Pick several or **Select all**; **Change background** rotates them.
 
 **Dim** 0-100 %: readable text on any picture.
 
@@ -526,7 +526,7 @@ Pick several; **Change background** rotates them.
 
 TV remote only: Downloader, code **4356026**, then make TV Home the home screen. Direct link: [tv-home.apk](https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-home.apk).
 
-Google TV: **Accounts & profiles** is empty while TV Home is in use. To switch profile: **Use the TV's own launcher**, switch, then pick TV Home again.
+Google TV: **Accounts & profiles** is empty under TV Home. To switch: **Use the TV's own launcher**, switch, then back to TV Home.
 
 ## Market, News, weather map and ⚙
 

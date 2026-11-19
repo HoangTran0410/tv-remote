@@ -4736,5 +4736,8 @@
  "home.key_audio": "Phím Âm thanh",
  "home.key_lastch": "Kênh vừa xem",
  "home.key_code": "Phím {n}",
- "home.qk_other_tv": "Phím khác (phát, kênh, Thông tin…): thêm trên TV, Phím nhanh → Phím khác. Chỉ chạy ở TV Home."
+ "home.qk_other_tv": "Phím khác (phát, kênh, Thông tin…): thêm trên TV, Phím nhanh → Phím khác. Chỉ chạy ở TV Home.",
+ "home.wall_all": "Chọn tất cả",
+ "home.wall_none": "Bỏ chọn tất cả",
+ "home.wall_full": "Tối đa {n} hình nền để đổi vòng: đã thêm đến đó."
 }

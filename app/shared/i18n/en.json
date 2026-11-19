@@ -4874,5 +4874,8 @@
  "home.key_audio": "Audio key",
  "home.key_lastch": "Last channel",
  "home.key_code": "Key {n}",
- "home.qk_other_tv": "Other keys (play, channel, Info…): add them on the TV, Quick keys → Other key. They work in TV Home only."
+ "home.qk_other_tv": "Other keys (play, channel, Info…): add them on the TV, Quick keys → Other key. They work in TV Home only.",
+ "home.wall_all": "Select all",
+ "home.wall_none": "Unselect all",
+ "home.wall_full": "Up to {n} backgrounds can take turns: added up to that."
 }

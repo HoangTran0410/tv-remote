@@ -863,5 +863,8 @@
   "k_code": "Phím %1$d",
   "k_other": "Phím khác",
   "k_other_press": "Bấm phím muốn dùng trên remote",
-  "k_other_bad": "Phím này không gán được. Bấm phím khác."
+  "k_other_bad": "Phím này không gán được. Bấm phím khác.",
+  "wall_all": "Chọn tất cả",
+  "wall_none": "Bỏ chọn tất cả",
+  "wall_full": "Tối đa %1$d hình nền để đổi vòng: đã thêm đến đó."
 }

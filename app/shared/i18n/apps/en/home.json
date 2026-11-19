@@ -863,5 +863,8 @@
   "k_code": "Key %1$d",
   "k_other": "Other key",
   "k_other_press": "Press the key you want on the remote",
-  "k_other_bad": "This key cannot be given an app. Press another one."
+  "k_other_bad": "This key cannot be given an app. Press another one.",
+  "wall_all": "Select all",
+  "wall_none": "Unselect all",
+  "wall_full": "Up to %1$d backgrounds can take turns: added up to that."
 }

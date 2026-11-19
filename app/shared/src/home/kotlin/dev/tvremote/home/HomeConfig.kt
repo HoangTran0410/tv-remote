@@ -257,6 +257,18 @@ object HomeConfig {
     /** A wall id this config knows: a gradient, a scene, Bing, the page, a photo slot or a library video. */
     fun knownWall(id: String) = id in WALLS || isVideo(id)
     const val WALLS_MAX = 40
+    /**
+     * "Select all" of one group of backgrounds (the person's photos, videos, scenes, colours) in the rotation set: all of [group] in
+     * [set] already = they go out (one stays: a set is never empty); else the missing ones join, up to [WALLS_MAX]. Second = some did
+     * not fit. The page's homeWallsAll is the same (tests/walls_all_cases.json).
+     */
+    fun wallsAll(set: List<String>, group: List<String>): Pair<List<String>, Boolean> {
+        if (group.isEmpty()) return set to false
+        if (group.all { it in set }) return (set - group.toSet()).ifEmpty { listOf(group.first()) } to false
+        val add = group.filter { it !in set }.distinct()
+        val room = maxOf(0, WALLS_MAX - set.size)
+        return (set + add.take(room)) to (add.size > room)
+    }
     val EVERY = listOf("off", "30m", "1h", "6h", "day", "show")
     /** Where a client puts the first photo (the shell may write there; the app reads it with no permission). */
     const val PHOTO = "/sdcard/Android/data/$PKG/files/wall.jpg"

@@ -1,0 +1,249 @@
+{
+ "_": "HomeConfig.wallsAll and js/home.js homeWallsAll: \"Select all\" of one group of backgrounds in the rotation set (max 40)",
+ "cases": [
+  {
+   "name": "adds the missing ones",
+   "set": [
+    "night",
+    "art1"
+   ],
+   "group": [
+    "art1",
+    "art2",
+    "art3"
+   ],
+   "walls": [
+    "night",
+    "art1",
+    "art2",
+    "art3"
+   ],
+   "full": false
+  },
+  {
+   "name": "all in: they go out",
+   "set": [
+    "night",
+    "art1",
+    "art2"
+   ],
+   "group": [
+    "art1",
+    "art2"
+   ],
+   "walls": [
+    "night"
+   ],
+   "full": false
+  },
+  {
+   "name": "all in and nothing else: one stays",
+   "set": [
+    "art1",
+    "art2"
+   ],
+   "group": [
+    "art1",
+    "art2"
+   ],
+   "walls": [
+    "art1"
+   ],
+   "full": false
+  },
+  {
+   "name": "stops at 40 and says so",
+   "set": [
+    "p0",
+    "p1",
+    "p2",
+    "p3",
+    "p4",
+    "p5",
+    "p6",
+    "p7",
+    "p8",
+    "p9",
+    "p10",
+    "p11",
+    "p12",
+    "p13",
+    "p14",
+    "p15",
+    "p16",
+    "p17",
+    "p18",
+    "p19",
+    "p20",
+    "p21",
+    "p22",
+    "p23",
+    "p24",
+    "p25",
+    "p26",
+    "p27",
+    "p28",
+    "p29",
+    "p30",
+    "p31",
+    "p32",
+    "p33",
+    "p34",
+    "p35",
+    "p36",
+    "p37"
+   ],
+   "group": [
+    "a",
+    "b",
+    "c",
+    "d"
+   ],
+   "walls": [
+    "p0",
+    "p1",
+    "p2",
+    "p3",
+    "p4",
+    "p5",
+    "p6",
+    "p7",
+    "p8",
+    "p9",
+    "p10",
+    "p11",
+    "p12",
+    "p13",
+    "p14",
+    "p15",
+    "p16",
+    "p17",
+    "p18",
+    "p19",
+    "p20",
+    "p21",
+    "p22",
+    "p23",
+    "p24",
+    "p25",
+    "p26",
+    "p27",
+    "p28",
+    "p29",
+    "p30",
+    "p31",
+    "p32",
+    "p33",
+    "p34",
+    "p35",
+    "p36",
+    "p37",
+    "a",
+    "b"
+   ],
+   "full": true
+  },
+  {
+   "name": "already 40: nothing joins",
+   "set": [
+    "p0",
+    "p1",
+    "p2",
+    "p3",
+    "p4",
+    "p5",
+    "p6",
+    "p7",
+    "p8",
+    "p9",
+    "p10",
+    "p11",
+    "p12",
+    "p13",
+    "p14",
+    "p15",
+    "p16",
+    "p17",
+    "p18",
+    "p19",
+    "p20",
+    "p21",
+    "p22",
+    "p23",
+    "p24",
+    "p25",
+    "p26",
+    "p27",
+    "p28",
+    "p29",
+    "p30",
+    "p31",
+    "p32",
+    "p33",
+    "p34",
+    "p35",
+    "p36",
+    "p37",
+    "x",
+    "y"
+   ],
+   "group": [
+    "a"
+   ],
+   "walls": [
+    "p0",
+    "p1",
+    "p2",
+    "p3",
+    "p4",
+    "p5",
+    "p6",
+    "p7",
+    "p8",
+    "p9",
+    "p10",
+    "p11",
+    "p12",
+    "p13",
+    "p14",
+    "p15",
+    "p16",
+    "p17",
+    "p18",
+    "p19",
+    "p20",
+    "p21",
+    "p22",
+    "p23",
+    "p24",
+    "p25",
+    "p26",
+    "p27",
+    "p28",
+    "p29",
+    "p30",
+    "p31",
+    "p32",
+    "p33",
+    "p34",
+    "p35",
+    "p36",
+    "p37",
+    "x",
+    "y"
+   ],
+   "full": true
+  },
+  {
+   "name": "empty group: nothing changes",
+   "set": [
+    "night"
+   ],
+   "group": [],
+   "walls": [
+    "night"
+   ],
+   "full": false
+  }
+ ]
+}

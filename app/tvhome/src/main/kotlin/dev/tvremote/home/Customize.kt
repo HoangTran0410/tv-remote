@@ -38,6 +38,8 @@ import dev.tvremote.home.keys.QuickKeys
 import dev.tvremote.home.wall.WallArt
 import dev.tvremote.home.wall.Walls
 import dev.tvremote.tvui.TvScroll
+import dev.tvremote.tvui.pill
+import dev.tvremote.tvui.pillText
 
 /**
  * TV Home's own settings, on the TV with the D-pad: a glass panel from the right, the home screen still showing beside it so
@@ -419,10 +421,17 @@ object Customize {
             }, if (tag == "check") FrameLayout.LayoutParams(dp(22), dp(22), Gravity.TOP or Gravity.END).apply { setMargins(0, dp(6), dp(6), 0) }
                else FrameLayout.LayoutParams(-2, -2, Gravity.BOTTOM or Gravity.START).apply { setMargins(dp(6), 0, 0, dp(6)) })
         }
+        // "Select all" under a group's title while it rotates: the whole group in the set (or out again), the user 2026-11-19
+        val alls = ArrayList<Pair<() -> List<String>, TextView>>()
         fun markAll() {
             val c = Store.get(a)                                         // once: reading it per tile cost 18 ms on the FPT box
             val rotating = c.optString("wevery") != "off"
             val shown = c.optString("wall")
+            val set = c.getJSONArray("walls").let { s -> List(s.length()) { s.getString(it) } }
+            for ((group, p) in alls) {
+                val g = group(); p.visibility = if (rotating && g.size > 1) View.VISIBLE else View.GONE
+                p.pillText(a.getString(if (g.isNotEmpty() && g.all { it in set }) R.string.wall_none else R.string.wall_all))
+            }
             // two marks when it rotates: a ✓ on each wall in the set, and "showing now" on the one on screen; one wall only: just the ✓
             for ((k, v) in tiles) {
                 val on = wallOn(c, k); v.isSelected = on
@@ -735,7 +744,7 @@ object Customize {
                             val pv = getChildAt(0) as? ImageView
                             shots.execute { val b = thumb(a, k, w); a.runOnUiThread { if (b != null) pv?.setImageBitmap(b) } }
                         }
-                        else if (c.optString("wevery") == "off") Store.change(a, JSONObject().put("wall", k))       // one choice
+                        else if (c.optString("wevery") == "off" || c.optString("wall") == HomeConfig.WEB) Store.change(a, JSONObject().put("wall", k))   // one choice; leaving the page, the set starts again from this one (clean() keeps the page alone)
                         else {                                                                                      // a set: a tile in or out, never the last one out
                             val s = c.getJSONArray("walls"); val now = List(s.length()) { s.getString(it) }
                             val next = if (k in now) now - k else now + k
@@ -778,12 +787,25 @@ object Customize {
             val photos = keys.filter { HomeConfig.isPhoto(it) }
             val scenes = keys.filter { it in HomeConfig.ART }
             val colours = keys.filter { it !in online && it !in photos && it !in videos && it !in scenes }
+            fun selectAll(list: List<String>) {
+                val group = { list.filter { k -> tiles.any { it.first == k } } }                  // a photo deleted meanwhile is not in it
+                val p = a.pill(a.getString(R.string.wall_all), 13f) {
+                    val c = Store.get(a); if (c.optString("wevery") == "off") return@pill
+                    val web = c.optString("wall") == HomeConfig.WEB           // a web page is the whole set alone: leaving it, the set starts from the group
+                    val (next, full) = HomeConfig.wallsAll(if (web) emptyList() else c.getJSONArray("walls").let { s -> List(s.length()) { s.getString(it) } }, group())
+                    Store.change(a, JSONObject().put("walls", org.json.JSONArray(next)).also { if (web) it.put("wall", next.first()) })
+                    if (full) android.widget.Toast.makeText(a, a.getString(R.string.wall_full, HomeConfig.WALLS_MAX), android.widget.Toast.LENGTH_LONG).show()
+                    markAll()
+                }
+                col.addView(p, LinearLayout.LayoutParams(-2, dp(40)).apply { bottomMargin = dp(12) })
+                alls.add(group to p)
+            }
             fun part(title: Int, list: List<String>, more: () -> Unit = {}) {
                 if (list.isEmpty()) return
-                section(a.getString(title)); wallRows(list); more()
+                section(a.getString(title)); selectAll(list); wallRows(list); more()
             }
             // the person's own photos first (the + cell is always there), then the pages (Bing, a page of their own, the site's live pages), then the site's pictures and videos
-            section(a.getString(R.string.wall_h_photos)); wallRows(listOf(ADD) + photos)
+            section(a.getString(R.string.wall_h_photos)); if (photos.isNotEmpty()) selectAll(photos); wallRows(listOf(ADD) + photos)
             val onBox = LinearLayout(a).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false }
             col.addView(onBox, LinearLayout.LayoutParams(-1, -2))
             // the site's suggestions (Suggest): drawn from the list kept, again when a newer one comes while the page is open

@@ -4907,5 +4907,8 @@
   "home.key_audio": "Touche Audio",
   "home.key_lastch": "Chaîne précédente",
   "home.key_code": "Touche {n}",
-  "home.qk_other_tv": "Autres touches (lecture, chaîne, Info…) : ajoutez-les sur la TV, Touches rapides → Autre touche. Elles ne marchent que dans TV Home."
+  "home.qk_other_tv": "Autres touches (lecture, chaîne, Info…) : ajoutez-les sur la TV, Touches rapides → Autre touche. Elles ne marchent que dans TV Home.",
+  "home.wall_all": "Tout choisir",
+  "home.wall_none": "Tout retirer",
+  "home.wall_full": "{n} fonds d’écran au plus peuvent tourner : ajoutés jusque-là."
 }

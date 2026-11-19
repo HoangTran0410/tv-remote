@@ -278,6 +278,18 @@ class HomeConfigTest {
         assertEquals(0, both.getJSONObject("wsize").length())
     }
 
+    /** "Select all" of a group of backgrounds, as tests/walls_all_cases.json says (the page's homeWallsAll reads it too). */
+    @Test fun selectAllWallsFollowsTheSharedCases() {
+        val cases = JSONObject(java.io.File("tests/walls_all_cases.json").readText()).getJSONArray("cases")
+        fun list(a: JSONArray) = (0 until a.length()).map { a.getString(it) }
+        for (i in 0 until cases.length()) {
+            val c = cases.getJSONObject(i)
+            val (walls, full) = HomeConfig.wallsAll(list(c.getJSONArray("set")), list(c.getJSONArray("group")))
+            assertEquals(c.getString("name"), list(c.getJSONArray("walls")), walls)
+            assertEquals(c.getString("name"), c.getBoolean("full"), full)
+        }
+    }
+
     /** The packing gives what tests/home_pack_cases.json says (the page's homePack reads the same table). */
     @Test fun packingFollowsTheSharedCases() {
         val cases = JSONObject(java.io.File("tests/home_pack_cases.json").readText()).getJSONArray("cases")

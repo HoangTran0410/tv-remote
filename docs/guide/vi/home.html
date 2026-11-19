@@ -28,7 +28,7 @@ Màn hình chính không quảng cáo, chỉnh từ điện thoại hoặc máy 
 | Ảnh của bạn | Tối đa 10; ảnh dọc: **Hiện trọn ảnh**, hai bên mờ |
 | Trang web | Dán liên kết http/https; TV mở thử rồi báo kết quả |
 
-Chọn nhiều hình rồi đặt **Đổi hình nền** (30 phút → mỗi lần mở) để xoay vòng.
+Chọn nhiều hình hoặc **Chọn tất cả**; **Đổi hình nền** sẽ xoay vòng chúng.
 
 **Phủ tối** 0-100 %: chữ dễ đọc trên mọi hình.
 

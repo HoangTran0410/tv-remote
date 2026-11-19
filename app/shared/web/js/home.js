@@ -24,6 +24,15 @@ function homeOwnCss(c, dir) {
 // The scenes TV Home paints itself (HomeConfig.ART; recipes in home_walls.js), the day's Bing picture, the person's photos (photo, photo2..)
 Object.assign(HOME_WALL_WORDS, { dawn: 'home.wall_dawn', peaks: 'home.wall_peaks', dunes: 'home.wall_dunes', waves: 'home.wall_waves', candy: 'home.wall_candy', peach: 'home.wall_peach', meadow: 'home.wall_meadow', mist: 'home.wall_mist', bokeh: 'home.wall_bokeh', canyon: 'home.wall_canyon', bing: 'home.wall_bing' });
 const HOME_WEBMODE = { live: 'home.web_mode_live', snap: 'home.web_mode_snap' };   // HomeConfig.WMODES, with its words
+const HOME_WALLS_MAX = 40;                                           // HomeConfig.WALLS_MAX
+// "Select all" of one group in the rotation set: all in already = out (one stays), else the rest join up to the max; full = some did
+// not fit (HomeConfig.wallsAll, the same table: tests/walls_all_cases.json)
+function homeWallsAll(set, group) {
+  if (!group.length) return { walls: set, full: false };
+  if (group.every((k) => set.includes(k))) { const w = set.filter((k) => !group.includes(k)); return { walls: w.length ? w : [group[0]], full: false }; }
+  const add = [...new Set(group.filter((k) => !set.includes(k)))], room = Math.max(0, HOME_WALLS_MAX - set.length);
+  return { walls: [...set, ...add.slice(0, room)], full: add.length > room };
+}
 const HOME_EVERY = { 'off': 'home.every_off', '30m': 'home.every_30m', '1h': 'home.every_1h', '6h': 'home.every_6h', 'day': 'home.every_day', 'show': 'home.every_show' };   // HomeConfig.EVERY, with its words
 // Remote keys that can open an app (HomeConfig.KEY_COLOURS / KEY_DEAD / KEY_NUMBERS), with their words; a dead key is listed only
 // when TV Setup offers it on this TV (config.keysDead: the dead keys, and the YouTube / Netflix / Prime buttons even while they work)
@@ -912,6 +921,20 @@ async function homeOpen() {
       if (window.ONTV) { del.hidden = true; if (!used) holdDrop(cell.firstChild, v.id); }
       return cell;
     });
+    // "Select all" beside a group's title while it rotates: the whole group in the set, or out again (homeWallsAll; the user 2026-11-19)
+    const allOf = (h, keys) => {
+      let b = h.querySelector('.wallall');
+      if (!b) { b = el('button', { type: 'button', className: 'small wallall' }); h.append(' ', b); }
+      b.hidden = !multi || keys.length < 2;
+      b.textContent = T(keys.length && keys.every((k) => set.includes(k)) ? 'home.wall_none' : 'home.wall_all');
+      b.onclick = () => {
+        const web = set.includes('web'), r2 = homeWallsAll(web ? [] : set, keys);   // leaving the page (always alone in a set): the set starts from the group
+        send({ walls: r2.walls, ...(web ? { wall: r2.walls[0] } : {}) });
+        if (r2.full) toast(T('home.wall_full', { n: HOME_WALLS_MAX }));
+      };
+    };
+    allOf(hPhotos, (r.photos || []).map((p) => p.id)); allOf(hVideos, ((r.video || {}).items || []).map((v) => v.id));
+    allOf(hScenes, HOME_ART_IDS); allOf(hColours, [...(c.ownOk ? ['own'] : []), ...Object.keys(HOME_WALLS)]);
     holdNote.hidden = !(window.ONTV && (photos.length || videos.length));
     wOnline.replaceChildren(bing, ...webTile); wPhotos.replaceChildren(...photos); wVideos.replaceChildren(...videos);   // as on the TV (HomeConfig.WALLS)
     wPhotos.hidden = !photos.length; wVideos.hidden = !videos.length;

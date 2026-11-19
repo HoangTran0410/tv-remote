@@ -212,6 +212,7 @@ dialog::backdrop { background:rgba(0,0,0,.8); }
 dialog > .card > .card-head:first-child { position:sticky; top:-14px; z-index:2; margin:-14px -14px 0; padding:14px; background:var(--card); border-radius:var(--radius) var(--radius) 0 0; }
 dialog { border-radius:var(--radius); }                               /* the scroller itself rounded: what scrolls under the head showed in its corners */
 dialog.ask .card { width:min(440px, 92vw); display:flex; flex-direction:column; gap:14px; }
+dialog.ask .card .card { width:auto; display:block; }   /* a fold-out card inside one (TV Home's Video settings) took the dialog's width and stuck out at 400 px */
 dialog.ask.how .card { width:min(480px, 92vw); align-items:center; text-align:center; }   /* Manage on the TV: a phone's QR, or stay (manageHow) */
 dialog.ask.how .qrs { justify-content:center; margin:0; }
 dialog.ask p { margin:0; white-space:pre-line; line-height:1.45; overflow-wrap:anywhere; }
