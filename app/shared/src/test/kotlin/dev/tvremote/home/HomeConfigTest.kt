@@ -292,6 +292,19 @@ class HomeConfigTest {
         }
     }
 
+    /** "top2": the rows [HomeConfig.packRows] makes, as the same file's "rows" table says (the page's homePackRows reads it too). */
+    @Test fun twoRowsFollowTheSharedCases() {
+        val cases = JSONObject(java.io.File("tests/home_pack_cases.json").readText()).getJSONArray("rows")
+        fun list(a: JSONArray) = (0 until a.length()).map { a.getString(it) }
+        for (i in 0 until cases.length()) {
+            val c = cases.getJSONObject(i)
+            val p = HomeConfig.packRows(list(c.getJSONArray("keys")), list(c.getJSONArray("big")).toSet(), c.optBoolean("note"), c.getInt("rows"))
+            val lines = c.getJSONArray("lines")
+            assertEquals(c.getString("name"), (0 until lines.length()).map { l -> lines.getJSONArray(l).let { a -> (0 until a.length()).map { list(a.getJSONArray(it)) } } }, p.map { r -> r.cols.map { it.keys } })
+            assertEquals(c.getString("name"), list(c.getJSONArray("waiting")), p.last().waiting)
+        }
+    }
+
     @Test fun widgetsAreKnownOnesOnceInTheirOrderAsSent() {
         val c = HomeConfig.clean(JSONObject().put("widgets", JSONArray(listOf("usage", "bogus", "usage", "system"))))
         val w = c.getJSONArray("widgets").let { a -> (0 until a.length()).map { a.getString(it) } }

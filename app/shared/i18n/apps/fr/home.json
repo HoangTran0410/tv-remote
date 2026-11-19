@@ -324,6 +324,7 @@
   "c_center": "Centrer la grille d’applications",
   "c_wplace": "Position des widgets",
   "c_wplace_top": "Au-dessus des applications",
+  "c_wplace_top2": "Au-dessus des applications, 2 rangées",
   "c_wplace_left": "À gauche des applications",
   "c_wplace_right": "À droite des applications",
   "c_rows_auto": "Auto",

@@ -72,8 +72,15 @@ function homePack(keys, big, note) {
 }
 // HomeConfig.packColumn, the side column ("wplace" left / right): the same walk with the screen's height (dp) as the budget; a block's weight is its height
 const HOME_H = { full: 180, half: 90, gap: 12 };   // HomeConfig.H_FULL / H_HALF / H_GAP
-const HOME_PLACES = ['top', 'left', 'right'];   // HomeConfig.WPLACES
-const HOME_PLACE_WORDS = { top: 'home.wplace_top', left: 'home.wplace_left', right: 'home.wplace_right' };
+const HOME_PLACES = ['top', 'top2', 'left', 'right'];   // HomeConfig.WPLACES
+const HOME_PLACE_WORDS = { top: 'home.wplace_top', top2: 'home.wplace_top2', left: 'home.wplace_left', right: 'home.wplace_right' };
+// HomeConfig.packRows ("top2"): the first row without the note, the rest in a second row with the note; one row when all fits in one
+function homePackRows(keys, big, note, rows) {
+  const one = homePack(keys, big, note);
+  if (rows < 2 || !one.waiting.length) return [one];
+  const first = homePack(keys, big, false);
+  return [{ cols: first.cols, waiting: [] }, homePack(first.waiting, big, note)];
+}
 function homePackColumn(keys, big, note, room) {
   const run = (ks) => {
     const cols = []; let sum = 0, i = 0;
@@ -764,7 +771,7 @@ async function homeOpen() {
     if (dk) { ddarkFrom.value = dk[1]; ddarkTo.value = dk[2]; }
     center.checked = !!c.center;
     wplaceHead.hidden = wplace.hidden = c.wplace === undefined;      // a TV Home older than it
-    wplace.replaceChildren(...HOME_PLACES.map((k) => el('button', { type: 'button', className: (c.wplace || 'top') === k ? 'on' : '', 'aria-pressed': String((c.wplace || 'top') === k), onclick: () => send({ wplace: k }) }, T(HOME_PLACE_WORDS[k]))));
+    wplace.replaceChildren(...HOME_PLACES.filter((k) => k !== 'top2' || c.wrows2 || c.wplace === 'top2').map((k) => el('button', { type: 'button', className: (c.wplace || 'top') === k ? 'on' : '', 'aria-pressed': String((c.wplace || 'top') === k), onclick: () => send({ wplace: k }) }, T(HOME_PLACE_WORDS[k]))));   // "top2": only a TV Home that reports "wrows2" (an older one reads it as top)
     center.closest('label').hidden = c.center === undefined;          // a TV Home older than it
     const ka = c.keyapps || {}, kOk = !!c.keysOk;                     // an older TV Home has neither: shown, with its update
     keyOn.checked = !!c.keyon;

@@ -27,3 +27,11 @@ test('a size is the one chosen, else the card kind\'s', () => {
   assert.equal(sandbox.homeSize({ wsize: { system: 'small', lunar: 'big', timer: 'huge' } }, 'lunar'), 'big');
   assert.equal(sandbox.homeSize({ wsize: { timer: 'huge' } }, 'timer'), 'small');
 });
+
+// "top2": HomeConfig.packRows / homePackRows, the same "rows" table HomeConfigTest reads
+vm.runInContext(src.slice(src.indexOf('function homePackRows'), src.indexOf('function homePackColumn')) + '\nthis.homePackRows = homePackRows;', sandbox);
+for (const c of JSON.parse(fs.readFileSync(path.join(__dirname, 'home_pack_cases.json'), 'utf8')).rows) test(c.name, () => {
+  const p = JSON.parse(JSON.stringify(sandbox.homePackRows(c.keys, c.big, !!c.note, c.rows)));
+  assert.deepEqual(p.map((l) => l.cols.map((x) => x.keys)), c.lines);
+  assert.deepEqual(p.at(-1).waiting, c.waiting);
+});

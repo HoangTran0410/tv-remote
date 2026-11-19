@@ -43,7 +43,7 @@ Pick several; **Change background** rotates them.
 
 - On the TV: the gear at the top right → Quick settings → Customize, or the Menu key.
 - Hold OK on an app: open, pin, move, hide, rename, assign a key, lock or limit its time (asks the parent PIN), force stop, clear cache.
-- Each widget **Big** or **Small**; two small ones share a column.
+- Widgets **Big** or **Small**: 1-2 rows above the apps, or beside.
 - **Columns**: 4 to 8 apps per row (default 5).
 - Home pressed in an app: back on TV Home, on that app.
 - **TV Home screensaver**: a big clock and the background while the TV is idle.

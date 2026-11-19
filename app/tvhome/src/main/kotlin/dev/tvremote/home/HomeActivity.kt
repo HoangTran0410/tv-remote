@@ -298,7 +298,7 @@ class HomeActivity : Activity() {
         widgets.onMark = { glassTo(it, r = dp(12).toFloat()) }
         widgets.onOpen = { k -> if (editing || k !in OPENS) widgets.hot.firstOrNull { it.tag == k }?.let { widgetMenu(k, it) } else startActivity(Intent(this, when (k) { "news" -> dev.tvremote.home.widgets.NewsActivity::class.java; "market" -> dev.tvremote.home.widgets.MarketActivity::class.java; else -> dev.tvremote.home.widgets.WeatherMapActivity::class.java }).putExtra("i", widgets.newsShown)) }
         widgets.onUp = { v -> (bar.buttons.filter { it.isShown } + listOfNotNull(headLeft.takeIf { it.isShown && it.isFocusable })).minByOrNull { p -> val q = IntArray(2); val r = IntArray(2); p.getLocationOnScreen(q); v.getLocationOnScreen(r); Math.abs(q[0] + p.width / 2 - r[0] - v.width / 2) }?.requestFocus() }
-        widgets.onDown = { v -> if (place() == "top") below(v)?.let { go(it) } }   // beside the grid nothing is below
+        widgets.onDown = { v -> if (!HomeConfig.side(place())) below(v)?.let { go(it) } }   // beside the grid nothing is below
         widgets.onSide = { v, dx -> if ((place() == "left" && dx > 0) || (place() == "right" && dx < 0)) gridBeside(v)?.let { go(it) } }
         body = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; clipChildren = false; clipToPadding = false }
         col.addView(body, LinearLayout.LayoutParams(-1, -2))
@@ -719,9 +719,9 @@ class HomeActivity : Activity() {
         body.removeAllViews()
         body.orientation = if (side) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
         val wl = if (side) LinearLayout.LayoutParams(Widgets.sideW(resources.displayMetrics), -2).apply { topMargin = dp(SIDE_TOP); if (p == "left") rightMargin = dp(SIDE_GAP) else leftMargin = dp(SIDE_GAP) }
-            else LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(if (p == "top") 28 else 32) }
+            else LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(if (p == "top" || p == "top2") 28 else 32) }
         val gl = if (side) LinearLayout.LayoutParams(0, -2, 1f).apply { topMargin = dp(SIDE_TOP) } else LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(40) }
-        if (p == "top" || p == "left") { body.addView(widgets, wl); body.addView(grid, gl) } else { body.addView(grid, gl); body.addView(widgets, wl) }
+        if (p != "right") { body.addView(widgets, wl); body.addView(grid, gl) } else { body.addView(grid, gl); body.addView(widgets, wl) }
         shownKey = ""
         body.requestLayout()
     }

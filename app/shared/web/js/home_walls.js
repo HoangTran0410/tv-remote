@@ -190,7 +190,7 @@ function homePlaced(conf) {
   const keys = (conf.widgets || []).filter((k) => k !== 'timer' && (!/^qr\d$/.test(k) || (conf.qrs && conf.qrs[k])));   // as HomeConfig.placed: a timer counts as not set
   if (!keys.length || typeof homePack !== 'function') return keys;
   const big = keys.filter((k) => homeSize(conf, k) === 'big'), note = !!conf.note;
-  const p = conf.wplace === 'left' || conf.wplace === 'right' ? homePackColumn(keys, big, note, 378) : homePack(keys, big, note);
+  const p = conf.wplace === 'left' || conf.wplace === 'right' ? homePackColumn(keys, big, note, 378) : homePackRows(keys, big, note, conf.wplace === 'top2' ? 2 : 1).at(-1);
   return keys.filter((k) => !(p.waiting || []).includes(k));
 }
 
@@ -221,7 +221,8 @@ function homeThemePaint(cv, conf, tiles, img, look, now) {   // now: a Date, for
   const place = HOME_PLACES.includes(conf.wplace) ? conf.wplace : 'top', side0 = place === 'left' || place === 'right';
   let y = h * 0.21;
   const big = HOME_WIDGETS.concat(['qr1', 'qr2', 'qr3', 'qr4']).filter((k) => homeSize(conf, k) === 'big'), keys = (conf.widgets || []).filter((k) => HOME_WIDGETS.includes(k));
-  const packed = side0 ? homePackColumn(keys, big, false, 378) : homePack(keys, big);   // 378 dp: what is left of a 1080p screen under the top bar
+  const lines = side0 ? [homePackColumn(keys, big, false, 378)] : homePackRows(keys, big, false, place === 'top2' ? 2 : 1);   // 378 dp: what is left of a 1080p screen under the top bar; top2: two rows
+  const packed = lines[0];
   const side = side0 && packed.cols.length > 0;
   const card = (k, x, cy, cw, ch, n) => {
     const look = ((conf.wopt || {})[k] || {}).look || (conf.wstyle || {})[k], pad = h * 0.03;
@@ -230,8 +231,8 @@ function homeThemePaint(cv, conf, tiles, img, look, now) {   // now: a Date, for
     if (k === 'clock' && (n === 1 || ch > h * 0.12)) { ctx.strokeStyle = `rgba(${HOME_PREV.ink},0.7)`; ctx.lineWidth = Math.max(1, h * 0.008); ctx.beginPath(); ctx.arc(x + cw / 2, cy + ch / 2, Math.min(cw, ch) * 0.28, 0, 2 * Math.PI); ctx.stroke(); }
     else { bar(x + pad, cy + pad, cw * 0.42, h * 0.018, 0.4); if (ch > h * 0.12) bar(x + pad, cy + ch * 0.45, cw * 0.62, h * 0.045, 0.7); else bar(x + pad, cy + ch * 0.55, cw * 0.5, h * 0.03, 0.7); }
   };
-  const rowH = h * 0.30, wgap = w * 0.02, sideW = (w - 2 * m) / 3, sideGap = w * 0.033;
-  const drawRow = (ry) => {
+  const rowH = h * (lines.length > 1 ? 0.22 : 0.30), wgap = w * 0.02, sideW = (w - 2 * m) / 3, sideGap = w * 0.033;
+  const drawRow = (ry, packed) => {
     const room = w - 2 * m - wgap * (packed.cols.length - 1), sum = Math.max(HOME_W.floor, packed.cols.reduce((n, c) => n + c.weight, 0));
     const used = room * packed.cols.reduce((n, c) => n + c.weight, 0) / sum + wgap * (packed.cols.length - 1);
     let x = conf.center ? (w - used) / 2 : m;                           // centered over a centered grid, as TV Home lays it
@@ -249,7 +250,7 @@ function homeThemePaint(cv, conf, tiles, img, look, now) {   // now: a Date, for
       col.keys.forEach((k, j) => card(k, x, cy + j * ((ch - g * (n - 1)) / n + g), sideW, (ch - g * (n - 1)) / n, n));
       cy += ch + HOME_H.gap * sc;
     }
-  } else if (packed.cols.length && place === 'top') { drawRow(y); y += rowH + h * 0.04; }
+  } else if (packed.cols.length) for (const line of lines) { drawRow(y, line); y += rowH + h * (lines.length > 1 ? 0.025 : 0.04); }
   const cols0 = Math.min(8, Math.max(4, conf.cols || 5)), gap = w * 0.014, base = (w - 2 * m - (cols0 - 1) * gap) / cols0;
   const gx = side && place === 'left' ? m + sideW + sideGap : m, gw = side ? w - 2 * m - sideW - sideGap : w - 2 * m;
   // beside a column the tiles keep about their size and the row holds fewer (HomeActivity.gridCols)

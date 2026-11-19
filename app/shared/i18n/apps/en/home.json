@@ -255,6 +255,7 @@
   "c_center": "Center the app grid",
   "c_wplace": "Widgets position",
   "c_wplace_top": "Above the apps",
+  "c_wplace_top2": "Above the apps, 2 rows",
   "c_wplace_left": "Left of the apps",
   "c_wplace_right": "Right of the apps",
   "c_rows_auto": "Auto",

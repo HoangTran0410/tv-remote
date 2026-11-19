@@ -3293,6 +3293,7 @@
  "home.center": "Center the app grid",
  "home.wplace": "Widgets position",
  "home.wplace_top": "Above the apps",
+ "home.wplace_top2": "Above the apps, 2 rows",
  "home.wplace_left": "Left of the apps",
  "home.wplace_right": "Right of the apps",
  "home.rows": "App rows",

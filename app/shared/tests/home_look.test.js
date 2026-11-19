@@ -11,7 +11,7 @@ const js = fs.readFileSync(path.join(web, 'js/home_walls.js'), 'utf8');
 const cfg = fs.readFileSync(path.join(__dirname, '../src/home/kotlin/dev/tvremote/home/HomeConfig.kt'), 'utf8');
 const sb = {};
 vm.createContext(sb);
-vm.runInContext('var HOME_WALLS = { ocean: "#03192b,#0a4a66" }, HOME_WIDGETS = [], HOME_PLACES = ["top", "left", "right"]; function homePack() { return { cols: [] }; } function homeSize() { return "small"; }\n' + js + '\nthis.A = HOME_ACCENTS; this.S = HOME_TSTYLES; this.paint = homeThemePaint;', sb);
+vm.runInContext('var HOME_WALLS = { ocean: "#03192b,#0a4a66" }, HOME_WIDGETS = [], HOME_PLACES = ["top", "top2", "left", "right"]; function homePack() { return { cols: [] }; } function homePackRows() { return [{ cols: [] }]; } function homeSize() { return "small"; }\n' + js + '\nthis.A = HOME_ACCENTS; this.S = HOME_TSTYLES; this.paint = homeThemePaint;', sb);
 const langs = Object.keys(JSON.parse(fs.readFileSync(path.join(web, '../i18n/langs.json'), 'utf8')));
 
 test('the page palette equals HomeConfig.ACCENTS and the styles equal TSTYLES', () => {

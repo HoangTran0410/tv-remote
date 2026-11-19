@@ -134,7 +134,8 @@ import org.json.JSONObject
  *           Checked by the screensaver's once-a-minute tick; not a theme key
  *   center  the app grid's tiles sit in the middle of their row (a row with fewer tiles than [cols] too), default false = left-aligned.
  *           A look, so a theme key
- *   wplace  where the widgets sit ([WPLACES]): "top" (default, also a missing key) = one row under the top bar; "left" / "right" = a
+ *   wplace  where the widgets sit ([WPLACES]): "top" (default, also a missing key) = one row under the top bar; "top2" = two rows there
+ *           (more widgets, fewer apps on the first screen; [packRows]; an older TV Home reads it as "top"); "left" / "right" = a
  *           column of full-form widgets beside the grid (the grid keeps its tile size and takes fewer columns). No "under the apps": the grid is
  *           every app, so a row after it sat many rows down on a TV with 30 apps (2026-11-05). A look, so a theme key
  *   note    a line from the family, pinned on the home screen until it is emptied ([NOTE_MAX] characters, one line)
@@ -397,8 +398,10 @@ object HomeConfig {
     const val W_BIG = 100; const val W_CAL = 120; const val W_SMALL = 90; const val BUDGET = 415; const val FLOOR = 190
     fun weight(k: String, big: Boolean) = if (!big) W_SMALL else if (k == "calendar") W_CAL else W_BIG
     /** Where the widgets sit: the row under the top bar (default), or a column beside the grid. */
-    val WPLACES = listOf("top", "left", "right")
+    val WPLACES = listOf("top", "top2", "left", "right")
     fun side(place: String?) = place == "left" || place == "right"
+    /** Rows of widgets under the top bar: 2 for "top2", else 1. */
+    fun rows(place: String?) = if (place == "top2") 2 else 1
     /** The widgets of one column, top to bottom, and its weight (in a side column: its height in dp). */
     class Col(val keys: List<String>, val weight: Int)
     /** The columns that fit, left to right, and the widgets that wait (the pinned note, "note", never does). */
@@ -410,6 +413,17 @@ object HomeConfig {
      * small widget and keeps its place: the widgets before it give way, from the end.
      */
     fun pack(keys: List<String>, big: Set<String>, note: Boolean = false): Packed = packWith(keys, big, note, BUDGET, 0) { k, isBig, _ -> weight(k, isBig) }
+
+    /**
+     * The row(s) under the top bar ([rows] 2: "top2"): the first row as [pack] makes it without the note, the rest in the second with the
+     * note at its end; one row when everything fits in one (no lone note below). js/home.js `homePackRows` is its twin.
+     */
+    fun packRows(keys: List<String>, big: Set<String>, note: Boolean, rows: Int): List<Packed> {
+        val one = pack(keys, big, note)
+        if (rows < 2 || one.waiting.isEmpty()) return listOf(one)
+        val first = pack(keys, big, false)
+        return listOf(Packed(first.cols, emptyList()), pack(first.waiting, big, note))
+    }
 
     /** Heights in a side column (dp): a big widget or a stacked pair of small ones [H_FULL], a small one alone [H_HALF], [H_GAP] between. */
     const val H_FULL = 180; const val H_HALF = 90; const val H_GAP = 12
@@ -548,8 +562,9 @@ object HomeConfig {
         val keys = strs(o.optJSONArray("widgets")).filter { it != "timer" && (it !in HomeQr.KEYS || qrs?.has(it) == true) }
         if (keys.isEmpty()) return keys
         val note = o.optString("note").isNotEmpty()
-        val p = if (side(o.optString("wplace"))) packColumn(keys, bigs(o), note, 378) else pack(keys, bigs(o), note)
-        return keys - p.waiting.toSet()
+        val waiting = if (side(o.optString("wplace"))) packColumn(keys, bigs(o), note, 378).waiting
+            else packRows(keys, bigs(o), note, rows(o.optString("wplace"))).last().waiting
+        return keys - waiting.toSet()
     }
 
     fun headLine(o: JSONObject, which: String, t: Map<String, String>): String {

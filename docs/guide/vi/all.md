@@ -517,7 +517,7 @@ Chọn nhiều hình rồi đặt **Đổi hình nền** (30 phút → mỗi l�
 
 - Trên TV: bánh răng góc trên phải → Cài đặt nhanh → Tùy chỉnh, hoặc phím Menu.
 - Giữ OK trên app: mở, ghim, dời, ẩn, đổi tên, gán phím, khóa hoặc giới hạn giờ (hỏi mã PIN phụ huynh), dừng, xóa bộ nhớ đệm.
-- Mỗi widget **To** hoặc **Nhỏ**; hai widget nhỏ chung một cột.
+- Widget **To** hoặc **Nhỏ**: 1-2 hàng trên app, hoặc bên cạnh.
 - **Số cột**: 4 đến 8 app mỗi hàng (mặc định 5).
 - Bấm Home trong một app: về TV Home, đứng đúng ở app đó.
 - **Màn chờ TV Home**: đồng hồ lớn và hình nền khi TV rảnh.

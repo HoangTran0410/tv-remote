@@ -17,5 +17,12 @@
     { "name": "note stacks with a small card", "keys": ["system", "lunar"], "big": ["system"], "note": true, "cols": [["system"], ["lunar", "note"]], "waiting": [] },
     { "name": "note alone", "keys": [], "big": [], "note": true, "cols": [["note"]], "waiting": [] },
     { "name": "nothing", "keys": [], "big": [], "cols": [], "waiting": [] }
+  ],
+  "rows": [
+    {"name": "2 rows: the fourth big goes below", "keys": ["system", "usage", "calendar", "weather"], "big": ["system", "usage", "calendar", "weather"], "rows": 2, "lines": [[["system"], ["usage"], ["calendar"]], [["weather"]]], "waiting": []},
+    {"name": "2 rows: all fits in one, one row", "keys": ["system", "lunar", "timer"], "big": ["system"], "rows": 2, "lines": [[["system"], ["lunar", "timer"]]], "waiting": []},
+    {"name": "2 rows: the note ends the second row", "keys": ["system", "usage", "calendar", "weather"], "big": ["system", "usage", "calendar", "weather"], "note": true, "rows": 2, "lines": [[["system"], ["usage"], ["calendar"]], [["weather"], ["note"]]], "waiting": []},
+    {"name": "2 rows: more than two rows wait", "keys": ["system", "usage", "calendar", "weather", "air", "market", "news", "recent"], "big": ["system", "usage", "calendar", "weather", "air", "market", "news", "recent"], "rows": 2, "lines": [[["system"], ["usage"], ["calendar"]], [["weather"], ["air"], ["market"], ["news"]]], "waiting": ["recent"]},
+    {"name": "1 row: as pack", "keys": ["system", "usage", "calendar", "weather"], "big": ["system", "usage", "calendar", "weather"], "rows": 1, "lines": [[["system"], ["usage"], ["calendar"]]], "waiting": ["weather"]}
   ]
 }

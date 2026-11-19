@@ -112,7 +112,8 @@ object ThemePreview {
         // the widgets, in the columns HomeActivity makes of them: a row under the head, or a column beside the grid ("wplace" left / right)
         val keys = strs(conf, "widgets")
         val place = conf.optString("wplace").takeIf { it in HomeConfig.WPLACES } ?: "top"
-        val packed = if (HomeConfig.side(place)) HomeConfig.packColumn(keys, HomeConfig.bigs(conf), false, 378) else HomeConfig.pack(keys, HomeConfig.bigs(conf))   // 378 dp: a 1080p screen under the top bar
+        val lines = if (HomeConfig.side(place)) listOf(HomeConfig.packColumn(keys, HomeConfig.bigs(conf), false, 378)) else HomeConfig.packRows(keys, HomeConfig.bigs(conf), false, HomeConfig.rows(place))   // 378 dp: a 1080p screen under the top bar; "top2": two rows
+        val packed = lines[0]
         val side = HomeConfig.side(place) && packed.cols.isNotEmpty()
         fun card(k: String, x: Float, cy: Float, cw: Float, ch: Float, n: Int) {
             val look = HomeConfig.optValue(conf, k, "look")
@@ -139,8 +140,8 @@ object ThemePreview {
                 col.keys.forEachIndexed { j, k -> card(k, x, cy + j * (each + g), sideW, each, n) }
                 cy += ch + HomeConfig.H_GAP * sc
             }
-        } else if (packed.cols.isNotEmpty()) {
-            val rowH = h * 0.30f
+        } else if (packed.cols.isNotEmpty()) for (packed in lines) {
+            val rowH = h * (if (lines.size > 1) 0.22f else 0.30f)
             val gap = w * 0.02f
             val room = w - 2 * m - gap * (packed.cols.size - 1)
             val sum = maxOf(HomeConfig.FLOOR, packed.cols.sumOf { it.weight }).toFloat()
@@ -153,7 +154,7 @@ object ThemePreview {
                 col.keys.forEachIndexed { j, k -> card(k, x, y + j * (ch + gap * 0.6f), cw, ch, n) }
                 x += cw + gap
             }
-            y += rowH + h * 0.04f
+            y += rowH + h * (if (lines.size > 1) 0.025f else 0.04f)
         }
         // the grid: [cols] to a row, the live widgets first, the first one focused; "rows" as set (a part of a row shows part), else what fits
         val cols0 = conf.optInt("cols", HomeConfig.COLS_DEFAULT).coerceIn(HomeConfig.COLS_MIN, HomeConfig.COLS_MAX)

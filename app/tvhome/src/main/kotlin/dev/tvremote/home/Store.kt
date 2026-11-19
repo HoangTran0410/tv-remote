@@ -60,7 +60,7 @@ object Store {
      * can do and what it offers. Built only for them: TV Home's own screens never read it and paid ~6 ms a read on the FPT box.
      */
     fun forClients(c: Context, conf: JSONObject): JSONObject {
-        return conf.put("wsizes", true).put("colsOk", true).put("rowsOk", true).put("rowsMax", rowsFit)   // an older TV Home has none: the page offers it the old layout chips
+        return conf.put("wsizes", true).put("colsOk", true).put("rowsOk", true).put("wrows2", true).put("rowsMax", rowsFit)   // an older TV Home has none: the page offers it the old layout chips
             .put("wschema", HomeConfig.schema(android.os.Build.VERSION.SDK_INT))                  // what each widget offers in its settings (an older one has none: its looks were "wstyles")
             .put("wweb", true)                                    // the background can be a web page (an older one would clean it away)
             .put("wrotate", true)                                 // the background can turn through a set (an older one has one choice)
