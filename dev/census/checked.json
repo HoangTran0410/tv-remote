@@ -4585,14 +4585,19 @@
   "note": "TV Setup ADB health report (box refused / no Allow / not paired), not a code fault"
  },
  "ef46e92b5921045e1e901a58|0.49.0": {
-  "at": "2026-11-12T23:11:37+07:00",
+  "at": "2026-11-19T21:23:34+07:00",
   "n": 1,
-  "note": "sdk 29 X99Q PRO (Allwinner, fake google fp): firmware takes the a11y service out, never bound, no appop; nothing to fix in the app. Clients now say keys work on TV Home only (e9452995)"
+  "note": "X99Q PRO again on 0.53.1: Allwinner fake-model box, firmware takes the add-on out (sdk 29, rs -); firmware kind, nothing to fix; clients say keys work only on TV Home"
  },
  "ef46e92b5921045e1e901a58|0.51.0": {
-  "at": "2026-11-12T23:11:37+07:00",
+  "at": "2026-11-19T21:23:34+07:00",
   "n": 1,
-  "note": "sdk 29 X99Q PRO (Allwinner, fake google fp): firmware takes the a11y service out, never bound, no appop; nothing to fix in the app. Clients now say keys work on TV Home only (e9452995)"
+  "note": "X99Q PRO again on 0.53.1: Allwinner fake-model box, firmware takes the add-on out (sdk 29, rs -); firmware kind, nothing to fix; clients say keys work only on TV Home"
+ },
+ "ef46e92b5921045e1e901a58|0.53.1": {
+  "at": "2026-11-19T21:23:34+07:00",
+  "n": 1,
+  "note": "X99Q PRO again on 0.53.1: Allwinner fake-model box, firmware takes the add-on out (sdk 29, rs -); firmware kind, nothing to fix; clients say keys work only on TV Home"
  },
  "efa52b83207b258b74e55757|0.34.1": {
   "at": "2026-10-30T09:08:30+07:00",
