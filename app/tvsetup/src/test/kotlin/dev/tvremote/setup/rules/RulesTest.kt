@@ -103,8 +103,40 @@ class RulesTest {
     /** A limit on TV Setup itself closed it every 15 s once used up: refused, and one kept from before counts for nothing. */
     @Test fun tvSetupItselfHasNoLimit() {
         bad(JSONObject(), """{"do":"limit","pkg":"dev.tvremote.setup","minutes":5}""")
-        assertEquals(null, Rules.budget(d("""{"limits":{"dev.tvremote.setup":5}}"""), "dev.tvremote.setup", now))
-        assertEquals(5, Rules.budget(d("""{"limits":{"com.a.b":5}}"""), "com.a.b", now))
+        assertEquals(null, Rules.leftSec(d("""{"limits":{"dev.tvremote.setup":5}}"""), "dev.tvremote.setup", now, 0L) { 0L })
+        assertEquals(300L, Rules.leftSec(d("""{"limits":{"com.a.b":5}}"""), "com.a.b", now, 0L) { 0L })
+    }
+
+    /** A home screen closed by a limit, schedule or lock comes straight back with Home: refused while turned on, removable. */
+    @Test fun homeScreensCannotBeRuled() {
+        val homes = setOf("dev.tvremote.home")
+        val o = JSONObject()
+        for (s in listOf("""{"do":"limit","pkg":"dev.tvremote.home","minutes":5}""",
+                         """{"do":"lock","pkg":"dev.tvremote.home","on":true}""",
+                         """{"do":"sched","pkg":"dev.tvremote.home","days":[1],"from":"16:00","to":"18:00"}""")) {
+            try { Rules.apply(o, d(s), now, 0L, homes); fail(s) } catch (e: IllegalArgumentException) { assertEquals("home_app", e.message) }
+        }
+        Rules.apply(o, d("""{"do":"limit","pkg":"dev.tvremote.home","minutes":0}"""), now, 0L, homes)   // removing one kept from before
+        Rules.apply(o, d("""{"do":"sched","pkg":"dev.tvremote.home","on":false}"""), now, 0L, homes)
+        Rules.apply(o, d("""{"do":"limit","pkg":"com.a.b","minutes":5}"""), now, 0L, homes)
+    }
+
+    /** Guard runs only for a rule that needs it: a schedule alone, a PIN alone, a daily total on any days count. */
+    @Test fun everyRuleKindKeepsGuardRunning() {
+        assertFalse(Rules.enforces(JSONObject()))
+        assertTrue(Rules.enforces(sched(school)))
+        assertTrue(Rules.watchesApps(sched(school)))
+        assertTrue(Rules.enforces(d("""{"total":{"min":60,"days":[6,7]}}""")))
+        assertTrue(Rules.enforces(d("""{"lock":{"hash":"x","apps":[]}}""")))     // a PIN alone: TV Setup's own screens ask it
+        assertTrue(Rules.enforces(d("""{"sleep_at":5}""")))
+        assertFalse(Rules.enforces(d("""{"bedtime":{"on":false}}""")))
+    }
+
+    /** A snooze set while the clock ran a year ahead does not pause bedtime for a year once NTP sets it back. */
+    @Test fun snoozeFromAClockAheadIsSpent() {
+        assertEquals(now + 60_000L, Rules.snoozeUntil(d("""{"snooze_until":${now + 60_000L}}"""), now))
+        assertEquals(0L, Rules.snoozeUntil(d("""{"snooze_until":${now + 365L * 86_400_000L}}"""), now))
+        assertEquals(0L, Rules.snoozeUntil(d("""{"snooze_until":${now - 1}}"""), now))
     }
 
     @Test fun bedtimeRangesPaddedCappedAndChecked() {
@@ -177,13 +209,26 @@ class RulesTest {
 
     @Test fun scheduleMinutesCountOnlyInsideTheWindowAndMeetTheDailyLimit() {
         val o = sched(school.replace("\"18:00\"}", "\"18:00\",\"max\":30}"))
-        assertEquals(30, Rules.budget(o, yt, at(23, 17, 0)))
-        assertEquals(null, Rules.budget(o, yt, at(24, 17, 0)))                    // closed anyway: Guard closes it, no minutes to count
+        val starts = mutableListOf<Long>()
+        val inWindow: (Long) -> Long = { starts += it; 10 * 60L }                 // 10 min since the window opened
+        assertEquals(20 * 60L, Rules.leftSec(o, yt, at(23, 17, 0), 50 * 60L, inWindow))   // the morning's 40 min do not count
+        assertEquals(at(23, 16, 0), starts.last())
+        assertEquals(null, Rules.leftSec(o, yt, at(24, 17, 0), 0L, inWindow))    // closed anyway: Guard closes it, no minutes to count
         Rules.apply(o, d("""{"do":"limit","pkg":"$yt","minutes":20}"""), now)
-        assertEquals(20, Rules.budget(o, yt, at(23, 17, 0)))                      // the lower of the two
-        assertEquals(20, Rules.budget(o, yt, at(24, 17, 0)))                      // outside the window only the daily limit is left
+        assertEquals(5 * 60L, Rules.leftSec(o, yt, at(23, 17, 0), 15 * 60L, inWindow))    // the lower of the two
+        assertEquals(5 * 60L, Rules.leftSec(o, yt, at(24, 17, 0), 15 * 60L, inWindow))    // outside the window only the daily limit is left
         Rules.apply(o, d("""{"do":"limit","pkg":"$yt","minutes":90}"""), now)
-        assertEquals(30, Rules.budget(o, yt, at(23, 17, 0)))
+        assertEquals(20 * 60L, Rules.leftSec(o, yt, at(23, 17, 0), 15 * 60L, inWindow))
+    }
+
+    /** 22:00-02:00 with 60 min: the minutes count from 22:00 the evening before, so midnight does not give the hour again. */
+    @Test fun windowAcrossMidnightGetsItsCapOnce() {
+        val o = sched("""{"do":"sched","pkg":"$yt","days":[1,2,3,4,5,6,7],"from":"22:00","to":"02:00","max":60}""")
+        assertEquals(at(23, 22, 0), Rules.windowStart(o, yt, at(23, 23, 30)))
+        assertEquals(at(23, 22, 0), Rules.windowStart(o, yt, at(24, 0, 30)))     // after midnight: still Friday's window
+        assertEquals(null, Rules.windowStart(o, yt, at(24, 3, 0)))
+        val watched = { from: Long -> if (from == at(23, 22, 0)) 60 * 60L else 0L }   // an hour watched 22:00-23:00
+        assertEquals(0L, Rules.leftSec(o, yt, at(24, 0, 30), 0L, watched))       // "today" is 0 after midnight: the cap still holds
     }
 
     @Test fun scheduleBlockAndRemoval() {

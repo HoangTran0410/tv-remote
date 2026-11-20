@@ -72,7 +72,7 @@ internal class Stats(private val ctx: Context) {
         }
 
         private val DAY_KEY = Regex("\\d{4}-\\d\\d-\\d\\d")
-        private const val SANE = "2026-11-01"                         // a real "today" is never before this code shipped
+        private const val SANE = dev.tvremote.setup.rules.Clock.SANE_DAY   // a real "today" is never before this code shipped
 
         /**
          * Keeps [all] (day key -> seconds per app) to the last 90 days. A key that is no date, or is after [today] (a box that
@@ -164,8 +164,11 @@ internal class Stats(private val ctx: Context) {
     }
 
     /** Seconds on screen per app since midnight, and the app on screen now ("" when unknown). */
-    fun today(now: Long, on: Boolean): Pair<JSONObject, String> {
-        val start = Calendar.getInstance().apply { set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0) }.timeInMillis
+    fun today(now: Long, on: Boolean): Pair<JSONObject, String> =
+        since(Calendar.getInstance().apply { timeInMillis = now; set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0) }.timeInMillis, now, on)
+
+    /** [today] from [start] (a schedule's window that began last evening, [Rules.windowStart]). */
+    fun since(start: Long, now: Long, on: Boolean): Pair<JSONObject, String> {
         val list = ArrayList<Ev>()
         Usage.events(ctx, start, now) { e -> list.add(Ev(e.eventType, e.packageName ?: "", e.timeStamp)) }
         val (total, open) = count(list, start, now, on)

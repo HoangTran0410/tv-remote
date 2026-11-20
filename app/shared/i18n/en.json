@@ -617,6 +617,7 @@
  "auto.kids_totp_off_ask": "Remove Google Authenticator from this TV?",
  "auto.kids_waiting": "Too many wrong codes: the TV waits until {at} before another try.",
  "auto.kids_clock_manual": "The TV does not set its clock automatically: Google Authenticator codes may be wrong. Turn on Automatic date & time on the TV.",
+ "auto.tv_zone": "The TV is set to the {zone} time zone: {tv} there, {here} here. Times on this page and its timers follow the TV's clock.",
  "auto.kids_clock_drift": "The TV clock is {n} seconds off: Google Authenticator codes may be wrong. Turn on Automatic date & time on the TV (TV Setup corrects a small drift itself).",
  "auto.kids_unlock_title": "⏳ Open for a while",
  "auto.kids_open_30": "30 min",

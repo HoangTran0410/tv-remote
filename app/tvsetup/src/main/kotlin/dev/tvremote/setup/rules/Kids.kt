@@ -30,6 +30,20 @@ internal object Kids {
     /** Settings answers to the HOME intent on Google TV (its fallback home), yet in kids mode it asks like any app: the child must not reach Wi-Fi, accounts, installs. */
     private val SETTINGS = setOf("com.android.tv.settings", "com.android.settings", "com.google.android.tv.settings")
 
+    /** The launchers named in [ALWAYS]: home screens even on a TV that hides them from [homes]' question. */
+    private val HOMES = setOf("com.google.android.apps.tv.launcherx", "com.google.android.tvlauncher", "dev.tvremote.home")
+
+    /**
+     * Every home screen on the TV (TV Home, the TV's own, any other launcher), Settings aside: no limit, schedule or lock may be put
+     * on one, since closing it presses Home, which opens it again ([Rules.apply]); [Guard] also leaves one kept from before alone.
+     */
+    fun homes(c: Context, now: Long = System.currentTimeMillis()): Set<String> {
+        homesCached?.let { if (now - it.first in 0..30_000L) return it.second }   // Guard asks at every look while a limit is set
+        val found = try { c.packageManager.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0).map { it.activityInfo.packageName } } catch (e: Exception) { emptyList() }
+        return (HOMES + found - SETTINGS - "dev.tvremote.setup").also { homesCached = now to it }
+    }
+    @Volatile private var homesCached: Pair<Long, Set<String>>? = null
+
     @Volatile private var cached: Pair<Long, Set<String>>? = null
 
     /** The packages kids mode never asks for; looked up again every 30 s (a launcher or keyboard may be installed or chosen meanwhile). */
@@ -62,14 +76,21 @@ internal object Lockout {
     /** [wrong] in a row now, [level] lockouts so far (which wait is next), [until] when the last wait ends. */
     data class S(val wrong: Int = 0, val level: Int = 0, val until: Long = 0L)
 
-    fun fail(s: S, now: Long): S {
+    /**
+     * [s] as the clock now allows: a wait ending further off than the longest one is from a clock that has since gone back (set while
+     * a box ran a year ahead), and would leave the PIN pad dead for that year. It is over; the count of lockouts stays.
+     */
+    fun sane(s: S, now: Long): S = if (s.until - now > WAITS_MIN.last() * 60_000L) s.copy(until = 0L) else s
+
+    fun fail(given: S, now: Long): S {
+        val s = sane(given, now)
         if (now < s.until) return s                                    // still waiting: the try was never allowed
         val w = s.wrong + 1
         if (w < TRIES) return S(w, s.level, s.until)
         return S(0, minOf(s.level + 1, WAITS_MIN.size), now + WAITS_MIN[minOf(s.level, WAITS_MIN.size - 1)] * 60_000L)
     }
 
-    fun left(s: S, now: Long): Long = maxOf(0L, s.until - now)
+    fun left(s: S, now: Long): Long = maxOf(0L, sane(s, now).until - now)
 
     @Synchronized private fun load(c: Context): S =
         c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).let { S(it.getInt("wrong", 0), it.getInt("level", 0), it.getLong("until", 0L)) }
@@ -80,7 +101,7 @@ internal object Lockout {
     fun streak(c: Context): Int = load(c).wrong
 
     /** When the wait ends, 0 when not waiting. */
-    fun until(c: Context, now: Long): Long = load(c).let { if (it.until > now) it.until else 0L }
+    fun until(c: Context, now: Long): Long = sane(load(c), now).let { if (it.until > now) it.until else 0L }
 
     /** A wrong code: the wait it earned (ms, 0 for none yet). */
     @Synchronized fun wrong(c: Context, now: Long): Long = fail(load(c), now).also { save(c, it) }.let { left(it, now) }

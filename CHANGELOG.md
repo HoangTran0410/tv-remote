@@ -6,6 +6,9 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Rules on the TV: an app schedule alone, a PIN alone, or a daily total set only for other days now keep working after the TV restarts; a schedule window across midnight (22:00-02:00) gives its minutes once, not again at midnight; bedtime, limits and schedules wait while the TV's clock is still wrong after boot, and a snooze or a wrong-PIN wait set on a wrong clock no longer lasts a year; home screens can no longer be limited, scheduled or locked; with no rule set, TV Setup's watcher stops.
+- Automation: when the TV is set to another time zone, the page says so, and the times shown and "turn off at 23:30" use the TV's clock (also in the phone app).
+
 - Draw on the TV: ⏱ sets how long the drawing stays after the last stroke (10 min, 30 min, 1 hour, or until cleared, which survives a TV restart); TV Setup shows a Clear the drawing tile meanwhile.
 - TV Home: a suggested background (a slideshow, a video) picked on the phone or computer no longer turns into Night, nor is skipped in a rotating set, on a TV that had never opened its own Background page: TV Home fetches the list then.
 - TV Home: with widgets in two rows, the second row's widgets are no longer marked "waiting for room" (TV and page), the layout previews show both rows, and the apps no longer jump down a row at start.

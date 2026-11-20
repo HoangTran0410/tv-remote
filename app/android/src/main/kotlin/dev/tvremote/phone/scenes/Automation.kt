@@ -35,8 +35,11 @@ import java.util.Locale
 
 private fun MainActivity.toast(text: String) = Toast.makeText(this, dev.tvremote.tvui.Marks.plain(text), Toast.LENGTH_SHORT).show()   // a toast has no icons: no marks
 
-/** The TV's clock to this phone's: "23:10" for the moment the timer ends. */
-private fun hm(tvTime: Long, tvNow: Long): String = SimpleDateFormat("HH:mm", Locale.US).format(Date(tvTime - (tvNow - System.currentTimeMillis())))
+/** The TV's time zone ([r]'s clock.zone), else this phone's: the timer's "23:10" is read and shown on the TV's wall clock, as the page does (auto.js zoneShift). */
+private fun tvZone(r: JSONObject): java.util.TimeZone = r.optJSONObject("clock")?.optString("zone")?.takeIf { it.isNotEmpty() }?.let { java.util.TimeZone.getTimeZone(it) } ?: java.util.TimeZone.getDefault()
+
+/** The TV's clock to this phone's: "23:10" for the moment the timer ends, on the TV's wall clock. */
+private fun hm(tvTime: Long, r: JSONObject): String = SimpleDateFormat("HH:mm", Locale.US).apply { timeZone = tvZone(r) }.format(Date(tvTime - (r.optLong("now") - System.currentTimeMillis())))
 
 /** Asks TV Setup on a worker thread, answers on the UI thread. */
 private fun MainActivity.rules(change: JSONObject?, then: (JSONObject) -> Unit) {
@@ -64,7 +67,7 @@ private fun MainActivity.needsSetup(r: JSONObject): Boolean {
 
 internal fun MainActivity.setTimer(minutes: Int) {
     rules(JSONObject().put("do", "sleep").put("minutes", minutes)) { r ->
-        if (!needsSetup(r)) toast(if (minutes > 0) T("automation.the_tv_turns_off", "time" to hm(r.optLong("sleep_at"), r.optLong("now"))) else T("auto.sleep_cancelled"))
+        if (!needsSetup(r)) toast(if (minutes > 0) T("automation.the_tv_turns_off", "time" to hm(r.optLong("sleep_at"), r)) else T("auto.sleep_cancelled"))
     }
 }
 
@@ -81,13 +84,17 @@ internal fun sleepMinutes(v: String, now: java.util.Calendar = java.util.Calenda
 }
 
 internal fun MainActivity.timerPlus() {
-    rules(JSONObject().put("do", "sleep_add").put("minutes", 15)) { x -> toast(T("automation.the_tv_turns_off", "time" to hm(x.optLong("sleep_at"), x.optLong("now")))) }
+    rules(JSONObject().put("do", "sleep_add").put("minutes", 15)) { x -> toast(T("automation.the_tv_turns_off", "time" to hm(x.optLong("sleep_at"), x))) }
 }
 
 internal fun MainActivity.timerCustom() {
-    askText(T("remote.turn_off_when"), T("automation.e_g_40_minutes"), T("remote.set_timer")) {
-        val m = sleepMinutes(it)
-        if (m > 0) setTimer(m) else toast(T("auto.sleep_bad"))
+    askText(T("remote.turn_off_when"), T("automation.e_g_40_minutes"), T("remote.set_timer")) { text ->
+        if (sleepMinutes(text) == 0) { toast(T("auto.sleep_bad")); return@askText }
+        rules(null) { r ->                                            // "23:30" is the TV's 23:30: read in its time zone
+            if (needsSetup(r)) return@rules
+            val m = sleepMinutes(text, java.util.Calendar.getInstance(tvZone(r)))
+            if (m > 0) setTimer(m) else toast(T("auto.sleep_bad"))
+        }
     }
 }
 
@@ -104,7 +111,7 @@ internal fun MainActivity.timerMenu() {
             }
         }
         val items = remoteMenu("timer", if (at > 0) setOf("timerOn") else emptySet(), mapOf("lengths" to { lengths(intArrayOf(30, 60, 120)) }, "lengthsMore" to { lengths(intArrayOf(15, 45, 90)) }))
-        menu(if (at > 0) T("automation.the_tv_turns_off_2", "time" to hm(at, r.optLong("now"))) else T("remote.sleep_timer"), if (at > 0) 0 else -1, items)
+        menu(if (at > 0) T("automation.the_tv_turns_off_2", "time" to hm(at, r)) else T("remote.sleep_timer"), if (at > 0) 0 else -1, items)
     }
 }
 

@@ -123,7 +123,7 @@ class WarnActivity : Activity() {
             if (kind == "total" && (Rules.unlockUntil(o, System.currentTimeMillis()) > 0 || totalLeft(o) > 0)) { finish(); return }   // a code, a parent's "open", or more minutes granted
             if (kind == "idle" && Rules.load(this@WarnActivity).optInt("idle_h") == 0) { finish(); return }   // turned off meanwhile
             val off = kind == "sleep" && o.optLong("sleep_at") != until
-                || kind == "bed" && !(Rules.inBedtime(o, System.currentTimeMillis()) && System.currentTimeMillis() >= o.optLong("snooze_until"))   // more time granted, bedtime off or moved: the Guard's own test
+                || kind == "bed" && !(Rules.inBedtime(o, System.currentTimeMillis()) && Rules.snoozeUntil(o, System.currentTimeMillis()) == 0L)   // more time granted, bedtime off or moved: the Guard's own test
             if (left <= 0 || off) { finish(); return }
             val s = ((left + 999) / 1000).toInt()
             count.text = T("warn.off_in", "time" to "%d:%02d".format(s / 60, s % 60))
