@@ -370,6 +370,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
             while (cut > at) { cut = backspaceFrom(base, cut); presses++ }   // a Backspace takes a whole emoji: what it took too much goes back in
             presses += maxOf(0, del - base.codePointCount(0, base.length))   // all of them: a TV that never says its text has more than we know
             val put = base.substring(cut, at) + add
+            val before = editedAt
             editedAt = clock()
             val known = told != null                                  // a TV that says its text: wait for it to read as it should
             shown = Field(base.substring(0, cut) + put, f.label)       // no onField: the screen that typed it has it
@@ -377,6 +378,9 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
             if (presses > 0) deletedAt = clock()
             // an insert waits for the Backspaces before it, these or a moment ago's (live typing sends them one call each)
             if (put.isNotEmpty() && (presses > 0 || clock() - deletedAt < DELETED_WAIT_MS)) settle(if (known) base.substring(0, cut) else null, maxOf(presses, 1))
+            // live letters a moment apart: each waits for the TV to show the one before, an insert with the old counter is dropped
+            // (a BRAVIA over Tailscale lost 7 of 10 letters typed 60 ms apart when one echo came 800 ms late, measured 2026-11-20)
+            else if (put.isNotEmpty() && known && told != base && clock() - before < ECHO_MS) settle(base, 1, 0)
             if (put.isNotEmpty()) insert(put)
             if (enter) settle(if (known) base.substring(0, cut) + put else null, if (put.isEmpty()) presses else 1)
         } else if (enter && clock() - editedAt < ENTER_WAIT_MS) settle(if (told != null) f.text else null, 1)   // live: Enter alone, right after the last letter
@@ -401,7 +405,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
      * TV may say the focus left. Waits for the TV to say the field reads [expect] (then a little more, for what it says next),
      * or, not knowing, a set while; at most [SETTLE_MAX_MS] plus [SETTLE_PER_MS] for each of [n] steps.
      */
-    private fun settle(expect: String?, n: Int) {
+    private fun settle(expect: String?, n: Int, after: Long = SETTLE_MIN_MS) {
         if (tap != null || closed || sock == null) return
         out.execute {
             val end = System.nanoTime() / 1_000_000 + SETTLE_MAX_MS + SETTLE_PER_MS * minOf(n, 20)
@@ -410,7 +414,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
                 if (expect == null) Thread.sleep(minOf(end - now(), SETTLE_MIN_MS + SETTLE_PER_MS * minOf(n, 20).toLong()))
                 else {
                     while (now() < end && told != expect) Thread.sleep(20)
-                    Thread.sleep(SETTLE_MIN_MS)
+                    if (after > 0) Thread.sleep(after)
                 }
             } catch (ignored: InterruptedException) { }
         }
