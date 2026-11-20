@@ -95,11 +95,18 @@ internal object ScenePin {
  * ([dev.tvremote.setup.rules.SceneTimer]) both start it here. Over ADB (the shell), so Android 14's block on a background app opening a screen never applies.
  * A timed run passes [noAdb]: with no ADB after 10 s it answers whether another try will come (then nothing is said yet), and its
  * "running" toast waits for ADB so retries do not repeat it. [started] is called once the wait is over, whatever the outcome; [finished] when the whole run is over (steps done or no ADB).
+ * A scene already running in TV Setup ([Scenes.claim]: this, `/api/scene/run`, a chat) is not started again: a tile says so, a timed or event run is quiet.
  */
 internal fun runNow(c: Context, scene: JSONObject, started: (() -> Unit)? = null, noAdb: (() -> Boolean)? = null, finished: (() -> Unit)? = null) {
     val ui = Handler(Looper.getMainLooper())
     fun say(t: String) = ui.post { Toast.makeText(c, t, Toast.LENGTH_LONG).show() }
     val running = Words.get(Words.lang, "auto.running", "name" to scene.optString("name"))
+    val id = scene.optString("id")
+    if (!Scenes.claim(id)) {                                          // still running from a tile, a time, an event or a chat: not twice at once
+        if (noAdb == null) say(Words.get(Words.lang, "auto.already_running", "name" to scene.optString("name")))
+        started?.invoke(); finished?.invoke()
+        return
+    }
     if (noAdb == null) say(running)                                   // a tile: said at once, before the wait
     Thread({
         var waited = false
@@ -118,6 +125,7 @@ internal fun runNow(c: Context, scene: JSONObject, started: (() -> Unit)? = null
             say(if (failed == null) Words.get(Words.lang, "auto.done", "name" to scene.optString("name")) else Words.get(Words.lang, "auto.done_but", "why" to failed))
         } finally {
             if (!waited) started?.invoke()                            // died in the wait: the timer must not think it still runs
+            Scenes.release(id)
             finished?.invoke()
         }
     }, "scene-run").apply { isDaemon = true }.start()

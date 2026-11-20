@@ -498,7 +498,8 @@ async function saveScenes(list) { const r = await api('/api/scenes', { scenes: l
 async function runScene(sc) {
   toast(T('auto.running', { name: sc.name }));
   const r = await api('/api/scene/run', sc.id ? { id: sc.id } : { steps: sc.steps });
-  if (r && !(r.failed && needSetup(r.failed))) toast(r.ok ? T('auto.done', { name: sc.name }) : T('auto.done_but', { why: friendly(r.failed) }));
+  if (r && r.running) toast(T('auto.already_running', { name: sc.name }));   // started again before its last run ended: not run twice
+  else if (r && !(r.failed && needSetup(r.failed))) toast(r.ok ? T('auto.done', { name: sc.name }) : T('auto.done_but', { why: friendly(r.failed) }));
   setTimeout(refresh, 800); if (currentTab === 'auto') loadRules(null, true);
 }
 let sceneNamesAsked = false;

@@ -1159,7 +1159,7 @@ Nhắn bot của riêng bạn để tắt/bật TV, chỉnh tiếng, mở app, c
 3. 🛠️ Cài đặt trên TV hoặc trang web của TV → **Điều khiển bằng Telegram** → **Cho dùng**, dán token, **Lưu**.
 4. Bấm **Tạo mã ghép đôi**: mã 6 số hiện trong Cài đặt và trên màn hình TV, dùng một lần, 5 phút.
 5. Mở bot (chat riêng hoặc nhóm), gửi `/pair 123456`. Chat lạ gửi gì bot cũng im lặng.
-6. Sai 5 lần: mã bị huỷ và khoá ghép đôi 15 phút; tạo mã mới để mở khoá.
+6. Một chat sai 5 lần: chat đó hết lượt. Tổng sai 30 lần: khoá ghép đôi 15 phút.
 
 Lệnh:
 

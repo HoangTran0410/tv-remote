@@ -563,6 +563,7 @@
  "auto.tpl_tv_off": "أطفئ التلفزيون",
  "auto.running": "جارٍ التشغيل: {name}",
  "auto.done": "✓ تم: {name}",
+ "auto.already_running": "{name} لا يزال قيد التشغيل",
  "auto.done_but": "تم، لكن بعض الخطوات لم تنجح: {why}",
  "auto.no_scenes": "لا توجد مشاهد بعد. اضغط “+ مشهد جديد”: فيه أمثلة تبدأ منها.",
  "auto.run": "شغّل",

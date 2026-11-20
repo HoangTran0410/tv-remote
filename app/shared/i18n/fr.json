@@ -541,6 +541,7 @@
   "auto.tpl_tv_off": "Éteindre la TV",
   "auto.running": "En cours : {name}",
   "auto.done": "✓ Terminé : {name}",
+  "auto.already_running": "{name} est encore en cours",
   "auto.done_but": "Terminé, mais certaines étapes ont échoué : {why}",
   "auto.no_scenes": "Aucune scène pour l’instant. Appuyez sur « + Nouvelle scène » : des exemples vous aident à démarrer.",
   "auto.run": "Lancer",

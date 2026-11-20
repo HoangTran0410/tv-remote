@@ -132,6 +132,29 @@ class ScenesTest {
         assertTrue(r.getString("failed").startsWith("1: no such app"))
     }
 
+    @Test fun aSceneStillRunningIsNotStartedAgainButAnotherOneIs() {
+        val other = JSONObject("""{"id":"s2","name":"Day","steps":[{"do":"key","key":"home"}]}""")
+        val both = { id: String -> if (id == "s2") other else find(id) }
+        var again: JSONObject? = null; var second: JSONObject? = null; var own: JSONObject? = null
+        val tv = object : Scenes.Target by Fake() {
+            override fun key(code: Int) {
+                if (code != 224) return                                  // only from inside s1's first step: s1 is running now
+                again = body(Scenes.runRequest(JSONObject().put("id", "s1"), both, "off") { error("never asked") })
+                second = body(Scenes.runRequest(JSONObject().put("id", "s2"), both, "off") { Fake() })
+                own = body(Scenes.runRequest(JSONObject().put("steps", steps("""{"do":"key","key":"home"}""")), both, "off") { Fake() })   // the editor's Try: no id, no check
+            }
+        }
+        assertEquals(true, body(Scenes.runRequest(JSONObject().put("id", "s1"), both, "off") { tv }).getBoolean("ok"))
+        assertEquals(true, again!!.getBoolean("running")); assertEquals(false, again!!.getBoolean("ok"))
+        assertEquals(true, second!!.getBoolean("ok")); assertEquals(true, own!!.getBoolean("ok"))
+        assertEquals(true, body(Scenes.runRequest(JSONObject().put("id", "s1"), both, "off") { Fake() }).getBoolean("ok"))   // over: it runs again
+        assertTrue(Scenes.claim("s1")); assertTrue(!Scenes.claim("s1")); Scenes.release("s1"); assertTrue(Scenes.claim("s1")); Scenes.release("s1")
+    }
+
+    @Test fun theLongestSceneIsThirtyWaitsOfThirtySecondsAndAMinute() {
+        assertEquals(16 * 60_000L, Scenes.LONGEST_MS)
+    }
+
     @Test fun runRequestUnknownSceneIs404BeforeTheTvIsAsked() {
         var asked = false
         val r = Scenes.runRequest(JSONObject().put("id", "zzz"), find, "off") { asked = true; Fake() }

@@ -61,7 +61,7 @@ object Scenes {
      */
     fun run(steps: JSONArray, tv: Target, stop: () -> Boolean = { false }): String? {
         val failed = ArrayList<String>()
-        for (i in 0 until minOf(steps.length(), 30)) {
+        for (i in 0 until minOf(steps.length(), MAX_STEPS)) {
             if (stop()) break
             val s = steps.optJSONObject(i) ?: continue
             try {
@@ -72,7 +72,7 @@ object Scenes {
                     "app" -> tv.app(s.optString("pkg"))
                     "link" -> tv.link(s.optString("url"))
                     "volume" -> tv.volume(s.optInt("level").coerceIn(0, 100))
-                    "wait" -> Thread.sleep((s.optDouble("s", 1.0).coerceIn(0.0, 30.0) * 1000).toLong())
+                    "wait" -> Thread.sleep((s.optDouble("s", 1.0).coerceIn(0.0, MAX_WAIT_S) * 1000).toLong())
                     "timer" -> tv.timer(s.optInt("min").coerceIn(0, 720))
                     "input" -> tv.input(s.optString("id"))
                     "notify" -> tv.notify(Notify.clean(s))
@@ -97,6 +97,32 @@ object Scenes {
     fun runRequest(d: JSONObject, find: (String) -> JSONObject?, offline: String, target: () -> Target?): HttpServer.Response {
         val steps = d.optJSONArray("steps") ?: find(d.optString("id"))?.optJSONArray("steps")
             ?: return HttpServer.Response.error(404, "no such scene")
+        val id = if (d.has("steps")) "" else d.optString("id")         // a saved scene; steps of the editor's own ("Try") are not one
+        return once(id, { HttpServer.Response.json(JSONObject().put("ok", false).put("running", true).put("failed", "")) }) { runSteps(steps, offline, target) }
+    }
+
+    private val busy = HashSet<String>()
+
+    /**
+     * Runs [block] unless scene [id] is already running in this app (a second tap, a timer and a tile at once, a chat): then [running]
+     * answers instead and nothing is sent to the TV twice. Different scenes may run together. "" = not a saved scene: no check.
+     */
+    fun <T> once(id: String, running: () -> T, block: () -> T): T {
+        if (id.isEmpty()) return block()
+        if (!claim(id)) return running()
+        try { return block() } finally { release(id) }
+    }
+
+    /** [once] in two halves, for a run that ends on another thread: false = already running. Every true is paired with one [release]. */
+    fun claim(id: String): Boolean = id.isEmpty() || synchronized(busy) { busy.add(id) }
+    fun release(id: String) { synchronized(busy) { busy.remove(id) } }
+
+    const val MAX_STEPS = 30                                           // [run] does the first 30 steps
+    const val MAX_WAIT_S = 30.0                                        // a "wait" step's most
+    /** The longest a scene can take: [MAX_STEPS] waits of [MAX_WAIT_S], plus a minute for the steps themselves. */
+    val LONGEST_MS: Long = MAX_STEPS * (MAX_WAIT_S * 1000).toLong() + 60_000L
+
+    private fun runSteps(steps: JSONArray, offline: String, target: () -> Target?): HttpServer.Response {
         val tv = target() ?: return HttpServer.Response.error(503, offline)
         var missing: SetupNeed.Missing? = null
         val watched = object : Target by tv {

@@ -111,22 +111,26 @@ class TelegramTest {
         assertFalse(bot.pair(42, "An", code)); assertEquals(0, bot.codeLeftS()); assertTrue(bot.chats().isEmpty())
     }
 
-    @Test fun fiveWrongCodesCancelItAndLockPairingUntilTheOwnerAsksAgain() {
+    @Test fun fiveWrongCodesShutOutThatChatOnlyAndThirtyFromAllLockPairing() {
         val code = bot.newCode()
         repeat(4) { assertFalse(bot.pair(9, "x", "00000$it")) }
-        assertEquals(0, bot.lockedLeftS())
-        assertFalse(bot.pair(9, "x", "999999"))                         // the fifth
+        assertFalse(bot.pair(9, "x", "999999"))                         // the fifth from this chat
+        assertFalse(bot.pair(9, "x", code))                             // even the right one: this chat is done with this code
+        assertEquals(0, bot.lockedLeftS()); assertTrue(bot.codeLeftS() > 0)   // a stranger cannot lock the owner out
+        assertTrue(bot.pair(42, "An", code))
+        val again = bot.newCode()
+        for (chat in 100L until 106L) repeat(5) { bot.pair(chat, "x", "00000$it") }   // 30 wrong from six chats: a guessing run
         assertTrue(bot.lockedLeftS() > 0); assertEquals(0, bot.codeLeftS())
-        assertFalse(bot.pair(42, "An", code))                           // even the right one: it is dead and pairing is locked
+        assertFalse(bot.pair(43, "B", again))                           // the code is dead and pairing is locked
         now += 15 * 60_000L + 1
         assertEquals(0, bot.lockedLeftS())
-        val fresh = bot.newCode(); assertTrue(bot.pair(42, "An", fresh))
+        val fresh = bot.newCode(); assertTrue(bot.pair(43, "B", fresh))
     }
 
     @Test fun anOwnerWhoMakesANewCodeLiftsTheLock() {
-        bot.newCode(); repeat(5) { bot.pair(9, "x", "11111$it") }
+        bot.newCode(); for (chat in 100L until 106L) repeat(5) { bot.pair(chat, "x", "11111$it") }
         assertTrue(bot.lockedLeftS() > 0)
-        val c = bot.newCode(); assertEquals(0, bot.lockedLeftS()); assertTrue(bot.pair(42, "An", c))
+        val c = bot.newCode(); assertEquals(0, bot.lockedLeftS()); assertTrue(bot.pair(100, "x", c))   // a new code also forgives a chat's wrong tries
     }
 
     @Test fun aGroupIsPairedByItsNegativeId() {
@@ -301,6 +305,48 @@ class TelegramTest {
     }
 
     // ---------------------------------------------------------------- the loop: offset, webhook, errors
+    @Test fun aSceneRunsOffThePollThreadAndAnswersWhenDone() {
+        val queued = ArrayList<Runnable>()
+        bot = Telegram(store, api, hook, { r, scope -> seen.add(Seen(r.path, r.method, if (r.method == "POST") r.json() else JSONObject(), scope)); answer(r) },
+            { state }, { apps }, { shown = it }, { now }, java.util.Random(7), background = false, later = { queued.add(it) })
+        pairChat()
+        bot.onUpdate(msg(42, "/scene movie", 1))
+        assertTrue(seen.isEmpty()); assertEquals(1, queued.size)         // the poll goes on: the scene waits for its own thread
+        now += 1000; bot.onUpdate(msg(42, "/key HOME", 2))
+        assertEquals("/api/key", seen.single().path)                    // a later command is not stuck behind the scene
+        tap(42, "s:s1")
+        assertEquals(2, queued.size)
+        queued.forEach { it.run() }
+        assertEquals(listOf("s1", "s1"), seen.filter { it.path == "/api/scene/run" }.map { it.body.optString("id") })
+        assertTrue(api.sent(42).any { it.contains("movie") })                 // answered once it is done
+    }
+
+    @Test fun aSceneStillRunningIsNotStartedAgainAndTheChatIsTold() {
+        answer = { HttpServer.Response.json(JSONObject().put("ok", false).put("running", true).put("failed", "")) }   // what Scenes.runRequest answers then
+        pairChat()
+        bot.onUpdate(msg(42, "/scene movie", 1))
+        assertTrue(api.sent(42).last().contains("still running"))
+    }
+
+    @Test fun tapsQueuedBeforeTheStartAreDroppedAndMessagesKeepTheirTimeCheck() {
+        pairChat()
+        store.offset = 10                                               // not the very first start: the queue is read, not skipped whole
+        val oldTap = JSONObject("""{"update_id":10,"callback_query":{"id":"cb1","data":"m:off","message":{"message_id":3,"chat":{"id":42}}}}""")
+        api.on("getUpdates") { updates(oldTap, msg(42, "/key HOME", 11), msg(42, "/off", 12, date = now / 1000 - 86400)) }
+        api.on("getUpdates") { updates(JSONObject("""{"update_id":13,"callback_query":{"id":"cb2","data":"k:UP","message":{"message_id":3,"chat":{"id":42}}}}""")) }
+        assertEquals(0L, bot.step())
+        assertEquals(0, api.named("getUpdates")[0].getInt("timeout"))  // the backlog is read at once, then the long poll
+        assertEquals(listOf("/api/key"), seen.map { it.path })           // the fresh message ran; the old tap (power off) and the day-old /off did not
+        assertEquals(13L, store.offset)
+        now += 1000; assertEquals(0L, bot.step())
+        assertEquals(50, api.named("getUpdates")[1].getInt("timeout"))
+        assertEquals(listOf("/api/key", "/api/key"), seen.map { it.path })   // a tap after the start runs
+        bot.sync()                                                      // switched off and on (or a new language): the queue is old again
+        api.on("getUpdates") { updates(JSONObject("""{"update_id":14,"callback_query":{"id":"cb3","data":"k:UP","message":{"message_id":3,"chat":{"id":42}}}}""")) }
+        now += 1000; bot.step()
+        assertEquals(2, seen.size)
+    }
+
     private fun updates(vararg u: JSONObject) = Telegram.Reply(200, JSONObject().put("ok", true).put("result", JSONArray(u.toList())))
 
     @Test fun theOffsetMovesPastTheBatchBeforeAnyCommandRuns() {
@@ -497,8 +543,10 @@ class TelegramTest {
         assertEquals(listOf(42L), bot.chats().map { it.id }); assertEquals("private", bot.chats()[0].type)
         say(42, "/start", 3); assertTrue(api.sent(42).size >= 2)    // paired and bare: answered like /help
         val again = bot.newCode()
-        repeat(5) { say(60 + it.toLong(), "/start 99999$it", 10L + it) }
-        assertTrue(bot.lockedLeftS() > 0); assertEquals(0, bot.codeLeftS()); assertFalse(again.isEmpty())
+        repeat(5) { say(60, "/start 99999$it", 10L + it) }
+        assertEquals(0, bot.lockedLeftS()); assertTrue(bot.codeLeftS() > 0)   // one chat's wrong tries shut out only that chat
+        say(60, "/start $again", 20); assertFalse(bot.chats().any { it.id == 60L })
+        say(61, "/start $again", 21); assertTrue(bot.chats().any { it.id == 61L })
     }
 
     @Test fun newCommandsAreParsedAndAnswered() {
