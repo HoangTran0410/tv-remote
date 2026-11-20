@@ -541,6 +541,7 @@
  "auto.tpl_tv_off": "Turn the TV off",
  "auto.running": "Running: {name}",
  "auto.done": "✓ Done: {name}",
+ "auto.already_running": "{name} is still running",
  "auto.done_but": "Done, but some steps did not work: {why}",
  "auto.no_scenes": "No scenes yet. Press “+ New scene”: there are examples to start from.",
  "auto.run": "Run",

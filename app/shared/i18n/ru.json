@@ -546,6 +546,7 @@
  "auto.tpl_tv_off": "Выключить ТВ",
  "auto.running": "Выполняется: {name}",
  "auto.done": "✓ Готово: {name}",
+ "auto.already_running": "{name} ещё выполняется",
  "auto.done_but": "Готово, но часть шагов не сработала: {why}",
  "auto.no_scenes": "Сцен пока нет. Нажмите «+ Новая сцена»: есть примеры для старта.",
  "auto.run": "Запустить",

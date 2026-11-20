@@ -6,6 +6,9 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Telegram: buttons tapped while the bot was off (or TV Setup was not running) no longer run when it comes back (an old "Turn off" or "more time" tap was carried out); a scene runs beside the bot, so commands sent during a long scene are not lost; wrong pairing codes are counted per chat, so a stranger cannot lock pairing for everyone (30 wrong in all still lock it).
+- Scenes: the same scene started again while it runs (a second tap, its time and its event together, a chat) is skipped with "still running" instead of running twice; a scene with both a time and "Start when" no longer starts itself again through its own steps; scenes from the phone app's widget, tiles and icon shortcuts are no longer cut after 2 minutes.
+
 - Draw on the TV: ⏱ sets how long the drawing stays after the last stroke (10 min, 30 min, 1 hour, or until cleared, which survives a TV restart); TV Setup shows a Clear the drawing tile meanwhile.
 
 ## 0.56.0 - 2026-11-20

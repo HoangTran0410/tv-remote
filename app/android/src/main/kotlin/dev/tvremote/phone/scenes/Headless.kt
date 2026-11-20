@@ -92,22 +92,24 @@ internal class Headless(private val c: Context) {
     /** Runs [what] on the TV; the answer is what to tell the person. Blocks for up to about 15 s, longer for a scene that waits. */
     fun run(what: (Scenes.Target, Boolean) -> String?): String {
         val h = try { open() } catch (e: Failed) { return e.message ?: "" }
-        var said: String? = null
+        val said = java.util.concurrent.atomic.AtomicReference<String?>(null)   // read here even when the worker has not finished
         val worker = Thread {
-            said = try { what(h.tv, h.adb)?.let { "${h.name}: $it" } ?: "✓ ${h.name}" }
+            said.set(try { what(h.tv, h.adb)?.let { "${h.name}: $it" } ?: "✓ ${h.name}" }
             catch (e: Remote.Refused) { T("headless.the_tv_said_no", "name" to h.name) }
-            catch (e: Exception) { h.name + ": " + (e.message ?: e.javaClass.simpleName) }
+            catch (e: Exception) { h.name + ": " + (e.message ?: e.javaClass.simpleName) })
         }
         worker.start()
-        worker.join(120000)                                           // connected: a scene's waits take as long as they take
+        worker.join(Scenes.LONGEST_MS)                                // connected: the longest scene (30 waits of 30 s) is never cut
         h.close()
-        return said ?: T("headless.the_tv_did_not", "name" to h.name)
+        return said.get() ?: T("headless.the_tv_did_not", "name" to h.name)
     }
 
-    /** A scene by id. */
+    /** A scene by id; one still running in this app (the widget again, the remote screen) is not started twice. */
     fun scene(id: String): String {
         val sc = SceneStore.find(c, id) ?: return T("headless.this_scene_is_gone")
-        return run { tv, _ -> Scenes.run(sc.optJSONArray("steps") ?: JSONArray(), tv) }.let { if (it.startsWith("✓")) "✓ " + sc.optString("name") else it }
+        return Scenes.once(id, { T("auto.already_running", "name" to sc.optString("name")) }) {
+            run { tv, _ -> Scenes.run(sc.optJSONArray("steps") ?: JSONArray(), tv) }.let { if (it.startsWith("✓")) "✓ " + sc.optString("name") else it }
+        }
     }
 
     /** Standby when the TV is on, on when it is in standby: [Companion.power]. */

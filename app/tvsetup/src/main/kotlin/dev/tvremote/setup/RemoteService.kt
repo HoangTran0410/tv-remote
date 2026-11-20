@@ -301,7 +301,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         dev.tvremote.core.web.Telegram(object : dev.tvremote.core.web.Telegram.Store {
             override var enabled: Boolean get() = prefs.getBoolean("tg_on", false); set(v) { prefs.edit().putBoolean("tg_on", v).apply() }
             override var token: String get() = prefs.getString("tg_token", "") ?: ""; set(v) { prefs.edit().putString("tg_token", v).apply() }
-            override var offset: Long get() = prefs.getLong("tg_offset", 0); set(v) { prefs.edit().putLong("tg_offset", v).apply() }
+            override var offset: Long get() = prefs.getLong("tg_offset", 0); set(v) { prefs.edit().putLong("tg_offset", v).commit() }   // on the disk before the batch runs (Telegram.handle): a crash must not replay "/off"
             override var lang: String get() = prefs.getString("tg_lang", "") ?: ""; set(v) { prefs.edit().putString("tg_lang", v).apply() }
             override var bot: String get() = prefs.getString("tg_bot", "") ?: ""; set(v) { prefs.edit().putString("tg_bot", v).apply() }
             override var chats: String get() = prefs.getString("tg_chats", "[]") ?: "[]"; set(v) { prefs.edit().putString("tg_chats", v).apply() }

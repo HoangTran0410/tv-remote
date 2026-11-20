@@ -526,6 +526,7 @@
  "auto.tpl_tv_off": "Tắt TV",
  "auto.running": "Đang chạy: {name}",
  "auto.done": "✓ Xong: {name}",
+ "auto.already_running": "{name} vẫn đang chạy",
  "auto.done_but": "Xong, nhưng có bước không làm được: {why}",
  "auto.no_scenes": "Chưa có cảnh nào. Bấm “＋ Tạo cảnh”, có sẵn mẫu để bắt đầu.",
  "auto.run": "Chạy",

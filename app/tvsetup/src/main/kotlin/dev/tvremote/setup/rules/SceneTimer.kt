@@ -148,7 +148,8 @@ internal object SceneTimer {
             val sig = s.cursors[id]?.first ?: continue
             val due = s.due[id] ?: continue
             if (!starting.add(id)) continue
-            runNow(c, scene, started = { done(id) }) { noAdb(c, id, sig, due) }
+            quiet[id] = now..Long.MAX_VALUE                             // its own wake / app step must not start it again by its "on" (row 18 / 21)
+            runNow(c, scene, started = { done(id) }, noAdb = { noAdb(c, id, sig, due) }, finished = { endQuiet(id) })
         }
         var wait = s.wait
         val apps = byId.mapNotNull { (id, sc) -> sc.optJSONObject("on")?.optString("app")?.takeIf { it.isNotEmpty() }?.let { id to it } }.toMap()
@@ -191,9 +192,15 @@ internal object SceneTimer {
         val id = scene.optString("id")
         if (!starting.add(id)) return
         quiet[id] = now..Long.MAX_VALUE
-        runNow(c, scene, started = { done(id) }, noAdb = { true }, finished = {   // no ADB: silent, not "cannot run" on every app opened
-            synchronized(this) { starting.remove(id); quiet[id] = now..(System.currentTimeMillis() + QUIET_AFTER_MS) }
-        })
+        runNow(c, scene, started = { done(id) }, noAdb = { true }, finished = { endQuiet(id) })   // no ADB: silent, not "cannot run" on every app opened
+    }
+
+    /** A run of scene [id] (timed or by an event) is over: its own events are still ignored for [QUIET_AFTER_MS]. */
+    @Synchronized
+    private fun endQuiet(id: String) {
+        starting.remove(id)
+        val from = quiet[id]?.first ?: return
+        quiet[id] = from..(System.currentTimeMillis() + QUIET_AFTER_MS)
     }
 
     private const val EVENTS_EVERY_MS = 10_000L

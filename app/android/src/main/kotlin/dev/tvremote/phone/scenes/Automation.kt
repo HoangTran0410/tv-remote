@@ -119,9 +119,11 @@ internal fun MainActivity.runScene(sc: JSONObject) {
     val tv = tv
     val b = basic
     val target = if (tv != null && tv.ready()) Scenes.Shell({ tv.shell(it) }) else if (b is dev.tvremote.core.remote.Atv) Headless.keysOnly(b) else if (b != null) dev.tvremote.core.remote.RemoteSteps(b) { } else return
+    val id = sc.optString("id")
+    if (!Scenes.claim(id)) { toast(T("auto.already_running", "name" to sc.optString("name"))); return }   // a second tap while it runs: not twice at once
     toast(T("auto.running", "name" to sc.optString("name")))
     Thread {
-        val failed = Scenes.run(steps, target)
+        val failed = try { Scenes.run(steps, target) } finally { Scenes.release(id) }
         ui.post {
             if (isFinishing || (failed != null && offerSetup(java.io.IOException(failed)))) return@post   // e.g. its timer needs a newer TV Setup
             toast(if (failed == null) T("auto.done", "name" to sc.optString("name")) else T("automation.some_steps_did_not", "steps" to failed))
