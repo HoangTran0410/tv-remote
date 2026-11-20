@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.57.0 - 2026-11-21
+
+Web 0.57.0 · Phone app 0.54.0 · TV app 0.55.0 · TV Home 0.36.0 · TV Channels 0.26.0 · TV Games 0.26.0 · TV Apps 0.10.0
 
 - Scenes: "Voice phrases", "Start at" and "Start when" are easier to tap on a phone (the whole row, as tall as a button).
 - TV Home: the lunar widget in a narrow spot (two rows of widgets) no longer cuts its date and year to "1…": the moon, then the day's square, give their room up.
