@@ -3,6 +3,7 @@ import dev.tvremote.core.B64
 import dev.tvremote.core.adb.Adb
 import dev.tvremote.core.adb.PmInstall
 import dev.tvremote.core.adb.TvShell
+import dev.tvremote.core.ontv.PlayProtect
 import dev.tvremote.core.manage.TvPaths.tmpApk
 import dev.tvremote.core.manage.TvPaths.tmpBase
 import dev.tvremote.core.manage.TvPaths.safeName
@@ -68,23 +69,25 @@ internal class InstallApi(core: ManageCore, private val copy: TvCopy) : ManagePa
         val how = if (pkg == null) null else Splits.how(adb.shell("dumpsys package $pkg 2>/dev/null | grep -m1 versionCode=; echo ."), info["versionCode"])
         val cancel = current.get()
         cancel?.check()
-        var out: String
+        val out = PlayProtect.watch({ adb.shell(it, 10000) }, { cancel?.say?.invoke(PlayProtect.NOTE) }) {
         if (plan != null) {
             val parts = plan.parts.mapIndexed { i, e -> PmInstall.Part("unzip -p $q ${Adb.q(Splits.pattern(e.name))}", e.size, if (i == 0) "base.apk" else "split$i.apk") }
-            out = PmInstall.bundle({ adb.shell(it, 600000) }, parts) { cancel?.check() }
+            val o = PmInstall.bundle({ adb.shell(it, 600000) }, parts) { cancel?.check() }
             cancel?.check()
-            if (out.contains("Success")) for (o in plan.obbs) {        // expansion files go beside the app
-                val dir = "/sdcard/Android/obb/" + Splits.obbPackage(o)
-                val dest = dir + "/" + o.name.substringAfterLast('/')
-                adb.shell("mkdir -p ${Adb.q(dir)} && unzip -p $q ${Adb.q(Splits.pattern(o.name))} > ${Adb.q(dest)}", 1800000)
-                if (adb.shell("stat -c %s ${Adb.q(dest)} 2>/dev/null").trim().toLongOrNull() != o.size) throw IOException("copy to the TV incomplete")
+            if (o.contains("Success")) for (ob in plan.obbs) {         // expansion files go beside the app
+                val dir = "/sdcard/Android/obb/" + Splits.obbPackage(ob)
+                val dest = dir + "/" + ob.name.substringAfterLast('/')
+                adb.shell("mkdir -p ${Adb.q(dir)} && unzip -p $q ${Adb.q(Splits.pattern(ob.name))} > ${Adb.q(dest)}", 1800000)
+                if (adb.shell("stat -c %s ${Adb.q(dest)} 2>/dev/null").trim().toLongOrNull() != ob.size) throw IOException("copy to the TV incomplete")
             }
+            o
         } else {
             val s = adb.exec("cat $q | pm install -r -S $size 2>&1")
             cancel?.onStop { s.close() }                              // closing the stream ends pm, which drops its install session
-            out = try { s.readAll(600000) } finally { s.close() }
+            val first = try { s.readAll(600000) } finally { s.close() }
             cancel?.check()
-            out = PmInstall.fallback(out, { adb.shell(it, 600000) }, q, size.toLongOrNull() ?: 0) { cancel?.check() }   // firmware that refuses pm install: a session instead
+            PmInstall.fallback(first, { adb.shell(it, 600000) }, q, size.toLongOrNull() ?: 0) { cancel?.check() }   // firmware that refuses pm install: a session instead
+        }
         }
         cancel?.check()
         if (!out.contains("Success") && pkg != null && Regex("INSTALL_FAILED_VERSION_DOWNGRADE|INSTALL_FAILED_UPDATE_INCOMPATIBLE|signatures do not match").containsMatchIn(out)

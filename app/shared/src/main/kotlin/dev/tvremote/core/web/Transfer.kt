@@ -13,6 +13,8 @@ class Cancelled : IOException("stopped")
  * let go at once.
  */
 class Cancel {
+    /** Where a running job's news goes, as a code the page words (the job's `note`); set by Jobs, null outside a job. */
+    @Volatile var say: ((String) -> Unit)? = null
     @Volatile var stopped = false
         private set
     private val hooks = CopyOnWriteArrayList<() -> Unit>()

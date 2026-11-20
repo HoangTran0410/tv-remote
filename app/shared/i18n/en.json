@@ -1963,6 +1963,7 @@
  "core.fr_bundle_locked": "This bundle cannot be read: it has a password or the file is damaged. Get an unlocked copy, download it again.",
  "core.fr_missing_split": "This bundle is missing a part the app needs. Get the full bundle.",
  "core.fr_play_protect": "Google Play Protect on the TV blocked this build. TV Setup installs the next one by itself when it comes out.",
+ "core.play_protect_asks": "The TV asks about Google Play Protect: on the TV, press Install anyway (or More details, then Install anyway).",
  "core.fr_unsupported": "{brand} TVs cannot do this",
  "core.fr_storage_apk": "The TV has only {free} free, not enough to install this {size} APK (it needs at least {need}: the copy and the installed app). Remove some apps or files (Health / Files tab), then try again.",
  "core.fr_storage_file": "The TV has only {free} free, not enough for this {size} file (it needs at least {need}). Remove some apps or files (Health / Files tab), then try again.",

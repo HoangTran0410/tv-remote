@@ -1966,6 +1966,7 @@
   "core.fr_bundle_locked": "Ce lot est illisible : mot de passe ou fichier abîmé. Prenez une copie non verrouillée, téléchargez-la de nouveau.",
   "core.fr_missing_split": "Il manque à ce lot une partie dont l’appli a besoin. Prenez le lot complet.",
   "core.fr_play_protect": "Google Play Protect, sur la TV, a bloqué cette version. TV Setup installera la suivante tout seul dès sa sortie.",
+  "core.play_protect_asks": "La TV pose une question sur Google Play Protect : sur la TV, choisissez Installer quand même (ou Plus de détails, puis Installer quand même).",
   "core.fr_unsupported": "Les TV {brand} ne peuvent pas faire cela",
   "core.fr_storage_apk": "La TV n’a que {free} de libre, pas assez pour installer cet APK de {size} (il faut au moins {need} : la copie et l’application installée). Supprimez des applications ou des fichiers (onglet Santé / Fichiers), puis réessayez.",
   "core.fr_storage_file": "La TV n’a que {free} de libre, pas assez pour ce fichier de {size} (il faut au moins {need}). Supprimez des applications ou des fichiers (onglet Santé / Fichiers), puis réessayez.",

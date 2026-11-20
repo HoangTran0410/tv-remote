@@ -521,8 +521,10 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     /** `pm install`; on firmware that refuses it, a PackageInstaller session instead ([PmInstall]). */
     @Throws(IOException::class)
     private fun pmInstall(quoted: String, size: Long): String {
-        val out = adb!!.shell("cat $quoted | pm install -r -S $size 2>&1", 600000)
-        return PmInstall.fallback(out, { adb!!.shell(it, 600000) }, quoted, size)
+        return PlayProtect.watch({ adb!!.shell(it, 10000) }, { log.line(t("core.play_protect_asks")) }) {
+            val out = adb!!.shell("cat $quoted | pm install -r -S $size 2>&1", 600000)
+            PmInstall.fallback(out, { adb!!.shell(it, 600000) }, quoted, size)
+        }
     }
 
     @Throws(Exception::class)

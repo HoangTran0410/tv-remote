@@ -51,6 +51,7 @@ class Jobs {
         val what = title.substringBefore(' ').takeIf { it in setOf("install", "update", "tailscale") } ?: "work"
         val cancel = Cancel()
         stops[j.getString("id")] = cancel
+        cancel.say = { code -> try { j.put("note", code) } catch (ignored: Exception) { } }   // the page words it (files.js jobMsg)
         Thread({
             current.set(cancel)
             try {

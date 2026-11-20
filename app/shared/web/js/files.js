@@ -81,6 +81,7 @@ function mark(src, j) {
 const JOB_T = { download: 'files.job_download', install: 'files.install_name', upload: 'files.job_upload' };
 function jobTitle(j) { const k = JOB_T[j.kind]; return k && j.name ? T(k, { name: j.name }) : j.title; }
 function jobMsg(j) {
+  if (j.status === 'running' && j.note === 'play_protect') return T('core.play_protect_asks');   // PlayProtect.watch: the TV shows Google's question
   const how = j.status === 'done' && /^installed (new|update|same|older)$/.exec(j.msg || '');   // Installer.pmInstall: what the install was
   if (how) return { new: T('files.installed_new'), update: T('files.installed_update'), same: T('files.installed_same'), older: T('files.installed_older') }[how[1]];
   const w = j.status === 'done' && j.dest ? T('files.saved_to', { dest: j.dest }) : 'files.saved_to'; return w !== 'files.saved_to' ? w : j.msg; }

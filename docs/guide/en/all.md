@@ -1442,7 +1442,7 @@ The phone app's Manage screen uses Android's own browser (WebView). If it is too
 | The TV's page asks for the code again | Pair again once; avoid private windows. |
 | Choppy picture | Lower size and bitrate ([Picture quality](#quality)). |
 | Tailscale shows no link | Wait a bit, then tap **🔑** again ([Tailscale](#away)). |
-| Play Protect warns | Choose “Install anyway”. The source is public. |
+| Play Protect warns | Press “Install anyway” (or “More details”, then “Install anyway”) on the TV itself. While an install waits, the app shows this hint. The source is public. |
 | An.apks /.xapk /.apkm says a part is missing or locked | Use the complete file, without a password; the app sends only the parts that fit the TV. |
 | Fire TV: TV Setup cannot reach ADB though it is on | Amazon blocks an app on the TV from using its own ADB; use the phone or computer app. |
 | Fire TV: Home / Alexa buttons dead, other keys work | First setup never finished: the app says so at the top, press **Fix** (sets `user_setup_complete` to 1). |

@@ -1888,6 +1888,7 @@
  "core.fr_bundle_locked": "Không đọc được gói này: có mật khẩu hoặc file bị hỏng. Hãy lấy bản không khóa, tải lại.",
  "core.fr_missing_split": "Gói này thiếu một phần mà app cần. Hãy lấy gói đầy đủ.",
  "core.fr_play_protect": "Google Play Protect trên TV đã chặn bản này. TV Setup sẽ tự cài bản sau khi có.",
+ "core.play_protect_asks": "TV đang hỏi về Google Play Protect: trên TV, bấm “Vẫn cài” (hoặc “Chi tiết khác”, rồi “Vẫn cài”).",
  "core.fr_unsupported": "TV {brand} không hỗ trợ",
  "core.fr_storage_apk": "TV chỉ còn trống {free}, không đủ cài APK {size} (cần trống ít nhất {need}: bản chép và app sau khi cài). Xóa bớt app hoặc tệp (tab Sức khỏe / Tệp) rồi thử lại.",
  "core.fr_storage_file": "TV chỉ còn trống {free}, không đủ chép tệp {size} (cần trống ít nhất {need}). Xóa bớt app hoặc tệp (tab Sức khỏe / Tệp) rồi thử lại.",
