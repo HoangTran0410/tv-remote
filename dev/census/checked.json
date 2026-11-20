@@ -1829,6 +1829,11 @@
   "n": 1,
   "note": "HAKO Pro sdk 34, add-on by shell, running, a11y 0: kind not told (rs / bound cut by the 150-char limit); report reordered so they come first; likely firmware like the operator boxes; clients say keys work only on TV Home (e9452995)"
  },
+ "5b2afde4cbf4c38088649d4c|0.53.1": {
+  "at": "2026-11-20T21:50:00+07:00",
+  "n": 1,
+  "note": "HAKO Pro sdk 34 again on 0.53.1, now with the full report: rs allow, bound 0, binding 0, crashed 0: firmware drops our a11y entry (operator kind); nothing to fix, clients say keys work only on TV Home"
+ },
  "5b47665e5391015e7bcf0337|0.23.0": {
   "at": "2026-10-29T17:19:33+07:00",
   "n": 1,
@@ -2248,6 +2253,11 @@
   "at": "2026-11-03T06:59:47+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "6899a50cc258711baad9435a|0.35.0": {
+  "at": "2026-11-20T22:56:37+07:00",
+  "n": 1,
+  "note": "system_server died (DeadSystemException in ConnectivityManager) on an Amlogic X96Air Android 9, old TV Home 0.35.0: the whole system restarts, nothing to fix"
  },
  "69268d860e6dc5b93f87a619|0.38.4": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -4963,10 +4973,5 @@
   "at": "2026-10-29T17:19:54+07:00",
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
- },
- "5b2afde4cbf4c38088649d4c|0.53.1": {
-  "at": "2026-11-20T21:50:00+07:00",
-  "n": 1,
-  "note": "HAKO Pro sdk 34 again on 0.53.1, now with the full report: rs allow, bound 0, binding 0, crashed 0: firmware drops our a11y entry (operator kind); nothing to fix, clients say keys work only on TV Home"
  }
 }
