@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: with two rows of widgets over the grid, Down from the widgets now scrolls the focused app tile into view, and Up from the grid shows the whole widget area again (the top row was cut off).
 - Rules on the TV: an app schedule alone, a PIN alone, or a daily total set only for other days now keep working after the TV restarts; a schedule window across midnight (22:00-02:00) gives its minutes once, not again at midnight; bedtime, limits and schedules wait while the TV's clock is still wrong after boot, and a snooze or a wrong-PIN wait set on a wrong clock no longer lasts a year; home screens can no longer be limited, scheduled or locked; with no rule set, TV Setup's watcher stops.
 - Automation: when the TV is set to another time zone, the page says so, and the times shown and "turn off at 23:30" use the TV's clock (also in the phone app).
 - Telegram: buttons tapped while the bot was off (or TV Setup was not running) no longer run when it comes back (an old "Turn off" or "more time" tap was carried out); a scene runs beside the bot, so commands sent during a long scene are not lost; wrong pairing codes are counted per chat, so a stranger cannot lock pairing for everyone (30 wrong in all still lock it).

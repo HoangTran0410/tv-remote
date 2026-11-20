@@ -294,7 +294,8 @@ class HomeActivity : Activity() {
         col.addView(head); col.head = head
         widgets = Widgets(this, ::dp).apply { visibility = View.GONE; onWeather = { runOnUiThread { if (!isDestroyed) widgetsRead() } } }
         widgets.onMenu = ::widgetMenu
-        widgets.onFocus = { v, f -> if (f) { glassTo(v); if (HomeConfig.side(place())) scrollToY(0) } else glassOff() }   // a side column is in the first screen
+        // the widgets are in the first screen (a side column, or the rows over the grid: back up from the grid in two rows the page stayed down, row 1 cut)
+        widgets.onFocus = { v, f -> if (f) { glassTo(v); scrollToY(0) } else glassOff() }
         widgets.onMark = { glassTo(it, r = dp(12).toFloat()) }
         widgets.onOpen = { k -> if (editing || k !in OPENS) widgets.hot.firstOrNull { it.tag == k }?.let { widgetMenu(k, it) } else startActivity(Intent(this, when (k) { "news" -> dev.tvremote.home.widgets.NewsActivity::class.java; "market" -> dev.tvremote.home.widgets.MarketActivity::class.java; else -> dev.tvremote.home.widgets.WeatherMapActivity::class.java }).putExtra("i", widgets.newsShown)) }
         widgets.onUp = { v -> (bar.buttons.filter { it.isShown } + listOfNotNull(headLeft.takeIf { it.isShown && it.isFocusable })).minByOrNull { p -> val q = IntArray(2); val r = IntArray(2); p.getLocationOnScreen(q); v.getLocationOnScreen(r); Math.abs(q[0] + p.width / 2 - r[0] - v.width / 2) }?.requestFocus() }
@@ -1732,8 +1733,16 @@ class HomeActivity : Activity() {
     private fun headRoom() = if (conf.optBoolean("fixHead", false)) head.bottom else 0
 
     private fun reveal(v: View) {
-        if (grid.indexOfChild(v.parent as? View) <= 0) { scrollToY(0); return }
+        // the first row shows the page's top, when it fits there: two rows of widgets on a 960×540 dp screen put it under the edge,
+        // and the focus went down to a tile nobody could see (the user accepts it hidden until then, 2026-11-20)
+        if (grid.indexOfChild(v.parent as? View) <= 0 && fitsAtTop(v)) { scrollToY(0); return }
         revealAt(v)
+    }
+
+    private fun fitsAtTop(v: View): Boolean {
+        var y = 0; var p: View? = v
+        while (p != null && p !== scroll) { y += p.top; p = p.parent as? View }
+        return y + v.height <= scroll.height
     }
 
     /** The page scrolls only as far as [v] needs to be whole on screen. */
