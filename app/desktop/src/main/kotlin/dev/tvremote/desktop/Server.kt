@@ -259,6 +259,10 @@ class Server(private val repo: File, private val keys: File, private val pass: P
 
     private fun adbReady(s: Session) = s.link?.state() == "ready"
 
+    /** Typing goes through the TV's keyboard service: with no ADB, or whenever the TV reports a text field (#31: Enter then submits
+     *  the field instead of pressing the on-screen key, and the text already in it can be edited; ADB keeps everything else). */
+    private fun viaField(s: Session): Boolean { val a = s.atv as? Atv ?: return false; return !adbReady(s) || a.ready() && a.currentField != null }
+
     private fun native(s: Session) = s.kind != Remote.Kind.ANDROID
 
     /** An LG or Samsung TV's apps, from its remote link, in the shape Manage gives the page (names and pictures included). */
@@ -377,7 +381,7 @@ class Server(private val repo: File, private val keys: File, private val pass: P
             "/api/volume" -> volume(s, d)
             "/api/text" -> { s.need().text(d.optString("text").take(500)); Response.ok() }
             "/api/touch" -> if (native(s)) Response.error(400, "unsupported: " + Remote.Kind.name(s.kind)) else TvControl.touch(s.control(), d)
-            "/api/type" -> if (native(s) || (!adbReady(s) && s.atv is Atv)) { s.need().type(minOf(d.optInt("del"), 500), d.optString("text").take(500), d.optBoolean("enter")); Response.ok() } else TvControl.type(s.control(), d)
+            "/api/type" -> if (native(s) || viaField(s)) { s.need().type(minOf(d.optInt("del"), 500), d.optString("text").take(500), d.optBoolean("enter")); Response.ok() } else TvControl.type(s.control(), d)
             "/api/clip" -> if (native(s)) Response.error(400, "unsupported: " + Remote.Kind.name(s.kind)) else { s.control().setClipboard(d.optString("text").take(100000), d.optBoolean("paste")); Response.ok() }
             "/api/wake" -> wake(s, d.optString("host").ifEmpty { s.host })
             "/api/tv/select" -> {

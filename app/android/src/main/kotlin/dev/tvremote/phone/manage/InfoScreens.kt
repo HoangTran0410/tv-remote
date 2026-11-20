@@ -1,5 +1,7 @@
 package dev.tvremote.phone.manage
 
+import dev.tvremote.phone.remote.closeFieldLink
+import dev.tvremote.phone.remote.openFieldLink
 import dev.tvremote.phone.NotificationRemote
 import dev.tvremote.phone.MainActivity
 import dev.tvremote.phone.R
@@ -143,6 +145,18 @@ internal fun MainActivity.buildSettings(): View {
     }
     kbdLabel()
     box.addView(kbdRow)
+    lateinit var fieldRow: Button                                    // #31: typing into the TV's own field, ADB or not (Typing.kt openFieldLink)
+    val fieldLabel = { fieldRow.setToggle(prefs.getBoolean("fieldType", false), T("about.type_in_field")) }
+    fieldRow = row("") {
+        val on = !prefs.getBoolean("fieldType", false)
+        prefs.edit().putBoolean("fieldType", on).apply()
+        fieldLabel()
+        val ip = host
+        if (!on) closeFieldLink() else if (ip != null && tv != null) openFieldLink(ip, ask = true)
+    }
+    fieldLabel()
+    box.addView(fieldRow)
+    box.addView(note(T("about.type_in_field_note")))
 
     box.addView(head(T("info_screens.updates")), gap(18))
     lateinit var auto: Button

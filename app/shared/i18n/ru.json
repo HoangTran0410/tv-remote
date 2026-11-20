@@ -240,6 +240,8 @@
  "about.tv_keyboard": "Клавиатура телевизора",
  "about.tv_keyboard_auto": "Открывать поле ввода само",
  "about.tv_keyboard_manual": "Не открывать",
+ "about.type_in_field": "Печатать прямо в поле на телевизоре",
+ "about.type_in_field_note": "И с ADB: ↵ отправляет поле, а текст в нём можно исправить. В первый раз телевизор покажет код для сопряжения.",
  "about.census": "Отправлять анонимную статистику",
  "about.census_send": "Отправлять",
  "about.census_none": "Не отправлять",

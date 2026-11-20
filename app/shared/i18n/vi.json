@@ -230,6 +230,8 @@
  "about.tv_keyboard": "Bàn phím của TV",
  "about.tv_keyboard_auto": "Tự mở ô gõ",
  "about.tv_keyboard_manual": "Không tự mở",
+ "about.type_in_field": "Gõ thẳng vào ô chữ của TV",
+ "about.type_in_field_note": "Cả khi có ADB: ↵ gửi đúng ô, sửa được chữ đã có. Lần đầu TV hiện mã để ghép.",
  "about.census": "Gửi thống kê ẩn danh",
  "about.census_send": "Gửi",
  "about.census_none": "Không gửi",

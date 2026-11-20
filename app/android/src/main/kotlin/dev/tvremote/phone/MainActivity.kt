@@ -60,6 +60,8 @@ import dev.tvremote.phone.picture.pipLeaveHint
 import dev.tvremote.phone.picture.pipUpdate
 import dev.tvremote.phone.picture.setFloat
 import dev.tvremote.phone.picture.unfloat
+import dev.tvremote.phone.remote.openFieldLink
+import dev.tvremote.phone.remote.closeFieldLink
 import dev.tvremote.phone.remote.KbdWatch
 import dev.tvremote.phone.remote.PadMap
 import dev.tvremote.phone.remote.TapMark
@@ -160,6 +162,8 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
     private var picWatchers = 0                                       // devices watching this TV, ours too (Watchers.kt)
     @Volatile internal var sound: Tv? = null                           // the TV's sound, a session of its own (Listen.kt)
     internal var soundTries = 0
+    internal var fieldLink: Atv? = null                               // with ADB: the remote link beside it, for the TV's own text field only (#31)
+    internal val fieldUnpaired = HashSet<String>()                    // TVs that refused it: not tried again until the app restarts
     internal var basic: Remote? = null                                 // keys only: an Android TV whose ADB is still off (Atv), or an LG / Samsung TV (KeysOnly.kt)
     internal var host: String? = null                                  // the TV we want to be connected to, null on the picker
     internal var entry: String? = null                                 // the saved TV that [host] is another address of (its Tailscale or home IP), if so
@@ -459,6 +463,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
         if (NotificationRemote.screen === notifyKey) NotificationRemote.screen = null
         if (listen) { listen = false; listenService(false); stopSound() }
         stopSession()
+        closeFieldLink()
         basic?.close()
         basic = null
         super.onDestroy()
@@ -584,6 +589,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
         val h = host
         if (h.isNullOrBlank() || basic != null || keysAway || kindOf(entry ?: h) != Remote.Kind.ANDROID) return
         if (tv == null) { tv = Tv(this, h, null, 0, 0, wakeNext, this); wakeNext = false }
+        openFieldLink(h)
         startPicture()
     }
 
@@ -804,6 +810,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
         setupRow.visibility = View.GONE
         if (listen) { listen = false; bgListen = false; listenService(false); stopSound() }
         stopSession()
+        closeFieldLink()
         waiting.visibility = View.GONE
         surface.visibility = View.GONE                                 // drops the surface, or the next TV opens on this one's last frame
         basic?.close()

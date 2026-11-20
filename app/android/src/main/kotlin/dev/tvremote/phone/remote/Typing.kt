@@ -5,6 +5,7 @@ import dev.tvremote.phone.ui.setOn
 
 import dev.tvremote.core.T
 import dev.tvremote.core.remote.Atv
+import dev.tvremote.core.remote.Remote
 
 // The text box: type then send, or live (the TV follows every letter); with or without ADB.
 
@@ -20,6 +21,10 @@ internal fun MainActivity.sendText() {
         if (live) { it.key(66, Atv.SHORT); clearBox() }           // everything is on the TV already: this is Enter
         else if (s.isEmpty()) it.key(66, Atv.SHORT)
         else { val a = it as? Atv; if (a == null) it.text(s) else a.type(0, s, false); textBox.setText("") }   // keys, or the keyboard service for accents and capitals
+        return
+    }
+    fieldLink?.takeIf { it.hasField }?.let { f ->                 // ADB on, and the TV reports its field: typed through it (#31)
+        if (!live && s != f.currentField?.text) f.replace(s) else { f.type(0, "", true); clearBox() }
         return
     }
     val tv = tv
@@ -70,6 +75,14 @@ internal fun MainActivity.typedLive(now: String) {
         onTv = now
         return
     }
+    fieldLink?.takeIf { it.hasField }?.let { f ->                 // ADB on, and the TV reports its field: its text, edited (#31)
+        var keep = 0
+        while (keep < onTv.length && keep < now.length && onTv[keep] == now[keep]) keep++
+        if (keep > 0 && Character.isHighSurrogate(onTv[keep - 1])) keep--
+        f.type(onTv.codePointCount(keep, onTv.length), now.substring(keep), false)
+        onTv = now
+        return
+    }
     val tv = tv
     if (tv == null || !tv.ready()) return
     var same = 0
@@ -95,5 +108,38 @@ internal fun MainActivity.fieldShown(f: Atv.Field?) {
 
 /** Follows the TV's text field for as long as [a] is the remote in use. */
 internal fun MainActivity.watchField(a: Atv) {
-    a.onField = { ui.post { if (basic === a) fieldShown(a.currentField) } }
+    a.onField = { ui.post { if (basic === a || fieldLink === a) fieldShown(a.currentField) } }
+}
+
+/**
+ * With ADB: the remote link opened beside it, only so typing goes into the TV's own text field (#31): Enter submits the field
+ * instead of pressing the on-screen keyboard's key, and the text already in it can be edited. An extra the person turns on
+ * (About → The TV's keyboard, pref "fieldType"; off: nothing opens); [ask] is that tap: an unpaired TV then shows its code
+ * to type once, otherwise an unpaired link is only refused and the TV shows nothing. ADB keeps everything else.
+ */
+internal fun MainActivity.openFieldLink(ip: String, ask: Boolean = false) {
+    if (!prefs.getBoolean("fieldType", false)) return
+    if (ask) fieldUnpaired.remove(ip)
+    if (fieldLink != null || ip in fieldUnpaired || basic != null || kindOf(entry ?: ip) != Remote.Kind.ANDROID) return
+    val a = Atv(filesDir, ip)
+    fieldLink = a
+    Thread {
+        try {
+            a.connect { ui.post { if (fieldLink === a) { fieldLink = null; a.close() } } }   // dropped: opened again with the next session
+            ui.post { if (fieldLink === a && host == ip) watchField(a) else a.close() }
+        } catch (e: Exception) {
+            a.close()
+            ui.post {
+                if (fieldLink === a) fieldLink = null
+                if (e is Atv.NotPaired) { fieldUnpaired.add(ip); if (ask && host == ip) Thread { pair(ip) { prefs.edit().putBoolean("atv:$ip", true).apply(); fieldUnpaired.remove(ip); openFieldLink(ip) } }.start() }
+            }
+        }
+    }.apply { isDaemon = true }.start()
+}
+
+internal fun MainActivity.closeFieldLink() {
+    val a = fieldLink ?: return
+    fieldLink = null
+    a.onField = null
+    Thread { a.close() }.start()
 }

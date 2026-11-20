@@ -255,6 +255,8 @@
  "about.tv_keyboard": "لوحة مفاتيح التلفزيون",
  "about.tv_keyboard_auto": "افتح مربع الكتابة تلقائيًا",
  "about.tv_keyboard_manual": "لا تفتحه",
+ "about.type_in_field": "الكتابة مباشرة في خانة النص على التلفاز",
+ "about.type_in_field_note": "حتى مع ADB: ‏↵ يرسل الخانة، ويمكن تعديل نصها. في المرة الأولى يعرض التلفاز رمزًا للاقتران.",
  "about.census": "إرسال إحصاءات مجهولة الهوية",
  "about.census_send": "أرسل",
  "about.census_none": "لا ترسل",

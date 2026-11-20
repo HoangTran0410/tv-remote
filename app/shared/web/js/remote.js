@@ -155,11 +155,11 @@ function syncText() {                                                 // send on
   if (del || text) queue('/api/type', { del, text });
 }
 const typeOk = () => ADB.state === 'ready' || NATIVE() && can('text') || !!STATE.field;   // letters: ADB, LG's / Samsung's keyboard link, or the field an Android TV reports
-// An Android TV with no ADB tells its text field (/api/state "field": text, label, seq; Atv.kt): the box starts with its text and
+// An Android TV tells its text field over the remote link, ADB or not (/api/state "field": text, label, seq; Atv.kt): the box starts with its text and
 // the label as the hint, and what is typed replaces the field's text on the TV. seq moves only when the TV changed it.
 let fieldSeen = -1;
 function fieldFollow() {
-  const f = ADB.state === 'ready' || NATIVE() ? null : STATE.field, seq = f ? f.seq : -1;   // with ADB the box is ours: the TV's echo of each key would race what is typed
+  const f = NATIVE() ? null : STATE.field, seq = f ? f.seq : -1;     // a reported field takes the typing, ADB or not (#31): the box mirrors it
   if (seq === fieldSeen) return; fieldSeen = seq;
   if (!f) { if (live) txt.value = typed = ''; txt.placeholder = live ? T('remote.type_on_the_tv') : T('remote.type_then_send'); return; }
   txt.value = typed = f.text; txt.placeholder = f.label || (live ? T('remote.type_on_the_tv') : T('remote.type_then_send'));
@@ -177,7 +177,7 @@ txt.addEventListener('input', (e) => { if (live && !e.isComposing) syncText(); }
 txt.addEventListener('compositionend', () => live && syncText());   // Vietnamese / IME input arrives when the syllable is done
 $('#textf').addEventListener('submit', (e) => {
   e.preventDefault();
-  const field = ADB.state !== 'ready' && !NATIVE() && !!STATE.field;   // the box holds the TV field's text (fieldFollow)
+  const field = !NATIVE() && !!STATE.field;                           // the box holds the TV field's text (fieldFollow)
   if (!live && field && txt.value !== typed) return syncText();       // Send, edited: what changed goes in (the TV inserts, never replaces); the next Send is Enter
   if (live || field) { syncText(); queue('/api/type', { enter: true }); } else if (txt.value) queue('/api/type', { text: txt.value });
   txt.value = typed = '';
@@ -247,7 +247,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && document.fullscreenElement) return;       // let Esc leave fullscreen
   const adb = typeOk();      // letters: ADB, or LG's / Samsung's keyboard link
   if (keymap[e.key] || e.key === 'Enter') { e.preventDefault(); if (!e.repeat) keyDown(e.key); }   // sent on keyup: held, it is a long press
-  else if (e.key === 'Backspace') { e.preventDefault(); if (adb && STATE.field && ADB.state !== 'ready' && !NATIVE()) $('#del').click(); else if (adb) queue('/api/type', { del: 1 }); else api('/api/key', { key: 'DEL' }); }
+  else if (e.key === 'Backspace') { e.preventDefault(); if (adb && STATE.field && !NATIVE()) $('#del').click(); else if (adb) queue('/api/type', { del: 1 }); else api('/api/key', { key: 'DEL' }); }
   else if (!adb) return;                                              // letters need ADB
   else if (e.key === 'Delete') { e.preventDefault(); queue('/api/type', { fdel: 1 }); }
   else if (e.key.length === 1) { e.preventDefault(); queue('/api/type', { text: e.key }); }
