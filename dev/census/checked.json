@@ -3135,19 +3135,24 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "a0ef02bfc8edf9bdb3f78d1d|0.51.0": {
-  "at": "2026-11-17T05:38:58+07:00",
+  "at": "2026-11-20T08:23:13+07:00",
   "n": 1,
-  "note": "Amlogic t950s fake-Pixel box again on 0.53.0 (a13, rs allow): another a11y app, ours dropped; nothing to fix"
+  "note": "Amlogic t950s box again on 0.53.1: rs allow, other a11y bound, firmware drops ours (operator kind)"
  },
  "a0ef02bfc8edf9bdb3f78d1d|0.52.0": {
-  "at": "2026-11-17T05:38:58+07:00",
+  "at": "2026-11-20T08:23:13+07:00",
   "n": 1,
-  "note": "Amlogic t950s fake-Pixel box again on 0.53.0 (a13, rs allow): another a11y app, ours dropped; nothing to fix"
+  "note": "Amlogic t950s box again on 0.53.1: rs allow, other a11y bound, firmware drops ours (operator kind)"
  },
  "a0ef02bfc8edf9bdb3f78d1d|0.53.0": {
-  "at": "2026-11-17T05:38:58+07:00",
+  "at": "2026-11-20T08:23:13+07:00",
   "n": 1,
-  "note": "Amlogic t950s fake-Pixel box again on 0.53.0 (a13, rs allow): another a11y app, ours dropped; nothing to fix"
+  "note": "Amlogic t950s box again on 0.53.1: rs allow, other a11y bound, firmware drops ours (operator kind)"
+ },
+ "a0ef02bfc8edf9bdb3f78d1d|0.53.1": {
+  "at": "2026-11-20T08:23:13+07:00",
+  "n": 1,
+  "note": "Amlogic t950s box again on 0.53.1: rs allow, other a11y bound, firmware drops ours (operator kind)"
  },
  "a11df287c4b27a276b8f644e|0.27.0": {
   "at": "2026-11-02T22:17:48+07:00",
