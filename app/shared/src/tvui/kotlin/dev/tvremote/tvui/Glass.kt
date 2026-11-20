@@ -108,6 +108,7 @@ class Glass(c: Context, private val dp: (Number) -> Int) : View(c) {
      */
     fun to(content: ViewGroup, face: View, grow: Float, r: Float, glide: Boolean) {
         waiting?.let { (v, l) -> v.removeOnLayoutChangeListener(l) }; waiting = null
+        if (!inside(content, face)) return                            // a tile taken out (a row rebuilt) as it got the focus: offsetDescendantRectToMyCoords threw (census 667e486a)
         // not laid out yet: once it has a size. A post here spun the main thread for hours on a face that stayed 0 wide (FPT, 2026-11-01)
         if (face.width == 0) {
             val l = object : View.OnLayoutChangeListener {
@@ -137,6 +138,12 @@ class Glass(c: Context, private val dp: (Number) -> Int) : View(c) {
     private var waiting: Pair<View, View.OnLayoutChangeListener>? = null   // a face not laid out yet: one at a time, the latest focus wins
 
     private fun fits(face: View, r: Float) = baseH > 0 && r == radius && Math.abs(face.width.toFloat() / face.height - baseW.toFloat() / baseH) < 0.02f
+
+    private fun inside(content: ViewGroup, face: View): Boolean {
+        var p = face.parent
+        while (p is View) { if (p === content) return true; p = p.parent }
+        return false
+    }
 
     /** [face]'s place in content, in [at]. */
     private fun target(content: ViewGroup, face: View, grow: Float) { at.set(0, 0, face.width, face.height); content.offsetDescendantRectToMyCoords(face, at) }

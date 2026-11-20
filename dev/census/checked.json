@@ -2084,6 +2084,11 @@
   "n": 1,
   "note": "Safari with stale HTML + new JS (auto.js stopped at #supgo); 1 install, left"
  },
+ "667e486a7ce334431ac1737e|0.35.0": {
+  "at": "2026-11-21T01:59:28+07:00",
+  "n": 1,
+  "note": "Glass.to on a face no longer inside content (row rebuilt during focus): guarded, next commit"
+ },
  "66eb0755a0216e63a9de947c|0.45.0": {
   "at": "2026-11-06T17:03:02+07:00",
   "n": 1,

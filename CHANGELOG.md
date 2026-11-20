@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: no crash when a tile is taken out of its row (a row rebuilt) just as it gets the focus.
 - Typing with ADB on (Android TV, #31): when the TV reports a text field, text goes through the TV's keyboard service, so Enter submits the field instead of pressing the on-screen key and the text already in it can be edited. Computer app: once the remote is paired (Setup tab). Phone app: an extra, off by default (Settings → About → "Type straight into the TV's text box"); turning it on pairs the remote once with the code the TV shows.
 - Telegram: in a paired group only the group's admins can control the TV; other members still see alerts, and a command or button of theirs gets a short "only admins" note.
 - TV Home: with two rows of widgets over the grid, Down from the widgets now scrolls the focused app tile into view, and Up from the grid shows the whole widget area again (the top row was cut off).
