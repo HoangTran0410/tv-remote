@@ -30,4 +30,4 @@ TV tắt hay đồng hồ nhảy qua giờ hẹn thì bỏ lượt đó, không 
 
 Sao lưu: **⬇️ Xuất file sao lưu** và **⬆️ Nhập từ file**.
 
-> 💡 Cảnh đang chạy mà bấm lại thì bị bỏ qua không chạy hai lần.
+> 💡 Cảnh đang chạy mà bấm lại thì bị bỏ qua, không chạy hai lần.
