@@ -29,3 +29,5 @@ Run a scene from **More keys → Scenes**, by voice (say its name), or from the 
 If the TV was off or its clock jumped past the time, that run is skipped, not made up. Needs a newer TV Setup; not for LG or Samsung TVs.
 
 Back up with **⬇️ Export a backup file** and **⬆️ Import from a file**.
+
+> 💡 A scene started again while it runs is skipped, not run twice.

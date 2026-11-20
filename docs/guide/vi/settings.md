@@ -10,3 +10,5 @@
 
 - **🔍 Tìm** (cuối thanh tab): gõ một từ như “hẹn giờ” hay “khóa” để tới thẳng chỗ của nó, không cần biết nó ở tab nào.
 - **Gửi thống kê ẩn danh** (bật sẵn): xem [Thống kê ẩn danh](census.md). Trên app điện thoại nằm ở Quyền riêng tư.
+
+> 💡 App điện thoại: Giới thiệu → **Gõ thẳng vào ô chữ của TV** (mặc định tắt): khi ADB bật, Enter gửi ô chữ và sửa được chữ đang có. Lần đầu TV hiện mã để ghép.

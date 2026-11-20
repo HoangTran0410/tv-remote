@@ -73,7 +73,7 @@ Chưa có ADB thì trang Quản lý sẽ chỉ bạn bật nó: bấm **🧭 B�
 
 App nhỏ trên TV: chạy trang web của TV, hẹn giờ tắt, giới hạn app và nhiều thứ khác.
 
-> 📱 **Có app điện thoại hoặc máy tính? Không cần Downloader.** Chọn TV (đã bật ADB), vào **Quản lý → ⏰ Tự động**, bấm **⚡ Cài TV Setup lên TV**. Một nút, Play Protect không chặn.
+> 📱 **Có app điện thoại hoặc máy tính? Không cần Downloader.** Chọn TV (đã bật ADB), vào **Quản lý → ⏰ Tự động**, bấm **⚡ Cài TV Setup lên TV**. TV hỏi Play Protect thì chọn “Vẫn cài”.
 
 ### Chỉ có TV: cài bằng Downloader
 
@@ -757,7 +757,7 @@ Phím màu, phím số và nút đã hết tác dụng có thể mở app bạn 
 | --- | --- |
 | Đỏ, xanh lá, vàng, xanh dương | Luôn luôn: không app nào dùng chúng |
 | 0-9 | Ở TV Home: bấm. App khác: giữ 2 giây (cần TV Setup) |
-| Phím khác: phát, kênh, Info… | Chỉ ở TV Home. Trên TV: ô **Phím khác**, rồi bấm phím đó |
+| Phím khác: phát, kênh, Info… | Chỉ ở TV Home. Trên TV: ô **Phím khác**, rồi bấm phím đó (trừ phím cách và nút tay cầm) |
 | YouTube, Netflix, Prime Video | Luôn luôn: gán app khác thì nút mở app đó thay app gốc (cần TV Setup) |
 | TV, Input, PatchWall, Tất cả app, Cài đặt | Chỉ khi nút đã chết. Nút còn chạy thì không bị lấy |
 | Lệnh giọng nói (trong danh sách, cạnh app) | Cho phím màu hoặc phím app, khi nút Assistant bị hệ thống giữ (Xiaomi). Cần TV Setup 0.46.1+ |
@@ -1042,6 +1042,8 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 
 > 💡 TV chưa tắt được (ADB tắt hoặc TV Setup chưa nối được)? Hẹn giờ không tự xóa: nó báo một lần và thử lại.
 
+> 💡 “23:30” theo đồng hồ TV; TV khác múi giờ thì trang báo.
+
 ## Giờ đi ngủ
 
 1. Tab **⏰ Tự động → 🌙 Giờ đi ngủ**.
@@ -1051,6 +1053,8 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 > 💡 Cần TV Setup trên TV. Việc tắt do chính TV làm.
 
 > 💡 TV chưa tắt được (ADB tắt hoặc TV Setup chưa nối được)? App báo một lần và thử lại, Telegram không báo “đã tắt” sai.
+
+> 💡 Giờ đi ngủ, giới hạn và lịch chờ khi đồng hồ TV còn sai sau khi bật (có box khởi động với sai năm). Giờ theo đồng hồ TV; TV khác múi giờ thì trang báo.
 
 ## Màn hình chào
 
@@ -1076,6 +1080,8 @@ Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ
 > 💡 Tất cả nằm trên TV và cần TV Setup. TV ngủ hay máy bạn tắt vẫn có hiệu lực.
 
 > 💡 Chưa đóng được app (ADB tắt hoặc TV Setup chưa nối được)? App báo một lần và thử lại, thông báo “đã đóng app” không gửi sai.
+
+> 💡 Màn hình chính (TV Home, của TV) không đặt giới hạn được: đóng nó chỉ khiến nó mở lại.
 
 ## Chế độ trẻ em: thiết lập nhanh
 
@@ -1152,6 +1158,8 @@ TV tắt hay đồng hồ nhảy qua giờ hẹn thì bỏ lượt đó, không 
 
 Sao lưu: **⬇️ Xuất file sao lưu** và **⬆️ Nhập từ file**.
 
+> 💡 Cảnh đang chạy mà bấm lại thì bị bỏ qua không chạy hai lần.
+
 ## Điều khiển TV bằng Telegram
 
 Nhắn bot của riêng bạn để tắt/bật TV, chỉnh tiếng, mở app, chụp màn hình. Bot chạy trong TV Setup, không mở cổng ra Internet.
@@ -1195,6 +1203,8 @@ Thêm lệnh cho bot, và TV tự nhắn khi có việc. Cần đã ghép đôi 
 4. **/alerts** chọn tin TV tự gửi: bật/tắt TV, app bị đóng, giờ ngủ, hẹn giờ tắt, thiết bị mới ghép. Tối đa một tin mỗi loại mỗi phút. Tin “đã đóng app” có nút thêm giờ.
 
 Trong **🛠️ Cài đặt** bạn thấy trạng thái bot, mã QR để ghép đôi bằng một lần quét, từng chat với quyền và loại tin, và lịch sử 7 ngày. Nội dung /type và /say không được lưu.
+
+> 💡 Trong nhóm chỉ admin điều khiển được TV; người khác vẫn xem được cảnh báo.
 
 ## Home Assistant · Phím tắt (Siri)
 
@@ -1373,6 +1383,8 @@ Trong app điện thoại hay máy tính: **Thêm** › **Tiện ích** › **T�
 
 - **🔍 Tìm** (cuối thanh tab): gõ một từ như “hẹn giờ” hay “khóa” để tới thẳng chỗ của nó, không cần biết nó ở tab nào.
 - **Gửi thống kê ẩn danh** (bật sẵn): xem [Thống kê ẩn danh](#census). Trên app điện thoại nằm ở Quyền riêng tư.
+
+> 💡 App điện thoại: Giới thiệu → **Gõ thẳng vào ô chữ của TV** (mặc định tắt): khi ADB bật, Enter gửi ô chữ và sửa được chữ đang có. Lần đầu TV hiện mã để ghép.
 
 ## Tự kiểm tra khi không kết nối được
 

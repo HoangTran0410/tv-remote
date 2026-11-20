@@ -10,3 +10,5 @@
 
 - **🔍 Find** (end of the tab bar): type a word like “sleep” or “lock” to go straight to it, whatever tab it is in.
 - **Send anonymous stats** (on by default): see [Anonymous stats](census.md). In the phone app it is under Privacy.
+
+> 💡 Phone app: About → **Type straight into the TV's text box** (off by default): with ADB on, Enter sends the field and its text can be edited. The first time the TV shows a code to pair.

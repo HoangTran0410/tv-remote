@@ -73,7 +73,7 @@ Without ADB the Manage page shows you how to turn it on: tap **🧭 Turn ADB on 
 
 A small app on the TV: it runs the TV's web page, the sleep timer, app limits and more.
 
-> 📱 **Have the phone or computer app? No Downloader needed.** Pick the TV (ADB on), open **Manage → ⏰ Automation**, press **⚡ Install TV Setup on the TV**. One button, and Play Protect does not block it.
+> 📱 **Have the phone or computer app? No Downloader needed.** Pick the TV (ADB on), open **Manage → ⏰ Automation**, press **⚡ Install TV Setup on the TV**. If the TV asks about Play Protect, choose Install anyway.
 
 ### Only the TV: install with Downloader
 
@@ -757,7 +757,7 @@ Color keys, number keys and buttons that no longer do anything can open the app 
 | --- | --- |
 | Red, green, yellow, blue | Always: no app uses them |
 | 0-9 | On TV Home: a press. In other apps: hold 2 s (needs TV Setup) |
-| Other keys: play, channel, Info… | On TV Home only. On the TV: the **Other key** tile, then press that key |
+| Other keys: play, channel, Info… | On TV Home only. On the TV: the **Other key** tile, then press that key (not Space or a gamepad button) |
 | YouTube, Netflix, Prime Video | Always: given another app, the button opens it instead (needs TV Setup) |
 | TV, Input, PatchWall, All apps, Settings | Only while the button is dead. A working button is never taken |
 | Voice command (in the list, next to apps) | For a color or app key when the system keeps the Assistant button (Xiaomi). Needs TV Setup 0.46.1+ |
@@ -1042,6 +1042,8 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 
 > 💡 The TV could not be turned off (ADB is off, or TV Setup can’t connect)? The timer does not clear itself: it says so once and keeps trying.
 
+> 💡 “23:30” follows the TV's clock; the page says so when the TV is in another time zone.
+
 ## Bedtime
 
 1. Tab **⏰ Automation → 🌙 Bedtime**.
@@ -1051,6 +1053,8 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 > 💡 Needs TV Setup on the TV. The TV does the turning off itself.
 
 > 💡 The TV could not be turned off (ADB is off, or TV Setup can’t connect)? It says so once and tries again; Telegram does not report “off” by mistake.
+
+> 💡 Bedtime, limits and schedules wait while the TV's clock is still wrong after it starts (some boxes boot in the wrong year). Times follow the TV's clock; if the TV is in another time zone, the page says so.
 
 ## Welcome screen
 
@@ -1076,6 +1080,8 @@ To play it properly: **More keys → Open on the TV → Play a photo / video fro
 > 💡 All of it lives on the TV and needs TV Setup. It holds even with your device off.
 
 > 💡 The app could not be closed (ADB is off, or TV Setup can’t connect)? It says so once and tries again; the “app closed” alert is not sent by mistake.
+
+> 💡 A home screen (TV Home, the TV's own) cannot get a limit: closing it only opens it again.
 
 ## Kids mode: quick setup
 
@@ -1152,6 +1158,8 @@ If the TV was off or its clock jumped past the time, that run is skipped, not ma
 
 Back up with **⬇️ Export a backup file** and **⬆️ Import from a file**.
 
+> 💡 A scene started again while it runs is skipped, not run twice.
+
 ## Control the TV from Telegram
 
 Message your own bot to turn the TV off or on, set the volume, open apps, take a screenshot. The bot runs in TV Setup and opens no port to the Internet.
@@ -1195,6 +1203,8 @@ More bot commands, and the TV messages you when something happens. A paired chat
 4. **/alerts** picks what the TV sends by itself: TV on or off, app closed, bedtime, sleep timer, a new device. At most one per kind per minute. The “app closed” alert has more-time buttons (see [limits](#limits)).
 
 In **🛠️ Settings** you see the bot's status, a QR to pair with one scan, each chat with its rights and alerts, and a 7-day history. The words of /type and /say are never kept.
+
+> 💡 In a group only the admins can command the TV; the others still see the alerts.
 
 ## Home Assistant · Shortcuts (Siri)
 
@@ -1373,6 +1383,8 @@ Menu paths from [cleanyour.tv](https://cleanyour.tv/not-android).
 
 - **🔍 Find** (end of the tab bar): type a word like “sleep” or “lock” to go straight to it, whatever tab it is in.
 - **Send anonymous stats** (on by default): see [Anonymous stats](#census). In the phone app it is under Privacy.
+
+> 💡 Phone app: About → **Type straight into the TV's text box** (off by default): with ADB on, Enter sends the field and its text can be edited. The first time the TV shows a code to pair.
 
 ## The self-check when it will not connect
 
