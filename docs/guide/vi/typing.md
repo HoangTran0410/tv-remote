@@ -10,3 +10,5 @@
 > 💡 Chọn ô chữ trên TV hoặc khi bàn phím TV bật lên, ô gõ và bàn phím điện thoại tự mở trong chưa tới 1 giây. Rời ô mà chưa gõ gì thì ô gõ tự đóng.
 
 > 💡 Tắt ở Cài đặt (🛠️) → Giới thiệu → “Bàn phím của TV” → **Không tự mở**.
+
+> 💡 Không có ADB: khi TV báo có ô chữ, ô gõ bắt đầu bằng chữ đang có trong ô (tên ô làm gợi ý), sửa ở đây là sửa luôn trên TV, và **↵** gửi đi (tìm kiếm). App có bàn phím riêng (Downloader…) vẫn gõ từng phím như trước.

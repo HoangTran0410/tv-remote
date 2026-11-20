@@ -259,6 +259,8 @@ Trên app điện thoại, nút **Thu nhỏ hình** cạnh toàn màn hình th�
 
 > 💡 Tắt ở Cài đặt (🛠️) → Giới thiệu → “Bàn phím của TV” → **Không tự mở**.
 
+> 💡 Không có ADB: khi TV báo có ô chữ, ô gõ bắt đầu bằng chữ đang có trong ô (tên ô làm gợi ý), sửa ở đây là sửa luôn trên TV, và **↵** gửi đi (tìm kiếm). App có bàn phím riêng (Downloader…) vẫn gõ từng phím như trước.
+
 ## Clipboard của TV (chữ có dấu, dán chữ)
 
 Clipboard là chỗ TV giữ chữ vừa sao chép. Dùng để xem chữ trên TV, lấy về máy, hoặc đưa chữ lên TV.

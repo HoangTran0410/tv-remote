@@ -11,6 +11,12 @@ import dev.tvremote.core.remote.Atv
 internal fun MainActivity.sendText() {
     val s = textBox.text.toString()
     basic?.let {                                                  // keys only: the text goes into the field that has the focus on the TV
+        val f = (it as? Atv)?.takeIf { a -> a.hasField }          // the TV's own text field: the box holds all its text
+        if (f != null) {
+            if (!live && s != f.currentField?.text) f.replace(s)  // edited here: the field gets it all; unchanged (or live): Enter, which submits
+            else { f.submit(); clearBox() }
+            return
+        }
         if (live) { it.key(66, Atv.SHORT); clearBox() }           // everything is on the TV already: this is Enter
         else if (s.isEmpty()) it.key(66, Atv.SHORT)
         else { val a = it as? Atv; if (a == null) it.text(s) else if (a.hasField && !Atv.typable(s)) a.text(s) else a.keys(s); textBox.setText("") }
@@ -56,7 +62,11 @@ internal fun MainActivity.typedLive(now: String) {
             onTv = now
             return
         }
-        if (it.hasField && !Atv.typable(now)) { if (now.isNotEmpty()) it.text(now) }
+        if (it.hasField) {                                        // the TV's text field: its text, replaced as a whole
+            var keep = 0
+            while (keep < onTv.length && keep < now.length && onTv[keep] == now[keep]) keep++
+            it.type(onTv.codePointCount(keep, onTv.length), now.substring(keep), false)
+        }
         else {
             var keep = 0
             while (keep < onTv.length && keep < now.length && onTv[keep] == now[keep]) keep++
@@ -73,4 +83,22 @@ internal fun MainActivity.typedLive(now: String) {
     repeat(onTv.length - same) { tv.press(67) }
     if (now.length > same) tv.text(now.substring(same))
     onTv = now
+}
+
+/** The TV's text field appeared, changed or went (Atv.onField): the box starts with what is in it, with its label as the hint. */
+internal fun MainActivity.fieldShown(f: Atv.Field?) {
+    quiet = true
+    if (f == null) { if (live) textBox.setText("") }              // nothing to mirror any more; with Send, the words wait
+    else {
+        textBox.setText(f.text)
+        textBox.setSelection(textBox.text.length)
+        textBox.hint = f.label.ifEmpty { if (live) T("typing.live_the_tv_gets") else T("typing.type_then_send") }
+    }
+    quiet = false
+    onTv = f?.text ?: ""
+}
+
+/** Follows the TV's text field for as long as [a] is the remote in use. */
+internal fun MainActivity.watchField(a: Atv) {
+    a.onField = { ui.post { if (basic === a) fieldShown(a.currentField) } }
 }

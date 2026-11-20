@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Typing without ADB (Phone and Computer apps, Android TV): when the TV reports a text field, all text goes through it (not only accents), the box starts with the text already in the field and edits replace it, and Enter submits. Apps with their own keyboard (Downloader) still get key presses.
 - TV Home: "Select all" for each group of backgrounds (your photos, videos, scenes, colours) while the background changes by itself, up to 40; it says when the set is full.
 - TV Home: Quick keys has an "Other key" tile: press any remote key (play, channel, Info...) to give it an app; it works on TV Home's screen only, so in other apps the key keeps its job. Home, Back, arrows, OK, volume and power are never taken.
 - TV Home: widgets can sit in two rows above the apps (Widgets position → "Above the apps, 2 rows"), for more widgets on the first screen.

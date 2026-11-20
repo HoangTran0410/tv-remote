@@ -377,7 +377,7 @@ class Server(private val repo: File, private val keys: File, private val pass: P
             "/api/volume" -> volume(s, d)
             "/api/text" -> { s.need().text(d.optString("text").take(500)); Response.ok() }
             "/api/touch" -> if (native(s)) Response.error(400, "unsupported: " + Remote.Kind.name(s.kind)) else TvControl.touch(s.control(), d)
-            "/api/type" -> if (native(s)) { s.need().type(minOf(d.optInt("del"), 500), d.optString("text").take(500), d.optBoolean("enter")); Response.ok() } else TvControl.type(s.control(), d)
+            "/api/type" -> if (native(s) || (!adbReady(s) && s.atv is Atv)) { s.need().type(minOf(d.optInt("del"), 500), d.optString("text").take(500), d.optBoolean("enter")); Response.ok() } else TvControl.type(s.control(), d)
             "/api/clip" -> if (native(s)) Response.error(400, "unsupported: " + Remote.Kind.name(s.kind)) else { s.control().setClipboard(d.optString("text").take(100000), d.optBoolean("paste")); Response.ok() }
             "/api/wake" -> wake(s, d.optString("host").ifEmpty { s.host })
             "/api/tv/select" -> {

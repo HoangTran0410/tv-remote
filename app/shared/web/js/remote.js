@@ -153,6 +153,17 @@ function syncText() {                                                 // send on
   const del = [...typed.slice(i)].length, text = v.slice(i); typed = v;
   if (del || text) queue('/api/type', { del, text });
 }
+const typeOk = () => ADB.state === 'ready' || NATIVE() && can('text') || !!STATE.field;   // letters: ADB, LG's / Samsung's keyboard link, or the field an Android TV reports
+// An Android TV with no ADB tells its text field (/api/state "field": text, label, seq; Atv.kt): the box starts with its text and
+// the label as the hint, and what is typed replaces the field's text on the TV. seq moves only when the TV changed it.
+let fieldSeen = -1;
+function fieldFollow() {
+  const f = STATE.field, seq = f ? f.seq : -1;
+  if (seq === fieldSeen) return; fieldSeen = seq;
+  if (!f) { if (live) txt.value = typed = ''; txt.placeholder = live ? T('remote.type_on_the_tv') : T('remote.type_then_send'); return; }
+  txt.value = typed = f.text; txt.placeholder = f.label || (live ? T('remote.type_on_the_tv') : T('remote.type_then_send'));
+  if (kbdAutoOn() && currentTab === 'remote' && !$('#kbd').disabled && !$('#kbdbtn').classList.contains('on')) { setKbd(true); txt.focus({ preventScroll: true }); }
+}
 // Two ways to type, as in the phone app. Live (⚡ on): the TV follows every letter. Send: write first, then send it in one go.
 let live = true;
 function setLive(on) {
@@ -231,7 +242,7 @@ document.addEventListener('keydown', (e) => {
   if (document.activeElement.closest('nav.tabs') && /^(Arrow(Left|Right)|Home|End)$/.test(e.key)) return;   // the tab bar's own arrows
   if (onButton && (e.key === 'Enter' || e.key === ' ' || e.key === 'Tab')) return;   // keyboard users still operate the page
   if (e.key === 'Escape' && document.fullscreenElement) return;       // let Esc leave fullscreen
-  const adb = ADB.state === 'ready' || NATIVE() && can('text');      // letters: ADB, or LG's / Samsung's keyboard link
+  const adb = typeOk();      // letters: ADB, or LG's / Samsung's keyboard link
   if (keymap[e.key] || e.key === 'Enter') { e.preventDefault(); if (!e.repeat) keyDown(e.key); }   // sent on keyup: held, it is a long press
   else if (e.key === 'Backspace') { e.preventDefault(); if (adb) queue('/api/type', { del: 1 }); else api('/api/key', { key: 'DEL' }); }
   else if (!adb) return;                                              // letters need ADB
@@ -250,12 +261,12 @@ const keyUp = (key, tap) => {
   if (h.long) api('/api/key', { key: keymap[key] || 'OK', dir: 'END_LONG' });
   else if (!tap) return;
   else if (keymap[key]) api('/api/key', { key: keymap[key] });
-  else if (ADB.state === 'ready' || NATIVE() && can('text')) queue('/api/type', { enter: true }); else api('/api/key', { key: 'OK' });
+  else if (typeOk()) queue('/api/type', { enter: true }); else api('/api/key', { key: 'OK' });
 };
 document.addEventListener('keyup', (e) => keyUp(e.key, true));
 window.addEventListener('blur', () => Object.keys(held).forEach((k) => keyUp(k, false)));   // let go elsewhere: no keyup here, the TV must not stay held
 document.addEventListener('paste', (e) => {                           // Cmd+V anywhere on the Remote tab pastes onto the TV
-  if (window.ONTV || currentTab !== 'remote' || typingHere() || document.querySelector('dialog[open]') || !(ADB.state === 'ready' || NATIVE() && can('text'))) return;
+  if (window.ONTV || currentTab !== 'remote' || typingHere() || document.querySelector('dialog[open]') || !(typeOk())) return;
   const t = (e.clipboardData || window.clipboardData).getData('text'); if (t) { e.preventDefault(); queue('/api/type', { text: t.slice(0, 500) }); }
 });
 

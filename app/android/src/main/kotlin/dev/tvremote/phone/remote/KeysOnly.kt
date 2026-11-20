@@ -98,7 +98,7 @@ internal fun MainActivity.startBasic(ip: String, justPaired: Boolean) {
                 show(true)
                 layoutRemote()
                 status.text = title(ip) + " · " + keysLine(a)
-                if (a is Atv) watchAdb(a, ip)
+                if (a is Atv) { watchAdb(a, ip); watchField(a) }
             }
         } catch (e: Remote.Refused) {
             a.close()
@@ -135,7 +135,7 @@ internal fun MainActivity.resumeBasic(ip: String) {
                 waiting.visibility = View.GONE
                 status.text = title(entry ?: ip) + " · " + keysLine(a)
                 layoutRemote()
-                if (a is Atv) watchAdb(a, ip)
+                if (a is Atv) { watchAdb(a, ip); watchField(a) }
             }
         } catch (e: Exception) {
             a.close()

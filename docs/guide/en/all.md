@@ -259,6 +259,8 @@ While it floats, leaving for Home or another app (Android 8+) puts it in the sys
 
 > 💡 Turn it off in Settings (🛠️) → About → “The TV’s keyboard” → **Don't open it**.
 
+> 💡 Without ADB: when the TV reports a text field, the box starts with the text in it (the field's name is the hint), edits replace it on the TV, and **↵** submits. Apps with a keyboard of their own (Downloader…) still get key presses, as before.
+
 ## The TV's clipboard (accents, pasting)
 
 The clipboard holds the text the TV last copied. Use it to read it, copy it to your device, or send text to the TV.
