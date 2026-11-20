@@ -158,7 +158,7 @@ const typeOk = () => ADB.state === 'ready' || NATIVE() && can('text') || !!STATE
 // the label as the hint, and what is typed replaces the field's text on the TV. seq moves only when the TV changed it.
 let fieldSeen = -1;
 function fieldFollow() {
-  const f = STATE.field, seq = f ? f.seq : -1;
+  const f = ADB.state === 'ready' || NATIVE() ? null : STATE.field, seq = f ? f.seq : -1;   // with ADB the box is ours: the TV's echo of each key would race what is typed
   if (seq === fieldSeen) return; fieldSeen = seq;
   if (!f) { if (live) txt.value = typed = ''; txt.placeholder = live ? T('remote.type_on_the_tv') : T('remote.type_then_send'); return; }
   txt.value = typed = f.text; txt.placeholder = f.label || (live ? T('remote.type_on_the_tv') : T('remote.type_then_send'));
