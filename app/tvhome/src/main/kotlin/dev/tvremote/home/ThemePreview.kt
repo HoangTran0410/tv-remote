@@ -51,7 +51,8 @@ object ThemePreview {
         return b
     }
 
-    private fun make(a: Context, conf: JSONObject, live: List<String>, shot: File?, look: String, w: Int, h: Int, r: Float): Bitmap {
+    private fun make(a: Context, theme: JSONObject, live: List<String>, shot: File?, look: String, w: Int, h: Int, r: Float): Bitmap {
+        val conf = Store.shownCopy(a, theme)                          // a site suggestion: drawn as the page it is
         val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val cv = Canvas(out)
         val wall = conf.optString("wall")

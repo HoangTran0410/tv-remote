@@ -31,6 +31,7 @@ import org.json.JSONObject
  *           [SHADE_DEFAULT] the usual one (darker at the top and the bottom, where the clock and the names are), 100 an even veil
  *           nearly black. A busy page or photo fights the words of the home screen at the usual one. A TV Home that has this
  *           reports "shadeOk": true
+ *   sug:<id> a wall too: one of the site's suggestions ([isSug]), drawn as the page at the address the signed list gives
  *   walls   the set the background turns through (any of the above, [WALLS_MAX]); never empty, [wall] is what shows now
  *   wevery  how often it moves on to the next of [walls] ([EVERY]): "off", "30m", "1h", "6h", "day" (the first time Home is seen on a
  *           new day), "show" (each time Home comes back on screen). Only while Home is on screen or when it comes back: nothing
@@ -254,8 +255,17 @@ object HomeConfig {
     val VRES = listOf("", "1080", "720", "480")
     /** Where a client puts a file before TV Home takes it in (HomeReceiver "addvideo" names it); the shell may write there. */
     const val VIDEO_STAGING = "/sdcard/Android/data/$PKG/files/videos/in"
-    /** A wall id this config knows: a gradient, a scene, Bing, the page, a photo slot or a library video. */
-    fun knownWall(id: String) = id in WALLS || isVideo(id)
+    /**
+     * One of the site's suggestions (docs/home/wallpapers.json: a slideshow, a video, a live page, a picture) as a stop of the set:
+     * "sug:" + its id. TV Home draws it as the web wall at the address its signed list gives (Suggest, Store.shown), so it can sit in
+     * a set with the person's photos where the page itself ([WEB], any address) cannot; one whose list is not on the TV is skipped.
+     * A TV Home that has this reports "wsug": true (the clients send the page itself to an older one).
+     */
+    const val SUG_PREFIX = "sug:"
+    private val SUG = Regex("sug:[a-z0-9][a-z0-9_-]{0,39}")
+    fun isSug(id: String) = SUG.matches(id)
+    /** A wall id this config knows: a gradient, a scene, Bing, the page, a photo slot, a library video or a site suggestion. */
+    fun knownWall(id: String) = id in WALLS || isVideo(id) || isSug(id)
     const val WALLS_MAX = 40
     /**
      * "Select all" of one group of backgrounds (the person's photos, videos, scenes, colours) in the rotation set: all of [group] in

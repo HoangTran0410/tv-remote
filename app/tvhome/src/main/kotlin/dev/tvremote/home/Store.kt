@@ -35,6 +35,21 @@ object Store {
         return clean
     }
 
+    /**
+     * [conf] as drawn: a site suggestion on show ("sug:<id>") is the web wall at its address, live, with its fade (as picking it
+     * alone always set them); one this TV has no list for yet is Night. The saved settings keep the id: the clients and Customize
+     * read [get], the screens that draw the background read this.
+     */
+    /** [shown] of a config that is not ours to change (a theme's): copied first when there is something to resolve. */
+    fun shownCopy(c: Context, conf: JSONObject): JSONObject = if (HomeConfig.isSug(conf.optString("wall"))) shown(c, JSONObject(conf.toString())) else conf
+
+    fun shown(c: Context, conf: JSONObject = get(c)): JSONObject {
+        val w = conf.optString("wall")
+        if (!HomeConfig.isSug(w)) return conf
+        val s = Suggest.wall(c, w) ?: return conf.put("wall", "night")
+        return conf.put("wall", HomeConfig.WEB).put("wurl", s.url).put("wmode", "live").put("wfade", s.fade)
+    }
+
     /** The saved settings' text: changes with every change, cheap to compare (a JSONObject.toString of [get] was ~5% of Customize's CPU). */
     fun stamp(c: Context): String? = prefs(c).getString("conf", null)
 
@@ -64,6 +79,7 @@ object Store {
             .put("wschema", HomeConfig.schema(android.os.Build.VERSION.SDK_INT))                  // what each widget offers in its settings (an older one has none: its looks were "wstyles")
             .put("wweb", true)                                    // the background can be a web page (an older one would clean it away)
             .put("wrotate", true)                                 // the background can turn through a set (an older one has one choice)
+            .put("wsug", true)                                    // the site's suggestions are walls of their own ("sug:<id>"), in a set with the rest
             .put("shadeOk", true)                                 // the veil's strength can be chosen (an older one has one)
             .put("fitOk", true)                                   // a photo can be shown whole (HomeConfig "wfit"; an older one crops it)
             .put("greetOk", true)                                 // the greeting's words: with a name, or the person's own (HomeConfig "gstyle")

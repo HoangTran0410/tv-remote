@@ -92,7 +92,7 @@ class DreamBody(private val c: Context) {
     fun build(): View {
         Font.load(c)
         Store.advance(c, false)                                   // a timed rotation that fell due while Home was not on screen
-        val conf = Store.get(c)
+        val conf = Store.shown(c)
         Motion.read(c, conf)
         motion = Motion.on
         val dm = c.resources.displayMetrics

@@ -36,7 +36,7 @@ object ThemeShots {
         if (r.thumb.isEmpty()) null else File(dir(c), "r-${r.id}-${Integer.toHexString(r.thumb.hashCode())}.jpg").takeIf { it.isFile }
 
     /** Whether [conf]'s background is one a picture must be taken of (a drawn wall is not). */
-    private fun needs(conf: JSONObject) = conf.optString("wall").let { !WallArt.has(it) && (Walls.isPicture(it) || it == HomeConfig.WEB) }
+    private fun needs(conf: JSONObject) = conf.optString("wall").let { !WallArt.has(it) && (Walls.isPicture(it) || it == HomeConfig.WEB || HomeConfig.isSug(it)) }
 
     /** The ready-made themes' pictures that are not here yet, fetched (the list of the site is signed, the address https): true when any came. */
     fun fetch(c: Context, list: List<HomeConfig.Ready>): Boolean {
@@ -80,7 +80,8 @@ object ThemeShots {
     }
 
     /** The picture of [conf]'s background, written for saved theme [id]; false when there is nothing to take (a drawn wall, a page not drawn yet). Off the main thread. */
-    fun capture(c: Context, id: String, conf: JSONObject): Boolean {
+    fun capture(c: Context, id: String, theme: JSONObject): Boolean {
+        val conf = Store.shownCopy(c, theme)                          // a site suggestion: its page's picture
         if (!needs(conf)) return false
         val wall = conf.optString("wall")
         val b: Bitmap? = if (wall == HomeConfig.WEB) {
@@ -95,9 +96,10 @@ object ThemeShots {
      *  on), so the read after a change has it. Null for a drawn wall. */
     @Volatile private var nowKey = ""
     @Volatile private var nowBusy = false
-    fun current(c: Context, conf: JSONObject): Pair<String, File?>? {
-        if (!needs(conf)) return null
-        val key = conf.optString("wall") + "|" + conf.optString("wurl") + "|" + conf.optString("wfit")   // wfit: the page's key has it when "fitOk"
+    fun current(c: Context, saved: JSONObject): Pair<String, File?>? {
+        if (!needs(saved)) return null
+        val key = saved.optString("wall") + "|" + saved.optString("wurl") + "|" + saved.optString("wfit")   // wfit: the page's key has it when "fitOk" (the saved ids, as the page reads them)
+        val conf = Store.shownCopy(c, saved)                          // a site suggestion: its page's picture
         val f = File(dir(c), "now.jpg")
         val fresh = nowKey == key && f.isFile && (conf.optString("wall") != HomeConfig.WEB || dev.tvremote.guard.Age.fresh(f.lastModified(), 600_000))
         if (!fresh && !nowBusy) {

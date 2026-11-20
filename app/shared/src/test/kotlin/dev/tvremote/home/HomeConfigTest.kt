@@ -402,6 +402,16 @@ class HomeConfigTest {
 
     private fun walls(c: JSONObject) = c.getJSONArray("walls").let { a -> List(a.length()) { a.getString(it) } }
 
+    @Test fun aSiteSuggestionIsAStopOfTheSet() {
+        val c = HomeConfig.clean(JSONObject().put("wall", "sug:vn").put("wevery", "1h")
+            .put("walls", JSONArray(listOf("sug:vn", "photo", "sug:aurora-harbor", "sug:", "sug:Bad", "sug:a b", "sug:../x", "web", "sug:" + "x".repeat(41)))))
+        assertEquals(listOf("sug:vn", "photo", "sug:aurora-harbor"), walls(c))   // bad ids and the page itself go
+        assertEquals("sug:vn", c.getString("wall"))
+        assertEquals("sug:fireplace", HomeConfig.clean(JSONObject().put("wall", "sug:fireplace")).getString("wall"))   // one choice, no address needed
+        assertEquals(listOf("sug:vn", "dawn"), HomeConfig.wallsAll(listOf("sug:vn"), listOf("dawn")).first)
+        assertEquals("night", HomeConfig.clean(JSONObject().put("wall", "sug:")).getString("wall"))
+    }
+
     @Test fun theSetIsNeverEmptyAndAlwaysHoldsTheWallOnShow() {
         val none = HomeConfig.clean(JSONObject())
         assertEquals(listOf("night"), walls(none))

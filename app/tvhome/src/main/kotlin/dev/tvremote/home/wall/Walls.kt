@@ -25,6 +25,7 @@ object Walls {
 
     /** Whether [id] can be shown now: drawn and plain ones always, a photo while its file is there, Bing once a picture has come. */
     fun usable(c: Context, id: String) = (file(c, id)?.isFile ?: true) && (!HomeConfig.isVideo(id) || Videos.file(c, id).isFile)
+        && (!HomeConfig.isSug(id) || dev.tvremote.home.Suggest.wall(c, id) != null)
 
     /** The picture of [id] for a screen of [w] x [h] (null for a drawn wall, or when it cannot be read). */
     fun bitmap(c: Context, id: String, w: Int, h: Int): Bitmap? = file(c, id)?.let { Wall.load(it, w, h) }

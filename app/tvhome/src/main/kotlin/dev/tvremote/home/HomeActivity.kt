@@ -222,7 +222,7 @@ class HomeActivity : Activity() {
         shortcutWatch = Pins.watch(this) { r -> bg.execute(r) }
         if (!Pins.listed(this)) bg.execute { Pins.refresh(this) }       // the first Home: + Add has the apps' shortcuts to list
         Store.advance(this, true)                                     // a rotation on "each time Home is shown" (or one that fell due while away): before the first paint, so nothing is drawn twice
-        conf = Store.get(this); readNames(); Pics.ids = picIds(); if (Pics.dir(this).isDirectory) bg.execute { Pics.sweep(this, Pics.ids.values + Pics.frame) }; Pins.resize(pinW())
+        conf = Store.shown(this); readNames(); Pics.ids = picIds(); if (Pics.dir(this).isDirectory) bg.execute { Pics.sweep(this, Pics.ids.values + Pics.frame) }; Pins.resize(pinW())
         val root = FrameLayout(this)
         backdrop = Backdrop(window.decorView)
 
@@ -315,7 +315,7 @@ class HomeActivity : Activity() {
         ThemeShots.live = { webShot() ?: backdrop.small }              // a web wall: the page as it is drawn now, or the site's picture / slide TV Home draws itself
         Store.onChange = fun() {
             if (isDestroyed) { if (Store.onChange === heard) Store.onChange = null; return }   // handed back to a gone Home (a Quick keys dialog closed after it)
-            val was = conf; conf = Store.get(this)
+            val was = conf; conf = Store.shown(this)
             // the veil alone (its stepper, a step every press): the picture painted again, nothing else rebuilt; the whole screen
             // made again took ~60 ms of the FPT box's main thread a step (the widgets, the tiles)
             if (veilOnly(was, conf)) wall() else onConf()
@@ -812,7 +812,7 @@ class HomeActivity : Activity() {
     /** The widgets' numbers, read off the main thread; none at all while they are off. [tick]: the minute's read, which keeps a row that would draw the same. */
     private fun widgetsRead(tick: Boolean = false) {
         val want = Store.list(this, "widgets")
-        val conf = Store.get(this); val note = conf.optString("note"); val sizes = conf.optJSONObject("wsize") ?: JSONObject()
+        val conf = Store.shown(this); val note = conf.optString("note"); val sizes = conf.optJSONObject("wsize") ?: JSONObject()
         val none = want.isEmpty() && note.isEmpty()
         if (none) noWidgets = true                                    // else kept until the read says: reset to false here, chosen widgets with nothing to show rebuilt the grid without end
         widgets.roomPx = (if (scroll.height > 0) scroll.height else resources.displayMetrics.heightPixels) - (if (head.bottom > 0) head.bottom else dp(118)) - dp(SIDE_TOP) - dp(16)   // two full blocks (2 x 180 + 12) under a head with the time (126 dp): 20 dp less above them than the row has, they fit
@@ -932,7 +932,7 @@ class HomeActivity : Activity() {
 
     private fun badgeTiles() {
         val m = getString(R.string.b_m); val h = getString(R.string.b_h)
-        val conf = Store.get(this)
+        val conf = Store.shown(this)
         val power = Keys.powerApp(conf)
         for (t in tileCache.values) t.app?.let { a -> t.mark(badges.of(a.pkg) ?: Badges.POWER.takeIf { a.pkg == power }) { Badges.label(it, m, h) } }
         // which keys open each tile: a key's target is the tile's own key (a package, "pin:…", "tile:…"), only while keys are on
@@ -2308,7 +2308,7 @@ class HomeActivity : Activity() {
             start.add(stays(R.drawable.ic_power, R.string.auto_on, getString(if (powerApp) R.string.am_on else R.string.am_off)) {   // the app that opens when the TV turns on: TV Setup does it (Keys.push); a toggle, so the panel stays and the row shows the new state
                 Keys.setPowerApp(this, if (powerApp) "" else a.pkg)
                 if (!Keys.setup(this)) toast(R.string.auto_needs_setup)   // saved anyway: it works the day TV Setup is there
-                conf = Store.get(this)
+                conf = Store.shown(this)
                 sub(a, st, me, 0)
             })
             val mine = HomeConfig.keyApps(conf.optJSONObject("keyapps")).filterValues { it == a.pkg }.keys.sorted()
@@ -2622,7 +2622,7 @@ class HomeActivity : Activity() {
      */
     private fun keyPicker(a: App, st: JSONObject?, focusCode: Int?, said: String) {
         val p = amPanel ?: return
-        val conf = Store.get(this)
+        val conf = Store.shown(this)
         val map = HomeConfig.keyApps(conf.optJSONObject("keyapps"))
         val have = Keys.have(this)?.let { j -> (0 until j.length()).map { j.getInt(it) }.toSet() }
         val dead = Keys.dead(this).filter { it in HomeConfig.KEY_DEAD }
@@ -2733,7 +2733,7 @@ class HomeActivity : Activity() {
                     if (isDestroyed) return@runOnUiThread
                     if (ch != null && ch.length() > 0) Store.change(this, ch)
                     toast(if (ok) R.string.link_changed else if (r == YouTube.NO_APP) R.string.link_no_app else if (r == YouTube.NO_LINK) R.string.pq_web_bad else R.string.watch_pin_fail)
-                    conf = Store.get(this); pinsRead()
+                    conf = Store.shown(this); pinsRead()
                 }
             }
         }

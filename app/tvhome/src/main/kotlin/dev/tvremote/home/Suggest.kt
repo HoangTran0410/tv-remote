@@ -36,6 +36,13 @@ object Suggest {
 
     fun byKey(k: String) = if (k.startsWith(PREFIX)) items.firstOrNull { it.key == k } else null
 
+    /** The suggestion of wall [k] ("sug:<id>", [HomeConfig.isSug]) from the list kept on this TV (read once, no network); null when it has none. */
+    fun wall(c: Context, k: String): Item? {
+        if (!HomeConfig.isSug(k)) return null
+        if (items.isEmpty()) synchronized(this) { if (items.isEmpty()) SignedList.kept(File(c.applicationContext.filesDir, NAME))?.let { items = parse(it) } }
+        return byKey(k)
+    }
+
     /** The list kept (cheap once checked) now, the site's when the kept one is older than [maxAge]; off the main thread for the network. */
     fun load(c: Context, maxAge: Long = DAY) {
         val app = c.applicationContext

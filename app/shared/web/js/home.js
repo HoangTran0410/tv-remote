@@ -626,8 +626,39 @@ async function homeOpen() {
   // the site's moving backgrounds and pages (wallpapers.json "links"): each sets the web wall to its address, as TV Home's own "Suggested"
   const sugHead = el('h3', { textContent: T('home.wh_suggest') }), sugBox = el('div', { className: 'homegal' }), pageBox = el('div', { className: 'homegal' }), sugNote = el('p', { className: 'note', textContent: T('home.sug_note') });
   sugHead.hidden = sugBox.hidden = sugNote.hidden = pageBox.hidden = true;
-  const markSug = (c) => { for (const b of [...pageBox.children, ...sugBox.children]) { const on = c.wall === 'web' && c.wurl === b.dataset.url; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); } };
-  homeGallery(gal, credit, galHead, (n) => { if (take(n)) draw(); }, { box: sugBox, pages: pageBox, head: sugHead, note: sugNote, pick: (u, fade) => send({ wall: 'web', wurl: u, wmode: 'live', wfade: fade }), mark: () => markSug(r.config) });
+  // A TV Home with "wsug": each is a wall of its own ("sug:<id>", HomeConfig.isSug), one choice or in the set with the person's photos
+  // (the user 2026-11-20); an older one: it sets the web wall to its address, alone
+  const sugName = (k) => { const b = [...sugBox.children, ...pageBox.children].find((x) => x.dataset.key === k); return b ? b.querySelector('span').textContent : T('home.wh_suggest'); };   // the list not here yet: the group's name
+  const sugKeys = () => [...sugBox.children].map((b) => b.dataset.key);
+  const sugPick = (l) => {
+    const c = r.config, k = 'sug:' + l.id;
+    if (!c.wsug) return send({ wall: 'web', wurl: l.url, wmode: 'live', wfade: !!l.fade });
+    const multi = c.wevery !== 'off', set = c.walls || [c.wall];
+    if (!multi || set.includes('web')) return send({ wall: k });       // one choice; leaving the page (always alone in a set): the set starts again from this one
+    const n = set.includes(k) ? set.filter((x) => x !== k) : [...set, k];
+    if (n.length) send({ walls: n });
+  };
+  const markSug = (c) => {
+    const multi = c.wsug && c.wevery !== 'off', set = c.walls || [c.wall];
+    for (const b of [...pageBox.children, ...sugBox.children]) {
+      const k = b.dataset.key, on = (c.wall === 'web' && c.wurl === b.dataset.url) || (c.wsug && (multi ? set.includes(k) : c.wall === k));
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
+      let now = b.querySelector('.nowtag');
+      if (multi && c.wall === k) { if (!now) b.append(el('span', { className: 'nowtag', textContent: T('home.wall_now') })); } else if (now) now.remove();
+    }
+    // "Select all" of the suggestions, as the other groups have it
+    let a = sugHead.querySelector('.wallall');
+    if (!a) { a = el('button', { type: 'button', className: 'small wallall' }); sugHead.append(' ', a); }
+    const keys = sugKeys();
+    a.hidden = !multi || keys.length < 2;
+    a.textContent = T(keys.length && keys.every((k) => set.includes(k)) ? 'home.wall_none' : 'home.wall_all');
+    a.onclick = () => {
+      const web = set.includes('web'), r2 = homeWallsAll(web ? [] : set, keys);
+      send({ walls: r2.walls, ...(web ? { wall: r2.walls[0] } : {}) });
+      if (r2.full) toast(T('home.wall_full', { n: HOME_WALLS_MAX }));
+    };
+  };
+  homeGallery(gal, credit, galHead, (n) => { if (take(n)) draw(); }, { box: sugBox, pages: pageBox, head: sugHead, note: sugNote, pick: sugPick, mark: () => markSug(r.config) });
 
   // "Add to home screen": a picker of the apps (hidden ones too), their shortcuts and the live widgets; a press puts one on the grid or
   // takes it off and the list stays open. Shortcuts and live widgets are in config "tiles" (the order they have on the grid), an app is
@@ -940,7 +971,7 @@ async function homeOpen() {
     wPhotos.hidden = !photos.length; wVideos.hidden = !videos.length;
     wScenes.replaceChildren(...art); walls.replaceChildren(...plain);
     every.replaceChildren(...Object.keys(HOME_EVERY).map((e) => el('button', { type: 'button', className: c.wevery === e ? 'on' : '', 'aria-pressed': String(c.wevery === e), textContent: T(HOME_EVERY[e]), onclick: () => send({ wevery: e }) })));
-    const shownName = (() => { const t = [...wOnline.querySelectorAll('.nowtag'), ...wPhotos.querySelectorAll('.nowtag'), ...wVideos.querySelectorAll('.nowtag'), ...wScenes.querySelectorAll('.nowtag'), ...walls.querySelectorAll('.nowtag')][0]; return t ? t.previousSibling.textContent : ''; })();
+    const shownName = (() => { if (/^sug:/.test(c.wall)) return sugName(c.wall); const t = [...wOnline.querySelectorAll('.nowtag'), ...wPhotos.querySelectorAll('.nowtag'), ...wVideos.querySelectorAll('.nowtag'), ...wScenes.querySelectorAll('.nowtag'), ...walls.querySelectorAll('.nowtag')][0]; return t ? t.previousSibling.textContent : ''; })();
     put(everyNote, 'textContent', multi ? T('home.rot_state', { n: set.length, every: T(HOME_EVERY[c.wevery]).toLowerCase(), name: shownName }) + ' ' + T(set.length < 2 && set[0] !== 'bing' ? 'home.rotate_pick' : 'home.rotate_set') : '');   // Bing alone turns through its last 8 days
     everyNote.hidden = !multi;
   }
@@ -1037,7 +1068,7 @@ async function homeOpen() {
   const themeUses = (c, id) => [...(c.themes || []), ...(c.before ? [{ conf: c.before }] : [])].some((t) => t.conf.wall === id || (t.conf.walls || []).includes(id));   // HomeConfig.themeUses
   // what a theme sets, read only: name: value rows in the details dialog (the TV shows the same on a long press). Under the tiles it
   // opened below the fold, a long way from the ⓘ: nothing seemed to happen (phone, 2026-10-25)
-  const themeWall = (k) => HOME_WALL_WORDS[k] ? T(HOME_WALL_WORDS[k]) : k === 'bing' ? T('home.wall_bing') : k === 'web' ? T('home.wall_web') : /^vid:/.test(k) ? (((r.video || {}).items || []).find((v) => v.id === k) || {}).name || T('home.wall_video')
+  const themeWall = (k) => HOME_WALL_WORDS[k] ? T(HOME_WALL_WORDS[k]) : k === 'bing' ? T('home.wall_bing') : k === 'web' ? T('home.wall_web') : /^sug:/.test(k) ? sugName(k) : /^vid:/.test(k) ? (((r.video || {}).items || []).find((v) => v.id === k) || {}).name || T('home.wall_video')
     : k === 'photo' ? T('home.wall_photo') : /^photo\d+$/.test(k) ? T('home.wall_photo_n', { n: +k.slice(5) }) : k;
   const themeRows = (conf) => {
     const on = (v) => T(v ? 'home.td_on' : 'home.td_off'), none = T('home.td_none');
@@ -1214,6 +1245,7 @@ async function homeOpen() {
   const onOff = (v) => T(v ? 'home.sum_on' : 'home.sum_off');
   const wallWord = (c) => c.wall === 'web' ? T('home.wall_web') : /^photo\d*$/.test(c.wall) ? T('home.wall_photo_n', { n: (+c.wall.slice(5) || 1) })
     : /^vid:/.test(c.wall) ? (((r.video || {}).items || []).find((v) => v.id === c.wall) || {}).name || T('home.wall_video')
+    : /^sug:/.test(c.wall) ? sugName(c.wall)
     : c.wall === 'bing' ? T('home.wall_bing') : HOME_WALL_WORDS[c.wall] ? T(HOME_WALL_WORDS[c.wall]) : c.wall;
   // the line under each group's name, as the TV's Customize writes it (summary())
   function sums(c) {
@@ -1305,9 +1337,10 @@ async function homeGallery(box, credit, head, done, sug) {
     const tile = (l) => {
       const face = l.thumb ? el('img', { src: l.thumb, alt: '', loading: 'lazy' }) : el('i', { className: 'mi', innerHTML: '<svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg>' });
       const tag = l.kind === 'video' ? T('home.sug_video') : l.kind === 'page' ? T('home.sug_page') : '';
-      const b = el('button', { type: 'button', title: [l.name[lang] || l.name.en, l.credit, l.license].filter(Boolean).join(' · '), onclick: () => sug.pick(l.url, !!l.fade) },
+      const b = el('button', { type: 'button', title: [l.name[lang] || l.name.en, l.credit, l.license].filter(Boolean).join(' · '), onclick: () => sug.pick(l) },
         face, el('span', { textContent: l.name[lang] || l.name.en }), ...(tag ? [el('small', { className: 'badge', textContent: tag })] : []));
       b.dataset.url = l.url;
+      b.dataset.key = 'sug:' + l.id;                                    // its wall id on a TV Home with "wsug"
       return b;
     };
     const pages = links.filter((l) => l.kind === 'page'), rest = links.filter((l) => l.kind !== 'page');   // a page sits beside Bing, in Online

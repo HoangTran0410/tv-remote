@@ -402,7 +402,7 @@ object Customize {
         val rotNote = label("", 12f, DIM)
         val nowNote = label("", 14f, ACCENT)                           // at the top of the page while it rotates: how many, how often, which is on screen
         fun wallOn(c: JSONObject, k: String) =
-            if (k.startsWith(Suggest.PREFIX)) c.optString("wall") == HomeConfig.WEB && Suggest.byKey(k)?.url == c.optString("wurl")   // a suggestion is the page it sets
+            if (k.startsWith(Suggest.PREFIX) && c.optString("wall") == HomeConfig.WEB) Suggest.byKey(k)?.url == c.optString("wurl")   // set as the page itself (before "sug:" walls, or by an older client)
             else if (c.optString("wevery") == "off") c.optString("wall") == k
             else c.getJSONArray("walls").let { s -> (0 until s.length()).any { s.getString(it) == k } }
         // a tile's ✓ (in the set) and "showing now" (filled, only while it rotates): made the first time one is shown, not on all
@@ -730,10 +730,6 @@ object Customize {
                     onFocusChangeListener = View.OnFocusChangeListener { v, f -> lit(v, f) }
                     setOnClickListener {
                         val c = Store.get(a)
-                        Suggest.byKey(k)?.let { sg ->                               // the page it is: one choice, as the web page tile (clean() keeps "web" alone in a set)
-                            Store.change(a, JSONObject().put("wall", HomeConfig.WEB).put("wurl", sg.url).put("wmode", "live").put("wfade", sg.fade)); markAll()
-                            return@setOnClickListener
-                        }
                         if (k == HomeConfig.WEB) {                                // the link is pasted on a phone (a QR), how it updates is picked there with the D-pad
                             PhotoScreen.show(a, web = true) { dialog.dismiss() }
                             return@setOnClickListener
@@ -814,13 +810,13 @@ object Customize {
             fun sugFill() {
                 val pages = Suggest.items.filter { it.kind == "page" }.map { it.key }          // a page is a web page: beside Bing, not among the pictures
                 val list = Suggest.items.filter { it.kind != "page" }.map { it.key }
-                tiles.removeAll { it.first.startsWith(Suggest.PREFIX) || it.first in online }; onBox.removeAllViews(); sugBox.removeAllViews()
+                tiles.removeAll { it.first.startsWith(Suggest.PREFIX) || it.first in online }; onBox.removeAllViews(); sugBox.removeAllViews(); alls.removeAll { it.second.parent == null }   // the old "Select all" went with its rows
                 val was = col
                 col = onBox
                 if (online.isNotEmpty() || pages.isNotEmpty()) { section(a.getString(R.string.wall_h_online)); wallRows(online + pages) }
                 col = sugBox
                 if (list.isNotEmpty()) {
-                    section(a.getString(R.string.wall_h_suggest)); wallRows(list)
+                    section(a.getString(R.string.wall_h_suggest)); selectAll(list); wallRows(list)   // each is a wall of its own ("sug:<id>"): in the set with the person's photos
                     col.addView(label(a.getString(R.string.sug_note), 12f, DIM), LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(8) })
                 }
                 col = was; markAll()
@@ -1692,7 +1688,8 @@ object Customize {
         k == "photo" -> a.getString(R.string.wall_photo)
         HomeConfig.isPhoto(k) -> a.getString(R.string.wall_photo_n, k.removePrefix("photo").toInt())
         HomeConfig.isVideo(k) -> Videos.list(a).firstOrNull { it.wall == k }?.name?.takeIf { it.isNotBlank() } ?: a.getString(R.string.wall_video)
-        else -> a.getString(a.resources.getIdentifier("wall_$k", "string", a.packageName))
+        HomeConfig.isSug(k) -> Suggest.wall(a, k)?.name(a.resources.locale0().language) ?: a.getString(R.string.wall_h_suggest)   // no list on this TV yet
+        else -> a.resources.getIdentifier("wall_$k", "string", a.packageName).takeIf { it != 0 }?.let { a.getString(it) } ?: k
     }
 }
 

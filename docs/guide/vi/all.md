@@ -494,7 +494,7 @@ Màn hình chính không quảng cáo, chỉnh từ điện thoại hoặc máy 
 
 | Hình nền | Là gì |
 | --- | --- |
-| Gợi ý | Slideshow Việt Nam, video êm, trang web sống; danh sách cập nhật từ site, không cần bản app mới |
+| Gợi ý | Slideshow Việt Nam, video êm, trang web sống; xoay chung với ảnh của bạn; danh sách cập nhật từ site |
 | Tự chọn | 1 màu hoặc 2-4 màu chuyển dần, 9 hướng; trên TV đổi bằng ◀ ▶ |
 | Hình vẽ | Có sẵn, không cần mạng |
 | Bing | Ảnh 8 ngày gần nhất; bấm lại ô Bing trên TV = ảnh hôm trước |
