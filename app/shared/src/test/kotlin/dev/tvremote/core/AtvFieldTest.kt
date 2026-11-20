@@ -47,48 +47,53 @@ class AtvFieldTest {
         assertEquals("Search", atv.currentField!!.label)
     }
 
-    @Test fun anEditReplacesTheWholeTextWithTheTvsCounters() {
+    @Test fun anEditIsBackspacesThenAnInsertWithTheTvsCounters() {
         inject("com.app", 5, status(9, "ab"))
         show(9, "ab")
         atv.type(1, "xyz", false)                                   // "ab" minus one, plus "xyz"
         val e = sent.mapNotNull { edit(it) }.single()
-        assertEquals(listOf<Any>(5L, 9L, "axyz", 4L), e)
+        assertEquals(listOf<Any>(5L, 9L, "xyz", 3L), e)             // the TV inserts at its caret (a BRAVIA, measured)
+        assertEquals(listOf(67L), keys())
+        assertTrue(sent.indexOfFirst { keyOf(it) != null } < sent.indexOfFirst { edit(it) != null })
         assertEquals("axyz", atv.currentField!!.text)
-        assertTrue(keys().isEmpty())
     }
 
     @Test fun accentsAndLettersGoTheSameWay() {
         show(1, "")
         atv.type(0, "phở", false)
         atv.type(0, " bò", false)
-        assertEquals(listOf("phở", "phở bò"), texts())
+        assertEquals(listOf("phở", " bò"), texts())
+        assertEquals("phở bò", atv.currentField!!.text)
         assertTrue(keys().isEmpty())
     }
 
-    @Test fun deletingToNothingSendsAnEmptyText() {
+    @Test fun deletingIsBackspaceKeys() {
         show(1, "a")
         atv.type(1, "", false)
-        assertEquals(listOf(""), texts())
+        assertTrue(texts().isEmpty())
+        assertEquals(listOf(67L), keys())
         assertEquals("", atv.currentField!!.text)
     }
 
     @Test fun deletingMoreThanThereIsStopsAtEmpty() {
         show(1, "ab")
         atv.type(9, "", false)
-        assertEquals(listOf(""), texts())
+        assertEquals(9, keys().size)                                // all sent: the TV stops at empty, and may hold more than we know
+        assertEquals("", atv.currentField!!.text)
     }
 
     @Test fun anEmojiIsOneCharacterToDelete() {
         show(1, "a😀")
         atv.type(1, "", false)
-        assertEquals(listOf("a"), texts())
+        assertEquals(listOf(67L), keys())
+        assertEquals("a", atv.currentField!!.text)
     }
 
     @Test fun enterSubmitsAndTheFieldIsForgotten() {
         show(1, "tv")
         atv.type(0, "", true)
         assertEquals(listOf(66L), keys())
-        assertTrue(texts().isEmpty())                               // nothing typed: nothing replaced
+        assertTrue(texts().isEmpty())                               // nothing typed: nothing inserted
         assertFalse(atv.hasField)
     }
 
@@ -162,6 +167,40 @@ class AtvFieldTest {
         batch(3, 4)
         atv.type(0, "x", false)
         assertEquals(listOf<Any>(8L, 4L, "x", 1L), sent.mapNotNull { edit(it) }.single())
+    }
+
+    @Test fun aBatchEditsZeroFieldCounterDoesNotBeatTheStatusOne() {
+        inject("com.android.vending", 1, status(55, "", "Search"))   // a BRAVIA, measured: then {1:1, 2:0}
+        batch(1, 0)
+        atv.type(0, "kodi", false)
+        assertEquals(listOf<Any>(1L, 55L, "kodi", 4L), sent.mapNotNull { edit(it) }.single())
+    }
+
+    @Test fun theFocusLeavingTheFieldForgetsIt() {
+        inject("com.android.vending", 1, status(58, "", "Search"))
+        batch(1, 0)
+        assertTrue(atv.hasField)
+        batch(0, 0)                                                 // a BRAVIA, measured, as the Play Store moved to its result
+        assertFalse(atv.hasField)
+        batch(0, 0)
+        assertFalse(atv.hasField)
+    }
+
+    @Test fun noEnterOnceTheFocusLeft() {
+        show(1, "")
+        atv.tap = { b -> if (keyOf(b) == null) { sent.add(b); batch(0, 0) } else sent.add(b) }   // the app leaves the field on the text
+        atv.type(0, "vlc", true)
+        assertEquals(listOf("vlc"), texts())
+        assertTrue(keys().isEmpty())                                // "Install" would have taken it
+        assertFalse(atv.hasField)
+    }
+
+    @Test fun replaceIsBackspacesForAllThenTheText() {
+        show(1, "ab😀")
+        atv.replace("x")
+        assertEquals(listOf(67L, 67L, 67L), keys())
+        assertEquals(listOf("x"), texts())
+        assertEquals("x", atv.currentField!!.text)
     }
 
     @Test fun aMissingFieldCounterIsKeptNotZeroed() {
