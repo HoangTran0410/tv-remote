@@ -35,6 +35,10 @@ class SetupTest {
         var restarts = true                                           // false: only the link dropped
         var lost = false
         val hangs = mutableSetOf<String>()                            // turning this one on holds pm past Setup.SLOW
+        var sdk = "30"
+        val starved = mutableSetOf<String>()                          // apps with a background op at ignore
+        val starveList = mutableListOf<String>()
+        val ops = mutableListOf<String>()
         fun sh(raw: String): String {
             val cmd = raw.replace(dev.tvremote.core.ontv.TvUser.ID, "0")
             if (lost) throw IOException("adb connection lost")
@@ -56,6 +60,13 @@ class SetupTest {
                 if (it.groupValues[1] in hangs) return "tvr-slow"; disabled -= it.groupValues[1]; return "" }
             Regex("^printf '%s\\\\n' (.*) > ${Setup.OFF_LIST}$").find(cmd)?.let { offList.clear(); offList += it.groupValues[1].split(" ").map { w -> w.trim('\'') }; return "" }
             Regex("^grep -qx '([^']+)' ${Setup.OFF_LIST} 2>/dev/null \\|\\| echo '\\1' >> ${Setup.OFF_LIST}$").find(cmd)?.let { if (it.groupValues[1] !in offList) offList += it.groupValues[1]; return "" }
+            if (cmd == "getprop ro.build.version.sdk") return sdk
+            Regex("^appops set (\\S+) (\\S+) (ignore|default)( 2>&1)?$").find(cmd)?.let {
+                ops += "${it.groupValues[1]} ${it.groupValues[2]} ${it.groupValues[3]}"
+                if (it.groupValues[3] == "ignore") starved += it.groupValues[1] else starved -= it.groupValues[1]; return "" }
+            Regex("^grep -qx '([^']+)' ${Setup.STARVE_LIST} 2>/dev/null \\|\\| echo '\\1' >> ${Setup.STARVE_LIST}$").find(cmd)?.let { if (it.groupValues[1] !in starveList) starveList += it.groupValues[1]; return "" }
+            if (cmd == "cat ${Setup.STARVE_LIST} 2>/dev/null") return starveList.joinToString("\n")
+            if (cmd == "rm -f ${Setup.STARVE_LIST}") { starveList.clear(); return "" }
             return when {
                 cmd == "pm has-feature android.software.leanback" -> tv.toString()
                 cmd.startsWith("pm list packages -d") -> disabled.joinToString("\n") { "package:$it" }
@@ -146,6 +157,46 @@ class SetupTest {
         assertEquals(setOf("com.foo.game"), tv.disabled)
         assertTrue(lines.toString(), "✓ Turned off 1 app" in lines)
         assertTrue(lines.toString(), lines.any { "would not let these be turned off" in it && "com.brand.locked" in it })
+    }
+
+    @Test fun anAppTheTvRefusesIsStarvedAndUndoGivesItBack() {
+        val tv = FakeTv(true, "com.foo.game", "com.brand.locked")
+        tv.refuse += "com.brand.locked"
+        val lines = mutableListOf<String>()
+        run(tv, listOf("com.foo.game", "com.brand.locked"), lines)
+        assertEquals(setOf("com.brand.locked"), tv.starved)           // the one turned off is left alone
+        assertEquals(listOf("com.brand.locked"), tv.starveList)
+        assertEquals(listOf("com.brand.locked RUN_IN_BACKGROUND ignore", "com.brand.locked RUN_ANY_IN_BACKGROUND ignore"), tv.ops)
+        assertTrue(lines.toString(), lines.any { "run in the background" in it && "com.brand.locked" in it })
+        assertTrue(tv.setup().optimized())
+        tv.setup().undo()
+        assertTrue(tv.starved.isEmpty())
+        assertTrue(tv.starveList.isEmpty())
+        assertTrue(tv.ops.takeLast(2).all { it.endsWith("default") })
+        assertFalse(tv.setup().optimized())
+    }
+
+    @Test fun starvingNeverTouchesAnAppTheTvNeeds() {                 // on the keep list: never picked, so never refused, never starved
+        val tv = FakeTv(true, "com.google.android.gms", "com.android.tv.settings")
+        tv.refuse += setOf("com.google.android.gms", "com.android.tv.settings")
+        run(tv, listOf("com.google.android.gms", "com.android.tv.settings"))
+        assertTrue(tv.ops.toString(), tv.ops.isEmpty())
+        assertTrue(tv.starveList.isEmpty())
+    }
+
+    @Test fun anOlderAndroidStarvesWithTheFirstOpOnly() {
+        val tv = FakeTv(true, "com.brand.locked")
+        tv.sdk = "27"
+        tv.refuse += "com.brand.locked"
+        run(tv, listOf("com.brand.locked"))
+        assertEquals(listOf("com.brand.locked RUN_IN_BACKGROUND ignore"), tv.ops)
+    }
+
+    @Test fun theRestoreScriptGivesStarvedAppsTheirBackgroundBack() {
+        val out = Setup.restoreScript("X", "now", "10.0.0.2", emptyList(), "", 5555, listOf("com.brand.locked", "bad; reboot"))
+        assertTrue(out, "\$A shell 'appops set com.brand.locked RUN_IN_BACKGROUND default; appops set com.brand.locked RUN_ANY_IN_BACKGROUND default'" in out)
+        assertTrue(out, "reboot" !in out)
+        assertTrue(out, "rm -f ${Setup.STARVE_LIST}" in out)
     }
 
     @Test fun aTvThatRestartsMidwayStopsAndNamesTheApp() {

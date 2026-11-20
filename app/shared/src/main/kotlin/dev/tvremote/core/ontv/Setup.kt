@@ -102,6 +102,15 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
         fun inUse(out: String): Boolean = out.lines().any { (it.trim().toIntOrNull() ?: 0) > 0 }
         /** What this project turned off beyond its own lists, so Undo can turn exactly that back on. Kept on the TV. */
         const val OFF_LIST = "/data/local/tmp/tvr-disabled.txt"
+        /**
+         * The apps pm refused to turn off and Optimize TV starved instead (no background running), so Undo gives their two
+         * background ops back. Apart from [OFF_LIST]: those are turned on with pm, these are reset with appops.
+         */
+        const val STARVE_LIST = "/data/local/tmp/tvr-starved.txt"
+        /** The background ops [starve] closes; Android 9+ (SDK 28) has the second one. */
+        private val BG_OPS = listOf("RUN_IN_BACKGROUND", "RUN_ANY_IN_BACKGROUND")
+        /** Back to the system's own choice ("default"), not "allow": that is what the app had before. One command per op. */
+        fun unstarve(p: String): List<String> = BG_OPS.map { "appops set $p $it default" }
         /** Seconds Undo gives one app to come back on: pm answers in under 1 s, a hung package service never. */
         const val SLOW = 20
         private const val TMP = "/data/local/tmp/tvr-setup.apk"
@@ -117,7 +126,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
         /** The script's file name: the same in the download and in the script's own "how to run" line. */
         fun restoreName(model: String) = "tv-restore-" + model.replace(Regex("[^A-Za-z0-9_.-]+"), "-").trim('-').ifEmpty { "tv" } + ".sh"
 
-        fun restoreScript(model: String, date: String, host: String, apps: List<String>, home: String, port: Int = dev.tvremote.core.adb.AdbPort.CLASSIC): String {
+        fun restoreScript(model: String, date: String, host: String, apps: List<String>, home: String, port: Int = dev.tvremote.core.adb.AdbPort.CLASSIC, starved: List<String> = emptyList()): String {
             val pkgs = apps.filter { SAFE.matches(it) }.distinct()
             val b = StringBuilder("#!/bin/sh\n")
             b.append("# Restore for the TV ").append(model.replace(Regex("[^\\w .-]"), "").trim().ifEmpty { "?" }).append(", saved ").append(date.replace(Regex("[^\\w :+-]"), "")).append(" by TV Remote (Optimize TV, Undo).\n")
@@ -126,6 +135,9 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
             b.append("#   then  sh ").append(f).append("      (several devices: ADB_SERIAL=<ip>:$port sh ").append(f).append(")\n")
             b.append("A=\"adb\"; [ -n \"\$ADB_SERIAL\" ] && A=\"adb -s \$ADB_SERIAL\"\n")
             for (p in pkgs) b.append("\$A shell '").append(TvUser.enable(p)).append("'\n")
+            val bg = starved.filter { SAFE.matches(it) && '/' !in it }.distinct()
+            for (p in bg) b.append("\$A shell '").append(unstarve(p).joinToString("; ")).append("'\n")
+            if (bg.isNotEmpty()) b.append("\$A shell 'rm -f ").append(STARVE_LIST).append("'\n")
             if (home.isNotEmpty() && SAFE.matches(home) && '/' in home)
                 b.append("\$A shell 'cmd package set-home-activity ").append(home).append("'\n")
             b.append("\$A shell 'rm -f ").append(OFF_LIST).append(' ').append(LauncherSwap.REC).append("'\n")
@@ -160,11 +172,30 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     @Throws(IOException::class)
     fun optimized(): Boolean {
         val off = off()
-        return undoable().any { it in off }
+        return undoable().any { it in off } || starvedList().isNotEmpty()
     }
 
     private fun off(): Set<String> =
         Pkg.list(sh, "-d " + TvUser.USER, empty = true)
+
+    private fun starvedList(): List<String> = sh("cat $STARVE_LIST 2>/dev/null").split("\n").map { it.trim() }.filter { SAFE.matches(it) && '/' !in it }
+
+    /**
+     * What pm would not turn off is starved instead: it may not run in the background, so it cannot hold RAM or wake itself. Only
+     * apps [apply] already picked and let through its keep rules, and pm refused. Recorded before the ops, as [turnOff] does.
+     * Gives the apps starved.
+     */
+    private fun starve(apps: Collection<String>): List<String> {
+        val sdk = sh("getprop ro.build.version.sdk").trim().toIntOrNull() ?: 0
+        val done = ArrayList<String>()
+        for (p in apps) {
+            if (!SAFE.matches(p) || '/' in p || kept(p)) continue
+            sh("grep -qx '$p' $STARVE_LIST 2>/dev/null || echo '$p' >> $STARVE_LIST")
+            val said = BG_OPS.filterIndexed { i, _ -> i == 0 || sdk >= 28 }.map { sh("appops set $p $it ignore 2>&1") }
+            if (said.none { Regex("Error|Exception|Unknown|not found", RegexOption.IGNORE_CASE).containsMatchIn(it) }) done += p
+        }
+        return done
+    }
 
     private fun record(): List<String> = sh("cat $OFF_LIST 2>/dev/null").split("\n").map { it.trim() }.filter { it.isNotEmpty() }   // "" is in no list
 
@@ -271,6 +302,8 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
         if (failed.isNotEmpty()) {
             log.line(t("optimize.not_off", "apps" to failed.keys.joinToString(", ")))
             report("failed", "", failed)
+            val starved = starve(failed.keys)
+            if (starved.isNotEmpty()) log.line(t("optimize.starved", "apps" to starved.joinToString(", ")))
         }
         keyboard()
 
@@ -401,7 +434,7 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
     @Throws(IOException::class)
     fun restore(model: String, date: String, host: String): String {
         val home = LauncherSwap(sh).state()?.let { it.prev.takeIf { p -> p.substringBefore('/') != it.pkg } } ?: ""
-        return restoreScript(model, date, host, undoable().filter { has(it.substringBefore('/')) }, home, dev.tvremote.core.adb.AdbPort.known(host))   // a BeeCube: 5877
+        return restoreScript(model, date, host, undoable().filter { has(it.substringBefore('/')) }, home, dev.tvremote.core.adb.AdbPort.known(host), starvedList())   // a BeeCube: 5877
     }
 
     /**
@@ -423,6 +456,9 @@ class Setup internal constructor(private val adb0: Adb?, private val dir: File?,
             if (p.substringBefore('/') !in there) continue           // p may be one screen of an app (the wizard's Home)
             if (sh(enableIn(p)).lines().any { it.trim() == "tvr-slow" }) { slow += p; inRow++ } else { on++; inRow = 0 }
         }
+        val bg = starvedList()
+        for (p in bg) unstarve(p).forEach { sh(it) }
+        if (bg.isNotEmpty()) sh("rm -f $STARVE_LIST")
         val left = (slow + todo.drop(stopAt)).filter { SAFE.matches(it) }
         if (left.isEmpty()) sh("rm -f $OFF_LIST")
         else {

@@ -442,6 +442,8 @@ TV chậm? Tối ưu giúp mở app nhanh hơn. Không gỡ gì cả, và **Hoà
 
 > 💡 Danh sách lấy từ [cleanyourtv](https://github.com/Gathin23/cleanyourtv) (400+ TV), UAD-NG, TV Slim và người dùng TV Remote.
 
+> 🧊 App mà TV không cho tắt thì bị chặn chạy nền (không giữ RAM, không tự thức dậy). Hoàn tác trả lại.
+
 > 🛡️ App giữ Wi-Fi đã lưu hoặc cổng HDMI / kênh TV không bao giờ bị tắt, xóa dữ liệu hay gỡ.
 
 > 🔁 Sau khi TV cập nhật firmware, TV Setup tắt lại app đã tắt mà bản cập nhật bật lại, và đặt lại TV Home. Hoàn tác thì dừng.
