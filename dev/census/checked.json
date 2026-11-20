@@ -130,9 +130,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
  "0a9749690d5a3b0e1613f21f|0.47.0": {
-  "at": "2026-11-08T02:46:13+07:00",
+  "at": "2026-11-21T04:53:58+07:00",
   "n": 1,
-  "note": "keyfix_refused on VISION XS100MINI+, 6th box (WS, ADT-3, G-Two, SWTV, X96mini): cause logged from the next TV Setup (a20c4155), left"
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
+ },
+ "0a9749690d5a3b0e1613f21f|0.54.0": {
+  "at": "2026-11-21T04:53:58+07:00",
+  "n": 2,
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
  },
  "0bea8243f97640450535da70|0.47.0": {
   "at": "2026-11-16T23:11:23+07:00",
@@ -520,44 +525,44 @@
   "note": "0.51.0 SWTV Android 9: sleep rule could not turn the TV off: adbd running but 5555 refused (network ADB off, e.g. after a restart); 'still connecting' was getQuiet's wait, the next TV Setup names the dial error (d7671a0a)"
  },
  "1b64c0fdb7081f015b2765c2|0.22.1": {
-  "at": "2026-11-14T14:55:26+07:00",
+  "at": "2026-11-21T04:53:57+07:00",
   "n": 1,
-  "note": "old pc 0.24.1 again (Linux azure host running an old build); fixed in 4c5bf584 (v0.26.0)"
+  "note": "pc 0.24.1, old: fixed in 4c5bf5841"
  },
  "1b64c0fdb7081f015b2765c2|0.23.0": {
-  "at": "2026-11-14T14:55:26+07:00",
+  "at": "2026-11-21T04:53:57+07:00",
   "n": 2,
-  "note": "old pc 0.24.1 again (Linux azure host running an old build); fixed in 4c5bf584 (v0.26.0)"
+  "note": "pc 0.24.1, old: fixed in 4c5bf5841"
  },
  "1b64c0fdb7081f015b2765c2|0.24.0": {
-  "at": "2026-11-14T14:55:26+07:00",
+  "at": "2026-11-21T04:53:57+07:00",
   "n": 6,
-  "note": "old pc 0.24.1 again (Linux azure host running an old build); fixed in 4c5bf584 (v0.26.0)"
+  "note": "pc 0.24.1, old: fixed in 4c5bf5841"
  },
  "1b64c0fdb7081f015b2765c2|0.24.1": {
-  "at": "2026-11-14T14:55:26+07:00",
-  "n": 3,
-  "note": "old pc 0.24.1 again (Linux azure host running an old build); fixed in 4c5bf584 (v0.26.0)"
+  "at": "2026-11-21T04:53:57+07:00",
+  "n": 4,
+  "note": "pc 0.24.1, old: fixed in 4c5bf5841"
  },
  "1b64c0fdb7081f015b2765c2|0.25.0": {
-  "at": "2026-11-14T14:55:26+07:00",
+  "at": "2026-11-21T04:53:57+07:00",
   "n": 6,
-  "note": "old pc 0.24.1 again (Linux azure host running an old build); fixed in 4c5bf584 (v0.26.0)"
+  "note": "pc 0.24.1, old: fixed in 4c5bf5841"
  },
  "1b64c0fdb7081f015b2765c2|0.26.0": {
-  "at": "2026-11-14T14:55:26+07:00",
+  "at": "2026-11-21T04:53:57+07:00",
   "n": 1,
-  "note": "old pc 0.24.1 again (Linux azure host running an old build); fixed in 4c5bf584 (v0.26.0)"
+  "note": "pc 0.24.1, old: fixed in 4c5bf5841"
  },
  "1b64c0fdb7081f015b2765c2|0.26.1": {
-  "at": "2026-11-14T14:55:26+07:00",
+  "at": "2026-11-21T04:53:57+07:00",
   "n": 8,
-  "note": "old pc 0.24.1 again (Linux azure host running an old build); fixed in 4c5bf584 (v0.26.0)"
+  "note": "pc 0.24.1, old: fixed in 4c5bf5841"
  },
  "1b64c0fdb7081f015b2765c2|0.26.3": {
-  "at": "2026-11-14T14:55:26+07:00",
+  "at": "2026-11-21T04:53:57+07:00",
   "n": 8,
-  "note": "old pc 0.24.1 again (Linux azure host running an old build); fixed in 4c5bf584 (v0.26.0)"
+  "note": "pc 0.24.1, old: fixed in 4c5bf5841"
  },
  "1bb957ff3a488ee2d9b284a4|0.42.0": {
   "at": "2026-11-04T06:24:38+07:00",
@@ -840,19 +845,19 @@
   "note": "TV Setup ADB health report (box refused / no Allow / not paired), not a code fault"
  },
  "2f7b4a5845c32315a71d9ed8|0.48.0": {
-  "at": "2026-11-19T02:49:00+07:00",
+  "at": "2026-11-21T04:53:58+07:00",
   "n": 1,
-  "note": "Allwinner projector (fake adt3, a11) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
  },
  "2f7b4a5845c32315a71d9ed8|0.52.0": {
-  "at": "2026-11-19T02:49:00+07:00",
+  "at": "2026-11-21T04:53:58+07:00",
   "n": 1,
-  "note": "Allwinner projector (fake adt3, a11) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
  },
  "2f7b4a5845c32315a71d9ed8|0.53.1": {
-  "at": "2026-11-19T02:49:00+07:00",
-  "n": 1,
-  "note": "Allwinner projector (fake adt3, a11) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "at": "2026-11-21T04:53:58+07:00",
+  "n": 2,
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
  },
  "304d571eb8351582e87856f4|0.26.3": {
   "at": "2026-10-26T21:47:43+07:00",
@@ -3895,9 +3900,9 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
  "c637d18dfed3a49bbcb1db54|0.53.1": {
-  "at": "2026-11-19T11:09:05+07:00",
-  "n": 2,
-  "note": "CHiQ AI PONT again (2nd report): add-on stopped kind; nothing to fix"
+  "at": "2026-11-21T04:53:57+07:00",
+  "n": 3,
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
  },
  "c6a86068f3601afb5dbbefd8|0.31.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -4910,39 +4915,39 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "fbed4da875a2ffa6e96f47b8|0.47.0": {
-  "at": "2026-11-18T22:24:54+07:00",
+  "at": "2026-11-21T04:53:58+07:00",
   "n": 2,
-  "note": "keyfix_refused fake ADT-3 (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
  },
  "fbed4da875a2ffa6e96f47b8|0.49.0": {
-  "at": "2026-11-18T22:24:54+07:00",
+  "at": "2026-11-21T04:53:58+07:00",
   "n": 1,
-  "note": "keyfix_refused fake ADT-3 (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
  },
  "fbed4da875a2ffa6e96f47b8|0.50.0": {
-  "at": "2026-11-18T22:24:54+07:00",
+  "at": "2026-11-21T04:53:58+07:00",
   "n": 5,
-  "note": "keyfix_refused fake ADT-3 (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
  },
  "fbed4da875a2ffa6e96f47b8|0.51.0": {
-  "at": "2026-11-18T22:24:54+07:00",
+  "at": "2026-11-21T04:53:58+07:00",
   "n": 4,
-  "note": "keyfix_refused fake ADT-3 (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
  },
  "fbed4da875a2ffa6e96f47b8|0.52.0": {
-  "at": "2026-11-18T22:24:54+07:00",
+  "at": "2026-11-21T04:53:58+07:00",
   "n": 2,
-  "note": "keyfix_refused fake ADT-3 (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
  },
  "fbed4da875a2ffa6e96f47b8|0.53.0": {
-  "at": "2026-11-18T22:24:54+07:00",
+  "at": "2026-11-21T04:53:58+07:00",
   "n": 2,
-  "note": "keyfix_refused fake ADT-3 (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
  },
  "fbed4da875a2ffa6e96f47b8|0.53.1": {
-  "at": "2026-11-18T22:24:54+07:00",
-  "n": 1,
-  "note": "keyfix_refused fake ADT-3 (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "at": "2026-11-21T04:53:58+07:00",
+  "n": 2,
+  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
  },
  "fc50f4abd4e3d69b9a57334c|0.34.1": {
   "at": "2026-10-30T09:08:32+07:00",
