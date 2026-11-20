@@ -115,6 +115,11 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
     @Volatile private var shown: Field? = null
     @Volatile private var told: String? = null                        // the field's text as the TV last said it, ours or not
     @Volatile private var editedAt = 0L                               // when we last sent text: the TV's echo of it must not overwrite the text typed since
+    @Volatile private var deletedAt = 0L                              // when we last sent Backspaces to the field: an insert right after waits for them
+    @Volatile private var submitted: String? = null                   // the text Enter went with: a late report of it must not bring the field back
+    @Volatile private var submittedAt = 0L
+    /** Runs [what] after [ms] (tests: at once or never); a report the echo window held back is looked at again then. */
+    internal var later: (Long, () -> Unit) -> Unit = { ms, what -> LATER.schedule(object : java.util.TimerTask() { override fun run() { try { what() } catch (ignored: Exception) { } } }, ms) }
     internal var clock: () -> Long = { System.currentTimeMillis() }
     internal var tap: ((ByteArray) -> Unit)? = null                   // tests: what would go on the wire
 
@@ -249,7 +254,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
             val v = (st[2]?.firstOrNull() as? ByteArray)?.toString(Charsets.UTF_8) ?: ""
             told = v
             val f = shown ?: return
-            if (clock() - editedAt < ECHO_MS) return                  // our own edit coming back: ours is newer
+            if (clock() - editedAt < ECHO_MS) { recheck(); return }   // our own edit coming back: ours is newer
             val l = (st[6]?.firstOrNull() as? ByteArray)?.toString(Charsets.UTF_8) ?: f.label
             if (v != f.text || l != f.label) setField(Field(v, l))
         }
@@ -282,8 +287,22 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
             if (c != 0L) { field = c; fieldFromStatus = true }
             told = v
             val f = shown
-            if (f != null && clock() - editedAt < ECHO_MS) return@let   // our own edit coming back: ours is newer
+            if (f != null && clock() - editedAt < ECHO_MS) { recheck(); return@let }   // our own edit coming back: ours is newer
+            if (f == null && v == submitted && clock() - submittedAt < ECHO_MS) return@let   // the text Enter went with, reported late: the field is gone
             if (f == null || f.text != v || f.label != l) setField(Field(v, l))
+        }
+    }
+
+    /**
+     * A report held back as our own echo may be the TV's last word on the field (an insert it dropped): once no edit of ours is
+     * that recent, what the TV said wins over what we expected.
+     */
+    private fun recheck() {
+        val e = editedAt
+        later(maxOf(0L, ECHO_MS - (clock() - e)) + 50) {
+            val f = shown
+            val t = told
+            if (editedAt == e && f != null && t != null && t != f.text) setField(Field(t, f.label))
         }
     }
 
@@ -345,16 +364,29 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
         }
         if (del > 0 || add.isNotEmpty()) {
             val base = f.text
-            val cut = try { base.offsetByCodePoints(base.length, -minOf(del, base.codePointCount(0, base.length))) } catch (e: Exception) { 0 }
+            val at = try { base.offsetByCodePoints(base.length, -minOf(del, base.codePointCount(0, base.length))) } catch (e: Exception) { 0 }
+            var cut = base.length
+            var presses = 0
+            while (cut > at) { cut = backspaceFrom(base, cut); presses++ }   // a Backspace takes a whole emoji: what it took too much goes back in
+            presses += maxOf(0, del - base.codePointCount(0, base.length))   // all of them: a TV that never says its text has more than we know
+            val put = base.substring(cut, at) + add
             editedAt = clock()
             val known = told != null                                  // a TV that says its text: wait for it to read as it should
-            shown = Field(base.substring(0, cut) + add, f.label)       // no onField: the screen that typed it has it
-            repeat(del) { key(67, SHORT) }                            // all of them: a TV that never says its text has more than we know
-            if (del > 0 && add.isNotEmpty()) settle(if (known) base.substring(0, cut) else null, del)
-            if (add.isNotEmpty()) insert(add)
-            if (enter) settle(if (known) base.substring(0, cut) + add else null, if (add.isEmpty()) del else 1)
-        }
+            shown = Field(base.substring(0, cut) + put, f.label)       // no onField: the screen that typed it has it
+            repeat(presses) { backspace() }
+            if (presses > 0) deletedAt = clock()
+            // an insert waits for the Backspaces before it, these or a moment ago's (live typing sends them one call each)
+            if (put.isNotEmpty() && (presses > 0 || clock() - deletedAt < DELETED_WAIT_MS)) settle(if (known) base.substring(0, cut) else null, maxOf(presses, 1))
+            if (put.isNotEmpty()) insert(put)
+            if (enter) settle(if (known) base.substring(0, cut) + put else null, if (put.isEmpty()) presses else 1)
+        } else if (enter && clock() - editedAt < ENTER_WAIT_MS) settle(if (told != null) f.text else null, 1)   // live: Enter alone, right after the last letter
         if (enter) submit(l)
+    }
+
+    /** Backspace for the field: kept longer than other keys when the link is slow, a settle may hold the queue for seconds. */
+    private fun backspace() {
+        WireLog.all.add("→", "remote $host key 67 tap")
+        post(Pb().msg(10, Pb().int(1, 67).int(2, SHORT.toLong()).bytes()).bytes(), FIELD_STALE_MS)
     }
 
     /** Sets the field's whole text to [t] (empty too): Backspaces for what it holds, then [t]. */
@@ -389,6 +421,8 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
      * Not sent when the TV said the focus left the field since [l] (its count when the typing began): the app moved on by itself.
      */
     fun submit(l: Int = lefts) {
+        submitted = shown?.text
+        submittedAt = clock()
         WireLog.all.add("→", "remote $host key 66 tap")
         post(0) { if (lefts != l) null else Pb().msg(10, Pb().int(1, 66).int(2, SHORT.toLong()).bytes()).bytes() }   // no stale limit: it waits for the text; a BRAVIA's Play Store jumps to "Install" on a match
         if (shown != null) setField(null)
@@ -576,6 +610,34 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
         const val SHORT = 3
         const val KEYCODE_SEARCH = 84
         private const val ECHO_MS = 1500L
+        private const val DELETED_WAIT_MS = 2000L
+        private const val ENTER_WAIT_MS = 3000L
+        private const val FIELD_STALE_MS = 10_000L
+        private val LATER by lazy { java.util.Timer("atv-field", true) }
+
+        /**
+         * Where one Backspace from [end] leaves [s], as Android's own Backspace (BaseKeyListener) deletes: a whole emoji with its
+         * skin tone, variation selector, keycap or tags, a ZWJ family, a flag's two letters; anything else one code point.
+         */
+        internal fun backspaceFrom(s: String, end: Int): Int {
+            fun prev(j: Int) = if (j > 0) s.offsetByCodePoints(j, -1) else -1
+            var i = prev(end)
+            if (i < 0) return 0
+            while (true) {
+                val c = s.codePointAt(i)
+                if (c == 0xFE0E || c == 0xFE0F || c in 0x1F3FB..0x1F3FF || c == 0x20E3 || c in 0xE0020..0xE007F) {
+                    val p = prev(i); if (p < 0) return i; i = p; continue
+                }
+                val p = prev(i)
+                if (p >= 0 && s.codePointAt(p) == 0x200D) { val q = prev(p); if (q < 0) return p; i = q; continue }
+                if (c in 0x1F1E6..0x1F1FF) {                          // a flag: regional letters pair from the start of their run
+                    var k = i; var run = 0
+                    while (true) { val pp = prev(k); if (pp >= 0 && s.codePointAt(pp) in 0x1F1E6..0x1F1FF) { run++; k = pp } else break }
+                    if (run % 2 == 1) return p
+                }
+                return i
+            }
+        }
         const val VOICE_MAX = 20 * 1024
         const val VOICE_MIN = 8 * 1024
 

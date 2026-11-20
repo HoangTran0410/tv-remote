@@ -14,12 +14,12 @@ internal fun MainActivity.sendText() {
         val f = (it as? Atv)?.takeIf { a -> a.hasField }          // the TV's own text field: the box holds all its text
         if (f != null) {
             if (!live && s != f.currentField?.text) f.replace(s)  // edited here: the field gets it all; unchanged (or live): Enter, which submits
-            else { f.submit(); clearBox() }
+            else { f.type(0, "", true); clearBox() }                  // type: right after live letters, Enter waits for the TV to have them
             return
         }
         if (live) { it.key(66, Atv.SHORT); clearBox() }           // everything is on the TV already: this is Enter
         else if (s.isEmpty()) it.key(66, Atv.SHORT)
-        else { val a = it as? Atv; if (a == null) it.text(s) else if (a.hasField && !Atv.typable(s)) a.text(s) else a.keys(s); textBox.setText("") }
+        else { val a = it as? Atv; if (a == null) it.text(s) else a.type(0, s, false); textBox.setText("") }   // keys, or the keyboard service for accents and capitals
         return
     }
     val tv = tv
@@ -58,21 +58,15 @@ internal fun MainActivity.typedLive(now: String) {
         if (it == null) {                                             // LG / Samsung: their keyboard link takes the change
             var keep = 0
             while (keep < onTv.length && keep < now.length && onTv[keep] == now[keep]) keep++
+            if (keep > 0 && Character.isHighSurrogate(onTv[keep - 1])) keep--
             r.type(onTv.length - keep, now.substring(keep), false)
             onTv = now
             return
         }
-        if (it.hasField) {                                        // the TV's text field: its text, replaced as a whole
-            var keep = 0
-            while (keep < onTv.length && keep < now.length && onTv[keep] == now[keep]) keep++
-            it.type(onTv.codePointCount(keep, onTv.length), now.substring(keep), false)
-        }
-        else {
-            var keep = 0
-            while (keep < onTv.length && keep < now.length && onTv[keep] == now[keep]) keep++
-            repeat(onTv.length - keep) { _ -> it.key(67, Atv.SHORT) }
-            it.keys(now.substring(keep))
-        }
+        var keep = 0                                              // with a field: its text, edited; without: Backspace keys, then keys (or the keyboard service)
+        while (keep < onTv.length && keep < now.length && onTv[keep] == now[keep]) keep++
+        if (keep > 0 && Character.isHighSurrogate(onTv[keep - 1])) keep--   // never half an emoji
+        it.type(onTv.codePointCount(keep, onTv.length), now.substring(keep), false)
         onTv = now
         return
     }
@@ -80,7 +74,8 @@ internal fun MainActivity.typedLive(now: String) {
     if (tv == null || !tv.ready()) return
     var same = 0
     while (same < onTv.length && same < now.length && onTv[same] == now[same]) same++
-    repeat(onTv.length - same) { tv.press(67) }
+    if (same > 0 && Character.isHighSurrogate(onTv[same - 1])) same--
+    repeat(onTv.codePointCount(same, onTv.length)) { tv.press(67) }
     if (now.length > same) tv.text(now.substring(same))
     onTv = now
 }

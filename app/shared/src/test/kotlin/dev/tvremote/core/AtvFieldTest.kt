@@ -17,7 +17,9 @@ class AtvFieldTest {
     private val atv = Atv(java.nio.file.Files.createTempDirectory("atv").toFile(), "10.0.0.2").also { a ->
         a.tap = { sent.add(it) }
         a.clock = { now }
+        a.later = { _, what -> held.add(what) }
     }
+    private val held = ArrayList<() -> Unit>()
 
     private fun feed(b: ByteArray) = atv.ime(Atv.Pb.read(b))
     private fun status(counter: Long, text: String, label: String = "") =
@@ -217,5 +219,65 @@ class AtvFieldTest {
         atv.text("")
         assertTrue(sent.isEmpty())
         assertNull(atv.currentField?.takeIf { it.text != "a" })
+    }
+
+    @Test fun aBackspaceTakesAWholeEmoji() {
+        fun from(t: String) = Atv.backspaceFrom(t, t.length)
+        assertEquals(1, from("a👍🏽"))                                // skin tone
+        assertEquals(1, from("a👨‍👩‍👧"))                                // a ZWJ family
+        assertEquals(1, from("a🇻🇳"))                                  // a flag
+        assertEquals(5, from("a🇻🇳🇫🇷"))                                // the second flag only
+        assertEquals(1, from("a1️⃣"))                                  // a keycap
+        assertEquals(1, from("a❤️"))                                   // a variation selector
+        assertEquals(2, from("ae\u0301"))                             // a combining accent goes alone
+        assertEquals(0, from(""))
+    }
+
+    @Test fun deletingAnEmojiWithItsSkinToneIsOneBackspace() {
+        show(1, "hi👍🏽")
+        atv.type(2, "", false)                                      // the clients count code points
+        assertEquals(listOf(67L), keys())
+        assertEquals("hi", atv.currentField!!.text)
+    }
+
+    @Test fun deletingOnlyTheSkinToneTypesTheEmojiBack() {
+        show(1, "hi👍🏽")
+        atv.type(1, "", false)
+        assertEquals(listOf(67L), keys())
+        assertEquals(listOf("👍"), texts())
+        assertEquals("hi👍", atv.currentField!!.text)
+    }
+
+    @Test fun aLateReportOfTheSubmittedTextDoesNotBringTheFieldBack() {
+        show(1, "")
+        atv.type(0, "kodi", false)
+        atv.type(0, "", true)
+        assertFalse(atv.hasField)
+        show(2, "kodi")                                             // the TV's report of the insert, after Enter
+        assertFalse(atv.hasField)
+        now += 5000
+        show(3, "kodi")                                             // the keyboard really back on that field, later
+        assertTrue(atv.hasField)
+    }
+
+    @Test fun theTvsLastWordWinsOnceTheEchoWindowIsOver() {
+        show(1, "a")
+        atv.type(0, "b", false)                                     // we expect "ab"
+        show(2, "a")                                                // the TV dropped the insert, and says nothing more
+        assertEquals("ab", atv.currentField!!.text)                 // held back as our echo for now
+        now += 2000
+        held.forEach { it() }
+        assertEquals("a", atv.currentField!!.text)
+    }
+
+    @Test fun aNewerEditCancelsTheLookAgain() {
+        show(1, "a")
+        atv.type(0, "b", false)
+        show(2, "a")
+        now += 500
+        atv.type(0, "c", false)                                     // typed since: that report is old news
+        now += 2000
+        held.forEach { it() }
+        assertEquals("abc", atv.currentField!!.text)
     }
 }

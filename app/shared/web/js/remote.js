@@ -150,6 +150,7 @@ const queue = (path, data) => { inputQ = inputQ.then(() => api(path, data)); }; 
 function syncText() {                                                 // send only the difference: backspaces, then new characters
   const v = txt.value; let i = 0;
   while (i < typed.length && i < v.length && typed[i] === v[i]) i++;
+  if (i && /[\uD800-\uDBFF]/.test(typed[i - 1])) i--;              // never half an emoji: 😀 and 😁 share their first half
   const del = [...typed.slice(i)].length, text = v.slice(i); typed = v;
   if (del || text) queue('/api/type', { del, text });
 }
@@ -176,7 +177,9 @@ txt.addEventListener('input', (e) => { if (live && !e.isComposing) syncText(); }
 txt.addEventListener('compositionend', () => live && syncText());   // Vietnamese / IME input arrives when the syllable is done
 $('#textf').addEventListener('submit', (e) => {
   e.preventDefault();
-  if (live) { syncText(); queue('/api/type', { enter: true }); } else if (txt.value) queue('/api/type', { text: txt.value });
+  const field = ADB.state !== 'ready' && !NATIVE() && !!STATE.field;   // the box holds the TV field's text (fieldFollow)
+  if (!live && field && txt.value !== typed) return syncText();       // Send, edited: what changed goes in (the TV inserts, never replaces); the next Send is Enter
+  if (live || field) { syncText(); queue('/api/type', { enter: true }); } else if (txt.value) queue('/api/type', { text: txt.value });
   txt.value = typed = '';
 });
 $('#del').addEventListener('click', () => { if (txt.value) { txt.value = [...txt.value].slice(0, -1).join(''); if (live) syncText(); } else queue('/api/type', { del: 1 }); });
@@ -244,7 +247,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && document.fullscreenElement) return;       // let Esc leave fullscreen
   const adb = typeOk();      // letters: ADB, or LG's / Samsung's keyboard link
   if (keymap[e.key] || e.key === 'Enter') { e.preventDefault(); if (!e.repeat) keyDown(e.key); }   // sent on keyup: held, it is a long press
-  else if (e.key === 'Backspace') { e.preventDefault(); if (adb) queue('/api/type', { del: 1 }); else api('/api/key', { key: 'DEL' }); }
+  else if (e.key === 'Backspace') { e.preventDefault(); if (adb && STATE.field && ADB.state !== 'ready' && !NATIVE()) $('#del').click(); else if (adb) queue('/api/type', { del: 1 }); else api('/api/key', { key: 'DEL' }); }
   else if (!adb) return;                                              // letters need ADB
   else if (e.key === 'Delete') { e.preventDefault(); queue('/api/type', { fdel: 1 }); }
   else if (e.key.length === 1) { e.preventDefault(); queue('/api/type', { text: e.key }); }
