@@ -17,7 +17,8 @@ import java.util.Locale
  * Who may command it: a chat that sent `/pair 123456` with the code the TV showed (one at a time, five minutes, five wrong
  * guesses cancel it and lock pairing, as [Hook] does for tokens). Anyone else is ignored silently, so a stranger who finds the bot
  * learns nothing, not even that it listens. A paired chat has a scope like a shared browser (Scope.kt in TV Setup): REMOTE by
- * default, FULL when the owner raises it.
+ * default, FULL when the owner raises it. In a paired group only the group's admins command it (the user, 2026-11-21): the others
+ * read what it sends, alerts too, and a command or tap of theirs gets one line saying so ([mayControl]).
  *
  * Nothing here presses a key: every command becomes the request the page would have sent and goes to the core's own router
  * ([route], with the chat's scope, so a REMOTE chat is refused exactly where a REMOTE browser is), through [Hook.perform] for the
@@ -238,8 +239,10 @@ class Telegram(
         val cmd = parse(text, store.bot) ?: return onText(id, chat)
         val known = chats().firstOrNull { it.id == id }
         // t.me/<bot>?start=<code> sends "/start <code>": the same code, the same limits as /pair
-        if (known == null) { if ((cmd.name == "pair" || (cmd.name == "start" && cmd.arg.isNotEmpty())) && pair(id, nameOf(chat), cmd.arg, chat.optString("type"))) send(id, w("telegram.paired", "scope" to REMOTE) + "\n\n" + help(REMOTE)); return }   // anyone else: nothing, not even an answer
+        val from = m.optJSONObject("from")
+        if (known == null) { if ((cmd.name == "pair" || (cmd.name == "start" && cmd.arg.isNotEmpty())) && mayControl(id, from, m.optJSONObject("sender_chat")) && pair(id, nameOf(chat), cmd.arg, chat.optString("type"))) send(id, w("telegram.paired", "scope" to REMOTE) + "\n\n" + help(REMOTE)); return }   // anyone else: nothing, not even an answer
         if (!limit.ok(id, clock())) return
+        if (!mayControl(id, from, m.optJSONObject("sender_chat"))) { send(id, w("tg.admins_only")); return }
         touch(known)
         val secret = cmd.name in HIDDEN                                  // what was typed or said is the family's, not the log's
         WireLog.all.add("←", "telegram ${known.name}: /${cmd.name} ${if (secret) "…(${cmd.arg.length})" else cmd.arg}".trim())
@@ -290,6 +293,7 @@ class Telegram(
         val known = chats().firstOrNull { it.id == id } ?: return
         val qid = cb.optString("id")
         if (!limitTap.ok(id, clock())) { answer(qid, ""); return }
+        if (!mayControl(id, cb.optJSONObject("from"))) { answer(qid, w("tg.admins_only")); return }   // shown to the one who tapped only
         val rest = data.substringAfter(':', "")
         WireLog.all.add("←", "telegram ${known.name}: tap ${data.take(40)}")
         val job = Runnable {
@@ -331,6 +335,29 @@ class Telegram(
             "u" -> grant(known, rest, qid, msg, id)                       // a parent's answer to "ask a parent" (kids mode)
             else -> answer(qid, "")
         }
+    }
+
+    // ---------------------------------------------------------------- groups: only the admins
+    private val admins = HashMap<Pair<Long, Long>, Pair<Boolean, Long>>()   // (group, user) -> admin?, until when
+
+    /**
+     * Whether [from] may command the TV in [chat]: always in a private chat; in a group (its id is negative) only its creator and
+     * admins, asked of Telegram (getChatMember) and kept [ADMIN_MS]. An admin posting as the group ([senderChat], anonymous) is one.
+     * No answer from Telegram: no (asked again next time).
+     */
+    private fun mayControl(chat: Long, from: JSONObject?, senderChat: JSONObject? = null): Boolean {
+        if (chat > 0) return true
+        if (senderChat != null && senderChat.optLong("id") == chat) return true
+        val user = from?.optLong("id") ?: 0L
+        if (user <= 0L) return false
+        val key = chat to user
+        synchronized(admins) { admins[key]?.let { if (clock() < it.second) return it.first } }
+        val r = try { api.call(store.token, "getChatMember", JSONObject().put("chat_id", chat).put("user_id", user), 10) } catch (e: IOException) { return false }
+        if (!r.ok) return false
+        val status = r.body.optJSONObject("result")?.optString("status") ?: ""
+        val yes = status == "creator" || status == "administrator"
+        synchronized(admins) { if (admins.size > 500) admins.clear(); admins[key] = yes to clock() + ADMIN_MS }
+        return yes
     }
 
     // ---------------------------------------------------------------- pairing
@@ -1026,6 +1053,7 @@ class Telegram(
         private fun alertsOf(a: JSONArray?): Set<String> = if (a == null) emptySet() else (0 until a.length()).map { a.optString(it) }.filter { it in ALERTS }.toSet()
         const val POLL_S = 50
         private const val STALE_S = 120L
+        private const val ADMIN_MS = 10 * 60_000L                         // a member made or unmade admin counts within ten minutes
         private const val CODE_MS = 5 * 60_000L
         private const val MAX_WRONG = 5                     // per chat
         private const val MAX_WRONG_ALL = 30                // from all chats together: 30 tries of a million, then the code dies and pairing locks

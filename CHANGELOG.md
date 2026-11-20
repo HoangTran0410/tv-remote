@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Telegram: in a paired group only the group's admins can control the TV; other members still see alerts, and a command or button of theirs gets a short "only admins" note.
 - TV Home: with two rows of widgets over the grid, Down from the widgets now scrolls the focused app tile into view, and Up from the grid shows the whole widget area again (the top row was cut off).
 - Rules on the TV: an app schedule alone, a PIN alone, or a daily total set only for other days now keep working after the TV restarts; a schedule window across midnight (22:00-02:00) gives its minutes once, not again at midnight; bedtime, limits and schedules wait while the TV's clock is still wrong after boot, and a snooze or a wrong-PIN wait set on a wrong clock no longer lasts a year; home screens can no longer be limited, scheduled or locked; with no rule set, TV Setup's watcher stops.
 - Automation: when the TV is set to another time zone, the page says so, and the times shown and "turn off at 23:30" use the TV's clock (also in the phone app).

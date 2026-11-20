@@ -135,8 +135,39 @@ class TelegramTest {
 
     @Test fun aGroupIsPairedByItsNegativeId() {
         val c = bot.newCode()
-        bot.onUpdate(JSONObject("""{"update_id":1,"message":{"date":${now / 1000},"text":"/pair@tvbot $c","chat":{"id":-100123,"type":"supergroup","title":"Family"}}}"""))
+        api.on("getChatMember") { Telegram.Reply(200, JSONObject("""{"ok":true,"result":{"status":"creator"}}""")) }
+        bot.onUpdate(JSONObject("""{"update_id":1,"message":{"date":${now / 1000},"text":"/pair@tvbot $c","chat":{"id":-100123,"type":"supergroup","title":"Family"},"from":{"id":7}}}"""))
         assertEquals("Family", bot.chats().single().name); assertEquals(-100123L, bot.chats().single().id)
+    }
+
+    private fun groupMsg(user: Long, text: String, id: Long) = JSONObject(
+        """{"update_id":$id,"message":{"date":${now / 1000},"text":${JSONObject.quote(text)},"chat":{"id":-100123,"type":"supergroup","title":"Family"},"from":{"id":$user}}}""")
+    private fun member(status: String) = api.on("getChatMember") { Telegram.Reply(200, JSONObject("""{"ok":true,"result":{"status":"$status"}}""")) }
+
+    @Test fun inAGroupOnlyItsAdminsCommandTheTv() {
+        pairChat(-100123)
+        member("member"); bot.onUpdate(groupMsg(8, "/key HOME", 1))
+        assertTrue(seen.isEmpty()); assertTrue(api.sent(-100123).single().contains("admins"))
+        now += 1000; member("administrator"); bot.onUpdate(groupMsg(9, "/key HOME", 2))
+        assertEquals(1, seen.size)
+        now += 1000; bot.onUpdate(groupMsg(9, "/key UP", 3))           // kept: Telegram is asked once per member
+        assertEquals(2, seen.size); assertEquals(2, api.named("getChatMember").size)
+        now += 1000; bot.onUpdate(JSONObject("""{"update_id":4,"message":{"date":${now / 1000},"text":"/key DOWN","chat":{"id":-100123,"type":"supergroup"},"from":{"id":1087968824},"sender_chat":{"id":-100123}}}"""))
+        assertEquals(3, seen.size)                                       // an anonymous admin, posting as the group
+    }
+
+    @Test fun aMemberWhoIsNotAdminCannotPairTheGroupNorTap() {
+        val c = bot.newCode(); member("member")
+        bot.onUpdate(groupMsg(8, "/pair $c", 1)); assertTrue(bot.chats().isEmpty())
+        pairChat(-100123); member("left")
+        now += 1000; bot.onUpdate(JSONObject("""{"update_id":60,"callback_query":{"id":"cb60","data":"k:HOME","from":{"id":8},"message":{"message_id":9,"chat":{"id":-100123}}}}"""))
+        assertTrue(seen.isEmpty()); assertTrue(api.named("answerCallbackQuery").single().optString("text").contains("admins"))
+    }
+
+    @Test fun noAnswerFromTelegramMeansNo() {
+        pairChat(-100123); api.on("getChatMember") { throw IOException("down") }
+        bot.onUpdate(groupMsg(9, "/key HOME", 1)); assertTrue(seen.isEmpty())
+        now += 1000; member("administrator"); bot.onUpdate(groupMsg(9, "/key HOME", 2)); assertEquals(1, seen.size)   // asked again
     }
 
     // ---------------------------------------------------------------- rate limit, stale messages
