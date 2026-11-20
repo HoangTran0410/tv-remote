@@ -596,6 +596,7 @@
  "auto.kids_totp_off_ask": "Gỡ Google Authenticator khỏi TV này?",
  "auto.kids_waiting": "Nhập sai nhiều lần, TV chờ đến {at} mới cho thử lại.",
  "auto.kids_clock_manual": "TV chưa tự đồng bộ giờ: mã Google Authenticator có thể sai. Bật Ngày & giờ tự động trên TV.",
+ "auto.tv_zone": "TV để múi giờ {zone}: trên TV là {tv}, ở đây là {here}. Giờ trên trang này và các hẹn giờ theo đồng hồ TV.",
  "auto.kids_clock_drift": "Đồng hồ TV lệch {n} giây: mã Google Authenticator có thể sai. Bật Ngày & giờ tự động trên TV (TV Setup tự chỉnh phần lệch nhỏ).",
  "auto.kids_unlock_title": "⏳ Mở khóa tạm",
  "auto.kids_open_30": "30 phút",

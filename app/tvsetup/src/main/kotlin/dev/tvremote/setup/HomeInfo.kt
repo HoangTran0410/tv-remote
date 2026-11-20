@@ -122,7 +122,7 @@ class HomeInfo : ContentProvider() {
             val o = Rules.load(c)
             return Bundle().apply { putString("json", JSONObject().put("sleep_at", o.optLong("sleep_at").let { if (it > now) it else 0L })
                 .put("bedtime", Rules.bedtime(o)).put("in_bedtime", Rules.inBedtime(o, now))
-                .put("snooze_until", o.optLong("snooze_until").let { if (it > now) it else 0L }).toString()) }
+                .put("snooze_until", Rules.snoozeUntil(o, now)).toString()) }
         }
         if (method == "recent") return recent(c, now)
         if (method == "badges") {                                      // the app tiles' marks: little to ask, answered each minute

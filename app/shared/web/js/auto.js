@@ -3,7 +3,18 @@
 const SETUP_APK = 'https://github.com/HoangTran0410/tv-remote/releases/latest/download/tv-setup.apk';
 let RULES = null, rulesSkew = 0, rulesBusy = false, rulesGen = 0;                                      // rulesGen: an answer from the old TV is dropped
 const pad2 = (n) => String(n).padStart(2, '0');
-const clock = (t) => { const d = new Date(t - rulesSkew); return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };   // a moment on the TV's clock, in this device's
+// the TV's time zone minus this device's at the moment t (ms), 0 when unknown: bedtime, schedules and "23:30" go by the TV's clock
+function zoneShift(zone, t) {
+  if (!zone) return 0;
+  try {
+    const p = {};
+    for (const x of new Intl.DateTimeFormat('en-US', { timeZone: zone, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' }).formatToParts(new Date(t))) p[x.type] = +x.value;
+    return Date.UTC(p.year, p.month - 1, p.day, p.hour % 24, p.minute) - Math.floor(t / 60000) * 60000 + new Date(t).getTimezoneOffset() * 60000;
+  } catch (e) { return 0; }                                             // a zone this browser does not know: this device's
+}
+const tvShift = (t) => zoneShift(RULES && RULES.clock && RULES.clock.zone, t);
+const tvWall = () => new Date(Date.now() + tvShift(Date.now()));       // this moment as the TV's wall clock reads it (its zone, this device's seconds)
+const clock = (t) => { const d = new Date(t - rulesSkew + tvShift(t - rulesSkew)); return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };   // a moment on the TV's clock, as the TV's wall shows it
 // short, for a line in a list: 25p, 3g30, 2g
 const minsShort = (m) => m < 60 ? T('auto.min_s', { n: m }) : m % 60 ? T('auto.hours_min_s', { h: Math.floor(m / 60), m: String(m % 60).padStart(2, '0') }) : T('auto.hours_s', { h: Math.floor(m / 60) });
 const mins = (m) => m < 60 ? T('auto.min_n', { n: m }) : m % 60 ? T('auto.hours_min_n', { h: Math.floor(m / 60), m: m % 60 }) : T('auto.hours_n', { h: Math.floor(m / 60) });
@@ -42,7 +53,9 @@ function renderRules() {
       el('div', { className: 'actions' }, act(T(r.setup === 'old' ? 'auto.update_setup' : 'auto.install_setup'), r.setup === 'old' ? updateSetup : installSetupApk, 'primary'))));
     return;
   }
-  box.replaceChildren(); put('#rulecards', 'hidden', false);
+  const shift = r.clock && r.clock.zone ? tvShift(Date.now()) : 0;     // another zone on the TV (set wrong, or this device away): its times are shown
+  box.replaceChildren(...(shift ? [UI.warn(T('auto.tv_zone', { zone: r.clock.zone, tv: clock(r.now), here: pad2(new Date().getHours()) + ':' + pad2(new Date().getMinutes()) }))] : []));
+  put('#rulecards', 'hidden', false);
   // sleep timer
   const left = r.sleep_at ? Math.max(0, Math.round((r.sleep_at - r.now) / 60000)) : 0;
   put('#sleepstate', 'textContent', r.sleep_at ? T('auto.sleep_at', { at: clock(r.sleep_at), left: mins(left) }) : T('auto.no_timer_set'));
@@ -142,7 +155,7 @@ function renderRules() {
 }
 
 // "40" is minutes from now, "23:30" / "23h30" / "23h" a time of day (the next one); the same reading as sleepMinutes in Automation.kt.
-function sleepMinutes(v, now = new Date()) {
+function sleepMinutes(v, now = tvWall()) {                        // "23:30" on the TV's clock, in its zone
   v = v.trim().toLowerCase();
   if (/^\d+$/.test(v)) return +v >= 1 && +v <= 1440 ? +v : 0;
   const m = /^(\d{1,2})\s*[:hg.]\s*(\d{2})?$/.exec(v);
@@ -318,7 +331,9 @@ async function loadPickApps() {
   const r = await api('/api/apps', null, true); if (!r) return;
   seedMeta(r.apps); pickApps = r.apps.map((a) => a.pkg);
 }
-const choosable = () => pickApps.filter((p) => p !== 'dev.tvremote.setup');   // TV Setup asks the PIN and keeps the limits: never its own
+// TV Setup asks the PIN and keeps the limits: never its own; nor a home screen (closing it presses Home, which opens it again: Kids.homes)
+const HOME_PKGS = ['dev.tvremote.home', 'com.google.android.apps.tv.launcherx', 'com.google.android.tvlauncher'];   // a TV Setup older than "homes" in its answer
+const choosable = () => { const homes = new Set((RULES && RULES.homes) || HOME_PKGS); return pickApps.filter((p) => p !== 'dev.tvremote.setup' && !homes.has(p)); };
 
 async function installSetupApk() {
   toast(T('auto.downloading_setup'));

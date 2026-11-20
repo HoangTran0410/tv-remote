@@ -30,7 +30,9 @@ internal data class Marks(val bedWarnedAt: Long, val totalWarnedAt: Long, val ra
  * when it stays fuller than the share set (once per half hour at most, so "Skip" means it). Standby, closing apps and putting the warning over another app all need
  * the TV's own ADB, which this app holds (as for everything else it does). A locked app ([Rules.locked]) is watched apart, a few
  * times a second, since its PIN must come up before anyone watches it: [PinActivity] goes over it until the PIN is given, and the
- * app stays open until another one comes to the front or the TV goes to standby.
+ * app stays open until another one comes to the front or the TV goes to standby. With no rule set ([Rules.guarded]) nothing runs:
+ * the chain of checks stops, the lock thread ends, the volume receiver goes; a rule saved pokes it back ([poke]). Rules by the hour
+ * wait while the clock is plainly wrong ([Clock.wrong]).
  */
 internal class Guard private constructor(private val c: Context, private val adb: () -> Adb?) {
     companion object {
@@ -125,11 +127,51 @@ internal class Guard private constructor(private val c: Context, private val adb
         override fun run() {
             if (stopped) return
             Thread({
-                val next = safe(30_000L, { died("check", it) }) { synchronized(checking) { check() } }   // an Error (OEM without a hidden API, OOM) must not end the chain
+                val next = safe(30_000L, { died("check", it) }) {     // an Error (OEM without a hidden API, OOM) must not end the chain
+                    val o = Rules.view(c)
+                    val any = Rules.guarded(c, o)
+                    val vol = any && (o.optJSONArray("volume")?.length() ?: 0) > 0
+                    ui.post { listenVolume(vol) }
+                    if (!any) -1L                                     // no rule: no next look, no lock thread; a rule set pokes it back ([poke])
+                    else { lockWatch(); synchronized(checking) { check() } }
+                }
                 ui.removeCallbacks(this)                              // a poke meanwhile: still one chain of checks
-                ui.postDelayed(this, next.coerceIn(3_000L, 60_000L))
+                if (next >= 0) ui.postDelayed(this, next.coerceIn(3_000L, 60_000L))
             }, "guard").apply { isDaemon = true }.start()
         }
+    }
+
+    private var volumeOn = false                                      // the main thread's alone
+
+    /** The volume receiver only while a volume range exists: off = nothing hears the volume keys. */
+    private fun listenVolume(want: Boolean) {
+        if (want == volumeOn || (want && stopped)) return
+        volumeOn = want
+        if (want) {
+            val f = IntentFilter("android.media.VOLUME_CHANGED_ACTION")
+            if (android.os.Build.VERSION.SDK_INT >= 33) c.registerReceiver(volume, f, Context.RECEIVER_NOT_EXPORTED) else c.registerReceiver(volume, f)
+        } else try { c.unregisterReceiver(volume) } catch (e: Exception) { }
+    }
+
+    private val lockOn = java.util.concurrent.atomic.AtomicBoolean(false)
+
+    /**
+     * The lock thread (the app on screen, a few times a second) only while [Rules.watchesApps]: it ends by itself when the last lock,
+     * schedule or code goes. Whoever sees it wanted and not running starts it; the thread looks at the rules once more after it has
+     * marked itself gone, so a rule saved while it was ending is never missed.
+     */
+    private fun lockWatch() {
+        if (stopped || !Rules.watchesApps(Rules.view(c)) || !lockOn.compareAndSet(false, true)) return
+        Thread({
+            while (!stopped) {
+                val wait = safe(5_000L, { died("lockCheck", it) }) { lockCheck() }
+                if (wait >= 0) { Thread.sleep(wait); continue }
+                eventsTo = 0                                          // off: forgets the apps it followed
+                lockOn.set(false)
+                if (stopped || !Rules.watchesApps(Rules.view(c)) || !lockOn.compareAndSet(false, true)) return@Thread
+            }
+            lockOn.set(false)
+        }, "guard-lock").apply { isDaemon = true }.start()
     }
 
     /** A check threw: logged, and the census hears it once per version, while the loop goes on (Throwable: an Error used to end it). */
@@ -140,28 +182,26 @@ internal class Guard private constructor(private val c: Context, private val adb
 
     private fun start() {
         running = this
-        ui.postDelayed(tick, 5_000)
-        Thread({ while (!stopped) Thread.sleep(safe(5_000L, { died("lockCheck", it) }) { lockCheck() }) }, "guard-lock").apply { isDaemon = true }.start()
-        val f = IntentFilter("android.media.VOLUME_CHANGED_ACTION")
-        if (android.os.Build.VERSION.SDK_INT >= 33) c.registerReceiver(volume, f, Context.RECEIVER_NOT_EXPORTED) else c.registerReceiver(volume, f)
+        ui.postDelayed(tick, 5_000)                                   // the first look decides whether anything runs at all
     }
 
     fun stop() {
         stopped = true
         if (running === this) running = null
         ui.removeCallbacks(tick)
-        try { c.unregisterReceiver(volume) } catch (e: Exception) { }
+        ui.post { listenVolume(false) }
     }
 
     /** Louder than the range allows: down to its highest, and said on screen each time (at most every 3 s, keys repeat). */
     private fun capVolume() {
-        val cap = Rules.volumeCap(Rules.load(c), System.currentTimeMillis()) ?: return
+        val now = System.currentTimeMillis()
+        if (Clock.wrong(c, now)) return                               // the hour is unknown: no range applies
+        val cap = Rules.volumeCap(Rules.view(c), now) ?: return
         if (audio.isVolumeFixed || toListener()) return
         val top = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         val most = cap.optInt("max") * top / 100
         if (audio.getStreamVolume(AudioManager.STREAM_MUSIC) <= most) return
         try { audio.setStreamVolume(AudioManager.STREAM_MUSIC, most, 0) } catch (e: Exception) { return }
-        val now = System.currentTimeMillis()
         if (now - volSaidAt in 0 until 3_000) return                   // a clock set back leaves no mark in the future
         volSaidAt = now
         say(T("guard.volume_cap", "max" to cap.optInt("max"), "from" to cap.optString("from"), "to" to cap.optString("to")))
@@ -179,8 +219,9 @@ internal class Guard private constructor(private val c: Context, private val adb
 
     /** One look at the rules; returns how long until the next one is worth doing. */
     private fun check(): Long {
-        val o = Rules.load(c)
+        val o = Rules.view(c)
         val now = System.currentTimeMillis()
+        val clockWrong = Clock.wrong(c, now)                          // a box that booted in 1970 / 2000: no rule by the hour until the network sets it
         val on = (c.getSystemService(Context.POWER_SERVICE) as PowerManager).isInteractive
         var next = 60_000L
         var today: Pair<org.json.JSONObject, String>? = null           // one read of the day's usage events per check, for the total and the limits alike
@@ -204,7 +245,7 @@ internal class Guard private constructor(private val c: Context, private val adb
         }
 
         // ---- bedtime: a minute after the TV is turned on in the window, standby again
-        if (on && Rules.inBedtime(o, now) && now >= o.optLong("snooze_until") && Rules.unlockUntil(o, now) == 0L) {   // a parent's code ("unlock") opens bedtime, limits and the total alike
+        if (on && !clockWrong && Rules.inBedtime(o, now) && Rules.snoozeUntil(o, now) == 0L && Rules.unlockUntil(o, now) == 0L) {   // a parent's code ("unlock") opens bedtime, limits and the total alike
             if (bedWarnedAt == 0L) { bedWarnedAt = now; warn("bed", now + 60_000, ""); RemoteService.alert("bed", "range" to (Rules.bedNow(o, now)?.let { it.optString("from") + "–" + it.optString("to") } ?: "")) }
             else if (now - bedWarnedAt >= 60_000) { if (standby()) bedWarnedAt = 0 else next = minOf(next, 15_000) }
             next = minOf(next, 5_000)
@@ -221,7 +262,7 @@ internal class Guard private constructor(private val c: Context, private val adb
 
 
         // ---- volume: a range may just have begun with the sound up
-        if ((o.optJSONArray("volume")?.length() ?: 0) > 0) {
+        if ((o.optJSONArray("volume")?.length() ?: 0) > 0 && !clockWrong) {
             ui.post { capVolume() }
             next = minOf(next, 30_000)
         }
@@ -241,7 +282,7 @@ internal class Guard private constructor(private val c: Context, private val adb
         }
 
         // ---- the day's total on the TV (kids mode): a notice near the end, then like bedtime: a minute's grace with a place for a code, then standby
-        if (on && Rules.totalMin(o, now) != null && Rules.unlockUntil(o, now) == 0L) {
+        if (on && !clockWrong && Rules.totalMin(o, now) != null && Rules.unlockUntil(o, now) == 0L) {   // "today" means nothing in 2000
             val left = Rules.totalLeftSec(o, usedToday().first, Kids.free(c, now), now) ?: 1L
             val warnMin = o.optJSONObject("total")?.optInt("warn", 5) ?: 5
             if (left <= 0) {
@@ -254,17 +295,16 @@ internal class Guard private constructor(private val c: Context, private val adb
                 next = minOf(next, 20_000)                            // another app may come to the front at any time
             }
         } else totalWarnedAt = 0
-        if (Rules.totpOn(o)) Clock.maybeCheck(c)                      // the Authenticator's codes follow the real time: a reading from the network, once a day
+        if (Rules.totpOn(o)) Clock.maybeCheckSoon(c)                  // the Authenticator's codes follow the real time: a reading from the network, once a day, on its own thread (offline it waits up to ~25 s)
 
         // ---- daily app limits, for the app on screen
         val limits = o.optJSONObject("limits")
         val capped = Rules.schedApps(o).any { o.optJSONObject("sched")?.optJSONObject(it)?.optInt("max") ?: 0 > 0 }   // a schedule's minutes count like a limit's
-        if (on && Rules.unlockUntil(o, now) == 0L && (limits != null && limits.length() > 0 || capped)) {
+        if (on && !clockWrong && Rules.unlockUntil(o, now) == 0L && (limits != null && limits.length() > 0 || capped)) {
             val (used, front) = usedToday()
-            val limit = Rules.budget(o, front, now) ?: 0
-            if (front.isNotEmpty() && limit > 0 && Rules.appGrant(o, front, now) == 0L) {   // a parent's "more time" for this app: no limit until it ends
-                val allowed = (limit + Rules.extra(o, front, now)) * 60L
-                val left = allowed - used.optLong(front)
+            val left = if (front.isEmpty() || front in Kids.homes(c, now) || Rules.appGrant(o, front, now) > 0L) null   // a home screen kept from before: closing it opens it again; a parent's "more time": no limit until it ends
+                else Rules.leftSec(o, front, now, used.optLong(front)) { from -> stats.since(from, now, true).first.optLong(front) }
+            if (left != null) {
                 val key = front + " " + Rules.day(now)
                 if (left <= 0) {
                     if (now - (lastStop[front] ?: 0L) > 15_000) { lastStop[front] = now; close(front) }
@@ -306,12 +346,12 @@ internal class Guard private constructor(private val c: Context, private val adb
 
     /** One look at the app on screen, for the locked apps; returns how long until the next. */
     private fun lockCheck(): Long {
-        val o = Rules.load(c)
+        val o = Rules.view(c)
+        if (!Rules.watchesApps(o)) return -1                          // off: the thread ends ([lockWatch])
         val apps = Rules.locked(o)
         val sched = Rules.schedApps(o)
         val kids = Rules.kidsMode(o)
         val code = Rules.hasCode(o)
-        if (apps.isEmpty() && !kids && sched.isEmpty() && !code) { eventsTo = 0; return 3_000 }   // off: forgets the apps it followed
         val now = System.currentTimeMillis()
         lastStop.entries.removeAll { it.value > now }              
         if (pinAt > now) pinAt = 0L                                   // the clock went back (a box that booted in the wrong year): marks ahead of it held every check off
@@ -320,7 +360,8 @@ internal class Guard private constructor(private val c: Context, private val adb
             return 2_000
         }
         val app = frontApp(now)
-        if (app in sched && !Rules.allowedNow(o, app, now) && !Rules.appOpen(o, app, now) && now - (lastStop[app] ?: 0L) > 15_000) {
+        if (app in sched && !Rules.allowedNow(o, app, now) && !Rules.appOpen(o, app, now) && now - (lastStop[app] ?: 0L) > 15_000
+            && !Clock.wrong(c, now) && app !in Kids.homes(c, now)) {     // the hour unknown (a box in 2000); a home screen kept from before: closing it opens it again
             lastStop[app] = now                                       // outside its window: closed here, before any PIN could be asked
             close(app, "sched")
         }
@@ -329,7 +370,7 @@ internal class Guard private constructor(private val c: Context, private val adb
             askPin(app, now - pinAt < 5_000)                          // MainActivity asks at once itself; this catches Manage brought back from Recents
             pinAt = now
         }
-        if (apps.isEmpty() && !kids) return if (sched.isEmpty() && !code) 3_000 else 1_500   // a schedule's edge is noticed within a second and a half
+        if (apps.isEmpty() && !kids) return 1_500                    // a schedule's edge is noticed within a second and a half
         if (app != unlocked && Rules.needsPin(o, app, now, if (kids) Kids.free(c, now) else emptySet()) && PinActivity.showing == null && now - pinAt > 2_000) {
             askPin(app, now - pinAt < 5_000)                          // asked a moment ago and not shown: Android kept it back
             pinAt = now

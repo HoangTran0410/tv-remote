@@ -17,7 +17,8 @@ A scene can also have "Start when" (`on`): an app comes to the front, or the TV 
 ## How it runs
 
 No alarm, receiver or thread of its own. `SceneTimer.set` keeps the timed scenes (prefs `scenetimer`, from RulesReceiver "scenes" or
-the TV page's save) and `Rules.active` is true while one exists, so `Guard` runs; each `Guard.check` calls `SceneTimer.tick`, which
+the TV page's save) and `Rules.guarded` is true while one exists, so `Guard` runs (with nothing guarded its chain stops, and
+`Guard.poke` from `SceneTimer.set` starts it again); each `Guard.check` calls `SceneTimer.tick`, which
 asks the pure `SceneTimer.step` and starts the due ones through `runNow` (ScenePin.kt) over TV Setup's own ADB link (the shell:
 Android 14's block on a background app opening a screen never applies). One cursor per scene (the last moment looked at, ms):
 the scene's next time after it (`Scenes.nextAt`, in the TV's time zone of that moment) has come = run. Guard's chain is
@@ -40,7 +41,7 @@ the scene's next time after it (`Scenes.nextAt`, in the TV's time zone of that m
 | 11 | a one-date scene after its run | nothing left to wait for; it stays in the list | `changedTimeStartsAgainAndOnceEndsWithNothingToWaitFor` |
 | 12 | Fire TV (local ADB blocked) or no ADB ever | row 3 each time: tried for 5 min, then "no ADB" | |
 | 13 | TV Setup older than `SetupNeed` "scenetime" | the client's save is refused with the update question; nothing timed on the TV | |
-| 14 | no timed scene | `SceneTimer.any` false: Guard does not run for it, nothing is read | |
+| 14 | no timed scene | `SceneTimer.any` false: Guard does not run for it, nothing is read; with no other rule either (`Rules.guarded` false) its chain, lock thread and volume receiver all stop | |
 | 15 | an "open app" step: the app turned off, or Android 6 and older (no `cmd package resolve-activity`) | `Scenes.launch`: resolve its TV / phone screen; else `am start -p` by category; still nothing: `AppRestore` brings it back for the user in front and tries once more; then "no launcher screen" | |
 | 16 | scene with `on.app`, screen on | each `Guard.check` (every <= 10 s while such a scene exists) reads `Usage.events` since its cursor; an app coming to the front (not another screen of the app already in front) runs the scene once | `anAppComingToTheFrontStartsItsSceneOnce` |
 | 17 | the app stays in front, or the person leaves and comes back | stays: nothing again; comes back: a new run | `anAppComingToTheFrontStartsItsSceneOnce` |

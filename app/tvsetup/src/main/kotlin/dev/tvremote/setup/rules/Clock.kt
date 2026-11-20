@@ -22,6 +22,20 @@ internal object Clock {
     private const val FRESH_MS = 24 * 3_600_000L
     private const val STALE_MS = 36 * 3_600_000L
 
+    /** A real "now" is never before this code shipped: a box without a battery boots at 1970 or 2000 until the network sets its clock. */
+    const val SANE_DAY = "2026-11-01"
+    const val SANE_MS = 1_793_491_200_000L                            // SANE_DAY 00:00 UTC
+    private const val DAY_MS = 24 * 3_600_000L
+
+    /**
+     * The clock says nothing about the time of day: before [SANE_MS], or a reading of the real time finds it a day or more out (a box
+     * that booted a year ahead). Rules by the hour (bedtime, schedules, volume ranges) wait for it: a box that booted at 2000-01-01
+     * 00:00 was "in bedtime" and went to standby a minute after every cold start until NTP answered.
+     */
+    fun wrong(now: Long, hasReading: Boolean, driftMs: Long): Boolean = now < SANE_MS || (hasReading && Math.abs(driftMs) >= DAY_MS)
+
+    fun wrong(c: Context, now: Long = System.currentTimeMillis()): Boolean = wrong(now, hasReading(c), driftMs(c))
+
     /** [driftMs]: the TV's clock minus the real time when it was read, at [wallAt] (the TV's clock) / [elapsedAt] (its boot clock). */
     class Obs(val driftMs: Long, val from: String, val wallAt: Long, val elapsedAt: Long)
 

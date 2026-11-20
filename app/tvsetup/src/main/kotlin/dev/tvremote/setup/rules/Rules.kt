@@ -56,15 +56,44 @@ internal object Rules {
     @Synchronized
     private fun save(c: Context, o: JSONObject) { c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString("json", o.toString()).commit() }
 
+    @Volatile private var viewed: Pair<String, JSONObject>? = null
+
+    /**
+     * The rules to read only, parsed once per change: Guard looks every few seconds and at every volume key, and parsing the JSON
+     * each time was most of its work. Never changed by the caller (it is shared); [load] gives a copy to change.
+     */
+    fun view(c: Context): JSONObject {
+        val s = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("json", "{}") ?: "{}"
+        viewed?.let { if (it.first == s) return it.second }
+        return (try { JSONObject(s) } catch (e: Exception) { JSONObject() }).also { viewed = s to it }
+    }
+
+    /**
+     * The app on screen must be watched a few times a second ([Guard]'s lock thread): a locked app, kids mode, a schedule, or a
+     * code set (TV Setup's own rule screens then ask it, [Guard.RULE_SCREENS]).
+     */
+    fun watchesApps(o: JSONObject): Boolean = locked(o).isNotEmpty() || kidsMode(o) || schedApps(o).isNotEmpty() || hasCode(o)
+
+    /** [guarded]'s part kept in the rules themselves. */
+    internal fun enforces(o: JSONObject): Boolean =
+        o.optLong("sleep_at") > 0 || bedtime(o).optBoolean("on") || IdleOff.hours(o) > 0 || (o.optJSONObject("limits")?.length() ?: 0) > 0
+            || (o.optJSONArray("volume")?.length() ?: 0) > 0 || ram(o).let { it.optBoolean("on") || it.optBoolean("auto") }
+            || watchesApps(o) || (o.optJSONObject("total")?.optInt("min") ?: 0) > 0
+
+    /**
+     * Something [Guard] enforces is set: with none it does not look at all (no check, no lock thread, no volume receiver). Every kind
+     * Guard acts on counts, whatever the day: a schedule, a PIN alone, a total on a day outside its days (TV Setup 0.54 left those out,
+     * so after a reboot with the web remote off nothing started the service: no schedule held, the rule screens asked no PIN).
+     */
+    fun guarded(c: Context, o: JSONObject): Boolean = enforces(o)
+            || NotifyLater.any(c)                                     // a message to show later (Guard's check shows it)
+            || SceneTimer.any(c)                                       // a scene that starts at a time (Guard's check starts it)
+
     /** Something here needs the TV Setup service to keep running, even with the web remote off. */
     fun active(c: Context): Boolean {
-        val o = load(c)
-        return o.optLong("sleep_at") > System.currentTimeMillis() || o.optJSONObject("bedtime")?.optBoolean("on") == true || IdleOff.hours(o) > 0 || (o.optJSONObject("limits")?.length() ?: 0) > 0
-            || (o.optJSONArray("volume")?.length() ?: 0) > 0 || ram(o).let { it.optBoolean("on") || it.optBoolean("auto") }
-            || locked(o).isNotEmpty() || kidsMode(o) || totalMin(o, System.currentTimeMillis()) != null
-            || NotifyLater.any(c)                                      // a message to show later (Guard's check shows it)
-            || SceneTimer.any(c)                                       // a scene that starts at a time (Guard's check starts it)
-            || o.optBoolean("awake")                                   // KeepAwake lives in the service
+        val o = view(c)
+        return guarded(c, o)
+            || o.optBoolean("awake")                                  // KeepAwake lives in the service
             || o.optBoolean("mic")                                     // MicVoice: the key filter stays on for the remote's mic button
             || o.optBoolean("holdkeys")                                // HoldKeys: KeyFixWatch keeps the key filter on
             || o.optString("homekey").isNotEmpty()                     // HomeKey: the filter sends Home to the launcher chosen
@@ -91,7 +120,7 @@ internal object Rules {
         val o = load(c)
         val now = System.currentTimeMillis()
         try {
-            if (!apply(o, d, now, Clock.driftMs(c))) return state(c)
+            if (!apply(o, d, now, Clock.driftMs(c), Kids.homes(c))) return state(c)
         } catch (e: CodeWrong) {
             e.clock = Clock.info(c).also { i -> e.clientDriftS?.let { i.put("client_drift_s", it) } }   // the page tells which clock is out
             throw e
@@ -116,9 +145,17 @@ internal object Rules {
         return state(c).also { st -> d.optJSONArray("recovery_out")?.let { st.put("recovery", it) } }   // the codes: this once
     }
 
-    /** [change] without the phone's storage: [o] becomes the new rules. False for a read ("" / "get"), which changes nothing. */
-    internal fun apply(o: JSONObject, d: JSONObject, now: Long, driftMs: Long = 0L): Boolean {
+    /**
+     * [change] without the phone's storage: [o] becomes the new rules. False for a read ("" / "get"), which changes nothing. [homes]:
+     * the TV's home screens ([Kids.homes]), never limited, scheduled or locked: closing one pressed Home, which opened it again, every 15 s.
+     */
+    internal fun apply(o: JSONObject, d: JSONObject, now: Long, driftMs: Long = 0L, homes: Set<String> = emptySet()): Boolean {
         val minutes = d.optInt("minutes").coerceIn(0, 24 * 60)
+        val ruled = { pkg: String ->                                     // an app a rule is put on
+            if (!PKG.matches(pkg) || pkg == SELF) throw IllegalArgumentException("bad package name")
+            if (pkg in homes) throw IllegalArgumentException("home_app")
+        }
+        val named = { pkg: String -> if (!PKG.matches(pkg)) throw IllegalArgumentException("bad package name") }   // a rule taken off: one kept from before can always go
         when (d.optString("do")) {
             "", "get" -> return false
             "sleep" -> o.put("sleep_at", if (minutes > 0) now + minutes * 60_000L else 0L)
@@ -157,7 +194,7 @@ internal object Rules {
             }
             "lock" -> {
                 val pkg = d.optString("pkg")
-                if (!PKG.matches(pkg) || pkg == SELF) throw IllegalArgumentException("bad package name")
+                if (d.optBoolean("on")) ruled(pkg) else named(pkg)
                 val lock = o.optJSONObject("lock")
                 if (lock?.has("hash") != true) throw IllegalArgumentException("set a PIN first")
                 val apps = locked(o).toMutableList().apply { remove(pkg); if (d.optBoolean("on")) add(pkg) }
@@ -165,7 +202,7 @@ internal object Rules {
             }
             "sched" -> {                                               // on: false takes the schedule back
                 val pkg = d.optString("pkg")
-                if (!PKG.matches(pkg) || pkg == SELF) throw IllegalArgumentException("bad package name")
+                if (d.optBoolean("on", true)) ruled(pkg) else named(pkg)
                 val all = o.optJSONObject("sched") ?: JSONObject()
                 if (d.optBoolean("on", true)) {
                     if (!all.has(pkg) && all.length() >= SCHED_MAX) throw IllegalArgumentException("too many schedules")
@@ -247,7 +284,7 @@ internal object Rules {
             "snooze" -> o.put("snooze_until", if (minutes > 0) now + minutes * 60_000L else 0L)
             "limit", "extra" -> {
                 val pkg = d.optString("pkg")
-                if (!PKG.matches(pkg) || pkg == SELF) throw IllegalArgumentException("bad package name")   // as lock and sched: a limit on TV Setup closed it over and over
+                if (d.optString("do") == "limit" && minutes == 0) named(pkg) else ruled(pkg)   // as lock and sched: a limit on TV Setup closed it over and over
                 if (d.optString("do") == "limit") {
                     val limits = o.optJSONObject("limits") ?: JSONObject()
                     if (minutes > 0) limits.put(pkg, minutes) else limits.remove(pkg)
@@ -493,13 +530,37 @@ internal object Rules {
         return (0 until list.length()).joinToString(" · ") { val w = list.getJSONObject(it); dayText(w.optJSONArray("days")) + " " + w.optString("from") + "–" + w.optString("to") }
     }
 
-    /** The minutes [pkg] may use today before it is closed (extra grants not counted): the lowest of its daily limit and its schedule's cap inside the window; null for none. */
-    fun budget(o: JSONObject, pkg: String, now: Long): Int? {
-        if (pkg == SELF) return null                                  // one kept from before the setter refused it: never closes TV Setup
-        val cap = o.optJSONObject("sched")?.optJSONObject(pkg)?.optInt("max")?.takeIf { it > 0 && allowedNow(o, pkg, now) }
-        val limit = o.optJSONObject("limits")?.optInt(pkg)?.takeIf { it > 0 }
-        return if (cap != null && limit != null) minOf(cap, limit) else cap ?: limit
+    /**
+     * When the window [pkg] is in at [now] began (the earliest of two that overlap), null outside them all, with no schedule or a block.
+     * A window across midnight began the evening before: its minutes are counted from then, not from midnight.
+     */
+    fun windowStart(o: JSONObject, pkg: String, now: Long): Long? {
+        val s = o.optJSONObject("sched")?.optJSONObject(pkg)?.takeIf { !it.optBoolean("block") } ?: return null
+        val list = windows(s)
+        return (0 until list.length()).mapNotNull { i ->
+            val w = list.optJSONObject(i)?.takeIf { inWindow(it, now) } ?: return@mapNotNull null
+            val (h, m) = w.optString("from").split(":").map { it.toInt() }
+            Calendar.getInstance().apply { timeInMillis = now; set(Calendar.HOUR_OF_DAY, h); set(Calendar.MINUTE, m); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+                if (timeInMillis > now) add(Calendar.DAY_OF_YEAR, -1) }.timeInMillis
+        }.minOrNull()
     }
+
+    /**
+     * Seconds [pkg] has left before it is closed, today's extra counted; null with neither a daily limit nor a cap in its window. The
+     * lower of the two: the limit against [usedToday] (seconds since midnight), the schedule's cap against [usedSince] the window began
+     * ([windowStart]), so a window from 22:00 to 02:00 is not granted its minutes again at midnight.
+     */
+    fun leftSec(o: JSONObject, pkg: String, now: Long, usedToday: Long, usedSince: (Long) -> Long): Long? {
+        if (pkg == SELF) return null                                  // one kept from before the setter refused it: never closes TV Setup
+        val extra = extra(o, pkg, now) * 60L
+        val limit = o.optJSONObject("limits")?.optInt(pkg)?.takeIf { it > 0 }?.let { it * 60L + extra - usedToday }
+        val max = o.optJSONObject("sched")?.optJSONObject(pkg)?.optInt("max") ?: 0
+        val cap = if (max > 0) windowStart(o, pkg, now)?.let { max * 60L + extra - usedSince(it) } else null
+        return listOfNotNull(limit, cap).minOrNull()
+    }
+
+    /** Bedtime paused until then (0 when not). Never further than a day ahead: one set while the clock ran a year ahead is spent. */
+    fun snoozeUntil(o: JSONObject, now: Long): Long = grantEnd(o.optLong("snooze_until"), now)
 
     /** Minutes of today granted on top of [pkg]'s limit. */
     fun extra(o: JSONObject, pkg: String, now: Long): Int = o.optJSONObject("extra")?.optJSONObject(day(now))?.optInt(pkg) ?: 0
@@ -574,13 +635,19 @@ internal object Rules {
         }
         val sched = JSONArray()
         o.optJSONObject("sched")?.let { l ->
-            for (pkg in l.keys()) sched.put(JSONObject(l.getJSONObject(pkg).toString()).also { if (!it.optBoolean("block")) it.put("windows", windows(it)) }.put("pkg", pkg)   // data saved before windows reads as one.put("label", label(c, pkg))
-                .put("now", allowedNow(o, pkg, now)).put("used", used.optLong(pkg) / 60).put("extra", extra(o, pkg, now)).put("open_until", appGrant(o, pkg, now)))
+            for (pkg in l.keys()) {
+                val capped = l.optJSONObject(pkg)?.optInt("max") ?: 0 > 0
+                val inWin = if (capped) windowStart(o, pkg, now)?.let { from -> try { Stats(c).since(from, now, true).first.optLong(pkg) } catch (e: Exception) { null } } else null   // the cap counts from the window's start
+                sched.put(JSONObject(l.getJSONObject(pkg).toString()).also { if (!it.optBoolean("block")) it.put("windows", windows(it)) }   // data saved before windows reads as one
+                    .put("pkg", pkg).put("label", label(c, pkg))
+                    .put("now", allowedNow(o, pkg, now)).put("used", (inWin ?: used.optLong(pkg)) / 60).put("extra", extra(o, pkg, now)).put("open_until", appGrant(o, pkg, now)))
+            }
         }
         val sleepAt = o.optLong("sleep_at").let { if (it > now) it else 0L }
         return JSONObject().put("ok", true).put("now", now).put("sleep_at", sleepAt)
             .put("bedtime", bedtime(o))
-            .put("in_bedtime", inBedtime(o, now)).put("snooze_until", o.optLong("snooze_until").let { if (it > now) it else 0L })
+            .put("in_bedtime", inBedtime(o, now)).put("snooze_until", snoozeUntil(o, now))
+            .put("homes", JSONArray(Kids.homes(c).sorted()))           // the page leaves them out of its app pickers ([apply] refuses them)
             .put("limits", limits).put("volume", o.optJSONArray("volume") ?: JSONArray()).put("volume_now", volumeCap(o, now) ?: JSONObject.NULL)
             .put("idle_h", IdleOff.hours(o)).put("ram", ram(o)).put("volume_fixed", Guard.volumeFixed(c)).put("running", RemoteService.isRunning()).put("wanted", active(c))
             .put("adb", RemoteService.adbState()).put("awake", o.optBoolean("awake")).put("holdkeys", o.optBoolean("holdkeys")).put("mic", o.optBoolean("mic")).put("mic_offline", o.optBoolean("mic_offline")).put("mic_secure", dev.tvremote.setup.keys.KeyFix.can(c)).put("mic_engine", o.optString("mic_engine").ifEmpty { "auto" }).put("mic_freespeech", o.optBoolean("mic_freespeech")).put("voice", MicVoice.offlineState(c)).put("mic_lang", MicVoice.lang(c)).put("mic_tv_lang", o.optString("mic_tv_lang")).put("mic_active", MicVoice.active(c) ?: "").put("mic_langs", JSONArray(MicVoice.installed(c))).put("voice_search", o.optString("voice_search")).put("voice_youtube", o.optString("voice_youtube")).put("voice_tubes", MicVoice.tubes(c)).put("homekey", o.optString("homekey"))

@@ -134,6 +134,24 @@ class KidsTest {
         assertEquals(Lockout.S(), Lockout.S())
     }
 
+    /** A wait set while the clock ran a year ahead is no wait once NTP sets it back; the longest real wait is an hour. */
+    @Test fun lockoutFromAClockAheadIsSpent() {
+        val ahead = Lockout.S(wrong = 0, level = 3, until = now + 365L * 86_400_000L)
+        assertEquals(0L, Lockout.left(ahead, now))
+        assertEquals(1, Lockout.fail(ahead, now).wrong)                          // a try counts again
+        assertEquals(60L * 60_000L, Lockout.left(Lockout.S(until = now + 60L * 60_000L), now))
+    }
+
+    /** The clock is wrong before the build's day (a box booted in 1970 / 2000) or a day off a reading; minutes off are not. */
+    @Test fun clockWrongOnBootYearsAndDayDrift() {
+        assertTrue(Clock.wrong(0L, false, 0L))
+        assertTrue(Clock.wrong(946_684_800_000L, false, 0L))                     // 2000-01-01
+        assertFalse(Clock.wrong(Clock.SANE_MS + 1, false, 0L))
+        assertTrue(Clock.wrong(Clock.SANE_MS + 1, true, 400L * 86_400_000L))      // a year ahead, by a reading
+        assertTrue(Clock.wrong(Clock.SANE_MS + 1, true, -86_400_000L))
+        assertFalse(Clock.wrong(Clock.SANE_MS + 1, true, 5 * 60_000L))           // minutes off: rules still run
+    }
+
     // ---- what asks
     @Test fun kidsModeAsksForEverythingButTheAllowedAndTheFreeOnes() {
         val o = kids()
