@@ -642,7 +642,7 @@ class Adb(private val dir: File) : Closeable {
             close()
             WireLog.all.add("·", "adb $host refused a second client ($e): sharing the open connection")
             if (oneClient(e)) synchronized(ONE) {
-                if (ONE[host]?.let { now - it in 0 until ONE_KEEP_MS } != true) {
+                if (ONE[host]?.let { now - it in 0 until ONE_KEEP_MS } != true || !one.exists()) {   // ONE is per process, the file per key folder
                     ONE[host] = now
                     try { one.writeText(ONE.entries.joinToString("") { "${it.key} ${it.value}\n" }) } catch (ignored: IOException) { }
                 }
@@ -742,6 +742,7 @@ class Adb(private val dir: File) : Closeable {
             while (c != null) {
                 if (c is SocketTimeoutException) return c.message?.contains("connect", ignoreCase = true) != true
                 if (c is EOFException) return true
+                if (c is java.net.SocketException && c.message?.contains("reset", ignoreCase = true) == true) return true   // the same hang-up, seen a moment later
                 c = c.cause.takeIf { it !== c }
             }
             return false
