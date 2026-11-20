@@ -31,17 +31,45 @@ import org.json.JSONObject
 /**
  * Drawing over the TV's screen for a phone or computer (Draw.kt in the shared code says how the strokes come). A window over
  * every app that takes no keys and no touches, so the person watching keeps using the TV under it. It goes away when cleared,
- * and by itself 10 minutes after the last stroke, so nothing is left on the screen for good.
+ * and by itself some minutes after the last stroke: each stroke says how many ("k", 10 when missing, as before there was a
+ * choice). 0 keeps it until cleared, through a restart too: then it is saved in a file ([KEEP]) and brought back when the app
+ * starts (SetupApp), and TV Setup's screen gets a tile to clear it with no phone at hand.
  */
 internal object DrawLayer {
-    private const val IDLE = 10 * 60_000L
+    private const val MINUTES = dev.tvremote.core.ontv.Draw.MINUTES   // a stroke with no "k": an older client
+    private const val KEEP = "draw-kept.json"
     private val ui = Handler(Looper.getMainLooper())
     private var server: ServerSocket? = null
     private val token: String by lazy { ByteArray(24).also { SecureRandom().nextBytes(it) }.joinToString("") { "%02x".format(it) } }
     private var app: Context? = null
     private var view: Board? = null
+    private var minutes = MINUTES                                     // of the last stroke: undo keeps it
+    private val io = java.util.concurrent.Executors.newSingleThreadExecutor()
 
     private val idle = Runnable { hide() }
+    private val save = Runnable { store() }
+
+    /** A drawing kept until cleared is on the screen now (TV Setup's tile to clear it). */
+    fun kept(c: Context) = java.io.File(c.filesDir, KEEP).exists()
+
+    /** After a restart: the drawing kept until cleared, back over the screen. Only a file check when there is none. */
+    fun restore(c: Context) {
+        val f = java.io.File(c.filesDir, KEEP)
+        if (!f.exists()) return
+        app = c.applicationContext
+        io.execute {
+            val ops = try { org.json.JSONArray(f.readText()) } catch (e: Exception) { f.delete(); return@execute }
+            ui.post {
+                if (view != null) return@post                         // a phone drew meanwhile: its strokes win
+                val b = board() ?: return@post
+                for (i in 0 until ops.length()) ops.optJSONObject(i)?.let { b.add(it) }
+                minutes = 0
+            }
+        }
+    }
+
+    /** TV Setup's tile: the kept drawing away, as Clear all from a phone. */
+    fun clear(c: Context) { app = app ?: c.applicationContext; ui.post { hide() } }
 
     /** The port on 127.0.0.1 and its secret, starting the listener if it is not running. */
     @Synchronized fun open(c: Context): JSONObject {
@@ -51,7 +79,7 @@ internal object DrawLayer {
             Thread({ accept(s) }, "draw-listen").apply { isDaemon = true }.start()
         }
         val overlay = Build.VERSION.SDK_INT < 23 || Settings.canDrawOverlays(c)
-        return JSONObject().put("port", s.localPort).put("token", token).put("overlay", overlay).put("pic", true)
+        return JSONObject().put("port", s.localPort).put("token", token).put("overlay", overlay).put("pic", true).put("keep", true)
     }
 
     private fun accept(s: ServerSocket) {
@@ -75,17 +103,35 @@ internal object DrawLayer {
     }
 
     private fun apply(o: JSONObject) {
-        ui.removeCallbacks(idle)
         when (o.optString("o")) {
-            "s", "a", "i" -> {
-                val b = board() ?: return
-                b.add(o)
-                ui.postDelayed(idle, IDLE)
-            }
-            "u" -> view?.let { it.undo(); if (it.empty()) hide() else ui.postDelayed(idle, IDLE) }
+            "s", "i" -> { board()?.let { it.add(o); arm(o.optInt("k", MINUTES)) } }
+            "a" -> view?.let { it.add(o); arm(minutes) }
+            "k" -> if (view != null) arm(o.optInt("m", MINUTES))      // the choice changed while drawing: what is there now follows it
+            "u" -> view?.let { it.undo(); if (it.empty()) hide() else arm(minutes) }
             "x", "h" -> hide()
         }
     }
+
+    /** The clock from now: [m] minutes, or none and the drawing saved (a second after the last change, not every point). */
+    private fun arm(m: Int) {
+        minutes = m.coerceIn(0, 24 * 60)
+        ui.removeCallbacks(idle)
+        ui.removeCallbacks(save)
+        if (minutes > 0) { ui.postDelayed(idle, minutes * 60_000L); forget() }
+        else ui.postDelayed(save, 1000)
+    }
+
+    private fun store() {
+        val b = view ?: return
+        val c = app ?: return
+        val items = b.items()                                         // taken here, on the UI thread; written there
+        io.execute {
+            val f = java.io.File(c.filesDir, KEEP)
+            try { f.writeText(org.json.JSONArray(items.map { it() }).toString()) } catch (e: Exception) { Log.w("DrawLayer", "not kept: $e") }
+        }
+    }
+
+    private fun forget() { val c = app ?: return; io.execute { java.io.File(c.filesDir, KEEP).delete() } }
 
     private fun board(): Board? {
         view?.let { return it }
@@ -109,6 +155,8 @@ internal object DrawLayer {
 
     private fun hide() {
         ui.removeCallbacks(idle)
+        ui.removeCallbacks(save)
+        forget()
         val b = view ?: return
         view = null
         try { (app?.getSystemService(android.content.Context.WINDOW_SERVICE) as? WindowManager)?.removeView(b) } catch (e: Exception) { }
@@ -117,7 +165,7 @@ internal object DrawLayer {
     /** The strokes and pictures, kept in 0..10000 of the screen so they fit it whatever its size. */
     private class Board(c: Context) : View(c) {
         private class Stroke(val id: Int, val color: Int, val width: Int) { val pts = ArrayList<Int>() }
-        private class Pic(val bmp: Bitmap, val x: Int, val y: Int, val w: Int)
+        private class Pic(val bmp: Bitmap, val x: Int, val y: Int, val w: Int) { @Volatile var b64: String? = null }   // b64: once, when kept
         private val strokes = ArrayList<Any>()                        // Stroke or Pic, in the order they came: undo takes the last
         private val smooth = Paint(Paint.FILTER_BITMAP_FLAG)
         private val box = RectF()
@@ -125,6 +173,15 @@ internal object DrawLayer {
         private val path = Path()
 
         fun empty() = strokes.isEmpty()
+
+        /** Each stroke and picture as the operation that draws it again; called here, run off the UI thread (a picture's PNG). */
+        fun items(): List<() -> JSONObject> = strokes.map { item ->
+            if (item is Stroke) { val pts = item.pts.toIntArray(); val c = String.format("#%06x", item.color and 0xffffff)
+                ({ JSONObject().put("o", "s").put("id", item.id).put("c", c).put("w", item.width).put("p", org.json.JSONArray(pts)).put("k", 0) }) }
+            else { val p = item as Pic
+                ({ JSONObject().put("o", "i").put("b", p.b64 ?: java.io.ByteArrayOutputStream().also { p.bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                    .let { Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP) }.also { p.b64 = it }).put("x", p.x).put("y", p.y).put("w", p.w).put("k", 0) }) }
+        }
 
         fun add(o: JSONObject) {
             if (o.optString("o") == "i") { picture(o)?.let { strokes.add(it); invalidate() }; return }

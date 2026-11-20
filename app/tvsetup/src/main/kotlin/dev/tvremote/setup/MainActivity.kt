@@ -153,6 +153,7 @@ class MainActivity : Activity() {
     /** TV Setup itself, first in the row (the user, 2026-11-03: it is one of the apps too); OK opens its Update menu, as the tile at the top. */
     private val SELF = dev.tvremote.core.ontv.Bundle.App("TV Setup", "dev.tvremote.setup", "tv", "tv-setup.apk") { _, _, _, _ -> org.json.JSONObject() }
     private lateinit var kidsOffTile: Tile
+    private lateinit var drawOffTile: Tile
     private var ecoNote: TextView? = null
     private var ecoWaiting: Eco? = null                               // Android's "install unknown apps" switch was opened for this one
 
@@ -312,6 +313,12 @@ class MainActivity : Activity() {
         }
         kidsOffTile.view.visibility = View.GONE
         left.addView(kidsOffTile.view, LinearLayout.LayoutParams(-1, dp(if (phone) 76 else 60)).apply { topMargin = dp(if (phone) 8 else 12) })
+        // a drawing kept until cleared (DrawLayer): its way off with no phone at hand; gone with it
+        drawOffTile = Tile(R.drawable.ic_eraser, T("tv_main.draw_off"), T("tv_main.draw_off_sub")) {
+            DrawLayer.clear(this); drawOffTile.view.visibility = View.GONE
+        }
+        drawOffTile.view.visibility = View.GONE
+        left.addView(drawOffTile.view, LinearLayout.LayoutParams(-1, dp(if (phone) 76 else 60)).apply { topMargin = dp(if (phone) 8 else 12) })
         val grid = listOf(manage) + if (phone) tiles else tiles.filter { it !== updateTile }   // Manage first, in the grid: no ragged last row
         val cols = if (phone) 2 else 3                                 // TV: one row of three; phone: 2 x 2
         for (row in grid.chunked(cols)) {
@@ -601,6 +608,7 @@ class MainActivity : Activity() {
         }
         shown = true
         kidsOffTile.view.visibility = if (Rules.kidsMode(Rules.load(this))) View.VISIBLE else View.GONE
+        drawOffTile.view.visibility = if (DrawLayer.kept(this)) View.VISIBLE else View.GONE
         voiceWatch()
         if (MicVoice.on(this)) Thread({ micBlockLog() }, "mic-block").apply { isDaemon = true }.start()   // off: nothing is read
         self.check({ }, { r -> install(r) })                          // back from "install unknown apps" for an update: on with it

@@ -223,7 +223,7 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
                     HttpServer.Response.json(JSONObject().put("ok", true))
                 }
                 "screen/on" -> { ScreenOff.on(link.get(), (helper ?: throw IllegalStateException("not here"))()); HttpServer.Response.json(JSONObject().put("ok", true)) }
-                "draw" -> { draw.send(r.json(Draw.MAX_BODY).getJSONArray("ops")); HttpServer.Response.json(JSONObject().put("ok", true).put("pic", draw.pics)) }
+                "draw" -> { draw.send(r.json(Draw.MAX_BODY).getJSONArray("ops")); HttpServer.Response.json(JSONObject().put("ok", true).put("pic", draw.pics).put("keep", draw.keeps)) }
                 "videobox" -> {                                        // {o: file, path, x, y, s} plays a file already on the TV; move, pause, play, mute, close, q
                     val d = r.json()
                     HttpServer.Response.json(if (d.optString("o") == "file") video.file(TvPaths.safePath(d.optString("path")), d) else video.op(d))

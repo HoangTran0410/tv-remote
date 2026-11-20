@@ -9,4 +9,4 @@ Two ways: lay a picture **over the TV's screen** (above every app), or **play** 
 
 To play it properly: **More keys → Open on the TV → Play a photo / video from the phone** (on a computer: from this device).
 
-> 💡 The overlay clears after 10 minutes, or tap **🗑 Clear all**. Needs TV Setup (if missing the app asks to update).
+> 💡 The overlay clears with the drawing (10 minutes unless **⏱** says otherwise), or tap **🗑 Clear all**. Needs TV Setup (if missing the app asks to update).

@@ -44,8 +44,14 @@ import org.json.JSONObject
 
 // ✏️ Drawing on the TV's screen, as on the web page (draw.js): while it is on, the finger on the picture draws instead of
 // touching the TV, and TV Setup draws the same strokes over whatever the TV shows, for the person watching (DrawLayer.kt there,
-// Draw.kt for the way). The strokes stay on the TV until cleared, or 10 minutes; here they fade once the finger lifts, since
-// the TV's own picture shows them by then.
+// Draw.kt for the way). The strokes stay on the TV until cleared, or the minutes chosen with ⏱ (10, as before there was a
+// choice; "until cleared" keeps them through a restart); here they fade once the finger lifts, since the TV's own picture shows them by then.
+
+/** ⏱ the choices, as the web page's (draw.js DRAW_KEEPS): minutes after the last stroke, 0 until cleared. */
+internal val DRAW_KEEPS = listOf(10 to "remote.keep_10m", 30 to "remote.keep_30m", 60 to "remote.keep_1h", 0 to "remote.keep_always")
+internal val MainActivity.drawKeep get() = prefs.getInt("drawkeep", 10).takeIf { m -> DRAW_KEEPS.any { it.first == m } } ?: 10
+/** On a stroke or picture: how long it stays; nothing for 10 or an older TV Setup, which clears after 10 minutes anyway. */
+private fun MainActivity.keepOn(o: JSONObject) = o.also { if (drawKeep != 10 && drawer.keeps) it.put("k", drawKeep) }
 
 internal val DRAW_COLORS = intArrayOf(0xffff3b30.toInt(), 0xffff9f0a.toInt(), 0xffffd60a.toInt(), 0xff32d74b.toInt(), 0xff40c8ff.toInt(),
     0xff0a5cff.toInt(), 0xffbf5af2.toInt(), 0xffff6ac1.toInt(), Color.WHITE, Color.BLACK)
@@ -60,8 +66,31 @@ internal fun MainActivity.startDrawing() {
     drawBar.visibility = View.VISIBLE
     drawLit()
     drawIo.execute {                                                  // opens the way now: an old or missing TV Setup is told before anything is drawn
-        try { drawer.send(JSONArray()) } catch (e: Exception) { ui.post { if (drawing) stopDrawing(); drawFail(e) } }
+        try { drawer.send(JSONArray()) } catch (e: Exception) { ui.post { if (drawing) stopDrawing(); drawFail(e) }; return@execute }
+        if (!drawer.keeps && drawKeep != 10) ui.post { withSetup("drawkeep") { } }   // chosen here, but this TV Setup still clears after 10 minutes
     }
+}
+
+/** ⏱ How long the drawing stays on the TV: the four choices, the one in use marked; remembered on this phone. */
+private fun MainActivity.drawKeepPick(lit: () -> Unit) {
+    val wrap = LinearLayout(this)
+    wrap.orientation = LinearLayout.VERTICAL
+    wrap.setPadding(dp(20), dp(8), dp(20), dp(4))
+    var dlg: Popup? = null
+    for ((m, id) in DRAW_KEEPS) {
+        val b = button(T(id), BTN)
+        b.setOn(m == drawKeep)
+        b.setOnClickListener {
+            dlg?.dismiss()
+            val pick = {
+                prefs.edit().putInt("drawkeep", m).apply(); lit()
+                if (drawing) drawSend(JSONObject().put("o", "k").put("m", m))   // what is on the TV now follows the new choice
+            }
+            if (m == 10 || drawer.keeps) pick() else withSetup("drawkeep", pick)
+        }
+        wrap.addView(b, LinearLayout.LayoutParams(-1, dp(48)).also { it.topMargin = dp(6) })
+    }
+    dlg = Popup.Builder(this).setTitle(T("remote.draw_keep")).setView(wrap).show()
 }
 
 /** Why drawing cannot go on; an old or missing TV Setup comes as offerSetup's question (update or install it on the TV). */
@@ -112,13 +141,16 @@ internal fun MainActivity.drawTools(): LinearLayout {
     say.setOnClickListener { withSetup("pic") { askText(T("draw.message_for_tv"), T("drawing.e_g_dinner_s"), T("draw.next")) { placeMessage(it) } } }
     val vid = icon("@camera", T("rkey.vbox"), BTN)                   // the web's draw bar has it too (draw.js #drawvid): the same Video on TV box
     vid.setOnClickListener { stopDrawing(); dev.tvremote.phone.remote.phoneActions["vbox"]?.invoke(this, null) }
+    val keep = icon("@clock", T("remote.draw_keep"), BTN)
+    keep.chosen = drawKeep != 10                                      // lit when it is not the 10 minutes it always was
+    keep.setOnClickListener { drawKeepPick { keep.chosen = drawKeep != 10 } }
     val undo = icon("@undo", T("remote.take_back_the_last"), BTN)
     undo.setOnClickListener { drawSend(JSONObject().put("o", "u")) }
     val clear = icon("@trash", T("drawing.clear_all"), BTN)
     clear.setOnClickListener { drawView.clear(); drawSend(JSONObject().put("o", "x")) }
     val done = icon("@check", T("drawing.done"), ACCENT)
     done.setOnClickListener { stopDrawing() }
-    for (b in listOf(pic, say, vid, undo, clear, done)) bar.addView(b, LinearLayout.LayoutParams(dp(40), dp(40)).also { it.leftMargin = dp(4) })
+    for (b in listOf(pic, say, vid, keep, undo, clear, done)) bar.addView(b, LinearLayout.LayoutParams(dp(40), dp(40)).also { it.leftMargin = dp(3) })   // 7 + the swatch: 360 dp wide still holds them
     tools.addView(bar, LinearLayout.LayoutParams(-1, -2))
 
     val place = LinearLayout(this)
@@ -289,7 +321,7 @@ internal fun MainActivity.picEnd() {
 
 internal fun MainActivity.picSend() {
     val p = drawView.placing ?: return
-    drawSend(JSONObject().put("o", "i").put("id", ++drawId).put("b", p.data).put("x", p.x).put("y", p.y).put("w", p.w))
+    drawSend(keepOn(JSONObject().put("o", "i").put("id", ++drawId).put("b", p.data).put("x", p.x).put("y", p.y).put("w", p.w)))
     drawView.landed(p)
     picEnd()
 }
@@ -303,7 +335,7 @@ internal fun MainActivity.drawTouch(e: MotionEvent, v: View) {
         MotionEvent.ACTION_DOWN -> {
             val id = ++drawId
             drawView.start(drawColor, drawWidth, x, y)
-            drawSend(JSONObject().put("o", "s").put("id", id).put("c", String.format("#%06x", drawColor and 0xffffff)).put("w", drawWidth).put("p", JSONArray().put(x).put(y)))
+            drawSend(keepOn(JSONObject().put("o", "s").put("id", id).put("c", String.format("#%06x", drawColor and 0xffffff)).put("w", drawWidth).put("p", JSONArray().put(x).put(y))))
         }
         MotionEvent.ACTION_MOVE -> if (drawView.more(x, y)) drawSend(JSONObject().put("o", "a").put("id", drawId).put("p", JSONArray().put(x).put(y)))
         MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> drawView.lift()

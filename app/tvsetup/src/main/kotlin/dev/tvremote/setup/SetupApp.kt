@@ -16,6 +16,7 @@ class SetupApp : Application() {
         Words.lang = Words.pick(speak(resources.configuration))
         dev.tvremote.guard.Guard.install(this, { dev.tvremote.core.guardWords() })
         if (main()) KeyList.start(this) { KeyFix.sync(this); KeysBridge.poke() }   // one TV's odd buttons, from the site's signed list; not again in ManageActivity's :web
+        if (main()) DrawLayer.restore(this)                            // a drawing kept until cleared, after a restart (one file check)
     }
 
     override fun onConfigurationChanged(c: Configuration) {

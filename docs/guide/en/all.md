@@ -978,9 +978,10 @@ Reading aloud needs Google Speech Services (or another engine) with that languag
 1. Tap **✏️** by the picture (or More keys → Draw on the TV).
 2. Pick a color and draw on the picture. **↩** undoes a stroke.
 3. Add **💬 Text**, a **🖼️ Picture** or a **🎞️ Video** (opens the [Video on TV box](#video)). For a picture, size it with − / + then tap **✓ Put on TV**.
-4. Tap **✓ Done** when finished. To clear: **🗑 Clear all**.
+4. **⏱** sets how long it stays after the last stroke: 10 min, 30 min, 1 hour or **Until cleared** (kept when the TV restarts).
+5. Tap **✓ Done** when finished. To clear: **🗑 Clear all**, or **Clear the drawing** in TV Setup on the TV.
 
-> 💡 The drawing sits over every app and clears after 10 minutes. Needs TV Setup.
+> 💡 The drawing sits over every app. Needs TV Setup (⏱ needs a recent one; the app asks to update).
 
 ## Put a picture on the TV
 
@@ -993,7 +994,7 @@ Two ways: lay a picture **over the TV's screen** (above every app), or **play** 
 
 To play it properly: **More keys → Open on the TV → Play a photo / video from the phone** (on a computer: from this device).
 
-> 💡 The overlay clears after 10 minutes, or tap **🗑 Clear all**. Needs TV Setup (if missing the app asks to update).
+> 💡 The overlay clears with the drawing (10 minutes unless **⏱** says otherwise), or tap **🗑 Clear all**. Needs TV Setup (if missing the app asks to update).
 
 ## TV screenshot
 

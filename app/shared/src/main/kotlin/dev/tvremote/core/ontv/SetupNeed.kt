@@ -18,6 +18,7 @@ object SetupNeed {
         "rules" to "0.1.0",                                            // sleep timer, bedtime, app limits
         "draw" to "0.1.0",                                             // ✏️ drawing over the screen
         "pic" to "0.1.0",                                              // 🖼️ a picture over it
+        "drawkeep" to "0.54.1",                                        // ⏱ how long a drawing stays, until cleared too (DrawLayer "k"; the release after 0.54.0)
         "volume" to "0.1.0",                                           // 🔊 volume limits
         "bedtimes" to "0.3.1",                                         // 🌙 more than one bedtime
         "notify" to "0.4.2",                                           // 🔔 a card with a message over the TV's screen
@@ -75,6 +76,7 @@ object SetupNeed {
             "rules" -> t("core.need_rules")
             "draw" -> t("setup_need.drawing_tv")
             "pic" -> t("core.need_pic")
+            "drawkeep" -> t("core.need_drawkeep")
             "volume" -> t("core.need_volume")
             "bedtimes" -> t("core.need_bedtimes")
             "notify" -> t("core.need_notify")

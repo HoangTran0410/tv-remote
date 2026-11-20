@@ -978,9 +978,10 @@ Tắt TV xong, TV có thể ngủ sâu và không trả lời nữa. Tùy chọn
 1. Bấm **✏️** cạnh hình TV (hoặc Thêm phím → Vẽ lên TV).
 2. Chọn màu, rồi vẽ ngón tay lên hình. **↩** hoàn tác nét vừa vẽ.
 3. Thêm **💬 Chữ**, **🖼️ Ảnh** hoặc **🎞️ Video** (mở [khung Video trên TV](#video)). Với ảnh, chỉnh to nhỏ bằng − / + rồi bấm **✓ Đưa lên TV**.
-4. Xong bấm **✓ Xong**. Muốn xóa: **🗑 Xóa hết**.
+4. **⏱** chọn hình ở lại bao lâu sau nét cuối: 10 phút, 30 phút, 1 giờ hoặc **Đến khi xoá** (còn nguyên khi tắt mở TV).
+5. Xong bấm **✓ Xong**. Muốn xóa: **🗑 Xóa hết**, hoặc ô **Xoá hình vẽ** trong TV Setup trên TV.
 
-> 💡 Nét vẽ nằm trên mọi app và tự mất sau 10 phút. Cần TV Setup.
+> 💡 Nét vẽ nằm trên mọi app. Cần TV Setup (⏱ cần bản mới, thiếu thì app hỏi cập nhật).
 
 ## Đưa ảnh lên TV
 
@@ -993,7 +994,7 @@ Có hai cách: đặt một ảnh **phủ lên màn hình TV** (trên mọi app)
 
 Muốn phát hẳn: **Thêm phím → Mở trên TV → Phát ảnh / video từ điện thoại** (trên máy tính: từ máy này).
 
-> 💡 Ảnh phủ tự mất sau 10 phút, hoặc bấm **🗑 Xóa hết**. Cần TV Setup (thiếu thì app hỏi cập nhật).
+> 💡 Ảnh phủ tự mất cùng hình vẽ (mặc định 10 phút, đổi bằng **⏱**), hoặc bấm **🗑 Xóa hết**. Cần TV Setup (thiếu thì app hỏi cập nhật).
 
 ## Chụp màn hình TV
 
