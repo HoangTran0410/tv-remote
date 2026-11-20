@@ -2,7 +2,7 @@
 // this device's network, the TV's ports, a VPN, the app's ADB link, the TV under a new address) answers with ONE conclusion and
 // what to do, in the banner at the top, instead of leaving the person with a red chip and a raw error. The same check backs
 // the phone's native screens. Cancel stops waiting; Retry connects again, and a TV that is still out of reach is checked again.
-const DIAG_TONE = { up: 'ok', wireless: 'warn', adb_off: 'warn', remote_off: 'warn', allow: 'warn', closed: 'warn', moved: 'warn' };   // the others are 'bad'
+const DIAG_TONE = { up: 'ok', wireless: 'warn', adb_off: 'warn', remote_off: 'warn', allow: 'warn', closed: 'warn', adb_stuck: 'warn', moved: 'warn' };   // the others are 'bad'
 let diagSetupKey = '';
 let diagKey = '', diagBad = 0, diagCtl = null;
 const diagAsked = new Set();                                         // TVs whose pairing window was opened for the person already: once, not at every check
