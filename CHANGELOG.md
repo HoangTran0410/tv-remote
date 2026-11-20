@@ -6,7 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
-- Scenes: "Voice phrases", "Start at" and "Start when" are easier to tap on a phone (the whole row, 32 px).
+- Scenes: "Voice phrases", "Start at" and "Start when" are easier to tap on a phone (the whole row, as tall as a button).
 - TV Home: the lunar widget in a narrow spot (two rows of widgets) no longer cuts its date and year to "1…": the moon, then the day's square, give their room up.
 - Optimize TV: an app the TV will not let be turned off may no longer run in the background instead (only apps already chosen); Undo gives it back.
 - Installing an APK while the TV shows Google Play Protect's question: the install no longer waits in silence, it says what to press on the TV.
