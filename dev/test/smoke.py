@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Every /api route over a real network path, for the faults a unit test and adb forward hide. See dev/test/AGENTS.md.
 
-    dev/test/smoke.py tv                   TV Setup on the TV emulator (emulator-5554), reached through the emulator's own port
+    dev/test/smoke.py tv                   TV Setup on the TV emulator (emulator-5554, or TV_SERIAL=…), reached through the emulator's own port
                                       redirect (`emu redir`), not adb forward: adb forward hid a reply cut short by a reset
     dev/test/smoke.py URL                  any core, e.g. the computer app's test server: TVR_PASS=... dev/test/smoke.py http://127.0.0.1:8769
 
@@ -23,7 +23,7 @@ SOURCES = ["app/shared/src/main/kotlin/dev/tvremote/core/manage", "app/shared/sr
 # what changes the TV, a file on it, the saved TVs or this computer; or opens something on the TV's screen
 SKIP = re.compile(r"/(reboot|power|shutdown|kill|delete|rename|mkdir|install|upload|uninstall|clean|free|backup|perm|launch|open|"
                   r"update|shell|settings|rules|scenes?|run|key|touch|type|text|wake|off|notify|draw|allow|deny|pair|cert|input|volume|"
-                  r"clip|share|warm|cancel|tvset|save|select|remove|forget|scope|do|connect|tailscale/start|assist|fetch|setup|app)$"
+                  r"clip|share|warm|cancel|tvset|save|select|remove|forget|scope|do|connect|tailscale/start|assist|fetch|setup|app|revoke|revoke-one)$"   # revoke: every ADB key on the TV, ours too
                   r"|^/api/(fleet|pair/)")   # pair/start is asked by the pairing itself, with a body it does not read
 STREAMS = {"/api/video", "/api/audio", "/api/screen"}               # sent until the connection closes: only their start is read
 BIG = b"x" * 65536
@@ -92,7 +92,7 @@ def locked(base, tv):
     return bad
 
 
-def adb(*a): return subprocess.run(["adb", "-s", "emulator-5554", *a], capture_output=True, text=True, timeout=60).stdout
+def adb(*a): return subprocess.run(["adb", "-s", os.environ.get("TV_SERIAL", "emulator-5554"), *a], capture_output=True, text=True, timeout=60).stdout
 
 
 def pair_tv(base):
