@@ -10,6 +10,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - TV Home: a suggested background (a slideshow, a video) picked on the phone or computer no longer turns into Night, nor is skipped in a rotating set, on a TV that had never opened its own Background page: TV Home fetches the list then.
 - TV Home: with widgets in two rows, the second row's widgets are no longer marked "waiting for room" (TV and page), the layout previews show both rows, and the apps no longer jump down a row at start.
 - TV Home: Quick keys' "Other key" no longer takes Space or a gamepad's A / B / X / Y; the page no longer lists a key that is dead only on another TV.
+- Draw on the TV fixes: ✓ no longer drops the last stroke or a picture just placed; a 💬 message is not placed when drawing could not start; strokes from two phones or pages no longer join; many pictures no longer run TV Setup out of memory (the oldest go); a kept drawing is never brought back empty, after a Clear, or lost when it could not be shown.
 
 ## 0.56.0 - 2026-11-20
 

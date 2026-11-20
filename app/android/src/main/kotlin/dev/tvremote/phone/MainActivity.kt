@@ -258,7 +258,7 @@ class MainActivity : Activity(), Tv.Listener, SurfaceHolder.Callback {
     internal var drawBusy = false
     internal var drawColor = DRAW_COLORS[0]
     internal var drawWidth = 60
-    internal var drawId = 0
+    internal var drawId = kotlin.random.Random.nextInt(1_000_000_000)   // TV Setup joins "a" to the newest stroke with that id: not 0 like another sender's
 
     // ---- Typing.kt. Two ways to type. Send: write here, then send it in one go. Live (⚡): the TV follows every letter and
     // every deletion as it happens, so one wrong letter is fixed by fixing it here.
