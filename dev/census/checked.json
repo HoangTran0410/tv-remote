@@ -4963,5 +4963,10 @@
   "at": "2026-10-29T17:19:54+07:00",
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
+ },
+ "5b2afde4cbf4c38088649d4c|0.53.1": {
+  "at": "2026-11-20T21:50:00+07:00",
+  "n": 1,
+  "note": "HAKO Pro sdk 34 again on 0.53.1, now with the full report: rs allow, bound 0, binding 0, crashed 0: firmware drops our a11y entry (operator kind); nothing to fix, clients say keys work only on TV Home"
  }
 }
