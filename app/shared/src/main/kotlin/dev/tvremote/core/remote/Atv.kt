@@ -105,10 +105,34 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
     // ---------------------------------------------------------------- remote (port 6466)
     @Volatile private var ime = 0L                                    // the TV's counters for its text field, echoed back with the text
     @Volatile private var field = 0L
+    private var imeFromInject = false                                 // remote_ime_key_inject's counter wins over remote_ime_batch_edit's (androidtvremote2 does the same)
+
+    /** A text field on the TV that takes text from the keyboard service: what is in it now and its label (a hint such as "Search"). */
+    class Field(val text: String, val label: String)
+
+    @Volatile private var shown: Field? = null
+    @Volatile private var editedAt = 0L                               // when we last sent text: the TV's echo of it must not overwrite the text typed since
+    internal var clock: () -> Long = { System.currentTimeMillis() }
+    internal var tap: ((ByteArray) -> Unit)? = null                   // tests: what would go on the wire
+
+    /** The text field that has the focus on the TV, null when none (or the TV does not tell: [keys] then). */
+    val currentField: Field? get() = shown
 
     /** The app in front has told us about a text field that takes text from the TV's keyboard service; see [text] and [keys]. */
-    @Volatile var hasField = false
+    val hasField: Boolean get() = shown != null
+
+    /** Counts every change of [currentField], for a screen that polls. */
+    @Volatile var fieldSeq = 0
         private set
+
+    /** Called (on the connection's thread) when [currentField] appears, changes or goes. */
+    @Volatile var onField: (() -> Unit)? = null
+
+    private fun setField(f: Field?) {
+        shown = f
+        fieldSeq++
+        try { onField?.invoke() } catch (ignored: Exception) { }
+    }
 
     /** The package on the TV's screen, as the TV reports it ("" until it does). */
     @Volatile override var app = ""
@@ -126,6 +150,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
                 try { while (true) handle(s, frame(s.inputStream) ?: break) } catch (e: Exception) { WireLog.all.add("·", "remote $host $e") }
                 WireLog.all.add("·", "remote $host dropped, dialling again")
                 live = false
+                if (shown != null) setField(null)                     // the TV may have closed its keyboard while we were away
                 try { s.close() } catch (ignored: Exception) { }   // the dropped link, or its descriptor stays until the GC
                 var again: SSLSocket? = null
                 for (i in 0 until 4) {
@@ -200,19 +225,55 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
             fun n(f: Int) = (v[f]?.firstOrNull() as? Long ?: 0L).toInt()
             volume = Triple(n(7), n(6), n(8) != 0)
         }
-        m[21]?.let {                                                  // remote_ime_batch_edit: a text field on the TV has the focus
-            val e = Pb.read(it[0] as? ByteArray ?: ByteArray(0))
-            ime = e[1]?.firstOrNull() as? Long ?: 0L
-            field = e[2]?.firstOrNull() as? Long ?: 0L
-            hasField = true
-        }
         m[30]?.let {                                                  // remote_voice_begin: the Assistant listens, under this session
             voiceWait?.offer(Pb.read(it[0] as? ByteArray ?: ByteArray(0))[1]?.firstOrNull() as? Long ?: 0L)
         }
+        ime(m)
+    }
+
+    /**
+     * The text field messages (tronikos/androidtvremote2's remotemessage.proto): 20 remote_ime_key_inject {app_info {1 counter,
+     * 12 package}, text_field_status}, 21 remote_ime_batch_edit {1 ime_counter, 2 field_counter}, 22 remote_ime_show_request
+     * {2 text_field_status}; a text_field_status is {1 counter_field, 2 value, 3 start, 4 end, 6 label}.
+     */
+    internal fun ime(m: Map<Int, List<Any>>) {
+        fun sub(f: ByteArray?, n: Int) = f?.let { Pb.read(it)[n]?.firstOrNull() as? ByteArray }
+        fun status(b: ByteArray?) {                                   // the field's own counter, and what is in it
+            if (b == null) return
+            val st = Pb.read(b)
+            val c = st[1]?.firstOrNull() as? Long ?: 0L
+            if (c != 0L) field = c
+            val f = shown ?: return
+            if (clock() - editedAt < ECHO_MS) return                  // our own edit coming back: ours is newer
+            val v = (st[2]?.firstOrNull() as? ByteArray)?.toString(Charsets.UTF_8) ?: ""
+            val l = (st[6]?.firstOrNull() as? ByteArray)?.toString(Charsets.UTF_8) ?: f.label
+            if (v != f.text || l != f.label) setField(Field(v, l))
+        }
         m[20]?.let {                                                  // remote_ime_key_inject: sent whenever another app comes to the front
-            val info = Pb.read(it[0] as? ByteArray ?: ByteArray(0))[1]?.firstOrNull() as? ByteArray
-            val pkg = info?.let { i -> Pb.read(i)[12]?.firstOrNull() as? ByteArray }?.toString(Charsets.UTF_8)
-            if (!pkg.isNullOrEmpty()) { if (pkg != app) hasField = false; app = pkg }
+            val inj = Pb.read(it[0] as? ByteArray ?: ByteArray(0))
+            val info = inj[1]?.firstOrNull() as? ByteArray
+            val pkg = sub(info, 12)?.toString(Charsets.UTF_8)
+            if (!pkg.isNullOrEmpty()) { if (pkg != app && shown != null) setField(null); app = pkg }
+            val c = info?.let { i -> Pb.read(i)[1]?.firstOrNull() as? Long } ?: 0L
+            if (c != 0L) { ime = c; imeFromInject = true }
+            status(inj[2]?.firstOrNull() as? ByteArray)
+        }
+        m[21]?.let {                                                  // remote_ime_batch_edit: a text field on the TV has the focus
+            val e = Pb.read(it[0] as? ByteArray ?: ByteArray(0))
+            if (!imeFromInject) ime = e[1]?.firstOrNull() as? Long ?: 0L
+            field = e[2]?.firstOrNull() as? Long ?: 0L
+            if (shown == null) setField(Field("", ""))                // its text unknown (a TV that never says it): the box starts empty
+        }
+        m[22]?.let {                                                  // remote_ime_show_request: the TV's keyboard comes up on a field, with its text
+            val st = Pb.read(it[0] as? ByteArray ?: ByteArray(0))[2]?.firstOrNull() as? ByteArray ?: return@let
+            val p = Pb.read(st)
+            val v = (p[2]?.firstOrNull() as? ByteArray)?.toString(Charsets.UTF_8) ?: ""
+            val l = (p[6]?.firstOrNull() as? ByteArray)?.toString(Charsets.UTF_8) ?: ""
+            val c = p[1]?.firstOrNull() as? Long ?: 0L
+            if (c != 0L) field = c
+            val f = shown
+            if (f != null && clock() - editedAt < ECHO_MS) return@let   // our own edit coming back: ours is newer
+            if (f == null || f.text != v || f.label != l) setField(Field(v, l))
         }
     }
 
@@ -220,6 +281,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
     override fun key(code: Int, direction: Int) {
         WireLog.all.add("→", "remote $host key $code " + (if (direction == SHORT) "tap" else if (direction == DOWN) "down" else "up"))
         post(Pb().msg(10, Pb().int(1, code.toLong()).int(2, direction.toLong()).bytes()).bytes(), KEY_STALE_MS)
+        if (shown != null && direction != DOWN && (code == 3 || code == 4)) setField(null)   // Home / Back: the keyboard goes; the TV says so again when it returns
     }
 
     /**
@@ -244,9 +306,41 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
     /** Fills the text field that has the focus on the TV with [t] (it replaces what is there). Nothing happens when no field has it. */
     override fun text(t: String) {
         if (t.isEmpty()) return
-        val at = (t.length - 1).toLong()
-        val edit = Pb().int(1, 1).msg(2, Pb().int(1, at).int(2, at).str(3, t).bytes()).bytes()
+        replace(t)
+    }
+
+    /** Sets the field's whole text to [t] (empty too), through the TV's keyboard service. */
+    fun replace(t: String) {
+        val edit = Pb().int(1, 1).msg(2, Pb().int(1, t.length.toLong()).int(2, t.length.toLong()).str(3, t).bytes()).bytes()
+        editedAt = clock()
+        shown?.let { shown = Field(t, it.label) }                     // no onField: the screen that typed it has it
         post(Pb().msg(21, Pb().int(1, ime).int(2, field).msg(3, edit).bytes()).bytes())
+    }
+
+    /**
+     * With a field: its text with [del] characters off the end and [add] after, set as a whole; Enter then submits. Without one
+     * (an app with its own keyboard, or a TV that never says): backspaces, [keys], Enter, as before.
+     */
+    override fun type(del: Int, add: String, enter: Boolean) {
+        val f = shown
+        if (f == null) {
+            repeat(del) { key(67, SHORT) }
+            if (add.isNotEmpty()) { if (typable(add)) keys(add) else text(add) }
+            if (enter) key(66, SHORT)
+            return
+        }
+        if (del > 0 || add.isNotEmpty()) {
+            val base = f.text
+            val cut = try { base.offsetByCodePoints(base.length, -minOf(del, base.codePointCount(0, base.length))) } catch (e: Exception) { 0 }
+            replace(base.substring(0, cut) + add)
+        }
+        if (enter) submit()
+    }
+
+    /** Enter on the focused field, then the field is forgotten: the app usually moves on and the TV says again if one stays. */
+    fun submit() {
+        key(66, SHORT)
+        if (shown != null) setField(null)
     }
 
     /**
@@ -299,6 +393,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
 
     /** [staleMs] > 0: dropped if it waited longer than that (keys: 8 queued VOL_UP must not all fire when the link is back). */
     private fun post(message: ByteArray, staleMs: Long = 0) {
+        tap?.let { it(message); return }
         if (closed || sock == null) return
         val queued = System.nanoTime()
         out.execute {
@@ -423,6 +518,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
         const val UP = 2
         const val SHORT = 3
         const val KEYCODE_SEARCH = 84
+        private const val ECHO_MS = 1500L
         const val VOICE_MAX = 20 * 1024
         const val VOICE_MIN = 8 * 1024
 

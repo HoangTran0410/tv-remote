@@ -96,6 +96,7 @@ class Session(val host: String, private val keys: File, cache: File, helper: () 
         val a = atv
         val o = JSONObject().put("host", host).put("connected", available).put("paired", paired ?: JSONObject.NULL).put("error", error)
             .put("is_on", a?.isOn ?: JSONObject.NULL).put("app", a?.app?.ifEmpty { null } ?: JSONObject.NULL)
+        (a as? Atv)?.let { t -> t.currentField?.let { o.put("field", JSONObject().put("text", it.text).put("label", it.label).put("seq", t.fieldSeq)) } }   // the TV's text field, if it says (no ADB needed)
         a?.let { appLabel(it) }?.let { o.put("app_label", it) }       // an LG / Roku / Samsung says an id ("12"): its name for the page
         val v = a?.volume
         o.put("volume", if (v == null) JSONObject.NULL else JSONObject().put("level", v.first).put("max", v.second).put("muted", v.third))

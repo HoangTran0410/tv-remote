@@ -429,6 +429,7 @@ async function refreshRead() {
   if (locked) return;
   tvOn = !!(s && s.connected && s.is_on); STATE = s || {};
   if (s) applyKind(s);
+  if (typeof fieldFollow === 'function') fieldFollow();                // the TV's text field (no ADB): the typing box starts with what is in it
   if (!s && ++stateMiss < 2) { setTimeout(refresh, 1500); return; }    // one miss is often this device waking (its Wi-Fi back a moment later)
   if (s) stateMiss = 0;
   if (!s) {
@@ -671,7 +672,7 @@ function applyAdb() {
   const noadb = !ready && ADB.state !== 'unknown' && !NATIVE();         // not while still connecting; LG / Samsung hide those tabs instead
   $('.tabs').classList.toggle('noadb', noadb);
   document.querySelectorAll('.tabs [data-needs-adb]').forEach((b) => { if (noadb) b.title = T('core.needs_adb_tip'); else b.removeAttribute('title'); });
-  const typing = ready || NATIVE() && can('text');                    // typing goes through ADB, or LG's / Samsung's own keyboard link
+  const typing = ready || NATIVE() && can('text') || !!STATE.field;   // typing goes through ADB, LG's / Samsung's keyboard link, or the text field an Android TV reports without ADB
   put('#kbd', 'disabled', !typing); put($('#kbdoff'), 'hidden', typing);         // no half-working box without it
   put('#screenbtn', 'disabled', !ready && !screenOn);
   if (!ready && screenOn) stopScreen(T('core.adb_stopped_view'));
