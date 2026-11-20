@@ -20,7 +20,7 @@ A home screen with no ads, set up from the phone or computer. Install it from th
 
 | Background | What it is |
 | --- | --- |
-| Suggested | A Việt Nam slideshow, calm videos, a live page; they rotate with your photos; the list updates from the site |
+| Suggested | A Việt Nam slideshow, calm videos, a live page; the list updates from the site |
 | Custom | One color or 2-4 blended, 9 directions; on the TV ◀ ▶ change it live |
 | Drawn scene | Built in, no internet needed |
 | Bing | The last 8 days' pictures; press the Bing tile again on the TV = the day before |
@@ -28,7 +28,7 @@ A home screen with no ads, set up from the phone or computer. Install it from th
 | Your photos | Up to 10; a portrait one: **Whole photo**, blurred sides |
 | Web page | Paste an http/https link; the TV tries it first |
 
-Pick several or **Select all**; **Change background** rotates them.
+**Pick several backgrounds** on: ticked ones take turns.
 
 **Dim** 0-100 %: readable text on any picture.
 

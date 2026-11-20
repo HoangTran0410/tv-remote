@@ -654,17 +654,20 @@ object Customize {
         }
         groups[1].fill = {
             // a photo from a phone on the same Wi-Fi is the first cell of "your photos" (a QR screen, no ADB and no TV Setup; when it was used the panel closes to show the new background)
-            col.addView(nowNote, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })
-            // the veil over a photo, a scene or the page: a busy one fights the clock and the names (HomeConfig "shade")
-            tile(R.drawable.ic_contrast, a.getString(R.string.c_shade), null, "shade")
-            // a photo cropped to fill the screen, or whole over itself blurred (HomeConfig "wfit": a portrait photo)
-            tile(R.drawable.ic_image, a.getString(R.string.c_fit), null, "wfit", listOf("cover" to a.getString(R.string.fit_cover), "contain" to a.getString(R.string.fit_contain)))
-            // a video's jump back to its start as a dissolve (HomeConfig "wfade"; the site's video themes set it for a clip whose end is not its start)
-            tile(R.drawable.ic_play, a.getString(R.string.c_fade), a.getString(R.string.c_fade_sub), "wfade")
-            col.addView(label(a.getString(R.string.rot), 13f, Color.WHITE), LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(18); bottomMargin = dp(8) })
+            // one background, or several taking turns (the user, 2026-11-20: "Chọn nhiều", off by default, at the top where it is seen);
+            // it is HomeConfig "wevery" off / on, so no second setting: on, the interval picks below and the ✓ on each tile show
+            var lastEvery = conf.optString("wevery").takeIf { it != "off" } ?: "day"
+            lateinit var showRot: () -> Unit
+            tile(R.drawable.ic_image, a.getString(R.string.wall_multi), null, "wevery", listOf("off" to a.getString(R.string.w_off).replaceFirstChar { it.uppercase() }, "on" to a.getString(R.string.wall_multi_sub)),
+                then = { showRot(); markEvery(); markAll() },
+                read = { if (Store.get(a).optString("wevery") == "off") "off" else "on" },
+                write = { v -> val now = Store.get(a).optString("wevery"); if (now != "off") lastEvery = now; Store.change(a, JSONObject().put("wevery", if (v == "off") "off" else lastEvery)) })
+            val rotHead = label(a.getString(R.string.rot), 13f, Color.WHITE)
+            col.addView(rotHead, LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(14); bottomMargin = dp(8) })
             var chipRow: LinearLayout? = null
-            HomeConfig.EVERY.forEachIndexed { i, k ->
-                if (i % 3 == 0) { chipRow = LinearLayout(a).apply { clipChildren = false; clipToPadding = false }; col.addView(chipRow, LinearLayout.LayoutParams(-1, -2).apply { if (i > 0) topMargin = dp(8) }) }
+            val rotRows = ArrayList<View>()
+            HomeConfig.EVERY.drop(1).forEachIndexed { i, k ->              // "off" is the switch above
+                if (i % 3 == 0) { chipRow = LinearLayout(a).apply { clipChildren = false; clipToPadding = false }; col.addView(chipRow, LinearLayout.LayoutParams(-1, -2).apply { if (i > 0) topMargin = dp(8) }); rotRows.add(chipRow!!) }
                 val chip = Font.on(TextView(a)).apply {
                     text = a.getString(everyWords.getValue(k)); textSize = 14f; gravity = Gravity.CENTER; maxLines = 1
                     setTextColor(Color.WHITE); isFocusable = true; isClickable = true; setPadding(dp(8), dp(11), dp(8), dp(11))
@@ -680,6 +683,15 @@ object Customize {
                 chipRow!!.addView(chip, LinearLayout.LayoutParams(0, -2, 1f).apply { if (i % 3 > 0) leftMargin = dp(8) })
             }
             col.addView(rotNote, LinearLayout.LayoutParams(-2, -2).apply { topMargin = dp(8) })
+            showRot = { val on = Store.get(a).optString("wevery") != "off"; val v = if (on) View.VISIBLE else View.GONE; rotHead.visibility = v; rotRows.forEach { it.visibility = v } }
+            showRot()
+            col.addView(nowNote, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(10) })
+            // the veil over a photo, a scene or the page: a busy one fights the clock and the names (HomeConfig "shade")
+            tile(R.drawable.ic_contrast, a.getString(R.string.c_shade), null, "shade")
+            // a photo cropped to fill the screen, or whole over itself blurred (HomeConfig "wfit": a portrait photo)
+            tile(R.drawable.ic_image, a.getString(R.string.c_fit), null, "wfit", listOf("cover" to a.getString(R.string.fit_cover), "contain" to a.getString(R.string.fit_contain)))
+            // a video's jump back to its start as a dissolve (HomeConfig "wfade"; the site's video themes set it for a clip whose end is not its start)
+            tile(R.drawable.ic_play, a.getString(R.string.c_fade), a.getString(R.string.c_fade_sub), "wfade")
             // the wall tiles by where they come from, each with the settings that belong to it (a video's sound only when there is a video)
             // the "add" cell: same size and rings as a background, a big + on it; OK opens the QR screen
             fun addTile() = FrameLayout(a).apply {

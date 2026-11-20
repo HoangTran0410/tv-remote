@@ -439,6 +439,11 @@ async function homeOpen() {
   }
   const photoAct = el('div', { className: 'actions' }, upload), videoAct = el('div', { className: 'actions' }, vupload);
   const everyHead = el('h3', { textContent: T('home.rotate') }), every = el('div', { className: 'fchips homeevery' }), everyNote = el('p', { className: 'note' });
+  // one background, or several taking turns (the user, 2026-11-20: off by default, first on the page so it is seen): HomeConfig
+  // "wevery" off / on, no second setting; on, the interval picks and the ✓ on each tile show (the TV: Customize's first tile)
+  let lastEvery = 'day';
+  const multiBox = el('input', { type: 'checkbox', onchange: () => send({ wevery: multiBox.checked ? lastEvery : 'off' }) });
+  const multiRow = el('label', { className: 'check' }, multiBox, el('span', { textContent: T('home.wall_multi') })), multiNote = el('p', { className: 'note', textContent: T('home.wall_multi_sub') });
   const file = el('input', { type: 'file', accept: 'image/*', multiple: true, hidden: true, onchange: async () => {
     // one at a time (the TV takes a photo per ADB push); a TV Home without rotation has room for one only
     const room = r.config.wrotate ? HOME_PHOTO_MAX - (r.photos || []).length : 1;
@@ -658,7 +663,7 @@ async function homeOpen() {
       if (r2.full) toast(T('home.wall_full', { n: HOME_WALLS_MAX }));
     };
   };
-  homeGallery(gal, credit, galHead, (n) => { if (take(n)) draw(); }, { box: sugBox, pages: pageBox, head: sugHead, note: sugNote, pick: sugPick, mark: () => markSug(r.config) });
+  homeGallery(gal, credit, galHead, (n) => { if (take(n)) draw(); }, { box: sugBox, pages: pageBox, head: sugHead, note: sugNote, pick: sugPick, mark: () => { markSug(r.config); if (r.config.wrotate && /^sug:/.test(r.config.wall)) drawRotation(r.config); } });   // the list came after: the note names the one on screen
 
   // "Add to home screen": a picker of the apps (hidden ones too), their shortcuts and the live widgets; a press puts one on the grid or
   // takes it off and the list stays open. Shortcuts and live widgets are in config "tiles" (the order they have on the grid), an app is
@@ -770,7 +775,9 @@ async function homeOpen() {
     const chips = (box, key, list, word) => box.replaceChildren(...list.map((k) => el('button', { type: 'button', className: (c[key] || '') === k ? 'on' : '', 'aria-pressed': String((c[key] || '') === k), textContent: word(k), onclick: () => send({ [key]: k }) })));
     chips(vfps, 'vfps', ['', '60', '30', '24', '15'], (k) => k ? T('home.v_fps_n', { n: k }) : T('home.v_orig'));
     chips(vres, 'vres', ['', '1080', '720', '480'], (k) => k ? T('home.v_res_n', { n: k }) : T('home.v_res_screen'));
-    everyHead.hidden = every.hidden = !c.wrotate; if (!c.wrotate) everyNote.hidden = true;
+    if (c.wevery && c.wevery !== 'off') lastEvery = c.wevery;
+    multiBox.checked = !!c.wevery && c.wevery !== 'off'; multiRow.hidden = multiNote.hidden = !c.wrotate;
+    everyHead.hidden = every.hidden = !c.wrotate || !multiBox.checked; if (!c.wrotate || !multiBox.checked) everyNote.hidden = true;
     homebar.checked = c.homebar === true; homebar.closest('label').hidden = c.homebar === undefined;
     lockLayout.checked = c.lockLayout === true; lockLayout.closest('label').hidden = c.lockLayout === undefined;   // an older TV Home does not report it
     shift.checked = c.shift === true; shift.closest('label').hidden = c.shift === undefined;
@@ -970,7 +977,7 @@ async function homeOpen() {
     wOnline.replaceChildren(bing, ...webTile); wPhotos.replaceChildren(...photos); wVideos.replaceChildren(...videos);   // as on the TV (HomeConfig.WALLS)
     wPhotos.hidden = !photos.length; wVideos.hidden = !videos.length;
     wScenes.replaceChildren(...art); walls.replaceChildren(...plain);
-    every.replaceChildren(...Object.keys(HOME_EVERY).map((e) => el('button', { type: 'button', className: c.wevery === e ? 'on' : '', 'aria-pressed': String(c.wevery === e), textContent: T(HOME_EVERY[e]), onclick: () => send({ wevery: e }) })));
+    every.replaceChildren(...Object.keys(HOME_EVERY).filter((e) => e !== 'off').map((e) => el('button', { type: 'button', className: c.wevery === e ? 'on' : '', 'aria-pressed': String(c.wevery === e), textContent: T(HOME_EVERY[e]), onclick: () => send({ wevery: e }) })));
     const shownName = (() => { if (/^sug:/.test(c.wall)) return sugName(c.wall); const t = [...wOnline.querySelectorAll('.nowtag'), ...wPhotos.querySelectorAll('.nowtag'), ...wVideos.querySelectorAll('.nowtag'), ...wScenes.querySelectorAll('.nowtag'), ...walls.querySelectorAll('.nowtag')][0]; return t ? t.previousSibling.textContent : ''; })();
     put(everyNote, 'textContent', multi ? T('home.rot_state', { n: set.length, every: T(HOME_EVERY[c.wevery]).toLowerCase(), name: shownName }) + ' ' + T(set.length < 2 && set[0] !== 'bing' ? 'home.rotate_pick' : 'home.rotate_set') : '');   // Bing alone turns through its last 8 days
     everyNote.hidden = !multi;
@@ -1196,7 +1203,7 @@ async function homeOpen() {
   const vFold = UI.card(T('home.v_head'), { fold: true }, vfpsHead, vfps, vresHead, vres);   // the video's own settings, in the videos' part
   const GROUPS = [
     ['themes', 'star', 45, 'home.themes', [themeHint, themeMineHead, themeMine, themeLine, themeNote, themeReadyHead, themeReady, themeCommHead, themeComm]],
-    ['bg', 'image', 330, 'home.wall', [everyHead, every, everyNote, shadeHead, shade, shadeNote, fitHead, fit, fitNote, fadeRow, fadeNote,
+    ['bg', 'image', 330, 'home.wall', [multiRow, multiNote, everyHead, every, everyNote, shadeHead, shade, shadeNote, fitHead, fit, fitNote, fadeRow, fadeNote,
       hPhotos, photoAct, wPhotos, holdNote, galHead, gal, credit,                       // the person's own first, as TV Home's own screen
       hOnline, wOnline, pageBox, webHead, webLine, webModeHead, webMode, webEveryHead, webEvery, webKeep, webModeNote, sugHead, sugBox, sugNote,
       hVideos, videoAct, vstate, vperf, wVideos, vFold, vnote, file, vfile,

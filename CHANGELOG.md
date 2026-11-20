@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home and the page: "Pick several backgrounds" switch at the top of the Background page (off: tap picks one; on: tick several, they take turns at the time you pick).
 - TV Home: the suggested backgrounds (Việt Nam and art slideshows, calm videos, live pages) join the rotating set with your photos and pictures; the Suggested group has "Select all" too.
 - Typing without ADB (Phone and Computer apps, Android TV): when the TV reports a text field, all text goes through it (not only accents), the box starts with the text already in the field and edits replace it, and Enter submits. Apps with their own keyboard (Downloader) still get key presses.
 - TV Home: "Select all" for each group of backgrounds (your photos, videos, scenes, colours) while the background changes by itself, up to 40; it says when the set is full.
