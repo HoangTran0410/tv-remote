@@ -27,6 +27,7 @@ class TrustReceiver : BroadcastReceiver() {
         if (i.getStringExtra("want") == "adbkey") {                  // a device just allowed offers to answer our own question (AdbPrompt.helpSetup)
             val state = Adb.askState()
             Adb.askNow()
+            RemoteService.letAsk()                                    // its jobs had stopped asking after questions nobody answered
             resultData = Adb(c.filesDir).fingerprint() + " " + state.ifEmpty { "-" }
             return
         }

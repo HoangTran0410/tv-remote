@@ -9,6 +9,7 @@ Không kết nối được? App tự kiểm tra trong chưa đầy 4 giây rồ
 | TV này chỉ có Gỡ lỗi không dây | Ghép một lần bằng mã 6 số: Tùy chọn nhà phát triển → Gỡ lỗi không dây → Ghép nối bằng mã. |
 | Gỡ lỗi ADB đang tắt trên TV | Phím vẫn bấm được. Muốn xem hình, mở app thì bấm **🧭 Bật ADB giúp tôi** hoặc bật trong Tùy chọn nhà phát triển. |
 | TV đang chờ bạn cho phép | Nhìn lên TV: tích “Luôn cho phép”, chọn OK. |
+| ADB đang bật nhưng không cho app vào | Bấm **🔄 Thử lại**. Vẫn không được thì khởi động lại TV (rút điện 10 giây); TV hỏi thì tích “Luôn cho phép”, chọn OK. |
 | Máy này đang ở mạng khác với TV | Nối vào đúng Wi-Fi của TV, không phải mạng khách hay 4G. |
 | Máy này chưa vào Wi-Fi | Bật Wi-Fi. |
 | Tailscale đang tắt trên máy này | Bật Tailscale rồi thử lại. |

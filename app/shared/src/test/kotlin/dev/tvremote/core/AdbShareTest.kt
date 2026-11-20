@@ -90,6 +90,22 @@ class AdbShareTest {
         assertTrue(!File(dir, "adb-one-client.txt").exists())
     }
 
+    /** Only a timed-out handshake or a hang-up says "one client" (an unpaired key, a lost network once marked a TV for good). */
+    @Test fun whatMarksATvAsOneClient() {
+        assertTrue(Adb.oneClient(java.net.SocketTimeoutException("Read timed out")))
+        assertTrue(Adb.oneClient(java.io.EOFException()))
+        assertTrue(Adb.oneClient(java.io.IOException("x", java.io.EOFException())))
+        assertTrue(!Adb.oneClient(java.net.SocketTimeoutException("connect timed out")))   // the network, not the TV's adbd
+        assertTrue(!Adb.oneClient(java.net.ConnectException("Connection refused")))
+        assertTrue(!Adb.oneClient(java.io.IOException("adb tls: this device is not paired")))
+        assertTrue(!Adb.oneClient(java.io.IOException(Adb.UNANSWERED)))
+    }
+
+    /** The mark carries its time and runs out (Adb.ONE_KEEP_MS); a line from before that has none counts as old: tried again. */
+    @Test fun marksExpire() {
+        assertEquals(mapOf("10.0.0.5" to 1700000000000L, "10.0.0.6" to 0L), Adb.oneParse(listOf("10.0.0.5 1700000000000", "10.0.0.6", "", "  ")))
+    }
+
     companion object {
         const val HOST = "127.0.0.1"
         const val CNXN = 0x4e584e43

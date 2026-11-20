@@ -31,4 +31,50 @@ class AdbLinkStateTest {
         val again = try { l.getQuiet(); "dialed" } catch (e: java.io.IOException) { e.message }
         org.junit.Assert.assertFalse(again, again!!.startsWith(AdbLink.STILL))   // it dials (and fails on port 1 for its own reason)
     }
+
+    private fun set(l: AdbLink, name: String, v: Any) = AdbLink::class.java.getDeclaredField(name).apply { isAccessible = true }.set(l, v)
+
+    /** The wait grows for a TV that never lets us in, and stops after questions nobody answered (LauncherGuard re-asked every ~4 min). */
+    @Test fun quietGrowsAndStops() {
+        assertEquals(60_000L, AdbLink.quietMs(0, 0))
+        assertEquals(60_000L, AdbLink.quietMs(1, 0))
+        assertEquals(120_000L, AdbLink.quietMs(2, 0))
+        assertEquals(480_000L, AdbLink.quietMs(4, 0))
+        assertEquals(AdbLink.MAX_QUIET_MS, AdbLink.quietMs(5, 0))
+        assertEquals(AdbLink.MAX_QUIET_MS, AdbLink.quietMs(500, 0))
+        assertEquals(60_000L, AdbLink.quietMs(1, 1))                      // one Cancel: the minute, as before
+        assertEquals(AdbLink.ASKED_QUIET_MS, AdbLink.quietMs(2, 2))
+        assertEquals(Long.MAX_VALUE, AdbLink.quietMs(3, AdbLink.ASK_STOP))
+    }
+
+    @Test fun stoppedAskingUntilSomeoneUsesIt() {
+        val l = AdbLink(Files.createTempDirectory("keys").toFile(), "127.0.0.1:1")
+        try { l.get() } catch (e: java.io.IOException) { }                 // failed
+        set(l, "fails", 3); set(l, "unanswered", 3); set(l, "lastTry", 0L)  // three questions nobody answered, long ago
+        val quiet = try { l.getQuiet(); "dialed" } catch (e: java.io.IOException) { e.message }
+        org.junit.Assert.assertTrue(quiet, quiet!!.startsWith(AdbLink.STILL))
+        l.letAsk()                                                         // TV Setup opened, or the web page used
+        val again = try { l.getQuiet(); "dialed" } catch (e: java.io.IOException) { e.message }
+        org.junit.Assert.assertFalse(again, again!!.startsWith(AdbLink.STILL))
+    }
+
+    /** close() is for good: a waiting caller or a late "Try again" does not dial (and leak) a new connection; reset() is not. */
+    @Test fun closedStaysClosed() {
+        val l = AdbLink(Files.createTempDirectory("keys").toFile(), "127.0.0.1:1")
+        l.close()
+        assertEquals(AdbLink.CLOSED, try { l.get(); "dialed" } catch (x: java.io.IOException) { x.message })
+        assertEquals(AdbLink.CLOSED, try { l.getQuiet(); "dialed" } catch (x: java.io.IOException) { x.message })
+        assertEquals("closed", l.state())
+        assertEquals("closed", l.reconnect())
+        val r = AdbLink(Files.createTempDirectory("keys").toFile(), "127.0.0.1:1")
+        r.reset()                                                          // a TV restarting: the next call dials again
+        assertEquals("unknown", r.state())
+    }
+
+    @Test fun quickRetryOnlyForOwnConnectTimeout() {
+        val connect = java.net.SocketTimeoutException("connect timed out")
+        org.junit.Assert.assertTrue(AdbLink.quickRetry("127.0.0.1", connect))
+        org.junit.Assert.assertFalse(AdbLink.quickRetry("127.0.0.1", java.net.SocketTimeoutException("Read timed out")))   // a hung adbd
+        org.junit.Assert.assertFalse(AdbLink.quickRetry("192.168.1.20", connect))   // another TV: the person's own Try again
+    }
 }

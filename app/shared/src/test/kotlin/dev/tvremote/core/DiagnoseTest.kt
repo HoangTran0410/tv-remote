@@ -31,6 +31,10 @@ class DiagnoseTest {
         check(Diagnose.ALLOW, facts(open = listOf(5555), adb = "waiting"))
         check(Diagnose.REMOTE_OFF, facts(open = listOf(5555), adb = "ready"))
         check(Diagnose.REMOTE_OFF, facts(open = listOf(5555)))
+        check(Diagnose.ADB_STUCK, facts(open = listOf(5555, 6466, 6467), adb = "closed"))   // the port answers, the link gave up: not "momentary"
+        check(Diagnose.ADB_STUCK, facts(open = listOf(5555), adb = "closed"))
+        check(Diagnose.UP, facts(open = listOf(5555, 6466), adb = "unknown"))                 // still dialling
+        check(Diagnose.ADB_OFF, facts(open = listOf(6466), adb = "closed"))                   // 5555 shut: ADB off, not stuck
     }
 
     @Test fun fireTvWithUnfinishedSetup() {

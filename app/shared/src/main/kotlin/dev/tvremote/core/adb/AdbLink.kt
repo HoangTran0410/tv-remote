@@ -13,6 +13,9 @@ class AdbLink(val keyDir: File, val host: String) {
     @Volatile private var dialStart = 0L                              // nanoTime: it stops while the device sleeps, so a dial it froze in is not "stuck"
     @Volatile private var lastTry = 0L                                // state() dials again at most this often after a failure
     @Volatile private var gen = 0                                     // bumped by reconnect(): a dial of an older generation was cut on purpose, not a failure
+    @Volatile private var fails = 0                                   // failed dials in a row: getQuiet's wait grows with them ([quietMs])
+    @Volatile private var unanswered = 0                              // of those, the last ones with "Allow USB debugging?" not allowed, in a row
+    @Volatile private var closed = false                              // close(): for good; a waiting get() or a late reconnect() dials no more
     private val spawning = java.util.concurrent.atomic.AtomicBoolean()
     private val lock = java.util.concurrent.locks.ReentrantLock()
 
@@ -24,6 +27,7 @@ class AdbLink(val keyDir: File, val host: String) {
      */
     @Throws(IOException::class)
     fun get(): Adb {
+        if (closed) throw IOException(CLOSED)
         adb?.let { if (!it.isDead()) return it }
         if (!lock.tryLock()) {
             val until = System.nanoTime() + WAIT_MS * 1_000_000
@@ -34,27 +38,46 @@ class AdbLink(val keyDir: File, val host: String) {
             }
         }
         try {
+            if (closed) throw IOException(CLOSED)
             adb?.let { if (!it.isDead()) return it }
-            val a = Adb(keyDir)
+            var a = Adb(keyDir)
             val mine = gen
             dialStart = System.nanoTime()
             dialing = a
             try {
-                val got = a.connectOrShare(host) { waiting = true; WireLog.all.add("·", "adb $host asking on the TV") }   // a TV that takes one client: shared
+                val prompt = Adb.Prompt { waiting = true; WireLog.all.add("·", "adb $host asking on the TV") }
+                val got = try { a.connectOrShare(host, prompt = prompt) } catch (e: java.net.SocketTimeoutException) {   // a TV that takes one client: shared
+                    // TV Setup's own adbd did not take the connection in time, once (census: a BRAVIA waking, 5555 open a moment
+                    // later): one more try in 2 s, not every job of TV Setup waiting out getQuiet's minute
+                    if (!quickRetry(host, e) || closed || mine != gen) throw e
+                    WireLog.all.add("·", "adb $host $e: once more in 2 s")
+                    try { a.close() } catch (ignored: Exception) { }
+                    Thread.sleep(QUICK_RETRY_MS)
+                    if (closed || mine != gen) throw e
+                    a = Adb(keyDir)
+                    dialStart = System.nanoTime()
+                    dialing = a
+                    a.connectOrShare(host, prompt = prompt)
+                }
+                if (closed) { try { got.close() } catch (ignored: Exception) { }; throw IOException(CLOSED) }   // closed while dialling: not kept, not leaked
                 WireLog.all.add("·", "adb $host connected")
                 waiting = false
                 failed = false
+                fails = 0
+                unanswered = 0
+                val old = adb
                 adb = got
+                if (old != null && old !== got) try { old.close() } catch (ignored: Exception) { }   // the dead one's socket, not left to the GC
                 dev.tvremote.core.Census.connected(host) { got.shell(it) }   // the TV's model, once, for the anonymous census (off: nothing happens)
                 return got
             } catch (e: IOException) {
                 WireLog.all.add("·", "adb $host $e")
-                if (mine == gen) { failed = true; lastErr = e.message ?: e.javaClass.simpleName }
+                if (mine == gen) failedWith(e)
                 try { a.close() } catch (ignored: Exception) { }      // the socket of a refused attempt, not left to the GC
                 throw e
             } catch (e: Exception) {
                 WireLog.all.add("·", "adb $host $e")
-                if (mine == gen) { failed = true; lastErr = e.message ?: e.javaClass.simpleName }
+                if (mine == gen) failedWith(e)
                 try { a.close() } catch (ignored: Exception) { }
                 throw IOException(e.message ?: e.javaClass.simpleName)
             } finally {
@@ -67,16 +90,31 @@ class AdbLink(val keyDir: File, val host: String) {
         }
     }
 
+    private fun failedWith(e: Exception) {
+        failed = true
+        lastErr = e.message ?: e.javaClass.simpleName
+        fails++
+        if (lastErr.contains(Adb.UNANSWERED)) unanswered++ else unanswered = 0
+    }
+
     /**
-     * [get] for work nobody pressed a button for (TV Setup's own jobs): after a failed dial it waits [QUIET_MS] before asking
+     * [get] for work nobody pressed a button for (TV Setup's own jobs): after a failed dial it waits [quietMs] before asking
      * the TV again. A person who pressed Cancel on "Allow USB debugging?" got the question back within a second, again and
-     * again, because each background job dialled anew (emulator, 2026-11-03). [reconnect] ("Try again") clears the wait.
+     * again, because each background job dialled anew (emulator, 2026-11-03); with a fixed minute, LauncherGuard's read every
+     * 30 s still brought it back every ~4 minutes, all night. [reconnect] ("Try again") and [letAsk] (someone uses it) clear it.
      */
     @Throws(IOException::class)
     fun getQuiet(): Adb {
+        if (closed) throw IOException(CLOSED)
         adb?.let { if (!it.isDead()) return it }
-        if (failed && dialing == null && System.currentTimeMillis() - lastTry < QUIET_MS) throw IOException("$STILL, last try: $lastErr")
+        if (failed && dialing == null && System.currentTimeMillis() - lastTry < quietMs(fails, unanswered)) throw IOException("$STILL, last try: $lastErr")
         return get()
+    }
+
+    /** Someone uses it (TV Setup opened, the web page): [getQuiet] may ask "Allow USB debugging?" again, after its first wait. */
+    fun letAsk() {
+        unanswered = 0
+        if (fails > 1) fails = 1
     }
 
     /**
@@ -117,6 +155,7 @@ class AdbLink(val keyDir: File, val host: String) {
      * or closed. Asking is also what starts a connection when there is none, so whoever shows this keeps it alive.
      */
     fun state(): String {
+        if (closed) return "closed"
         adb?.let { if (!it.isDead()) return "ready" }
         val d = dialing
         if (d != null && !waiting && (System.nanoTime() - dialStart) / 1_000_000 > 25000) {   // stuck dialing (a network that changed under it): cut it, say so
@@ -134,9 +173,12 @@ class AdbLink(val keyDir: File, val host: String) {
 
     /** "Try again": a fresh connection, whatever the old one thought of itself. */
     fun reconnect(): String {
+        if (closed) return "closed"                                   // a late "Try again" (the computer app's trust thread) after the TV was let go
         gen++
-        close()
+        reset()
         failed = false
+        fails = 0
+        unanswered = 0
         lastTry = 0
         return state()
     }
@@ -147,8 +189,14 @@ class AdbLink(val keyDir: File, val host: String) {
         Thread({ if (!a.alive(4000)) { try { get() } catch (ignored: Exception) { } } }, "adb-check").apply { isDaemon = true }.start()
     }
 
-    /** Never waits, not even for a connection that is still being made: that one is cut off. */
+    /** For good: never waits, not even for a connection that is still being made (cut off); nothing dials after it. */
     fun close() {
+        closed = true
+        reset()
+    }
+
+    /** Lets the connection go (a TV restarting); the next call dials again. Never waits: a dial under way is cut off. */
+    fun reset() {
         val d = dialing
         val a = adb
         adb = null
@@ -158,6 +206,23 @@ class AdbLink(val keyDir: File, val host: String) {
     }
 
     companion object {
+        /**
+         * How long [getQuiet] leaves the TV alone after [fails] failed dials in a row, the last [unanswered] of them with
+         * "Allow USB debugging?" not allowed: a minute, doubling up to [MAX_QUIET_MS] for a TV that never lets us in (a Fire TV
+         * blocks loopback, a hung adbd costs 15 s a try); after two unanswered questions half an hour, after [ASK_STOP] no more
+         * until someone uses it ([letAsk]): the question pops over whatever is playing.
+         */
+        fun quietMs(fails: Int, unanswered: Int): Long = when {
+            unanswered >= ASK_STOP -> Long.MAX_VALUE
+            unanswered >= 2 -> ASKED_QUIET_MS
+            fails <= 1 -> QUIET_MS
+            else -> minOf(QUIET_MS shl minOf(fails - 1, 8), MAX_QUIET_MS)
+        }
+
+        /** A connect timeout on this device's own adbd (TV Setup): worth one quick try more. Not a read timeout (a hung adbd). */
+        fun quickRetry(host: String, e: java.net.SocketTimeoutException): Boolean =
+            (host == "127.0.0.1" || host.startsWith("127.0.0.1:")) && e.message?.contains("connect", ignoreCase = true) == true
+
         /** Whether a failed command may run again: never sent, or the link is dead and the command only reads. */
         fun retryable(e: IOException, linkDead: Boolean, cmd: String): Boolean =
             e is NotSent || (linkDead && e.message != ASKING && e.message != STILL && readOnly(cmd))
@@ -179,6 +244,11 @@ class AdbLink(val keyDir: File, val host: String) {
         const val ASKING = "the TV is asking to allow USB debugging"   // Errors.say
         const val STILL = "adb still connecting"
         const val QUIET_MS = 60000L                                   // getQuiet(): a refused or failed dial is not tried again sooner
+        const val MAX_QUIET_MS = 10 * 60000L                          // ... nor waits longer while it keeps failing
+        const val ASKED_QUIET_MS = 30 * 60000L                        // two questions in a row nobody allowed
+        const val ASK_STOP = 3                                        // unanswered questions in a row after which getQuiet stops asking
+        const val QUICK_RETRY_MS = 2000L
+        const val CLOSED = "adb link closed"
         const val WAIT_MS = 20000L                                   // a dial that gets through takes a second or two, TLS with mDNS a few more
     }
 }

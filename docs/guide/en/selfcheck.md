@@ -9,6 +9,7 @@ Cannot connect? The app checks by itself in under 4 seconds and gives **one conc
 | This TV only has Wireless debugging | Pair once with the 6-digit code: Developer options → Wireless debugging → Pair with pairing code. |
 | ADB debugging is off on the TV | Keys still work. For picture and apps tap **🧭 Turn ADB on for me** or switch it on in Developer options. |
 | The TV is waiting for you to allow | Look at the TV: tick “Always allow”, choose OK. |
+| ADB is on, but it does not let this app in | Tap **🔄 Try again**. Still no: restart the TV (unplug it for 10 seconds); if it asks, tick “Always allow”, choose OK. |
 | This device is on another network than the TV | Join the TV's own Wi-Fi, not a guest network or mobile data. |
 | This device is not on Wi-Fi | Turn Wi-Fi on. |
 | Tailscale is off on this device | Turn Tailscale on, then try again. |

@@ -93,7 +93,12 @@ class Adb(private val dir: File) : Closeable {
             while (true) {
                 val n = read(buf, 0, buf.size, if (quietMs > 0) quietMs else 0)
                 if (n < 0) break
-                if (n == 0) { kill(); throw IOException("the TV stopped answering") }
+                if (n == 0) {
+                    // as open(): only a connection silent for that long is dead; one still sending on other streams (a copy, the
+                    // picture) has one command hanging, and closing it all cut those halfway. Then this stream alone goes.
+                    if ((System.nanoTime() - heard) / 1_000_000 >= quietMs) kill() else close()
+                    throw IOException("the TV stopped answering")
+                }
                 out.write(buf, 0, n)
             }
             return out.toString("UTF-8").replace("\r\n", "\n").trim()
@@ -487,6 +492,7 @@ class Adb(private val dir: File) : Closeable {
             if (!dead) WireLog.all.add("·", "adb connection lost: $e")
             dead = true
             LIVE.remove(at, this)
+            closeSock(sock)                                           // a bad packet or a reset leaves the socket open otherwise
             for (s in ArrayList(streams.values)) s.end()                 // toList() counts, then walks: a stream closing between ran out (census 1eaf9599)
         }
     }
@@ -614,14 +620,19 @@ class Adb(private val dir: File) : Closeable {
      * [connectTo] for a new user, which takes what comes back: this, or this app's live connection to the same TV when the TV
      * serves one client at a time. Some adbd do (an RCA set, Realtek RTD284x, Android 7.1.1, found by the kevscec/tv-remote-rca
      * fork): a second client's handshake times out, and the remote, the picture, Manage and the list's status line each dial
-     * their own. A dial that fails while another connection to that TV is alive with the same key can only be that: the TV
-     * is remembered (a file beside the key) and shares the one connection from then on, its streams side by side. TVs that
-     * take several clients keep one connection per user, so a big upload never holds up the keys.
+     * their own. A dial that fails while another connection to that TV is alive with the same key shares that one this time;
+     * only a timeout (that TV's way) has the TV remembered (a file beside the key) as sharing from then on, its streams side
+     * by side, for [ONE_KEEP_MS]: an EOF or a lost Wi-Fi once marked a TV for good. TVs that take several clients keep one
+     * connection per user, so a big upload never holds up the keys.
      */
     @Throws(Exception::class)
     fun connectOrShare(host: String, dial: (() -> Unit)? = null, prompt: Prompt): Adb {   // dial: a test's own
         val one = File(dir, ONE_FILE)
-        val single = synchronized(ONE) { if (ONE.isEmpty() && one.exists()) ONE.addAll(one.readLines().filter { it.isNotBlank() }); host in ONE }
+        val now = System.currentTimeMillis()
+        val single = synchronized(ONE) {
+            if (!oneRead) { oneRead = true; if (one.exists()) try { ONE.putAll(oneParse(one.readLines())) } catch (ignored: IOException) { } }
+            (ONE[host] ?: return@synchronized false).let { now - it in 0 until ONE_KEEP_MS }
+        }
         if (single) LIVE[host]?.share()?.let { close(); return it }
         try {
             if (dial != null) dial() else connectTo(host, prompt)
@@ -629,8 +640,13 @@ class Adb(private val dir: File) : Closeable {
         } catch (e: Exception) {
             val other = (if (e.message == UNANSWERED) null else LIVE[host]?.share()) ?: throw e
             close()
-            WireLog.all.add("·", "adb $host takes one client at a time ($e): sharing the open connection")
-            synchronized(ONE) { if (ONE.add(host)) try { one.writeText(ONE.joinToString("\n") + "\n") } catch (ignored: IOException) { } }
+            WireLog.all.add("·", "adb $host refused a second client ($e): sharing the open connection")
+            if (oneClient(e)) synchronized(ONE) {
+                if (ONE[host]?.let { now - it in 0 until ONE_KEEP_MS } != true) {
+                    ONE[host] = now
+                    try { one.writeText(ONE.entries.joinToString("") { "${it.key} ${it.value}\n" }) } catch (ignored: IOException) { }
+                }
+            }
             return other
         }
     }
@@ -709,8 +725,27 @@ class Adb(private val dir: File) : Closeable {
         private val PLAIN_ASKED = ConcurrentHashMap<String, Long>()   // host -> when 5555 was opened there for TV Setup (plainForSetup)
         private val ASKED = ConcurrentHashMap<String, Long>()         // host -> when this app last put its question on that TV
         private val LIVE = ConcurrentHashMap<String, Adb>()           // host -> this app's newest live connection there (connectOrShare)
-        private val ONE = HashSet<String>()                           // TVs that take one client at a time (connectOrShare), in ONE_FILE
+        private val ONE = HashMap<String, Long>()                     // TVs that take one client at a time (connectOrShare) -> when seen, in ONE_FILE
+        private var oneRead = false
         private const val ONE_FILE = "adb-one-client.txt"
+        /** How long a TV marked as taking one client stays so; then a second connection is tried again (and it is marked again if it times out). */
+        const val ONE_KEEP_MS = 30L * 24 * 3600_000
+
+        /** ONE_FILE's lines: "host millis"; a line with the host alone (before the marks expired) counts as old, so it is tried again. */
+        internal fun oneParse(lines: List<String>): Map<String, Long> =
+            lines.mapNotNull { l -> val w = l.trim().split(' '); if (w[0].isEmpty()) null else w[0] to (w.getOrNull(1)?.toLongOrNull() ?: 0L) }.toMap()
+
+        /** A failed second connection that says the TV takes one client: its handshake timed out, or the TV hung up on it. Not a
+         *  refused or timed-out connect (the network), an unpaired key, an unanswered question. */
+        internal fun oneClient(e: Throwable): Boolean {
+            var c: Throwable? = e
+            while (c != null) {
+                if (c is SocketTimeoutException) return c.message?.contains("connect", ignoreCase = true) != true
+                if (c is EOFException) return true
+                c = c.cause.takeIf { it !== c }
+            }
+            return false
+        }
         private val KEY_LOCK = Any()                                  // a file lock is per process: this keeps threads apart
 
         /** Writes [f] through a file beside it and a rename: a reader sees the old file or the whole new one, never half. */

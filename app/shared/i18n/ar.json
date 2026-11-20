@@ -2101,6 +2101,8 @@
  "diagnose_kt.isp_locked": "أجهزة مزودي الإنترنت (FPT، Viettel) تقفل خيارات المطور بكلمة مرور: اسأل المزوّد أو البائع.",
  "diagnose_kt.tv_s_remote_service": "خدمة الريموت في التلفزيون لا ترد",
  "diagnose_kt.adb_answers_so_keys": "ADB يرد، لذلك تمر الأزرار عبر ADB. لاستخدام الريموت بدون ADB، أعد تشغيل التلفزيون.",
+ "diagnose_kt.adb_stuck_title": "تصحيح ADB مفعّل، لكن التطبيق لا يستطيع الاتصال",
+ "diagnose_kt.adb_stuck_fix": "اضغط “أعد المحاولة”. لو لم تنجح، أعد تشغيل التلفزيون (افصل الكهرباء 10 ثوانٍ). لو سأل “Allow USB debugging?”، حدّد “Always allow”.",
  "diagnose_kt.tv_answering": "التلفزيون يرد",
  "diagnose_kt.error_was_momentary_try": "الخطأ كان مؤقتًا. أعد المحاولة، ولو ظهر سؤال على التلفزيون اختر Allow.",
  "diagnose_kt.tv_network_but_not": "التلفزيون على الشبكة لكنه لا يستقبل",

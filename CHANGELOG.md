@@ -11,6 +11,10 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - TV Home: with widgets in two rows, the second row's widgets are no longer marked "waiting for room" (TV and page), the layout previews show both rows, and the apps no longer jump down a row at start.
 - TV Home: Quick keys' "Other key" no longer takes Space or a gamepad's A / B / X / Y; the page no longer lists a key that is dead only on another TV.
 - Draw on the TV fixes: ✓ no longer drops the last stroke or a picture just placed; a 💬 message is not placed when drawing could not start; strokes from two phones or pages no longer join; many pictures no longer run TV Setup out of memory (the oldest go); a kept drawing is never brought back empty, after a Clear, or lost when it could not be shown.
+- TV Setup: after "Allow USB debugging?" went unanswered three times its background jobs stop asking until someone opens TV Setup or uses the web page (it came back every few minutes, all night); a TV that never lets it in is tried less and less often (up to every 10 min); a single slow start of the TV's own ADB is tried again after 2 s instead of a minute.
+- TV Home's power, cache and WebView actions use TV Setup's ADB link instead of dialling their own, which asked the question again and could hang for minutes.
+- One command that hangs no longer drops the whole ADB connection (copies and the picture on it went with it); a TV is marked "one client at a time" only on that TV's own sign, and the mark expires after 30 days.
+- The self-check says "ADB is on, but it does not let this app in" (restart the TV) when port 5555 answers but ADB fails, instead of "the error was momentary".
 
 ## 0.56.0 - 2026-11-20
 

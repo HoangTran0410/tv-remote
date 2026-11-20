@@ -187,6 +187,21 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
         /** The ADB session itself (null without the service or a link): HomePower runs its fixed actions on it. */
         fun adb(): dev.tvremote.core.adb.Adb? = try { running?.link?.getQuiet() } catch (e: Exception) { null }
 
+        /**
+         * [use] on ADB for what TV Home asks (HomePower, HomeApp, WebViewFix): the service's link through its quiet path ([adb]),
+         * or, only while the service is not running, a link of its own on the same key, closed after. Null without ADB. A link of
+         * its own whenever the service's was failing dialled again past getQuiet's wait: the question came back, and the binder
+         * thread waited up to 3 minutes for it.
+         */
+        fun <T : Any> withAdb(c: Context, use: (dev.tvremote.core.adb.Adb) -> T): T? {
+            if (running?.link != null) return adb()?.let(use)
+            val own = try { AdbLink(c.filesDir, "127.0.0.1").get() } catch (e: Exception) { return null }
+            try { return use(own) } finally { try { own.close() } catch (e: Exception) { } }
+        }
+
+        /** Someone at the TV wants ADB (a device offers to answer TV Setup's question): its own jobs may ask again. */
+        fun letAsk() { running?.link?.letAsk() }
+
         /** The anonymous-stats switch and install id as the census keeps them (Census.enabled / Census.id): what TV Home, Channels and Games follow (HomeInfo "census"). */
         fun censusState(c: Context): JSONObject {
             val p = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -469,6 +484,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
 
     override fun onStartCommand(i: Intent?, flags: Int, id: Int): Int {
         foreground()                                                  // every startForegroundService() wants its own answer, not only the first
+        link?.letAsk()                                                // started while running = TV Setup's screen opened: its jobs may ask again too
         if (askStopped) { askAgain(); ui.post { if (tv == null) { ui.removeCallbacks(retry); connect() } } }   // TV Setup's screen opened (RemoteService.start): one more question
         if (saidAlive) afterUpdate()                                  // started again by an update's script that missed the first word
         return START_STICKY
@@ -575,7 +591,7 @@ class RemoteService : Service(), Tv.Listener, HttpServer.Handler {
     @Volatile private var askStopped = false                          // the timed retries are off until someone uses it
     private val retry = Runnable { connect() }
     /** Somebody wants ADB: the next unanswered question counts as the last one allowed, not a fresh three. */
-    private fun askAgain() { askStopped = false; asked = minOf(asked, LinkFailure.ASK_LIMIT - 1) }
+    private fun askAgain() { askStopped = false; asked = minOf(asked, LinkFailure.ASK_LIMIT - 1); link?.letAsk() }
 
     private val rest = object : Runnable {
         override fun run() {

@@ -3,7 +3,6 @@ package dev.tvremote.setup
 import android.content.Context
 import android.util.Log
 import dev.tvremote.core.adb.Adb
-import dev.tvremote.core.adb.AdbLink
 
 /**
  * A TV whose WebView was switched off or removed for the user (by hand, by another cleaner) has no WebView at all: TV Games' web
@@ -30,10 +29,7 @@ object WebViewFix {
         return if (now == null) "fixed" else "failed"
     }
 
-    /** For HomeInfo: the service's link, else one of its own on the same key, closed after. "noadb" without either. */
-    fun run(c: Context): String {
-        val live = RemoteService.adb()
-        val own = if (live == null) try { AdbLink(c.filesDir, "127.0.0.1").get() } catch (e: Exception) { return "noadb" } else null
-        return try { repair(live ?: own!!) } catch (e: Exception) { "failed" } finally { try { own?.close() } catch (e: Exception) { } }
-    }
+    /** For HomeInfo: on [RemoteService.withAdb]. "noadb" without ADB. */
+    fun run(c: Context): String =
+        RemoteService.withAdb(c) { try { repair(it) } catch (e: Exception) { "failed" } } ?: "noadb"
 }
