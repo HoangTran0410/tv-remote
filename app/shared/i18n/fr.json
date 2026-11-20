@@ -1995,6 +1995,8 @@
   "diagnose_kt.isp_locked": "Les box des fournisseurs d’accès (FPT, Viettel) verrouillent les Options pour les développeurs par un mot de passe : demandez-le au fournisseur ou au vendeur.",
   "diagnose_kt.tv_s_remote_service": "Le service de télécommande de la TV ne répond pas",
   "diagnose_kt.adb_answers_so_keys": "ADB répond, donc les touches passent par ADB. Pour utiliser la télécommande sans ADB, redémarrez la TV.",
+  "diagnose_kt.adb_stuck_title": "Le débogage ADB est activé, mais l’app n’arrive pas à se connecter",
+  "diagnose_kt.adb_stuck_fix": "Appuyez sur Réessayer. Sinon, débranchez la TV 10 secondes. Si elle demande « Autoriser le débogage USB ? », cochez « Toujours autoriser ».",
   "diagnose_kt.tv_answering": "La TV répond",
   "diagnose_kt.error_was_momentary_try": "L’erreur était passagère. Réessayez ; si la TV pose une question, choisissez Autoriser.",
   "diagnose_kt.tv_network_but_not": "La TV est sur le réseau mais n’écoute pas",

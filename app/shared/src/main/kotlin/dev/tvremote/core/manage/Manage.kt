@@ -190,7 +190,7 @@ class Manage(private val link: AdbLink, private val labels: Labels?, private val
                 "reboot" -> {
                     sh(TvShell.REBOOT_PREP)
                     try { link.get().open("reboot:").use { it.readAll(3000) } } catch (ignored: Exception) { }   // the link drops as the TV goes down
-                    link.close()                                      // so the page's next state() dials again instead of trusting it
+                    link.reset()                                      // so the page's next state() dials again instead of trusting it
                     HttpServer.Response.ok()
                 }
                 "input" -> {

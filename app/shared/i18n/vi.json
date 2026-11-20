@@ -1917,6 +1917,8 @@
  "diagnose_kt.isp_locked": "Box của nhà mạng (FPT, Viettel) khóa Tùy chọn nhà phát triển bằng mật khẩu: hỏi tổng đài hoặc người bán box.",
  "diagnose_kt.tv_s_remote_service": "Dịch vụ remote của TV không trả lời",
  "diagnose_kt.adb_answers_so_keys": "ADB trả lời nên phím đi qua ADB. Nếu muốn dùng remote không qua ADB, khởi động lại TV.",
+ "diagnose_kt.adb_stuck_title": "ADB đang bật nhưng không cho app vào",
+ "diagnose_kt.adb_stuck_fix": "Bấm Thử lại. Vẫn lỗi thì rút điện TV 10 giây. TV hỏi “Cho phép gỡ lỗi USB?” thì tích “Luôn cho phép”.",
  "diagnose_kt.tv_answering": "TV đang trả lời",
  "diagnose_kt.error_was_momentary_try": "Lỗi lúc nãy chỉ thoáng qua. Bấm Thử lại; nếu TV hiện hộp hỏi, chọn Cho phép.",
  "diagnose_kt.tv_network_but_not": "TV đang bật mạng nhưng chưa nhận lệnh",

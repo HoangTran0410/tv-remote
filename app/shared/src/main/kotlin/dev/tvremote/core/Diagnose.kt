@@ -63,13 +63,14 @@ object Diagnose {
     const val WIRELESS = "wireless"            // no ADB on 5555, but the TV announces Wireless debugging: pair with its code
     const val ADB_OFF = "adb_off"              // the remote service answers, ADB's port is closed: keys still work
     const val REMOTE_OFF = "remote_off"        // ADB answers, the remote service does not
+    const val ADB_STUCK = "adb_stuck"          // ADB's port is open but this app's link failed (a hung adbd, a key not allowed, a handshake timeout)
     const val UP = "up"                        // answers: the failure was momentary
     const val CLOSED = "closed"                // the TV is on the network but none of its services listen
     const val MOVED = "moved"                  // nothing at this address; the same TV, by name, answers at another
     const val VPN = "vpn"                      // nothing answers and a VPN is carrying the traffic
     const val OFF = "off"                      // nothing answers: off, asleep, or another address
     const val SETUP_OFF = "setup_off"          // a Fire TV whose setup never finished: Home and Alexa keys do nothing (checked while ADB is up)
-    val CODES = listOf(SETUP_OFF, CLOCK, NO_WIFI, OTHER_NET, TAILSCALE, ALLOW, WIRELESS, ADB_OFF, REMOTE_OFF, UP, CLOSED, MOVED, VPN, OFF)
+    val CODES = listOf(SETUP_OFF, CLOCK, NO_WIFI, OTHER_NET, TAILSCALE, ALLOW, WIRELESS, ADB_OFF, ADB_STUCK, REMOTE_OFF, UP, CLOSED, MOVED, VPN, OFF)
 
     const val ADB = dev.tvremote.core.adb.AdbPort.CLASSIC
     private const val SETUP = 8765
@@ -104,6 +105,7 @@ object Diagnose {
         val adb = ADB in open || dev.tvremote.core.adb.AdbPort.OTHERS.any { it in open }   // a box whose adbd skips 5555 (BeeCube: 5877)
         val remote = 6466 in open || 6467 in open
         if (adb && (f.adb == "unauthorized" || f.adb == "waiting")) return ALLOW
+        if (adb && f.adb == "closed") return ADB_STUCK            // the port answers, yet the app's own link gave up: not "momentary"
         if (!adb && f.wireless) return WIRELESS
         if (!adb && (remote || SETUP in open)) return ADB_OFF
         if (adb && !remote) return REMOTE_OFF
@@ -158,6 +160,8 @@ object Diagnose {
                 (t("diagnose_kt.wireless_pair") + tclHint(f, lang))
             ADB_OFF -> t("diagnose_kt.adb_debugging_off_tv") to
                 (t("diagnose_kt.keys_still_work_picture") + tclHint(f, lang))
+            ADB_STUCK -> t("diagnose_kt.adb_stuck_title") to
+                t("diagnose_kt.adb_stuck_fix")
             REMOTE_OFF -> t("diagnose_kt.tv_s_remote_service") to
                 t("diagnose_kt.adb_answers_so_keys")
             UP -> t("diagnose_kt.tv_answering") to
@@ -204,7 +208,7 @@ object Diagnose {
         }))
         if (f.wireless) out.add(Check("wireless", true, t("diagnose_kt.wireless_found")))
         if (f.vpn) out.add(Check("vpn", !(f.home && open.isEmpty()), t("diagnose_kt.vpn")))
-        if (f.adb in listOf("ready", "unauthorized", "waiting", "offline")) out.add(Check("adb", f.adb == "ready", t("diagnose_kt.app_s_adb", "adb" to f.adb)))
+        if (f.adb in listOf("ready", "unauthorized", "waiting", "offline", "closed")) out.add(Check("adb", f.adb == "ready", t("diagnose_kt.app_s_adb", "adb" to f.adb)))
         if (f.tls) out.add(Check("clock", if (code == CLOCK) false else null, t("diagnose_kt.secure_connection_error_date")))
         return out
     }

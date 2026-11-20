@@ -2,7 +2,6 @@ package dev.tvremote.setup.home
 
 import android.content.Context
 import android.os.PowerManager
-import dev.tvremote.core.adb.AdbLink
 import dev.tvremote.core.adb.Pkg
 import dev.tvremote.setup.HomeInfo
 import dev.tvremote.setup.ManageActivity
@@ -195,12 +194,6 @@ object HomeApp {
     }
 
     /** The shell's text, or null when ADB cannot be reached ("noadb"). Blocks up to [ms]: never on the main thread (a binder thread is fine). */
-    private fun shell(c: Context, line: String, ms: Long): String? {
-        val live = try { RemoteService.adb() } catch (e: Exception) { null }
-        val own = if (live == null) try { AdbLink(c.filesDir, "127.0.0.1").get() } catch (e: Exception) { return null } else null
-        val adb = live ?: own!!
-        return try { adb.shell(line, ms) }
-        catch (e: Exception) { "Exception" }
-        finally { try { own?.close() } catch (e: Exception) { } }
-    }
+    private fun shell(c: Context, line: String, ms: Long): String? =
+        RemoteService.withAdb(c) { adb -> try { adb.shell(line, ms) } catch (e: Exception) { "Exception" } }
 }

@@ -7,6 +7,10 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 ## Unreleased
 
 - Draw on the TV: ⏱ sets how long the drawing stays after the last stroke (10 min, 30 min, 1 hour, or until cleared, which survives a TV restart); TV Setup shows a Clear the drawing tile meanwhile.
+- TV Setup: after "Allow USB debugging?" went unanswered three times its background jobs stop asking until someone opens TV Setup or uses the web page (it came back every few minutes, all night); a TV that never lets it in is tried less and less often (up to every 10 min); a single slow start of the TV's own ADB is tried again after 2 s instead of a minute.
+- TV Home's power, cache and WebView actions use TV Setup's ADB link instead of dialling their own, which asked the question again and could hang for minutes.
+- One command that hangs no longer drops the whole ADB connection (copies and the picture on it went with it); a TV is marked "one client at a time" only on that TV's own sign, and the mark expires after 30 days.
+- The self-check says "ADB is on, but it does not let this app in" (restart the TV) when port 5555 answers but ADB fails, instead of "the error was momentary".
 
 ## 0.56.0 - 2026-11-20
 

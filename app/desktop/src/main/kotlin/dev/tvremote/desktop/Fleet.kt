@@ -156,7 +156,7 @@ class Fleets(private val keys: File, private val cache: File) {
         "welcome_off" -> { link, _ ->                                 // the file stays on the TV: switching it on again needs no upload
             Manage(link, null, cache).welcomeBulk(null, 0, "", JSONObject().put("on", false), null, current.get()); "off"
         }
-        "reboot" -> { link, _ -> Fleet.reboot(link.get()); link.close(); "restarting" }
+        "reboot" -> { link, _ -> Fleet.reboot(link.get()); link.reset(); "restarting" }
         "launcher" -> {                                               // pkg: the gallery's id; one download for all the TVs, each one checked and rolled back on its own
             val g = dev.tvremote.core.ontv.Launchers.fetch()
             val e = g[pkg] ?: throw IllegalArgumentException("no such launcher")
