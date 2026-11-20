@@ -4,7 +4,9 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
-## Unreleased
+## 0.56.0 - 2026-11-20
+
+Web 0.56.0 · Phone app 0.53.0 · TV app 0.54.0 · TV Home 0.35.0 · TV Channels 0.25.0 · TV Games 0.25.0 · TV Apps 0.9.0
 
 - TV Home and the page: "Pick several backgrounds" switch at the top of the Background page (off: tap picks one; on: tick several, they take turns at the time you pick).
 - TV Home: the suggested backgrounds (Việt Nam and art slideshows, calm videos, live pages) join the rotating set with your photos and pictures; the Suggested group has "Select all" too.
