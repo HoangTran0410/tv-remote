@@ -469,16 +469,31 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
             p.removeView(square)
             val title = words.getChildAt(0) as TextView
             words.removeView(title)
+            val year = text(sky.year, 13f, DIM)
+            val moon = MoonFace(a, sky.phase)
             p.addView(LinearLayout(a).apply {
                 orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
                 addView(square, LayoutParams(dp(56), dp(56)))
                 addView(LinearLayout(a).apply {
                     orientation = VERTICAL
                     addView(title.apply { textSize = 18f; maxLines = 1 })
-                    addView(text(sky.year, 13f, DIM), LayoutParams(-2, -2).apply { topMargin = dp(2) })
+                    addView(year, LayoutParams(-2, -2).apply { topMargin = dp(2) })
                 }, LayoutParams(0, -2, 1f).apply { leftMargin = dp(14) })
-                addView(MoonFace(a, sky.phase), LayoutParams(dp(44), dp(44)))
+                addView(moon, LayoutParams(dp(44), dp(44)))
             }, 0, LayoutParams(-1, -2).apply { topMargin = dp(6) })
+            // a narrow widget (two rows of them) cut the date and the year to "1…" / "Bín…": first the moon gives its room up, then the
+            // day's square (the date says the day too), then the date gets smaller; each step once, so it never loops
+            title.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+                override fun onLayoutChange(v: View, l: Int, t: Int, r: Int, b: Int, ol: Int, ot: Int, or: Int, ob: Int) {
+                    val cut = listOf(title, year).any { w -> w.paint.measureText(w.text.toString()) > w.width - w.paddingLeft - w.paddingRight + 1 }
+                    if (v.width == 0 || !cut) return
+                    when {
+                        moon.visibility != View.GONE -> v.post { moon.visibility = View.GONE }
+                        square.visibility != View.GONE -> v.post { square.visibility = View.GONE; ((v.parent as View).layoutParams as LayoutParams).leftMargin = 0; (v.parent as View).requestLayout() }
+                        else -> { v.removeOnLayoutChangeListener(this); v.post { title.textSize = 15f } }
+                    }
+                }
+            })
             // a title and the top edge like the big widgets beside it (weather, system): centred and untitled it sat off their lines
             p.addView(head(a.getString(R.string.w_lunar), ""), 0)
             p.gravity = Gravity.START or Gravity.TOP
