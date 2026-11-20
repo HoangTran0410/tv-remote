@@ -240,7 +240,7 @@
  "about.tv_keyboard_auto": "Open the typing box by itself",
  "about.tv_keyboard_manual": "Don't open it",
  "about.type_in_field": "Type straight into the TV's text box",
- "about.type_in_field_note": "With ADB too: ↵ sends the box, and the text in it can be edited. The first time, the TV shows a code to pair.",
+ "about.type_in_field_note": "With ADB too: Enter sends the box, and the text in it can be edited. The first time, the TV shows a code to pair.",
  "about.census": "Send anonymous stats",
  "about.census_send": "Send",
  "about.census_none": "Don't send",

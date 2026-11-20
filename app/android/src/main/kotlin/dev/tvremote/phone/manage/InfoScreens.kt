@@ -149,10 +149,10 @@ internal fun MainActivity.buildSettings(): View {
     val fieldLabel = { fieldRow.setToggle(prefs.getBoolean("fieldType", false), T("about.type_in_field")) }
     fieldRow = row("") {
         val on = !prefs.getBoolean("fieldType", false)
-        prefs.edit().putBoolean("fieldType", on).apply()
+        prefs.edit().putBoolean("fieldType", on).putBoolean("fieldAsk", on).apply()
         fieldLabel()
         val ip = host
-        if (!on) closeFieldLink() else if (ip != null && tv != null) openFieldLink(ip, ask = true)
+        if (!on) closeFieldLink() else if (ip != null && tv != null) openFieldLink(ip, ask0 = true)
     }
     fieldLabel()
     box.addView(fieldRow)

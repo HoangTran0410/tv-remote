@@ -240,7 +240,7 @@
   "about.tv_keyboard_auto": "Ouvrir seul la zone de saisie",
   "about.tv_keyboard_manual": "Ne pas l’ouvrir",
   "about.type_in_field": "Écrire directement dans le champ de la TV",
-  "about.type_in_field_note": "Même avec ADB : ↵ valide le champ, et son texte se modifie. La première fois, la TV affiche un code d'association.",
+  "about.type_in_field_note": "Même avec ADB : Entrée valide le champ, et son texte se modifie. La première fois, la TV affiche un code d'association.",
   "about.census": "Envoyer des statistiques anonymes",
   "about.census_send": "Envoyer",
   "about.census_none": "Ne pas envoyer",

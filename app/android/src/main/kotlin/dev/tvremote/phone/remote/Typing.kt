@@ -114,11 +114,12 @@ internal fun MainActivity.watchField(a: Atv) {
 /**
  * With ADB: the remote link opened beside it, only so typing goes into the TV's own text field (#31): Enter submits the field
  * instead of pressing the on-screen keyboard's key, and the text already in it can be edited. An extra the person turns on
- * (About → The TV's keyboard, pref "fieldType"; off: nothing opens); [ask] is that tap: an unpaired TV then shows its code
+ * (Settings → The TV's keyboard, pref "fieldType"; off: nothing opens); [ask0] / "fieldAsk" is that tap: an unpaired TV then shows its code
  * to type once, otherwise an unpaired link is only refused and the TV shows nothing. ADB keeps everything else.
  */
-internal fun MainActivity.openFieldLink(ip: String, ask: Boolean = false) {
+internal fun MainActivity.openFieldLink(ip: String, ask0: Boolean = false) {
     if (!prefs.getBoolean("fieldType", false)) return
+    val ask = ask0 || prefs.getBoolean("fieldAsk", false)          // just turned on (in Settings, from the TV list): the next TV asks once
     if (ask) fieldUnpaired.remove(ip)
     if (fieldLink != null || ip in fieldUnpaired || basic != null || kindOf(entry ?: ip) != Remote.Kind.ANDROID) return
     val a = Atv(filesDir, ip)
@@ -126,12 +127,12 @@ internal fun MainActivity.openFieldLink(ip: String, ask: Boolean = false) {
     Thread {
         try {
             a.connect { ui.post { if (fieldLink === a) { fieldLink = null; a.close() } } }   // dropped: opened again with the next session
-            ui.post { if (fieldLink === a && host == ip) watchField(a) else a.close() }
+            ui.post { prefs.edit().remove("fieldAsk").apply(); if (fieldLink === a && host == ip) watchField(a) else a.close() }
         } catch (e: Exception) {
             a.close()
             ui.post {
                 if (fieldLink === a) fieldLink = null
-                if (e is Atv.NotPaired) { fieldUnpaired.add(ip); if (ask && host == ip) Thread { pair(ip) { prefs.edit().putBoolean("atv:$ip", true).apply(); fieldUnpaired.remove(ip); openFieldLink(ip) } }.start() }
+                if (e is Atv.NotPaired) { fieldUnpaired.add(ip); if (ask && host == ip) { prefs.edit().remove("fieldAsk").apply(); Thread { pair(ip) { prefs.edit().putBoolean("atv:$ip", true).apply(); fieldUnpaired.remove(ip); openFieldLink(ip) } }.start() } }
             }
         }
     }.apply { isDaemon = true }.start()
