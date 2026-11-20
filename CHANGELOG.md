@@ -7,6 +7,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 ## Unreleased
 
 - Draw on the TV: ⏱ sets how long the drawing stays after the last stroke (10 min, 30 min, 1 hour, or until cleared, which survives a TV restart); TV Setup shows a Clear the drawing tile meanwhile.
+- Draw on the TV fixes: ✓ no longer drops the last stroke or a picture just placed; a 💬 message is not placed when drawing could not start; strokes from two phones or pages no longer join; many pictures no longer run TV Setup out of memory (the oldest go); a kept drawing is never brought back empty, after a Clear, or lost when it could not be shown.
 
 ## 0.56.0 - 2026-11-20
 

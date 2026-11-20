@@ -45,8 +45,10 @@ internal object DrawLayer {
     private var view: Board? = null
     private var minutes = MINUTES                                     // of the last stroke: undo keeps it
     private val io = java.util.concurrent.Executors.newSingleThreadExecutor()
+    private var gen = 0                                               // one more on each hide: a restore read before it is dropped
+    private var unshown = false                                       // the kept drawing could not be shown: no stroke may forget it
 
-    private val idle = Runnable { hide() }
+    private val idle = Runnable { hide(keep = unshown) }
     private val save = Runnable { store() }
 
     /** A drawing kept until cleared is on the screen now (TV Setup's tile to clear it). */
@@ -57,12 +59,15 @@ internal object DrawLayer {
         val f = java.io.File(c.filesDir, KEEP)
         if (!f.exists()) return
         app = c.applicationContext
+        val g = gen
         io.execute {
             val ops = try { org.json.JSONArray(f.readText()) } catch (e: Exception) { f.delete(); return@execute }
+            val items = (0 until ops.length()).mapNotNull { ops.optJSONObject(it) }.map { it to picture(it) }   // decoded here, not on the UI thread
             ui.post {
-                if (view != null) return@post                         // a phone drew meanwhile: its strokes win
-                val b = board() ?: return@post
-                for (i in 0 until ops.length()) ops.optJSONObject(i)?.let { b.add(it) }
+                if (view != null || g != gen) return@post             // a phone drew meanwhile (its strokes win), or it was cleared
+                if (items.none { (o, p) -> o.optString("o") == "s" || p != null }) { forget(); return@post }   // nothing to show: no empty layer
+                val b = board() ?: run { unshown = true; return@post }   // no window over apps yet: kept for the next start
+                for ((o, p) in items) if (p != null) b.add(p) else if (o.optString("o") == "s") b.add(o)
                 minutes = 0
             }
         }
@@ -97,17 +102,19 @@ internal object DrawLayer {
             while (true) {
                 val line = r.readLine() ?: return
                 val o = try { JSONObject(line) } catch (e: Exception) { continue }
-                ui.post { apply(o) }
+                val p = if (o.optString("o") == "i") picture(o) else null   // decoded on this sender's thread: the UI keeps its frames
+                ui.post { apply(o, p) }
             }
         }
     }
 
-    private fun apply(o: JSONObject) {
+    private fun apply(o: JSONObject, p: Pic?) {
         when (o.optString("o")) {
-            "s", "i" -> { board()?.let { it.add(o); arm(o.optInt("k", MINUTES)) } }
+            "s" -> board()?.let { it.add(o); arm(o.optInt("k", MINUTES)) }
+            "i" -> if (p != null) board()?.let { it.add(p); arm(o.optInt("k", MINUTES)) }   // one that would not decode: no layer for nothing
             "a" -> view?.let { it.add(o); arm(minutes) }
             "k" -> if (view != null) arm(o.optInt("m", MINUTES))      // the choice changed while drawing: what is there now follows it
-            "u" -> view?.let { it.undo(); if (it.empty()) hide() else arm(minutes) }
+            "u" -> view?.let { it.undo(); if (it.empty()) hide(keep = unshown) else arm(minutes) }
             "x", "h" -> hide()
         }
     }
@@ -117,17 +124,21 @@ internal object DrawLayer {
         minutes = m.coerceIn(0, 24 * 60)
         ui.removeCallbacks(idle)
         ui.removeCallbacks(save)
-        if (minutes > 0) { ui.postDelayed(idle, minutes * 60_000L); forget() }
+        if (minutes > 0) { ui.postDelayed(idle, minutes * 60_000L); if (!unshown) forget() }
         else ui.postDelayed(save, 1000)
     }
 
     private fun store() {
         val b = view ?: return
         val c = app ?: return
+        if (b.empty()) { forget(); return }                           // an empty drawing kept would come back as an empty layer
+        unshown = false                                               // this one replaces the kept drawing that could not be shown
         val items = b.items()                                         // taken here, on the UI thread; written there
         io.execute {
             val f = java.io.File(c.filesDir, KEEP)
-            try { f.writeText(org.json.JSONArray(items.map { it() }).toString()) } catch (e: Exception) { Log.w("DrawLayer", "not kept: $e") }
+            val tmp = java.io.File(c.filesDir, "$KEEP.tmp")           // whole or not at all: a cut write must not lose the kept one
+            try { tmp.writeText(org.json.JSONArray(items.map { it() }).toString()); if (!tmp.renameTo(f)) throw java.io.IOException("rename") }
+            catch (e: Throwable) { tmp.delete(); Log.w("DrawLayer", "not kept: $e") }
         }
     }
 
@@ -153,19 +164,33 @@ internal object DrawLayer {
         }
     }
 
-    private fun hide() {
+    /** [keep]: the kept drawing that could not be shown stays for the next start; Clear all and the tile drop it. */
+    private fun hide(keep: Boolean = false) {
+        gen++
         ui.removeCallbacks(idle)
         ui.removeCallbacks(save)
-        forget()
+        if (!keep) { forget(); unshown = false }
         val b = view ?: return
         view = null
         try { (app?.getSystemService(android.content.Context.WINDOW_SERVICE) as? WindowManager)?.removeView(b) } catch (e: Exception) { }
     }
 
+    internal class Pic(val bmp: Bitmap, val x: Int, val y: Int, val w: Int) { @Volatile var b64: String? = null }   // b64: once, when kept
+    private const val PIC_BYTES = 32 shl 20                           // ~5 photos at 1280 pixels, dozens of messages
+
+    /** An "i" op's picture, decoded no larger than the screen needs, off the UI thread; null when it will not decode. */
+    private fun picture(o: JSONObject): Pic? = try {
+        val bytes = Base64.decode(o.optString("b"), Base64.DEFAULT)
+        val size = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.size, size)
+        if (size.outWidth <= 0 || size.outHeight <= 0) null
+        else BitmapFactory.decodeByteArray(bytes, 0, bytes.size, BitmapFactory.Options().apply { inSampleSize = drawSample(size.outWidth, size.outHeight, 1920) })
+            ?.let { Pic(it, o.optInt("x", 5000).coerceIn(0, 10000), o.optInt("y", 5000).coerceIn(0, 10000), o.optInt("w", 4000).coerceIn(100, 10000)) }
+    } catch (e: Exception) { null } catch (e: OutOfMemoryError) { Log.w("DrawLayer", "picture too big: $e"); null }   // one picture must not end TV Setup
+
     /** The strokes and pictures, kept in 0..10000 of the screen so they fit it whatever its size. */
     private class Board(c: Context) : View(c) {
         private class Stroke(val id: Int, val color: Int, val width: Int) { val pts = ArrayList<Int>() }
-        private class Pic(val bmp: Bitmap, val x: Int, val y: Int, val w: Int) { @Volatile var b64: String? = null }   // b64: once, when kept
         private val strokes = ArrayList<Any>()                        // Stroke or Pic, in the order they came: undo takes the last
         private val smooth = Paint(Paint.FILTER_BITMAP_FLAG)
         private val box = RectF()
@@ -183,8 +208,15 @@ internal object DrawLayer {
                     .let { Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP) }.also { p.b64 = it }).put("x", p.x).put("y", p.y).put("w", p.w).put("k", 0) }) }
         }
 
+        /** A picture; past [PIC_BYTES] the oldest go, so pictures sent all evening never take the app's memory. */
+        fun add(p: Pic) {
+            strokes.add(p)
+            val pics = strokes.filterIsInstance<Pic>()
+            for (old in pics.take(drawPicsOver(pics.map { it.bmp.byteCount }, PIC_BYTES))) strokes.remove(old)
+            invalidate()
+        }
+
         fun add(o: JSONObject) {
-            if (o.optString("o") == "i") { picture(o)?.let { strokes.add(it); invalidate() }; return }
             val id = o.optInt("id")
             val s = if (o.optString("o") == "s") {
                 val color = try { Color.parseColor(o.optString("c", "#ff3b30")) } catch (e: Exception) { Color.RED }
@@ -193,18 +225,6 @@ internal object DrawLayer {
             val p = o.optJSONArray("p") ?: return
             for (i in 0 until p.length() - 1 step 2) { s.pts.add(p.optInt(i).coerceIn(0, 10000)); s.pts.add(p.optInt(i + 1).coerceIn(0, 10000)) }
             invalidate()
-        }
-
-        /** Decoded no larger than the screen needs: a phone photo would take more memory than a TV app may use. */
-        private fun picture(o: JSONObject): Pic? {
-            val bytes = try { Base64.decode(o.optString("b"), Base64.DEFAULT) } catch (e: Exception) { return null }
-            val size = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-            BitmapFactory.decodeByteArray(bytes, 0, bytes.size, size)
-            if (size.outWidth <= 0) return null
-            var sample = 1
-            while (size.outWidth / (sample * 2) >= 1920) sample *= 2
-            val bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, BitmapFactory.Options().apply { inSampleSize = sample }) ?: return null
-            return Pic(bmp, o.optInt("x", 5000).coerceIn(0, 10000), o.optInt("y", 5000).coerceIn(0, 10000), o.optInt("w", 4000).coerceIn(100, 10000))
         }
 
         fun undo() { if (strokes.isNotEmpty()) strokes.removeAt(strokes.size - 1); invalidate() }
@@ -243,6 +263,22 @@ internal object DrawLayer {
             }
         }
     }
+}
+
+// Pure, outside the object (its Handler needs a device), so the unit tests reach them.
+/** How many of the oldest pictures go so the rest fit [budget] bytes; the newest always stays. */
+internal fun drawPicsOver(sizes: List<Int>, budget: Int): Int {
+    var total = sizes.sumOf { it.toLong() }
+    var n = 0
+    while (n < sizes.size - 1 && total > budget) total -= sizes[n++]
+    return n
+}
+
+/** The power of two to decode at so neither side passes [max]: a phone photo would take more memory than a TV app may use. */
+internal fun drawSample(w: Int, h: Int, max: Int): Int {
+    var s = 1
+    while (w / s > max || h / s > max) s *= 2
+    return s
 }
 
 /** The shell's way to [DrawLayer] (Draw.kt): only the shell may send it (the manifest), so only a device with ADB here. */

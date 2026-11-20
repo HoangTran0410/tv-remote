@@ -66,7 +66,7 @@ internal fun MainActivity.startDrawing() {
     drawBar.visibility = View.VISIBLE
     drawLit()
     drawIo.execute {                                                  // opens the way now: an old or missing TV Setup is told before anything is drawn
-        try { drawer.send(JSONArray()) } catch (e: Exception) { ui.post { if (drawing) stopDrawing(); drawFail(e) }; return@execute }
+        try { drawer.send(JSONArray()) } catch (e: Exception) { ui.post { if (drawing) stopDrawing(flush = false); drawFail(e) }; return@execute }
         if (!drawer.keeps && drawKeep != 10) ui.post { withSetup("drawkeep") { } }   // chosen here, but this TV Setup still clears after 10 minutes
     }
 }
@@ -101,14 +101,15 @@ internal fun MainActivity.drawFail(e: Exception) {
         else T("drawing.could_not_draw_on", "error" to Errors.say(e, dev.tvremote.core.Words.lang)), Toast.LENGTH_LONG).show()
 }
 
-internal fun MainActivity.stopDrawing() {
+/** [flush]: what waits still goes (the last stroke, a picture just placed: ✓ must not lose them); not after a failure. */
+internal fun MainActivity.stopDrawing(flush: Boolean = true) {
     drawing = false
     drawBar.visibility = View.GONE
     drawLit()
     picEnd()
     drawView.clear()
-    synchronized(drawQ) { drawQ.clear() }
-    drawIo.execute { drawer.close() }
+    if (!flush) synchronized(drawQ) { drawQ.clear() }
+    drawIo.execute { drawer.close() }                                 // one thread: after the ops still on their way
 }
 
 /** ✏️ among the keys shows whether drawing is on. */
@@ -361,7 +362,7 @@ internal fun MainActivity.drawSend(op: JSONObject) {
             }
             try { drawer.send(ops) } catch (e: Exception) {
                 synchronized(drawQ) { drawQ.clear(); drawBusy = false }
-                ui.post { if (drawing) stopDrawing(); drawFail(e) }
+                ui.post { if (drawing) stopDrawing(flush = false); drawFail(e) }
                 return@execute
             }
         }
