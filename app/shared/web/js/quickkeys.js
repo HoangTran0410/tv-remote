@@ -4,6 +4,7 @@
 // (config.keysHave) is shown dead; one that already has something stays editable, so it can be cleared.
 const QK_NUMBERS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 7];          // KEYCODE_1 .. 9, then 0 (HomeConfig.KEY_NUMBERS)
 const QK_COLOURS = { 183: 'red', 184: 'green', 185: 'yellow', 186: 'blue' };
+const QK_DEAD = [170, 178, 190, 191, 195, 192, 284, 176];          // HomeConfig.KEY_DEAD (tests/quickkeys.test.js keeps them equal): a slot only where this TV has it dead
 const QK_LAST = 'last:app';                                        // what the power-on slot holds for "the app open when the TV turned off" (HomeConfig autolast): not a Target
 const QK_POWER = 0;                                                // the power-on slot's code: no key has it
 
@@ -116,7 +117,8 @@ function quickKeysDraw(host, c, apps, send) {
   };
   const fixed = new Set([...QK_NUMBERS, ...Object.keys(QK_COLOURS).map(Number)]);
   const dk = (c.keysDead || []).filter((k) => HOME_KEY_WORDS[k]);
-  const others = Object.keys(ka).map(Number).filter((k) => k > 0 && !fixed.has(k) && !dk.includes(k)).sort((x, y) => x - y);   // "Other key", added on the TV (HomeConfig.keyOther)
+  // "Other key", added on the TV (HomeConfig.keyOther): a dead key given an app on another TV does nothing on this one, so it shows only in dk
+  const others = Object.keys(ka).map(Number).filter((k) => k > 0 && !fixed.has(k) && !dk.includes(k) && !QK_DEAD.includes(k)).sort((x, y) => x - y);
   const extra = [...dk, ...others];
   host.className = c.focus === 'ring' ? 'qkgrid focus-ring' : 'qkgrid focus-glass';
   host.replaceChildren(...[...QK_NUMBERS, ...Object.keys(QK_COLOURS).map(Number), QK_POWER, ...extra].map(slot));

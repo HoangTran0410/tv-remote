@@ -343,11 +343,12 @@ class Widgets(internal val a: Activity, internal val dp: (Number) -> Int) : Line
      */
     /**
      * The row's place kept, empty, while its numbers are read (2-3 s on a weak box at start): the grid sits where it will stay from
-     * the first frame instead of under the clock, then pushed down when they came (the user, 2026-11-03).
+     * the first frame instead of under the clock, then pushed down when they came (the user, 2026-11-03). [rows]: how many the saved
+     * settings pack ("top2" with widgets enough: 2); the last [show]'s count was 1 at start, so the grid sat a row high and then jumped.
      */
-    fun hold() {
+    fun hold(rows: Int) {
         val lp = layoutParams
-        if (!side && lp != null && lp.height != dp(rowsH(shownRows))) { lp.height = dp(rowsH(shownRows)); layoutParams = lp }   // a side column has no height to keep: the grid is beside it
+        if (!side && lp != null && lp.height != dp(rowsH(rows))) { lp.height = dp(rowsH(rows)); layoutParams = lp }   // a side column has no height to keep: the grid is beside it
         if (visibility == View.GONE) visibility = View.INVISIBLE
     }
 

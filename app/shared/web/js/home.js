@@ -122,6 +122,11 @@ const HOME_STYLE_WORDS = { classic: 'home.style_classic', light: 'home.style_lig
 
 // The packed layout drawn small: a column per weight, its widgets stacked, big ones filled (sizes in css/remote.css)
 // [x]: the settings dialog's strip, { mark: the widget framed, conf: the settings the widgets are drawn with (tonal warm, a light clock pale) }
+// The rows a TV Home lays out for [c] ("top2": two, HomeConfig.rows), drawn one under the other
+const homeRowsOf = (c, w, bigs) => homePackRows(w, bigs, !!c.note, c.wplace === 'top2' ? 2 : 1);
+function packGlyphRows(rows, big, x = {}) {
+  return rows.length < 2 ? packGlyph(rows[0], big, x) : el('div', { className: 'packrows' }, ...rows.map((p) => packGlyph(p, big, x)));
+}
 function packGlyph(p, big, x = {}) {
   const g = el('div', { className: 'packview', role: 'img', 'aria-label': T('home.pack_alt') });
   const sum = Math.max(HOME_W.floor, p.cols.reduce((n, c) => n + c.weight, 0));
@@ -214,7 +219,7 @@ function homeWidgetDlg(k, c0, title, send) {
   };
   const paint = () => {
     const bigs = w.filter((x) => homeSize(c, x) === 'big');
-    strip.replaceChildren(packGlyph(homePack(w, bigs, !!c.note), bigs, { mark: k, conf: c }));
+    strip.replaceChildren(packGlyphRows(homeRowsOf(c, w, bigs), bigs, { mark: k, conf: c }));
     stage.replaceChildren(homeCardPrev(k, c));
     rows.replaceChildren(...opts.map((o) => el('div', { className: 'wopt' }, el('span', { className: 'lbl', textContent: T(o.label) }),
       el('div', { className: 'fchips', role: 'group', 'aria-label': T(o.label) }, ...o.values.map((v) => {
@@ -842,7 +847,8 @@ async function homeOpen() {
     wHead.hidden = !w;
     const sized = !!c.wsizes;                                         // this TV Home sizes the widgets; an older one has the preset layouts
     const bigs = sized && w ? w.filter((k) => homeSize(c, k) === 'big') : [];
-    const packed = sized && w ? homePack(w, bigs, !!c.note) : null;
+    const packedRows = sized && w ? homeRowsOf(c, w, bigs) : null;   // "top2": the second row's widgets do not wait
+    const packed = packedRows && packedRows[packedRows.length - 1];
     const places = sized ? 0 : homeSlots(c.wlayout), slots = c.note ? places - 1 : places;
     const waits = (k, i) => sized ? (packed.waiting.includes(k) ? T('home.w_waits_pack') : '')
       : places ? (i >= slots ? T('home.w_waits', { n: slots }) : '')
@@ -867,7 +873,7 @@ async function homeOpen() {
       ...(!c.wschema && c.wstyles && c.wstyles[k] ? [styleChips(k)] : []))));
     wList.hidden = !w || !w.length;
     packHead.hidden = packBox.hidden = packNote.hidden = !sized || !w || !(w.length || c.note);
-    if (packed) packBox.replaceChildren(packGlyph(packed, bigs));
+    if (packedRows) packBox.replaceChildren(packGlyphRows(packedRows, bigs));
     layHead.hidden = lay.hidden = sized || c.wlayout === undefined || !w;      // a TV Home older than the layouts; one with sizes has no presets
     layNote.hidden = layHead.hidden || !places;
     put(layNote, 'textContent', T('home.layout_note', { n: places }));

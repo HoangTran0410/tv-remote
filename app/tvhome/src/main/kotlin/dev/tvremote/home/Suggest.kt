@@ -36,12 +36,30 @@ object Suggest {
 
     fun byKey(k: String) = if (k.startsWith(PREFIX)) items.firstOrNull { it.key == k } else null
 
-    /** The suggestion of wall [k] ("sug:<id>", [HomeConfig.isSug]) from the list kept on this TV (read once, no network); null when it has none. */
+    /**
+     * The suggestion of wall [k] ("sug:<id>", [HomeConfig.isSug]) from the list kept on this TV (read once, no network); null when it has
+     * none, and then the site is asked ([miss]): only Customize's page loaded the list, so a slideshow picked on the phone was Night for
+     * good, and skipped forever in a set.
+     */
     fun wall(c: Context, k: String): Item? {
         if (!HomeConfig.isSug(k)) return null
         if (items.isEmpty()) synchronized(this) { if (items.isEmpty()) SignedList.kept(File(c.applicationContext.filesDir, NAME))?.let { items = parse(it) } }
-        return byKey(k)
+        return byKey(k) ?: run { miss(c, k); null }
     }
+
+    /**
+     * A wall this TV has no entry for: the site's list asked now (at most every [MISS_MS], offline included), and once it names [k] the
+     * screen is drawn again ([Store.onChange]: Home resolves it through [Store.shown]). Meanwhile Night, or the set's next wall.
+     * Nothing runs while every wall is known.
+     */
+    private fun miss(c: Context, k: String) {
+        if (asking || dev.tvremote.guard.Age.fresh(missAt, MISS_MS)) return
+        missAt = System.currentTimeMillis(); missed = k
+        load(c, 0)
+    }
+    @Volatile private var missAt = 0L
+    @Volatile private var missed: String? = null
+    private const val MISS_MS = 10 * 60_000L
 
     /** The list kept (cheap once checked) now, the site's when the kept one is older than [maxAge]; off the main thread for the network. */
     fun load(c: Context, maxAge: Long = DAY) {
@@ -54,6 +72,7 @@ object Suggest {
             try {
                 SignedList.fetch(BASES, NAME, 1 shl 20, connectMs = 6000, readMs = 8000) { list, sig, _ ->
                     parse(list).takeIf { it.isNotEmpty() }?.also { SignedList.keep(f, list, sig); items = it; onChange?.invoke() }
+                    missed?.let { m -> if (byKey(m) != null) { missed = null; android.os.Handler(android.os.Looper.getMainLooper()).post { Store.onChange?.invoke() } } }   // the wall picked elsewhere can be drawn now
                 }
             } catch (e: Exception) { } finally { asking = false }
         }, "suggest").apply { isDaemon = true }.start()

@@ -7,6 +7,9 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 ## Unreleased
 
 - Draw on the TV: ⏱ sets how long the drawing stays after the last stroke (10 min, 30 min, 1 hour, or until cleared, which survives a TV restart); TV Setup shows a Clear the drawing tile meanwhile.
+- TV Home: a suggested background (a slideshow, a video) picked on the phone or computer no longer turns into Night, nor is skipped in a rotating set, on a TV that had never opened its own Background page: TV Home fetches the list then.
+- TV Home: with widgets in two rows, the second row's widgets are no longer marked "waiting for room" (TV and page), the layout previews show both rows, and the apps no longer jump down a row at start.
+- TV Home: Quick keys' "Other key" no longer takes Space or a gamepad's A / B / X / Y; the page no longer lists a key that is dead only on another TV.
 
 ## 0.56.0 - 2026-11-20
 

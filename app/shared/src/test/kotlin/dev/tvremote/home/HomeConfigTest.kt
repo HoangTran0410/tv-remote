@@ -552,6 +552,7 @@ class HomeConfigTest {
         assertEquals(mapOf(85 to "a.b", 166 to "c.d", 165 to "e.f"), HomeConfig.keyApps(m.getJSONObject("keyapps")))
         assertTrue(HomeConfig.keyOther(85)); assertFalse(HomeConfig.keyOther(183)); assertFalse(HomeConfig.keyOther(7)); assertFalse(HomeConfig.keyOther(170))   // colours, numbers, dead keys have their own rows
         assertTrue(HomeConfig.keyOnHome(7) && HomeConfig.keyOnHome(183) && HomeConfig.keyOnHome(85)); assertFalse(HomeConfig.keyOnHome(170))   // a dead key is TV Setup's, everywhere
+        for (k in listOf(62, 96, 97, 99, 100)) assertFalse("$k", HomeConfig.keyOther(k) || HomeConfig.keyAllowed(k))   // Space, a pad's A / B / X / Y: they click and go back
     }
     @Test fun keysAndPowerOnAppAreOffByDefaultAndKeepOnlyFreeKeys() {
         val c = HomeConfig.clean(JSONObject())

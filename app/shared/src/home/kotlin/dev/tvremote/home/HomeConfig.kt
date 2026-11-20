@@ -487,9 +487,10 @@ object HomeConfig {
     val KEY_DEAD = listOf(170, 178, 190, 191, 195, 192, 284, 176)
     /**
      * Never given an app, not even on TV Home's screen: navigation and the system (Home, Back, arrows, OK / Enter, volume, mute, power,
-     * sleep / wake, Esc) and Menu, which opens TV Home's own menus. 0 = no key.
+     * sleep / wake, Esc), Space and a gamepad's A / B / X / Y (they click, go back and act in every screen; a pad is a remote here) and
+     * Menu, which opens TV Home's own menus. 0 = no key.
      */
-    val KEY_NEVER = setOf(0, 3, 4, 19, 20, 21, 22, 23, 66, 160, 111, 24, 25, 164, 26, 223, 224, 82)
+    val KEY_NEVER = setOf(0, 3, 4, 19, 20, 21, 22, 23, 66, 160, 111, 24, 25, 164, 26, 223, 224, 82, 62, 96, 97, 99, 100)
     const val KEY_CODE_MAX = 400                                       // past KeyEvent's last code (Android 14: 316) with room; a vendor key above it is not offered
     /**
      * Any other key the remote sends ("Other key" on the Quick keys screen: media, channel, Info, Guide, a brand's own button): works on

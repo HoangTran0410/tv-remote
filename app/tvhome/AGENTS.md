@@ -82,6 +82,8 @@ on opening Themes (an hour), `Themes.refresh`.
 **Suggested** (Customize > Wallpaper, the page's "Suggested"): the same signed `wallpapers.json`, its `"links"` (the Việt Nam slideshow,
 Pexels videos, a live page; `dev/gen/wallpapers.py LINKS_ONLY=1`, small pictures pinned by SHA-256) and its pictures: each only sets
 `wall: web` + `wurl`, so the table above draws it (`Suggest.kt` here, `Wallpapers.links` + `/api/home/walls/thumb` for the page).
+A TV Home with `wsug` keeps each as a wall of its own (`sug:<id>`, resolved by `Store.shown`); one it has no list entry for (picked
+on the phone before Customize ever loaded the list) is Night until `Suggest.miss` has asked the site (at most every 10 min) and redrawn.
 **Custom** (`wall: own`): `wcol` 1-4 colours (one = plain), `wdir` one of `HomeConfig.WDIRS` (`radial` from the middle), drawn by
 `wallGradient` (Backdrop, the screensaver, the tiles); a change of either is part of `wall()`'s key.
 

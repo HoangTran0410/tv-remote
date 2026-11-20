@@ -264,6 +264,9 @@ dialog.wset .card { width:min(520px, 94vw); }
 .wset .card-head h2 { flex:1; min-width:0; }
 .wset .wstrip { padding:4px 3px; }
 .wset .packview { height:72px; }
+.packrows { display:flex; flex-direction:column; gap:4px; }   /* "top2": the two rows of cards, one under the other */
+.packrows .packview { height:40px; }
+.wset .packrows .packview { height:48px; }
 .wset .packview s { display:flex; align-items:center; padding:0 8px; min-width:0; }
 .wset .packview s em { font-style:normal; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }   /* the card's name in its block */
 .wset .packview s.tonal, .wset .packview s.pale { color:var(--wink); }

@@ -330,7 +330,7 @@ class HomeActivity : Activity() {
             @Suppress("DEPRECATION") addAction(ConnectivityManager.CONNECTIVITY_ACTION)
             addAction(Intent.ACTION_DREAMING_STARTED); addAction(Intent.ACTION_DREAMING_STOPPED)
         })
-        if (Store.suggestOff(this)) { Store.suggestOff(this, false); conf = Store.change(this, JSONObject().put("showSuggest", false)) }   // the old "hide" flag is now the setting everyone sees
+        if (Store.suggestOff(this)) { Store.suggestOff(this, false); Store.change(this, JSONObject().put("showSuggest", false)); conf = Store.shown(this) }   // the old "hide" flag is now the setting everyone sees; conf as drawn (a "sug:" wall resolved), not change()'s raw copy
         Look.read(Store.get(this))                                    // before the apps load: App.load makes the icon of icon / glass tiles off the main thread
         loadApps()
         if (Motion.on) enter()
@@ -820,7 +820,7 @@ class HomeActivity : Activity() {
         if (none) { widgets.visibility = View.GONE; placedSet(emptyList()); return }
         val sig = want.joinToString(",") + "|" + note.isNotEmpty()
         val held = widgets.visibility == View.GONE && widgetsLast != "-$sig"   // the row came last time (or nothing known): keep its place
-        if (held && !(noWidgets && HomeConfig.side(place()))) widgets.hold()   // a first column held beside a grid laid out full width pushed its last tiles off the screen
+        if (held && !(noWidgets && HomeConfig.side(place()))) widgets.hold(HomeConfig.packRows(want, HomeConfig.bigs(conf), note.isNotEmpty(), HomeConfig.rows(place())).size)   // a first column held beside a grid laid out full width pushed its last tiles off the screen
         bg.execute {
             val f = widgets.read(want)
             runOnUiThread {

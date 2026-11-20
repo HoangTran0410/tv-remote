@@ -1443,7 +1443,7 @@ object Customize {
             val qrs = conf.optJSONObject("qrs") ?: JSONObject()
             val order = (on + HomeConfig.WIDGETS.filter { it !in on }).filter { canShow(it, qrs) }   // Private DNS is Android 9+; a QR widget is written on the phone or the web page: only those that exist
             val big = HomeConfig.bigs(conf)
-            val waiting = HomeConfig.pack(on, big, conf.optString("note").isNotEmpty()).waiting.toSet()
+            val waiting = HomeConfig.packRows(on, big, conf.optString("note").isNotEmpty(), HomeConfig.rows(conf.optString("wplace"))).last().waiting.toSet()   // "top2": the second row's widgets have a place
             var want: View? = null
             order.forEachIndexed { i, k ->
                 val r = WIDGET_ROWS.firstOrNull { it[0] == k } ?: QR_ROW
@@ -1537,7 +1537,7 @@ object Customize {
     }
 
     /**
-     * The result in miniature: the columns [HomeConfig.pack] makes of the widgets on, a big widget in the accent, small ones pale; what
+     * The result in miniature: the columns [HomeConfig.packRows] makes of the widgets on (two rows with "top2"), a big widget in the accent, small ones pale; what
      * waits is not drawn. Reads the settings when painted (the rows call invalidate after every change), never animated.
      */
     private var panelDialog: Dialog? = null
@@ -1569,10 +1569,9 @@ object Customize {
         override fun onDraw(cv: Canvas) {
             val conf = Store.get(context)
             val big = HomeConfig.bigs(conf)
-            val p = HomeConfig.pack(Store.list(context, "widgets"), big, conf.optString("note").isNotEmpty())
+            val lines = HomeConfig.packRows(Store.list(context, "widgets"), big, conf.optString("note").isNotEmpty(), HomeConfig.rows(conf.optString("wplace")))   // "top2": two rows, as on the screen
             val g = resources.displayMetrics.density * 4f
-            val sum = maxOf(HomeConfig.FLOOR, p.cols.sumOf { it.weight })
-            if (p.cols.isEmpty()) {                                         // nothing on: the frame of an empty row and why, not a bare title over nothing
+            if (lines[0].cols.isEmpty()) {                                         // nothing on: the frame of an empty row and why, not a bare title over nothing
                 paint.style = Paint.Style.STROKE; paint.strokeWidth = g / 2; paint.color = DOOR_EDGE
                 paint.pathEffect = android.graphics.DashPathEffect(floatArrayOf(g * 2, g * 1.5f), 0f)
                 cv.drawRoundRect(g / 2, g / 2, width - g / 2, height - g / 2, g * 2, g * 2, paint)
@@ -1581,24 +1580,30 @@ object Customize {
                 cv.drawText(context.getString(R.string.w_layout_empty), width / 2f, height / 2f - (paint.descent() + paint.ascent()) / 2, paint)
                 return
             }
-            val room = width - g * (p.cols.size - 1)
-            var x = 0f
-            for (col in p.cols) {
-                val w = room * col.weight / sum
-                val h = (height - g * (col.keys.size - 1)) / col.keys.size
-                col.keys.forEachIndexed { j, k ->
-                    val look = HomeConfig.optValue(conf, k, "look"); val tonal = look == "tonal"
-                    val pale = k == "clock" && HomeConfig.optValue(conf, k, "theme") == "light"
-                    paint.style = Paint.Style.FILL
-                    paint.color = if (tonal) GLYPH_TONAL else if (pale) GLYPH_PALE else if (look == "solid") GLYPH_SOLID else if (look == "none") GLYPH_NONE else if (k in big) 0x668AB4F8 else 0x30FFFFFF
-                    cv.drawRoundRect(x, j * (h + g), x + w, j * (h + g) + h, g * 2, g * 2, paint)
-                    if (named) drawName(cv, k, x, j * (h + g), w, h, pale || tonal)
-                    if (k == mark) {
-                        paint.style = Paint.Style.STROKE; paint.strokeWidth = g * 0.6f; paint.color = ACCENT
-                        cv.drawRoundRect(x, j * (h + g), x + w, j * (h + g) + h, g * 2, g * 2, paint)
+            val bandH = (height - g * (lines.size - 1)) / lines.size
+            lines.forEachIndexed { r, p ->
+                val sum = maxOf(HomeConfig.FLOOR, p.cols.sumOf { it.weight })
+                val room = width - g * (p.cols.size - 1)
+                val top = r * (bandH + g)
+                var x = 0f
+                for (col in p.cols) {
+                    val w = room * col.weight / sum
+                    val h = (bandH - g * (col.keys.size - 1)) / col.keys.size
+                    col.keys.forEachIndexed { j, k ->
+                        val look = HomeConfig.optValue(conf, k, "look"); val tonal = look == "tonal"
+                        val pale = k == "clock" && HomeConfig.optValue(conf, k, "theme") == "light"
+                        val y = top + j * (h + g)
+                        paint.style = Paint.Style.FILL
+                        paint.color = if (tonal) GLYPH_TONAL else if (pale) GLYPH_PALE else if (look == "solid") GLYPH_SOLID else if (look == "none") GLYPH_NONE else if (k in big) 0x668AB4F8 else 0x30FFFFFF
+                        cv.drawRoundRect(x, y, x + w, y + h, g * 2, g * 2, paint)
+                        if (named) drawName(cv, k, x, y, w, h, pale || tonal)
+                        if (k == mark) {
+                            paint.style = Paint.Style.STROKE; paint.strokeWidth = g * 0.6f; paint.color = ACCENT
+                            cv.drawRoundRect(x, y, x + w, y + h, g * 2, g * 2, paint)
+                        }
                     }
+                    x += w + g
                 }
-                x += w + g
             }
         }
     }
