@@ -125,6 +125,7 @@ document.querySelectorAll('#drawbar [data-color]').forEach((b) => b.addEventList
 const drawDot = () => { const d = Math.max(4, drawWidth / 5) + 'px'; Object.assign($('#drawdot').style, { width: d, height: d, background: drawColor }); };
 $('#drawwidth').addEventListener('input', (e) => { drawWidth = +e.target.value; drawDot(); });
 
+const GIF_MAX = 2.5e6;                                                 // bytes: a GIF sent whole stays under Draw.MAX_BODY as base64
 // 🖼️ Pick, place (drag; size with two fingers or the wheel), then ✓ sends it. At most 1280 pixels: plenty for a TV
 // layer, and a phone photo stays a few hundred KB on its way.
 $('#drawpic').addEventListener('click', () => { if (drawPics) $('#drawfile').click(); else setupFor('pic'); });   // the file picker must open within the tap: known beforehand
@@ -135,7 +136,9 @@ $('#drawfile').addEventListener('change', async (e) => {
   const k = Math.min(1, 1280 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
   c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k));
   c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-  let data = /png|webp|gif/.test(f.type) ? c.toDataURL('image/png') : '';             // these may be see-through: keep that
+  let data = f.type === 'image/gif' && f.size <= GIF_MAX && Math.max(img.naturalWidth, img.naturalHeight) <= 1280
+    ? await new Promise((ok) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => ok(''); r.readAsDataURL(f); }) : '';   // a GIF as it is: it moves on the TV
+  if (!data) data = /png|webp|gif/.test(f.type) ? c.toDataURL('image/png') : '';    // these may be see-through: keep that
   if (!data || data.length > 4e6) data = c.toDataURL('image/jpeg', 0.85);
   picPlace(data, 4000);
 });

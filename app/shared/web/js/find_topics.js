@@ -48,7 +48,7 @@ const FIND_TOPICS = [
   ["tvguard","TV Setup tự sửa DNS và ADB","TV Setup repairs DNS and ADB by itself","dns loc dns keepadb adb tu bat lai tat loc dns cat mang youtube khong ket noi dns filter"],
   ["awake","Giữ kết nối khi tắt TV","Stay reachable when the TV is off","giu ket noi khi tat tv awake keepawake chip ngu sau tcl standby tailscale"],
   ["notify","Gửi thông báo lên TV","Send a notification to the TV","thong bao notification the nhan goc man hinh message card"],
-  ["draw","Vẽ lên TV","Draw on the TV","ve len tv but pen anh chu text hinh draw"],
+  ["draw","Vẽ lên TV","Draw on the TV","ve len tv but pen anh chu text hinh draw gif anh dong"],
   ["photo","Đưa ảnh lên TV","Put a picture on the TV","dua anh len tv hinh anh phu len man hinh pic phat anh video"],
   ["screenshot","Chụp màn hình TV","TV screenshot","chup man hinh screenshot anh png"],
   ["video","Video trên TV","Video on the TV","video tren tv camera webcam khung phu overlay keo doi co video box pip tieng micro am thanh sound microphone"],

@@ -175,18 +175,42 @@ internal object DrawLayer {
         try { (app?.getSystemService(android.content.Context.WINDOW_SERVICE) as? WindowManager)?.removeView(b) } catch (e: Exception) { }
     }
 
-    internal class Pic(val bmp: Bitmap, val x: Int, val y: Int, val w: Int) { @Volatile var b64: String? = null }   // b64: once, when kept
+    internal class Pic(val bmp: Bitmap, val x: Int, val y: Int, val w: Int, val gif: Gif? = null) { @Volatile var b64: String? = null }   // b64: once, when kept
+
+    /**
+     * A moving GIF: each frame drawn into [Pic.bmp] (a software canvas: android.graphics.Movie draws nothing on a hardware
+     * one). Movie runs on every Android TV Setup does (minSdk 21; ImageDecoder only from 9). Shown at the GIF's own pace.
+     */
+    internal class Gif(val movie: android.graphics.Movie, val frame: Canvas) { var start = 0L }
+    private const val GIF_PIXELS = 1280L * 1280                       // one frame's memory; bigger ones stay still
     private const val PIC_BYTES = 32 shl 20                           // ~5 photos at 1280 pixels, dozens of messages
 
     /** An "i" op's picture, decoded no larger than the screen needs, off the UI thread; null when it will not decode. */
     private fun picture(o: JSONObject): Pic? = try {
         val bytes = Base64.decode(o.optString("b"), Base64.DEFAULT)
+        gif(o, bytes) ?: still(o, bytes)
+    } catch (e: Exception) { null } catch (e: OutOfMemoryError) { Log.w("DrawLayer", "picture too big: $e"); null }   // one picture must not end TV Setup
+
+    /** A GIF with more than one frame and no bigger than [GIF_PIXELS]; null for anything else (drawn still, its first frame). */
+    @Suppress("DEPRECATION")
+    private fun gif(o: JSONObject, bytes: ByteArray): Pic? {
+        if (bytes.size < 6 || String(bytes, 0, 4, Charsets.ISO_8859_1) != "GIF8") return null
+        val m = android.graphics.Movie.decodeByteArray(bytes, 0, bytes.size) ?: return null
+        if (m.duration() <= 0 || m.width() <= 0 || m.height() <= 0 || m.width().toLong() * m.height() > GIF_PIXELS) return null
+        val bmp = Bitmap.createBitmap(m.width(), m.height(), Bitmap.Config.ARGB_8888)
+        val c = Canvas(bmp)
+        m.setTime(0); m.draw(c, 0f, 0f)
+        return Pic(bmp, o.optInt("x", 5000).coerceIn(0, 10000), o.optInt("y", 5000).coerceIn(0, 10000), o.optInt("w", 4000).coerceIn(100, 10000), Gif(m, c))
+            .also { it.b64 = o.optString("b") }                       // kept as it came: a PNG of one frame would stop it
+    }
+
+    private fun still(o: JSONObject, bytes: ByteArray): Pic? = run {
         val size = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size, size)
         if (size.outWidth <= 0 || size.outHeight <= 0) null
         else BitmapFactory.decodeByteArray(bytes, 0, bytes.size, BitmapFactory.Options().apply { inSampleSize = drawSample(size.outWidth, size.outHeight, 1920) })
             ?.let { Pic(it, o.optInt("x", 5000).coerceIn(0, 10000), o.optInt("y", 5000).coerceIn(0, 10000), o.optInt("w", 4000).coerceIn(100, 10000)) }
-    } catch (e: Exception) { null } catch (e: OutOfMemoryError) { Log.w("DrawLayer", "picture too big: $e"); null }   // one picture must not end TV Setup
+    }
 
     /** The strokes and pictures, kept in 0..10000 of the screen so they fit it whatever its size. */
     private class Board(c: Context) : View(c) {
@@ -229,14 +253,24 @@ internal object DrawLayer {
 
         fun undo() { if (strokes.isNotEmpty()) strokes.removeAt(strokes.size - 1); invalidate() }
 
+        @Suppress("DEPRECATION")
         override fun onDraw(c: Canvas) {
             val w = width / 10000f
             val h = height / 10000f
+            var next = Long.MAX_VALUE                                 // ms to the soonest GIF frame
             for (item in strokes) {
                 if (item is Pic) {
                     val pw = item.w * w
                     val ph = pw * item.bmp.height / item.bmp.width
                     box.set(item.x * w - pw / 2, item.y * h - ph / 2, item.x * w + pw / 2, item.y * h + ph / 2)
+                    item.gif?.let { g ->
+                        val now = android.os.SystemClock.uptimeMillis()
+                        if (g.start == 0L) g.start = now
+                        g.movie.setTime(((now - g.start) % g.movie.duration()).toInt())
+                        item.bmp.eraseColor(Color.TRANSPARENT)
+                        g.movie.draw(g.frame, 0f, 0f)
+                        next = minOf(next, GIF_FRAME_MS)
+                    }
                     c.drawBitmap(item.bmp, null, box, smooth)
                     continue
                 }
@@ -261,9 +295,12 @@ internal object DrawLayer {
                 pen.strokeWidth = thick
                 c.drawPath(path, pen)
             }
+            if (next != Long.MAX_VALUE) postInvalidateDelayed(next)   // a GIF moves on; none left (cleared, undone): nothing runs
         }
     }
 }
+
+private const val GIF_FRAME_MS = 66L                                 // 15 a second: GIFs rarely ask for more, a weak TV box pays for each
 
 // Pure, outside the object (its Handler needs a device), so the unit tests reach them.
 /** How many of the oldest pictures go so the rest fit [budget] bytes; the newest always stays. */

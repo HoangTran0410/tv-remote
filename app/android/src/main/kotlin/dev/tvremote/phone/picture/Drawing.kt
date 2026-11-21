@@ -251,6 +251,8 @@ internal fun MainActivity.pickDrawPic() {
     catch (e: Exception) { Toast.makeText(this, T("drawing.this_phone_has_no"), Toast.LENGTH_LONG).show() }
 }
 
+private const val GIF_MAX = 2_500_000                             // bytes: a GIF sent whole stays under Draw.MAX_BODY as base64
+
 internal fun MainActivity.drawPicked(uri: Uri) {
     drawIo.execute {
         val p = try {
@@ -265,7 +267,9 @@ internal fun MainActivity.drawPicked(uri: Uri) {
             val k = 1280f / maxOf(bmp.width, bmp.height)
             if (k < 1) bmp = Bitmap.createScaledBitmap(bmp, maxOf(1, (bmp.width * k).toInt()), maxOf(1, (bmp.height * k).toInt()), true)
             val out = ByteArrayOutputStream()
-            if (Regex("png|webp|gif").containsMatchIn(type)) bmp.compress(Bitmap.CompressFormat.PNG, 100, out)   // may be see-through
+            if (type == "image/gif" && maxOf(bounds.outWidth, bounds.outHeight) <= 1280)   // a GIF as it is: it moves on the TV (DrawLayer)
+                contentResolver.openInputStream(uri)?.use { i -> val b = i.readBytes(); if (b.size <= GIF_MAX) out.write(b) }
+            if (out.size() == 0 && Regex("png|webp|gif").containsMatchIn(type)) bmp.compress(Bitmap.CompressFormat.PNG, 100, out)   // may be see-through
             if (out.size() == 0 || out.size() > 3_000_000) { out.reset(); bmp.compress(Bitmap.CompressFormat.JPEG, 85, out) }
             DrawView.Pic(bmp, android.util.Base64.encodeToString(out.toByteArray(), android.util.Base64.NO_WRAP))
         } catch (e: Exception) { null }

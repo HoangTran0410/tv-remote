@@ -2,7 +2,7 @@
 
 1. Tap **✏️** by the picture (or More keys → Draw on the TV).
 2. Pick a color and draw on the picture. **↩** undoes a stroke.
-3. Add **💬 Text**, a **🖼️ Picture** or a **🎞️ Video** (opens the [Video on TV box](video.md)). For a picture, size it with − / + then tap **✓ Put on TV**.
+3. Add **💬 Text**, a **🖼️ Picture** or a **🎞️ Video** (opens the [Video on TV box](video.md)). For a picture, size it with − / + then tap **✓ Put on TV**. A GIF plays on the TV.
 4. **⏱** sets how long it stays after the last stroke: 10 min, 30 min, 1 hour or **Until cleared** (kept when the TV restarts).
 5. Tap **✓ Done** when finished. To clear: **🗑 Clear all**, or **Clear the drawing** in TV Setup on the TV.
 
