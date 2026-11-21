@@ -3099,6 +3099,16 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "9d57a846bf45ba3616ccd0d1|0.49.0": {
+  "at": "2026-11-21T20:50:23+07:00",
+  "n": 1,
+  "note": "Samsung M51 phone (TV Setup on a phone, a key option turned on): add-on 'stopped' by Samsung's battery saver; firmware kind, nothing to fix"
+ },
+ "9d57a846bf45ba3616ccd0d1|0.55.0": {
+  "at": "2026-11-21T20:50:23+07:00",
+  "n": 1,
+  "note": "Samsung M51 phone (TV Setup on a phone, a key option turned on): add-on 'stopped' by Samsung's battery saver; firmware kind, nothing to fix"
+ },
  "9d907bef0ac0d1a2139bb6e2|0.34.1": {
   "at": "2026-10-30T09:08:21+07:00",
   "n": 1,
