@@ -345,39 +345,44 @@
   "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
  },
  "1246e79da13b1f97f2bdb7fc|0.47.0": {
-  "at": "2026-11-18T22:45:52+07:00",
+  "at": "2026-11-21T22:11:27+07:00",
   "n": 2,
-  "note": "keyfix_refused G-Two Box (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "G-Two Box: bound 0, add-on by -, a11y 0 = firmware takes the service out (known firmware kind, nothing to fix)"
  },
  "1246e79da13b1f97f2bdb7fc|0.49.0": {
-  "at": "2026-11-18T22:45:52+07:00",
+  "at": "2026-11-21T22:11:27+07:00",
   "n": 2,
-  "note": "keyfix_refused G-Two Box (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "G-Two Box: bound 0, add-on by -, a11y 0 = firmware takes the service out (known firmware kind, nothing to fix)"
  },
  "1246e79da13b1f97f2bdb7fc|0.50.0": {
-  "at": "2026-11-18T22:45:52+07:00",
+  "at": "2026-11-21T22:11:27+07:00",
   "n": 2,
-  "note": "keyfix_refused G-Two Box (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "G-Two Box: bound 0, add-on by -, a11y 0 = firmware takes the service out (known firmware kind, nothing to fix)"
  },
  "1246e79da13b1f97f2bdb7fc|0.51.0": {
-  "at": "2026-11-18T22:45:52+07:00",
+  "at": "2026-11-21T22:11:27+07:00",
   "n": 1,
-  "note": "keyfix_refused G-Two Box (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "G-Two Box: bound 0, add-on by -, a11y 0 = firmware takes the service out (known firmware kind, nothing to fix)"
  },
  "1246e79da13b1f97f2bdb7fc|0.52.0": {
-  "at": "2026-11-18T22:45:52+07:00",
+  "at": "2026-11-21T22:11:27+07:00",
   "n": 1,
-  "note": "keyfix_refused G-Two Box (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "G-Two Box: bound 0, add-on by -, a11y 0 = firmware takes the service out (known firmware kind, nothing to fix)"
  },
  "1246e79da13b1f97f2bdb7fc|0.53.0": {
-  "at": "2026-11-18T22:45:52+07:00",
+  "at": "2026-11-21T22:11:27+07:00",
   "n": 1,
-  "note": "keyfix_refused G-Two Box (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "G-Two Box: bound 0, add-on by -, a11y 0 = firmware takes the service out (known firmware kind, nothing to fix)"
  },
  "1246e79da13b1f97f2bdb7fc|0.53.1": {
-  "at": "2026-11-18T22:45:52+07:00",
+  "at": "2026-11-21T22:11:27+07:00",
   "n": 1,
-  "note": "keyfix_refused G-Two Box (Allwinner) on 0.53.1 too: firmware drops the a11y entry; nothing to fix"
+  "note": "G-Two Box: bound 0, add-on by -, a11y 0 = firmware takes the service out (known firmware kind, nothing to fix)"
+ },
+ "1246e79da13b1f97f2bdb7fc|0.55.0": {
+  "at": "2026-11-21T22:11:27+07:00",
+  "n": 1,
+  "note": "G-Two Box: bound 0, add-on by -, a11y 0 = firmware takes the service out (known firmware kind, nothing to fix)"
  },
  "13b5562e22b1aff18d3e7207|0.15.0": {
   "at": "2026-10-30T09:07:55+07:00",
@@ -2445,29 +2450,34 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "6ee3614a8b9bcabc17846802|0.29.0": {
-  "at": "2026-11-19T21:00:52+07:00",
+  "at": "2026-11-21T22:11:22+07:00",
   "n": 1,
-  "note": "Fire TV (AFTSS/AFTSSS): Amazon blocks local 127.0.0.1 ADB since 2024, Connection reset; message already shipped"
+  "note": "Fire TV AFTSS: Amazon blocks 127.0.0.1 ADB since 2024 (Connection reset = the same block as AFTSSS EOF); message already shipped"
  },
  "6ee3614a8b9bcabc17846802|0.31.0": {
-  "at": "2026-11-19T21:00:52+07:00",
+  "at": "2026-11-21T22:11:22+07:00",
   "n": 1,
-  "note": "Fire TV (AFTSS/AFTSSS): Amazon blocks local 127.0.0.1 ADB since 2024, Connection reset; message already shipped"
+  "note": "Fire TV AFTSS: Amazon blocks 127.0.0.1 ADB since 2024 (Connection reset = the same block as AFTSSS EOF); message already shipped"
  },
  "6ee3614a8b9bcabc17846802|0.49.0": {
-  "at": "2026-11-19T21:00:52+07:00",
+  "at": "2026-11-21T22:11:22+07:00",
   "n": 1,
-  "note": "Fire TV (AFTSS/AFTSSS): Amazon blocks local 127.0.0.1 ADB since 2024, Connection reset; message already shipped"
+  "note": "Fire TV AFTSS: Amazon blocks 127.0.0.1 ADB since 2024 (Connection reset = the same block as AFTSSS EOF); message already shipped"
  },
  "6ee3614a8b9bcabc17846802|0.51.0": {
-  "at": "2026-11-19T21:00:52+07:00",
+  "at": "2026-11-21T22:11:22+07:00",
   "n": 1,
-  "note": "Fire TV (AFTSS/AFTSSS): Amazon blocks local 127.0.0.1 ADB since 2024, Connection reset; message already shipped"
+  "note": "Fire TV AFTSS: Amazon blocks 127.0.0.1 ADB since 2024 (Connection reset = the same block as AFTSSS EOF); message already shipped"
  },
  "6ee3614a8b9bcabc17846802|0.53.1": {
-  "at": "2026-11-19T21:00:52+07:00",
+  "at": "2026-11-21T22:11:22+07:00",
+  "n": 2,
+  "note": "Fire TV AFTSS: Amazon blocks 127.0.0.1 ADB since 2024 (Connection reset = the same block as AFTSSS EOF); message already shipped"
+ },
+ "6ee3614a8b9bcabc17846802|0.55.0": {
+  "at": "2026-11-21T22:11:22+07:00",
   "n": 1,
-  "note": "Fire TV (AFTSS/AFTSSS): Amazon blocks local 127.0.0.1 ADB since 2024, Connection reset; message already shipped"
+  "note": "Fire TV AFTSS: Amazon blocks 127.0.0.1 ADB since 2024 (Connection reset = the same block as AFTSSS EOF); message already shipped"
  },
  "6f884cad973deca6bbf86856|0.38.1": {
   "at": "2026-11-02T22:17:48+07:00",
