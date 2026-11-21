@@ -80,7 +80,7 @@ class AtvFieldTest {
     @Test fun deletingMoreThanThereIsStopsAtEmpty() {
         show(1, "ab")
         atv.type(9, "", false)
-        assertEquals(9, keys().size)                                // all sent: the TV stops at empty, and may hold more than we know
+        assertEquals(2, keys().size)                                // the TV said it holds two: two are enough
         assertEquals("", atv.currentField!!.text)
     }
 
@@ -260,14 +260,15 @@ class AtvFieldTest {
         assertTrue(atv.hasField)
     }
 
-    @Test fun theTvsLastWordWinsOnceTheEchoWindowIsOver() {
+    @Test fun anInsertTheTvDroppedIsSentAgainNotTakenFromIt() {
         show(1, "a")
         atv.type(0, "b", false)                                     // we expect "ab"
         show(2, "a")                                                // the TV dropped the insert, and says nothing more
         assertEquals("ab", atv.currentField!!.text)                 // held back as our echo for now
         now += 2000
-        held.forEach { it() }
-        assertEquals("a", atv.currentField!!.text)
+        held.toList().forEach { it() }
+        assertEquals("ab", atv.currentField!!.text)                 // the box is what the person typed: the TV is brought to it
+        assertEquals(listOf("b", "b"), texts())
     }
 
     @Test fun aNewerEditCancelsTheLookAgain() {
@@ -277,7 +278,71 @@ class AtvFieldTest {
         now += 500
         atv.type(0, "c", false)                                     // typed since: that report is old news
         now += 2000
-        held.forEach { it() }
+        held.toList().forEach { it() }
         assertEquals("abc", atv.currentField!!.text)
+    }
+
+    /** A TV on the wire: applies Backspaces and inserts (at its end) to its field and says what it reads after each; [drop] says which to lose. */
+    private fun fakeTv(start: String, drop: (n: Int, what: String) -> Boolean = { _, _ -> false }) {
+        var text = start
+        var counter = 100L
+        var n = 0
+        show(counter, text)
+        atv.tap = { b ->
+            sent.add(b)
+            val k = keyOf(b)
+            val e = edit(b)
+            if (k == 67L || e != null) {
+                val what = if (k == 67L) "⌫" else e!![2] as String
+                if (!drop(n++, what)) {
+                    text = if (k == 67L) text.dropLast(1) else text + what
+                    show(++counter, text)
+                }
+            }
+        }
+    }
+
+    @Test fun aLongTextEditedAtItsStartReadsTheSameOnTheTv() {
+        fakeTv("https://m3upt.com/iptv/list.m3u?k=1")
+        atv.type(35, "Https://m3upt.com/iptv/list.m3u?k=1", false)  // the first letter changed: the rest goes again (the caret is at the end)
+        assertEquals("Https://m3upt.com/iptv/list.m3u?k=1", atv.currentField!!.text)
+        assertEquals(35, keys().size)
+        assertEquals(listOf("Https://m3upt.com/iptv/list.m3u?k=1"), texts())
+    }
+
+    @Test fun whatTheTvDroppedIsSentAgainFromWhatItSays() {
+        var lost = 0
+        fakeTv("https://m3u") { _, what -> what == "⌫" && lost++ in listOf(3, 7) }   // two Backspaces lost on the way (#31)
+        atv.type(11, "Https://m3u", false)
+        assertEquals("Https://m3u", atv.currentField!!.text)
+        assertEquals(listOf("Https://m3u"), texts())                 // inserted once, when the field was empty
+        assertEquals(13, keys().size)
+    }
+
+    @Test fun aDroppedInsertIsSentAgain() {
+        var first = true
+        fakeTv("ab") { _, what -> what != "⌫" && first.also { first = false } }   // lost without a word
+        atv.type(0, "c", false)
+        assertEquals(listOf("c"), texts())
+        now += 2000
+        held.toList().forEach { it() }                               // a moment later: the TV still says "ab"
+        assertEquals(listOf("c", "c"), texts())
+        assertEquals("abc", atv.currentField!!.text)
+    }
+
+    @Test fun aTvThatKeepsItsOwnTextHasItsWay() {
+        fakeTv("ab") { _, _ -> false }
+        atv.tap = { b -> sent.add(b); if (edit(b) != null) show(200L + sent.size, "ab") }   // says "ab" whatever comes
+        atv.type(0, "c", false)
+        assertEquals(3, texts().size)                                // tried three times, never forever
+        assertEquals("ab", atv.currentField!!.text)
+    }
+
+    @Test fun enterGoesOnceTheFieldReadsRight() {
+        fakeTv("ab")
+        atv.type(0, "c", true)
+        val enter = sent.indexOfFirst { keyOf(it) == 66L }
+        assertTrue(enter > sent.indexOfFirst { edit(it) != null })
+        assertNull(atv.currentField)
     }
 }

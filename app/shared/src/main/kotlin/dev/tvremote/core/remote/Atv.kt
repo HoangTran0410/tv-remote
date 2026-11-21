@@ -114,6 +114,12 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
 
     @Volatile private var shown: Field? = null
     @Volatile private var told: String? = null                        // the field's text as the TV last said it, ours or not
+    @Volatile private var onTv: String? = null                        // what the field reads, as the TV said or, silent, as we sent it
+    @Volatile private var mends = 0                                   // unanswered steps sent again since the person last typed
+    @Volatile private var reports = 0                                 // how many times the TV has said what its field reads
+    private val steering = java.util.concurrent.atomic.AtomicBoolean()   // the field is being brought to read as the box
+    @Volatile private var enterAfter = -1                             // Enter asked for while steering: the [lefts] it was asked at
+    private val steerer = Executors.newSingleThreadExecutor()
     @Volatile private var editedAt = 0L                               // when we last sent text: the TV's echo of it must not overwrite the text typed since
     @Volatile private var deletedAt = 0L                              // when we last sent Backspaces to the field: an insert right after waits for them
     @Volatile private var submitted: String? = null                   // the text Enter went with: a late report of it must not bring the field back
@@ -252,9 +258,9 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
             val c = st[1]?.firstOrNull() as? Long ?: 0L
             if (c != 0L) { field = c; fieldFromStatus = true }
             val v = (st[2]?.firstOrNull() as? ByteArray)?.toString(Charsets.UTF_8) ?: ""
-            told = v
+            told = v; onTv = v; reports++
             val f = shown ?: return
-            if (clock() - editedAt < ECHO_MS) { recheck(); return }   // our own edit coming back: ours is newer
+            if (echo()) { recheck(); return }                         // our own edit coming back: ours is newer
             val l = (st[6]?.firstOrNull() as? ByteArray)?.toString(Charsets.UTF_8) ?: f.label
             if (v != f.text || l != f.label) setField(Field(v, l))
         }
@@ -285,9 +291,9 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
             val l = (p[6]?.firstOrNull() as? ByteArray)?.toString(Charsets.UTF_8) ?: ""
             val c = p[1]?.firstOrNull() as? Long ?: 0L
             if (c != 0L) { field = c; fieldFromStatus = true }
-            told = v
+            told = v; onTv = v; reports++
             val f = shown
-            if (f != null && clock() - editedAt < ECHO_MS) { recheck(); return@let }   // our own edit coming back: ours is newer
+            if (f != null && echo()) { recheck(); return@let }        // our own edit coming back: ours is newer
             if (f == null && v == submitted && clock() - submittedAt < ECHO_MS) return@let   // the text Enter went with, reported late: the field is gone
             if (f == null || f.text != v || f.label != l) setField(Field(v, l))
         }
@@ -297,6 +303,9 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
      * A report held back as our own echo may be the TV's last word on the field (an insert it dropped): once no edit of ours is
      * that recent, what the TV said wins over what we expected.
      */
+    /** A report now is our own edit coming back (or one half way, while steering), not the TV's word. */
+    private fun echo() = steering.get() || clock() - editedAt < ECHO_MS
+
     private fun recheck() {
         val e = editedAt
         later(maxOf(0L, ECHO_MS - (clock() - e)) + 50) {
@@ -362,6 +371,14 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
             if (enter) key(66, SHORT)
             return
         }
+        if (told != null && (del > 0 || add.isNotEmpty() || steering.get())) {   // a TV that says its text: steered to the box
+            val base = f.text
+            val at = try { base.offsetByCodePoints(base.length, -minOf(del, base.codePointCount(0, base.length))) } catch (e: Exception) { 0 }
+            shown = Field(base.substring(0, at) + add, f.label)       // no onField: the screen that typed it has it
+            mends = 0
+            steer(if (enter) l else -1)
+            return
+        }
         if (del > 0 || add.isNotEmpty()) {
             val base = f.text
             val at = try { base.offsetByCodePoints(base.length, -minOf(del, base.codePointCount(0, base.length))) } catch (e: Exception) { 0 }
@@ -385,6 +402,93 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
             if (enter) settle(if (known) base.substring(0, cut) + put else null, if (put.isEmpty()) presses else 1)
         } else if (enter && clock() - editedAt < ENTER_WAIT_MS) settle(if (told != null) f.text else null, 1)   // live: Enter alone, right after the last letter
         if (enter) submit(l)
+    }
+
+    /**
+     * Brings the TV's field to read as the box ([shown]), from what the TV last said it reads: a few Backspaces or one insert at a
+     * time, each waiting for the TV to say what it did, the next worked out from that. An insert lands at the TV's caret (its
+     * end; arrows move the TV's keyboard, not the caret, a BRAVIA, measured) and a key or an insert with an old counter is
+     * dropped, so sending all at once against what we expected left the field and the box apart: a long URL edited at its start
+     * lost letters, or had its end typed in again (#31). Typing while it runs only moves where it is going. A step the TV
+     * says nothing about is taken as done, and looked at again a moment later; a TV that keeps its own text over [STEER_TRIES]
+     * tries has its way.
+     * [enter]: the [lefts] Enter was asked at, sent once the field reads right.
+     */
+    private fun steer(enter: Int) {
+        editedAt = clock()
+        if (enter >= 0) enterAfter = enter
+        if (!steering.compareAndSet(false, true)) return             // the running one picks up the new text
+        val run = {
+            do {
+                try { steerOnce() } catch (ignored: Exception) { } finally { steering.set(false) }
+                val more = !closed && (enterAfter >= 0 || shown.let { it != null && it.text != onTv })
+            } while (more && steering.compareAndSet(false, true))      // typed in the moment it stopped
+        }
+        if (tap != null || sock == null) run() else try { steerer.execute(run) } catch (e: java.util.concurrent.RejectedExecutionException) { steering.set(false) }
+    }
+
+    private fun steerOnce() {
+        var have = onTv ?: told ?: ""
+        var stuck = 0
+        var silent = false
+        while (!closed) {
+            val f = shown ?: break
+            val want = f.text
+            if (have == want) break
+            var keep = 0
+            while (keep < have.length && keep < want.length && have[keep] == want[keep]) keep++
+            if (keep > 0 && Character.isHighSurrogate(have[keep - 1])) keep--
+            val n = reports
+            val expect: String
+            var presses = 0
+            if (have.length > keep) {
+                var cut = have.length
+                while (cut > keep && presses < STEER_KEYS) { cut = backspaceFrom(have, cut); presses++ }   // a Backspace takes a whole emoji
+                repeat(presses) { backspace() }
+                expect = have.substring(0, cut)
+            } else {
+                insert(want.substring(keep))
+                expect = want
+            }
+            val heard = hear(n, expect, maxOf(presses, 1))
+            silent = heard == null
+            if (heard == null) { have = expect; continue }            // it said nothing: taken as done, looked at again below
+            if (heard == have && ++stuck >= STEER_TRIES) {            // it keeps its own text: its word wins
+                setField(Field(heard, f.label))
+                break
+            }
+            if (heard != have) stuck = 0
+            have = heard
+        }
+        onTv = have
+        editedAt = clock()
+        val e = enterAfter
+        enterAfter = -1
+        if (e >= 0) submit(e)
+        else if (silent) later(ECHO_MS) {                             // the last step went unanswered: an edit dropped without a word is sent again
+            val f = shown
+            val t = told
+            if (!steering.get() && f != null && t != null && t != f.text && mends++ < STEER_TRIES) { onTv = t; steer(-1) }
+        }
+    }
+
+    /** Waits for the TV to say its field reads [expect] after [n] reports (or to fall quiet); what it last said, or null if nothing. */
+    private fun hear(n: Int, expect: String, keys: Int): String? {
+        if (tap == null && sock != null) {
+            fun now() = System.nanoTime() / 1_000_000
+            val end = now() + SETTLE_MAX_MS + SETTLE_PER_MS * keys
+            var seen = n
+            var quiet = now()
+            try {
+                while (now() < end && !closed) {
+                    val r = reports
+                    if (r != n && told == expect) break
+                    if (r != seen) { seen = r; quiet = now() } else if (r != n && now() - quiet > QUIET_MS) break   // it said something else and stopped
+                    Thread.sleep(15)
+                }
+            } catch (ignored: InterruptedException) { }
+        }
+        return if (reports != n) told else null
     }
 
     /** Backspace for the field: kept longer than other keys when the link is slow, a settle may hold the queue for seconds. */
@@ -500,6 +604,7 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
     override fun close() {
         closed = true
         out.shutdown()
+        steerer.shutdown()
         val s = sock
         Thread { try { s?.close() } catch (ignored: Exception) { } }.start()   // may be called on the UI thread
     }
@@ -616,6 +721,9 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
         private const val ECHO_MS = 1500L
         private const val DELETED_WAIT_MS = 2000L
         private const val ENTER_WAIT_MS = 3000L
+        private const val STEER_KEYS = 10                             // Backspaces sent before waiting for the TV to say
+        private const val STEER_TRIES = 3
+        private const val QUIET_MS = 400L
         private const val FIELD_STALE_MS = 10_000L
         private val LATER by lazy { java.util.Timer("atv-field", true) }
 

@@ -162,7 +162,9 @@ function fieldFollow() {
   const f = NATIVE() ? null : STATE.field, seq = f ? f.seq : -1;     // a reported field takes the typing, ADB or not (#31): the box mirrors it
   if (seq === fieldSeen) return; fieldSeen = seq;
   if (!f) { if (live) txt.value = typed = ''; txt.placeholder = live ? T('remote.type_on_the_tv') : T('remote.type_then_send'); return; }
-  txt.value = typed = f.text; txt.placeholder = f.label || (live ? T('remote.type_on_the_tv') : T('remote.type_then_send'));
+  if (txt.value !== f.text) { const back = txt.value.length - (txt.selectionEnd ?? txt.value.length);   // the caret keeps its place from the end
+    txt.value = f.text; if (document.activeElement === txt) { const at = Math.max(0, f.text.length - back); txt.setSelectionRange(at, at); } }
+  typed = f.text; txt.placeholder = f.label || (live ? T('remote.type_on_the_tv') : T('remote.type_then_send'));
   if (kbdAutoOn() && currentTab === 'remote' && !$('#kbd').disabled && !$('#kbdbtn').classList.contains('on')) { setKbd(true); txt.focus({ preventScroll: true }); }
 }
 // Two ways to type, as in the phone app. Live (⚡ on): the TV follows every letter. Send: write first, then send it in one go.

@@ -68,21 +68,15 @@ internal fun MainActivity.typedLive(now: String) {
             onTv = now
             return
         }
-        var keep = 0                                              // with a field: its text, edited; without: Backspace keys, then keys (or the keyboard service)
+        if (it.hasField) { fieldEdit(it, now); return }           // with a field: its text, edited
+        var keep = 0                                              // without: Backspace keys, then keys (or the keyboard service)
         while (keep < onTv.length && keep < now.length && onTv[keep] == now[keep]) keep++
         if (keep > 0 && Character.isHighSurrogate(onTv[keep - 1])) keep--   // never half an emoji
         it.type(onTv.codePointCount(keep, onTv.length), now.substring(keep), false)
         onTv = now
         return
     }
-    fieldLink?.takeIf { it.hasField }?.let { f ->                 // ADB on, and the TV reports its field: its text, edited (#31)
-        var keep = 0
-        while (keep < onTv.length && keep < now.length && onTv[keep] == now[keep]) keep++
-        if (keep > 0 && Character.isHighSurrogate(onTv[keep - 1])) keep--
-        f.type(onTv.codePointCount(keep, onTv.length), now.substring(keep), false)
-        onTv = now
-        return
-    }
+    fieldLink?.takeIf { it.hasField }?.let { f -> fieldEdit(f, now); return }   // ADB on, and the TV reports its field (#31)
     val tv = tv
     if (tv == null || !tv.ready()) return
     var same = 0
@@ -93,13 +87,25 @@ internal fun MainActivity.typedLive(now: String) {
     onTv = now
 }
 
+/** The TV's field gets the box's change: Backspaces back to where it differs, then the rest typed (#31). */
+private fun MainActivity.fieldEdit(f: Atv, now: String) {
+    var keep = 0                                                  // the TV's caret stays at the end (its keyboard takes the arrows): from the
+    while (keep < onTv.length && keep < now.length && onTv[keep] == now[keep]) keep++   // first change on, deleted and typed again
+    if (keep > 0 && Character.isHighSurrogate(onTv[keep - 1])) keep--   // never half an emoji
+    f.type(onTv.codePointCount(keep, onTv.length), now.substring(keep), false)
+    onTv = now
+}
+
 /** The TV's text field appeared, changed or went (Atv.onField): the box starts with what is in it, with its label as the hint. */
 internal fun MainActivity.fieldShown(f: Atv.Field?) {
     quiet = true
     if (f == null) { if (live) textBox.setText("") }              // nothing to mirror any more; with Send, the words wait
     else {
-        textBox.setText(f.text)
-        textBox.setSelection(textBox.text.length)
+        if (f.text != textBox.text.toString()) {                  // the same text: the caret stays where the person put it
+            val fromEnd = textBox.text.length - textBox.selectionEnd  // changed on the TV: the caret keeps its place from the end
+            textBox.setText(f.text)
+            textBox.setSelection((f.text.length - fromEnd).coerceIn(0, f.text.length))
+        }
         textBox.hint = f.label.ifEmpty { if (live) T("typing.live_the_tv_gets") else T("typing.type_then_send") }
     }
     quiet = false

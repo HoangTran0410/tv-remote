@@ -4,6 +4,11 @@ Ba số phiên bản, mỗi số chỉ tăng khi phần của nó đổi: `VERSI
 
 Three version numbers, each bumped only when its own part changes: `VERSION` (the release and the computer app), `app/android/VERSION` (phone app), `app/tv/VERSION` (TV app). Releases with the install files are on the [Releases](https://github.com/HoangTran0410/tv-remote/releases) page; the apps check there for updates.
 
+## Unreleased
+
+- Typing into the TV's text box (phone app and computer app): the TV now ends up with exactly what the box says, also after an edit in the middle of a long text (a URL with its first letter changed lost letters, or had its end typed twice, #31). The app sends a few keys at a time and checks what the TV says it holds before the next ones.
+- The text box keeps the cursor where you put it when the TV reports its text back.
+
 ## 0.57.0 - 2026-11-21
 
 Web 0.57.0 · Phone app 0.54.0 · TV app 0.55.0 · TV Home 0.36.0 · TV Channels 0.26.0 · TV Games 0.26.0 · TV Apps 0.10.0
