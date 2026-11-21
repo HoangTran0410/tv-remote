@@ -4549,6 +4549,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "eba4e59d3a94e331129f3872|0.55.0": {
+  "at": "2026-11-21T19:28:49+07:00",
+  "n": 1,
+  "note": "FPT Play 650 Android 11 (not the owner's): add-on 'stopped', a11y 0 = force-stopped by the firmware, Android drops the a11y entry (JmGO kind); nothing to fix"
+ },
  "ec35e370d1f1ed3547aef3ac|0.30.0": {
   "at": "2026-10-28T14:05:10+07:00",
   "n": 1,
