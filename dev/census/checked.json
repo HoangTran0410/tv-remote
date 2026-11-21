@@ -2909,6 +2909,11 @@
   "n": 2,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "8bd54e6fc4bb1f27cb7fecfa|0.55.0": {
+  "at": "2026-11-21T16:03:53+07:00",
+  "n": 1,
+  "note": "Xiaomi MiTV sdk 28: service taken out by the firmware (like MiTV-MZTU0); nothing to fix"
+ },
  "8c37e8d6e0a4d7dcfdb19359|0.53.6": {
   "at": "2026-11-19T21:00:48+07:00",
   "n": 1,
