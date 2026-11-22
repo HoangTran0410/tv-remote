@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- The self-check: a TV whose ADB port opens but never answers is now "ADB is on, but it does not let this app in" (restart the TV), not "the TV's remote service does not answer".
+
 - TV Home tab: opening TV Home's settings no longer fails on a TV whose browser is older than Chrome 92 (Android 12 boxes with an old WebView).
 
 - Typing into the TV's text box (phone app and computer app): the TV now ends up with exactly what the box says, also after an edit in the middle of a long text (a URL with its first letter changed lost letters, or had its end typed twice, #31). The app sends a few keys at a time and checks what the TV says it holds before the next ones.

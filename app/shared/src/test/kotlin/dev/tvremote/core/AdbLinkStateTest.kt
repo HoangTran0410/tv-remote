@@ -32,6 +32,14 @@ class AdbLinkStateTest {
         org.junit.Assert.assertFalse(again, again!!.startsWith(AdbLink.STILL))   // it dials (and fails on port 1 for its own reason)
     }
 
+    /** The self-check: a redial after a failure is a TV whose ADB did not let us in (ADB_STUCK), not "ADB answers" (support 38864996). */
+    @Test fun selfCheckSeesARedialAsStuck() {
+        val l = AdbLink(Files.createTempDirectory("keys").toFile(), "127.0.0.1:1")
+        try { l.get() } catch (e: java.io.IOException) { }                 // failed
+        AdbLink::class.java.getDeclaredField("lastTry").apply { isAccessible = true }.setLong(l, 0L)
+        assertEquals("closed", Diagnose.Real(l).adb("127.0.0.1:1"))      // dialing again, the page's "unknown"; the self-check's "closed"
+    }
+
     private fun set(l: AdbLink, name: String, v: Any) = AdbLink::class.java.getDeclaredField(name).apply { isAccessible = true }.set(l, v)
 
     /** The wait grows for a TV that never lets us in, and stops after questions nobody answered (LauncherGuard re-asked every ~4 min). */

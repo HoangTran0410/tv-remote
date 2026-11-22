@@ -277,7 +277,9 @@ object Diagnose {
         override fun vpn(): Boolean = Lan.wifi() != null || tunnelUp()
         override fun adb(host: String): String? {
             val l = link?.takeIf { it.host == host } ?: return null
-            return if (l.waitingForUser()) "waiting" else l.state()
+            // a link whose last dial failed is redialling ("unknown"), yet its TV did not answer: stuck, not "ADB answers" (a box whose
+            // adbd accepts and never replies read as remote_off, "keys go through ADB", support 38864996)
+            return if (l.waitingForUser()) "waiting" else l.state().let { if (it == "unknown" && l.failing()) "closed" else it }
         }
 
         override fun wireless(host: String): Boolean = dev.tvremote.core.adb.AdbTls.available() && dev.tvremote.core.adb.AdbTls.wireless(host, 1500, bindUdp).any
