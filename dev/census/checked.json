@@ -754,6 +754,11 @@
   "n": 1,
   "note": "system_server died (DeadSystemException) on a 'Pixel 10 Pro XL' Android 13 box; the second is Guard's dialog for the first"
  },
+ "27f219c588461708026d7a8c|0.55.0": {
+  "at": "2026-11-23T06:41:15+07:00",
+  "n": 1,
+  "note": "Firefox on the TV's page (HiSTB Q96): screen.js stopped before 'let currentTab' and talk.js never ran (2de8ab0a), same page load; the first error was not reported. No screen.js top-level call fails on a current Firefox: most likely a cut load on a weak box. Watch for a repeat."
+ },
  "28126a90d382b19bee86236d|0.21.1": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
@@ -828,6 +833,11 @@
   "at": "2026-10-26T21:47:36+07:00",
   "n": 1,
   "note": "fixed in 5d4096ec"
+ },
+ "2de8ab0ac7800b7a5c7474d0|0.55.0": {
+  "at": "2026-11-23T06:41:15+07:00",
+  "n": 1,
+  "note": "same page load as 27f219c5: talk.js not run (cut load suspected)"
  },
  "2df6318a25d093214bc16108|0.32.1": {
   "at": "2026-10-30T09:08:08+07:00",
