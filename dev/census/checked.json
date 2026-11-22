@@ -395,14 +395,19 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
  "13e27d831d17fd88362a6de6|0.47.0": {
-  "at": "2026-11-19T11:09:05+07:00",
+  "at": "2026-11-22T21:11:36+07:00",
   "n": 1,
-  "note": "keyfix_refused Skyworth 4K Google TV Stick (sdk 34, rs allow, add-on running, bound 1 = another a11y service): firmware/other app drops our entry (operator kind); nothing to fix"
+  "note": "Skyworth 4K Google TV Stick sdk 34: others 1, rs allow: another a11y service, ours dropped by firmware (operator kind); clients say keys work only on TV Home"
  },
  "13e27d831d17fd88362a6de6|0.53.1": {
-  "at": "2026-11-19T11:09:05+07:00",
+  "at": "2026-11-22T21:11:36+07:00",
   "n": 1,
-  "note": "keyfix_refused Skyworth 4K Google TV Stick (sdk 34, rs allow, add-on running, bound 1 = another a11y service): firmware/other app drops our entry (operator kind); nothing to fix"
+  "note": "Skyworth 4K Google TV Stick sdk 34: others 1, rs allow: another a11y service, ours dropped by firmware (operator kind); clients say keys work only on TV Home"
+ },
+ "13e27d831d17fd88362a6de6|0.55.0": {
+  "at": "2026-11-22T21:11:36+07:00",
+  "n": 1,
+  "note": "Skyworth 4K Google TV Stick sdk 34: others 1, rs allow: another a11y service, ours dropped by firmware (operator kind); clients say keys work only on TV Home"
  },
  "13ebb1a66fdaf61270829f5a|0.26.3": {
   "at": "2026-11-05T10:40:10+07:00",
