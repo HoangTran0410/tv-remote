@@ -190,7 +190,7 @@ function homePlaced(conf) {
   const keys = (conf.widgets || []).filter((k) => k !== 'timer' && (!/^qr\d$/.test(k) || (conf.qrs && conf.qrs[k])));   // as HomeConfig.placed: a timer counts as not set
   if (!keys.length || typeof homePack !== 'function') return keys;
   const big = keys.filter((k) => homeSize(conf, k) === 'big'), note = !!conf.note;
-  const p = conf.wplace === 'left' || conf.wplace === 'right' ? homePackColumn(keys, big, note, 378) : homePackRows(keys, big, note, conf.wplace === 'top2' ? 2 : 1).at(-1);
+  const p = conf.wplace === 'left' || conf.wplace === 'right' ? homePackColumn(keys, big, note, 378) : homePackRows(keys, big, note, conf.wplace === 'top2' ? 2 : 1).slice(-1)[0];
   return keys.filter((k) => !(p.waiting || []).includes(k));
 }
 

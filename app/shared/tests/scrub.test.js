@@ -39,3 +39,12 @@ test('no page script uses :is(), :where() or :has() in a selector (old WebView)'
     .filter((f) => /:(is|where|has)\(/.test(fs.readFileSync(path.join(d, f), 'utf8').replace(/^\s*\/\/.*$/gm, '').replace(/ \/\/ .*$/gm, '')));
   assert.deepEqual(bad, []);
 });
+
+// Calls newer than Chrome 80 (the page's floor, js/old.js) throw "is not a function" on old WebViews: .at() (Chrome 92) broke TV
+// Home's preview on an Android 12 box (census 73a70475). Same for findLast (97), replaceAll (85), Object.hasOwn (93), structuredClone (98).
+test('no page script calls an API newer than Chrome 80 (old WebView)', () => {
+  const d = path.join(__dirname, '../web/js');
+  const bad = fs.readdirSync(d).filter((f) => f.endsWith('.js'))
+    .filter((f) => /\.(at|findLast|findLastIndex|replaceAll|toSorted|toReversed|toSpliced)\(|Object\.hasOwn\(|structuredClone\(/.test(fs.readFileSync(path.join(d, f), 'utf8').replace(/^\s*\/\/.*$/gm, '').replace(/ \/\/ .*$/gm, '')));
+  assert.deepEqual(bad, []);
+});
