@@ -3310,34 +3310,54 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "a468264ed0a50f4f2ddd7dce|0.26.3": {
-  "at": "2026-11-10T20:00:59+07:00",
+  "at": "2026-11-22T21:01:27+07:00",
   "n": 1,
-  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+  "note": "Strong (Skyworth, Amlogic) 4K box: Allow USB debugging never answered; old TV Setups (0.26-0.54) stay old since AutoUpdate needs ADB; TV shows the Allow steps; not a code fault"
  },
  "a468264ed0a50f4f2ddd7dce|0.30.0": {
-  "at": "2026-11-10T20:00:59+07:00",
+  "at": "2026-11-22T21:01:27+07:00",
   "n": 2,
-  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+  "note": "Strong (Skyworth, Amlogic) 4K box: Allow USB debugging never answered; old TV Setups (0.26-0.54) stay old since AutoUpdate needs ADB; TV shows the Allow steps; not a code fault"
  },
  "a468264ed0a50f4f2ddd7dce|0.34.1": {
-  "at": "2026-11-10T20:00:59+07:00",
+  "at": "2026-11-22T21:01:27+07:00",
   "n": 4,
-  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+  "note": "Strong (Skyworth, Amlogic) 4K box: Allow USB debugging never answered; old TV Setups (0.26-0.54) stay old since AutoUpdate needs ADB; TV shows the Allow steps; not a code fault"
  },
  "a468264ed0a50f4f2ddd7dce|0.35.0": {
-  "at": "2026-11-10T20:00:59+07:00",
+  "at": "2026-11-22T21:01:27+07:00",
   "n": 1,
-  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+  "note": "Strong (Skyworth, Amlogic) 4K box: Allow USB debugging never answered; old TV Setups (0.26-0.54) stay old since AutoUpdate needs ADB; TV shows the Allow steps; not a code fault"
  },
  "a468264ed0a50f4f2ddd7dce|0.37.0": {
-  "at": "2026-11-10T20:00:59+07:00",
+  "at": "2026-11-22T21:01:27+07:00",
   "n": 1,
-  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+  "note": "Strong (Skyworth, Amlogic) 4K box: Allow USB debugging never answered; old TV Setups (0.26-0.54) stay old since AutoUpdate needs ADB; TV shows the Allow steps; not a code fault"
  },
  "a468264ed0a50f4f2ddd7dce|0.45.1": {
-  "at": "2026-11-10T20:00:59+07:00",
+  "at": "2026-11-22T21:01:27+07:00",
+  "n": 7,
+  "note": "Strong (Skyworth, Amlogic) 4K box: Allow USB debugging never answered; old TV Setups (0.26-0.54) stay old since AutoUpdate needs ADB; TV shows the Allow steps; not a code fault"
+ },
+ "a468264ed0a50f4f2ddd7dce|0.49.0": {
+  "at": "2026-11-22T21:01:27+07:00",
   "n": 2,
-  "note": "ADB allow: the TV's 'Allow USB debugging?' was not answered by the person (state, not a bug); TV Setup already shows how"
+  "note": "Strong (Skyworth, Amlogic) 4K box: Allow USB debugging never answered; old TV Setups (0.26-0.54) stay old since AutoUpdate needs ADB; TV shows the Allow steps; not a code fault"
+ },
+ "a468264ed0a50f4f2ddd7dce|0.50.0": {
+  "at": "2026-11-22T21:01:27+07:00",
+  "n": 1,
+  "note": "Strong (Skyworth, Amlogic) 4K box: Allow USB debugging never answered; old TV Setups (0.26-0.54) stay old since AutoUpdate needs ADB; TV shows the Allow steps; not a code fault"
+ },
+ "a468264ed0a50f4f2ddd7dce|0.52.0": {
+  "at": "2026-11-22T21:01:27+07:00",
+  "n": 2,
+  "note": "Strong (Skyworth, Amlogic) 4K box: Allow USB debugging never answered; old TV Setups (0.26-0.54) stay old since AutoUpdate needs ADB; TV shows the Allow steps; not a code fault"
+ },
+ "a468264ed0a50f4f2ddd7dce|0.54.0": {
+  "at": "2026-11-22T21:01:27+07:00",
+  "n": 1,
+  "note": "Strong (Skyworth, Amlogic) 4K box: Allow USB debugging never answered; old TV Setups (0.26-0.54) stay old since AutoUpdate needs ADB; TV shows the Allow steps; not a code fault"
  },
  "a54cc4711ab55a41b38bd0ab|0.29.0": {
   "at": "2026-11-11T06:02:22+07:00",
