@@ -5049,6 +5049,11 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "ff386e268356557453080df4|0.53.0": {
+  "at": "2026-11-23T02:55:23+07:00",
+  "n": 3,
+  "note": "Sony BRAVIA 4K VH2 sdk 31 (mt5895): add-on stopped, force-stopped 3x by the TV (JmGO kind); clients say keys work only on TV Home"
+ },
  "ff598fd52ae7ab8545756b95|0.52.0": {
   "at": "2026-11-15T08:14:41+07:00",
   "n": 1,
