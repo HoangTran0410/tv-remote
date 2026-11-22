@@ -75,3 +75,10 @@ test('pm\'s own words for a full TV (Android 14: "not enough space") say out of 
   for (const m of ['Exception occurred while executing \'install\':\nandroid.os.ParcelableException: java.io.IOException: Requested internal only, but not enough space', 'Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]'])
     assert.equal(friendly(m), 'The TV is out of storage.');
 });
+
+// PmInstall.NO_ANSWER: an install that printed nothing (ADB dropped under it) is worded, not "could not install: " (support 12596839)
+test('an install the TV never answered says so, on its own and inside a launcher install', () => {
+  const friendly = friendlyOf('en'), words = friendly('the TV stopped answering during the install');
+  assert.match(words, /stopped answering/i);
+  assert.equal(friendly('launcher:install:the TV stopped answering during the install'), words);
+});

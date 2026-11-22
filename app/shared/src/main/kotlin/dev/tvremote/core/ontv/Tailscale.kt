@@ -52,7 +52,7 @@ class Tailscale(private val adb: Adb, private val dir: File?) {
         try {
             step.at("install", 60)
             val out = setup.install(apk)
-            if (!out.contains("Success")) throw IOException("install failed: " + out.trim().lines().lastOrNull())
+            if (!out.contains("Success")) throw IOException("install failed: " + dev.tvremote.core.adb.PmInstall.why(out))
         } finally { apk.delete() }
     }
 

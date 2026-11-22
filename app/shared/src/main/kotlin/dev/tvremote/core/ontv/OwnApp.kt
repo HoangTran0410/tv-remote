@@ -76,7 +76,7 @@ class OwnApp(val pkg: String, val apk: String, private val versionKey: String, p
             if (!go()) return now
             val out = Setup(adb, dir, lang) { }.install(file)
             PlayProtect.check(dir, r.sha256, out)
-            if (!out.contains("Success")) throw IOException("launcher:install:" + out.trim().lines().lastOrNull().orEmpty().take(200))
+            if (!out.contains("Success")) throw IOException("launcher:install:" + dev.tvremote.core.adb.PmInstall.why(out))
             if (afterInstall.isNotEmpty()) sh(afterInstall)
         } finally { file.delete() }
         try { adb.shell("cmd package compile -m speed -f $pkg >/dev/null 2>&1", 120000) } catch (x: IOException) { }   // a cold start on a slow chip, as LauncherInstall

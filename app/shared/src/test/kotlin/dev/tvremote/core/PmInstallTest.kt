@@ -72,4 +72,13 @@ class PmInstallTest {
         assertTrue(en, en.contains("firmware") && en != vi)
         assertTrue(Errors.say(java.io.IOException(REFUSAL), "en").contains("firmware"))   // pm's own refusal, were it ever to reach a person
     }
+
+    /** An install that printed nothing (ADB dropped under it) names that, not an empty "could not install: " (support 12596839). */
+    @Test fun noAnswerIsWorded() {
+        assertEquals(dev.tvremote.core.adb.PmInstall.NO_ANSWER, dev.tvremote.core.adb.PmInstall.why(""))
+        assertEquals(dev.tvremote.core.adb.PmInstall.NO_ANSWER, dev.tvremote.core.adb.PmInstall.why("\n  \n"))
+        assertEquals("Failure [INSTALL_FAILED_OLDER_SDK]", dev.tvremote.core.adb.PmInstall.why("Performing Streamed Install\nFailure [INSTALL_FAILED_OLDER_SDK]\n"))
+        val said = Errors.say(java.io.IOException("launcher:install:" + dev.tvremote.core.adb.PmInstall.why("")), "en")
+        assertTrue(said, said.contains("stopped answering"))
+    }
 }

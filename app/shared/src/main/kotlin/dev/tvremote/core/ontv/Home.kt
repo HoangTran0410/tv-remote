@@ -108,7 +108,7 @@ object Home {
             val shown = sh("dumpsys activity activities | grep -m1 -E 'topResumedActivity|mResumedActivity'").contains(HomeConfig.PKG + "/")
             val out = Setup(adb, dir, lang) { }.install(file)
             PlayProtect.check(dir, r.sha256, out)
-            if (!out.contains("Success")) throw IOException("launcher:install:" + out.trim().lines().lastOrNull().orEmpty().take(200))
+            if (!out.contains("Success")) throw IOException("launcher:install:" + dev.tvremote.core.adb.PmInstall.why(out))
             // the install kills the home on screen and Android does not start it again: the last app used came up in its place
             // (an FPT box showed TV Channels, nothing pressed). Also in standby (AutoUpdate's time), where it waited for the wake-up
             if (shown) sh("am start -a android.intent.action.MAIN -c android.intent.category.HOME >/dev/null 2>&1")

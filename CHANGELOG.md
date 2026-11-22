@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- An install the TV never answered (ADB dropped during it) now says "The TV stopped answering midway" instead of an empty "could not install:".
+
 - The self-check: a TV whose ADB port opens but never answers is now "ADB is on, but it does not let this app in" (restart the TV), not "the TV's remote service does not answer".
 
 - TV Home tab: opening TV Home's settings no longer fails on a TV whose browser is older than Chrome 92 (Android 12 boxes with an old WebView).

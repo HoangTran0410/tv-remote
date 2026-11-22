@@ -10,6 +10,10 @@ import dev.tvremote.core.WireLog
 object PmInstall {
     /** What the error says when both ways failed (Errors.say and `friendly()` in js/core.js turn it into words). */
     const val BLOCKED = "install blocked by this TV's firmware"
+    /** `pm install` printed nothing: the shell ended under it (a weak box dropped ADB mid-install, support 12596839). Words: Errors.say / friendly(). */
+    const val NO_ANSWER = "the TV stopped answering during the install"
+    /** Why an install that did not print Success failed: its last line, or [NO_ANSWER] when it printed nothing. */
+    fun why(out: String): String = out.trim().lines().lastOrNull { it.isNotBlank() }?.trim()?.take(200) ?: NO_ANSWER
     private val REFUSED = Regex("disabled from pm|install apk has be disabled", RegexOption.IGNORE_CASE)
     private val ID = Regex("\\[(\\d+)]")
 
