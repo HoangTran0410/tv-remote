@@ -2735,19 +2735,29 @@
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
  "828f06d14524e826ed528989|0.34.1": {
-  "at": "2026-11-08T06:06:15+07:00",
+  "at": "2026-11-23T14:00:34+07:00",
   "n": 1,
-  "note": "AI PONT (Changhong, Android 11): allow question unanswered on 3 installs, likely never shown; TV Setup now points to Wireless debugging after it"
+  "note": "AI PONT (Changhong CHiQ mt5867 a14 + oboni a11): Allow question not answered in 3 min; adbd up, secure=1. Same as any TV where nobody taps Allow; nothing points to a missing dialog"
  },
  "828f06d14524e826ed528989|0.35.0": {
-  "at": "2026-11-08T06:06:15+07:00",
+  "at": "2026-11-23T14:00:34+07:00",
   "n": 1,
-  "note": "AI PONT (Changhong, Android 11): allow question unanswered on 3 installs, likely never shown; TV Setup now points to Wireless debugging after it"
+  "note": "AI PONT (Changhong CHiQ mt5867 a14 + oboni a11): Allow question not answered in 3 min; adbd up, secure=1. Same as any TV where nobody taps Allow; nothing points to a missing dialog"
  },
  "828f06d14524e826ed528989|0.47.0": {
-  "at": "2026-11-08T06:06:15+07:00",
-  "n": 3,
-  "note": "AI PONT (Changhong, Android 11): allow question unanswered on 3 installs, likely never shown; TV Setup now points to Wireless debugging after it"
+  "at": "2026-11-23T14:00:34+07:00",
+  "n": 4,
+  "note": "AI PONT (Changhong CHiQ mt5867 a14 + oboni a11): Allow question not answered in 3 min; adbd up, secure=1. Same as any TV where nobody taps Allow; nothing points to a missing dialog"
+ },
+ "828f06d14524e826ed528989|0.48.0": {
+  "at": "2026-11-23T14:00:34+07:00",
+  "n": 1,
+  "note": "AI PONT (Changhong CHiQ mt5867 a14 + oboni a11): Allow question not answered in 3 min; adbd up, secure=1. Same as any TV where nobody taps Allow; nothing points to a missing dialog"
+ },
+ "828f06d14524e826ed528989|0.55.0": {
+  "at": "2026-11-23T14:00:34+07:00",
+  "n": 2,
+  "note": "AI PONT (Changhong CHiQ mt5867 a14 + oboni a11): Allow question not answered in 3 min; adbd up, secure=1. Same as any TV where nobody taps Allow; nothing points to a missing dialog"
  },
  "82bbd4343b46d5b4f2b8ec5e|0.30.0": {
   "at": "2026-10-28T14:05:17+07:00",
