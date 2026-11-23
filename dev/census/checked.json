@@ -2955,9 +2955,14 @@
   "note": "Allwinner H713 (sun50iw12p1) projector firmware drops the a11y entry, a11y 0, rs -; same kind as Allwinner/JmGO, nothing to fix, clients say so since e9452995"
  },
  "8baf906db5be83b7065a065b|0.35.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+  "at": "2026-11-23T16:02:07+07:00",
   "n": 2,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "FPT Play Box S: Allow question not answered (3 old installs on 0.35.0, 1 on 0.53.1); nothing points to a missing dialog"
+ },
+ "8baf906db5be83b7065a065b|0.53.1": {
+  "at": "2026-11-23T16:02:07+07:00",
+  "n": 1,
+  "note": "FPT Play Box S: Allow question not answered (3 old installs on 0.35.0, 1 on 0.53.1); nothing points to a missing dialog"
  },
  "8bd54e6fc4bb1f27cb7fecfa|0.55.0": {
   "at": "2026-11-21T16:03:53+07:00",
