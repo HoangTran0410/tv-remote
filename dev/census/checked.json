@@ -3485,9 +3485,34 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
  "a706650c34c7566d87d64623|0.32.1": {
-  "at": "2026-10-30T09:08:24+07:00",
+  "at": "2026-11-23T20:01:12+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
+  "note": "TV Setup ADB health report (not paired: wireless debugging pairing lost), not a code fault; worded by errors.tv_not_paired_with"
+ },
+ "a706650c34c7566d87d64623|0.47.0": {
+  "at": "2026-11-23T20:01:12+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (not paired: wireless debugging pairing lost), not a code fault; worded by errors.tv_not_paired_with"
+ },
+ "a706650c34c7566d87d64623|0.50.0": {
+  "at": "2026-11-23T20:01:12+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (not paired: wireless debugging pairing lost), not a code fault; worded by errors.tv_not_paired_with"
+ },
+ "a706650c34c7566d87d64623|0.53.0": {
+  "at": "2026-11-23T20:01:12+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (not paired: wireless debugging pairing lost), not a code fault; worded by errors.tv_not_paired_with"
+ },
+ "a706650c34c7566d87d64623|0.53.1": {
+  "at": "2026-11-23T20:01:12+07:00",
+  "n": 2,
+  "note": "TV Setup ADB health report (not paired: wireless debugging pairing lost), not a code fault; worded by errors.tv_not_paired_with"
+ },
+ "a706650c34c7566d87d64623|0.55.0": {
+  "at": "2026-11-23T20:01:12+07:00",
+  "n": 1,
+  "note": "TV Setup ADB health report (not paired: wireless debugging pairing lost), not a code fault; worded by errors.tv_not_paired_with"
  },
  "a7704446a8c7641a1f20ede1|0.38.4": {
   "at": "2026-11-03T23:36:50+07:00",
