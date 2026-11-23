@@ -3174,6 +3174,11 @@
   "n": 1,
   "note": "inside Android system_server, not our code"
  },
+ "9dc8886f898f09b34a4b4889|0.55.0": {
+  "at": "2026-11-24T02:18:56+07:00",
+  "n": 1,
+  "note": "Mecool (SkyworthDigital rtd1325) Google TV stick sdk 34: others 1 + add-on stopped, same kind as 13e27d83 (operator/firmware), nothing to fix"
+ },
  "9ed017685dc812695ceb306f|0.34.1": {
   "at": "2026-10-30T09:08:22+07:00",
   "n": 1,
