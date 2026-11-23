@@ -134,16 +134,19 @@ Codes come from Flipper-IRDB (CC0). Hold an arrow, volume or channel key to repe
 
 ## Air Mouse
 
-Hold the phone like a remote: turning your wrist moves a pointer on the TV, like LG's Magic Remote. Good for apps the arrow keys cannot drive (a browser, some old apps).
+Hold the phone like a remote: hold the Aim button and turn your wrist, and a pointer moves on the TV, like LG's Magic Remote.
+
+Let go and the pointer stays where it is, so carrying the phone, turning around or putting it down leaves it alone. Good for apps the arrow keys cannot drive (a browser, some old apps).
 
 Phone app only. Android TVs need ADB; LG TVs use their own pointer.
 
 1. On the remote, tap the button under the arrows (**Arrow keys ▾**) and choose **Air Mouse**. The arrows turn into the mouse pad.
-2. Turn your wrist with the phone, or drag a finger on the pad.
+2. Hold the Aim button (the round button at the bottom corner of the pad) and turn your wrist, or drag a finger on the pad.
 3. Done: tap **Air Mouse** again; the arrows come back and the pointer goes away.
 
 | Gesture | What it does |
 | --- | --- |
+| Hold Aim | The pointer moves only while the button is held: the phone can be carried, turned or put down without it. A finger on the pad still moves it like a touchpad. |
 | One-finger drag | Moves the pointer like a touchpad, no gyroscope needed; the gyroscope waits while a finger is down. |
 | Tap the pad | Click. |
 | Tap, then touch again and drag | Drags with the finger, like a laptop touchpad. |
@@ -153,6 +156,7 @@ Phone app only. Android TVs need ADB; LG TVs use their own pointer.
 
 ### Tips
 
+- The Aim button sits at the bottom corner of the pad, opposite the scroll strip; the swap button moves it with the strip.
 - Left-handed: the swap button at the foot of the scroll strip puts the strip on the left and the close button on the right (remembered).
 
 ## Turn on ADB by hand (if needed)

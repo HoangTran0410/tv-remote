@@ -2812,6 +2812,7 @@
  "rkey.air": "Air Mouse",
  "air.pad": "Drag = move · tap = click · hold, then move = drag or select · scroll = side strip or two fingers",
  "air.swap": "Swap the scroll strip side (left-handed)",
+ "air.aim": "Aim: hold to steer the pointer with the phone",
  "air.needs_adb": "Air Mouse needs ADB debugging on the TV (or an LG TV).",
  "rkey.home_custom": "TV Home",
  "rkey.subtitles": "Subtitles",

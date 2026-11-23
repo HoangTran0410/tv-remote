@@ -2716,6 +2716,7 @@
  "rkey.air": "Air Mouse",
  "air.pad": "Kéo: di chuyển · chạm: click · giữ rồi kéo: kéo thả, bôi đen · cuộn: dải bên cạnh hoặc 2 ngón",
  "air.swap": "Đổi bên dải cuộn (tay trái)",
+ "air.aim": "Ngắm: giữ để điều khiển con trỏ bằng điện thoại",
  "air.needs_adb": "Air Mouse cần bật gỡ lỗi ADB trên TV (hoặc TV LG).",
  "rkey.home_custom": "TV Home",
  "rkey.subtitles": "Phụ đề",
