@@ -2660,8 +2660,8 @@
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout), not a code fault"
  },
  "7c5a834899c350d2c4f466d9|0.36.0": {
-  "at": "2026-11-24T14:44:38+07:00",
-  "n": 1,
+  "at": "2026-11-24T14:46:39+07:00",
+  "n": 3,
   "note": "DeadSystemException: system_server died under a Dialog.show (box restarting; MBOX says 11.1, stack is Android 7). Not ours"
  },
  "7ce62d6ce53d30ec3ee956df|0.49.0": {
