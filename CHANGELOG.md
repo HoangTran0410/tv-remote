@@ -13,6 +13,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - TV Home tab: opening TV Home's settings no longer fails on a TV whose browser is older than Chrome 92 (Android 12 boxes with an old WebView).
 
 - Typing into the TV's text box (phone app and computer app): the TV now ends up with exactly what the box says, also after an edit in the middle of a long text (a URL with its first letter changed lost letters, or had its end typed twice, #31). The app sends a few keys at a time and checks what the TV says it holds before the next ones.
+- Pasting a selection from the phone into the TV no longer loses letters: it goes as one insert or clipboard paste instead of a stream of key events; single letters typed live stay key events.
 - The text box keeps the cursor where you put it when the TV reports its text back.
 - Draw on the TV: a GIF put on the TV now plays there instead of standing still (up to 2.5 MB and 1280 pixels; bigger ones stay still). Needs the new TV Setup; an older one shows its first frame.
 

@@ -7,3 +7,5 @@ Clipboard là chỗ TV giữ chữ vừa sao chép. Dùng để xem chữ trên 
 3. Muốn đưa chữ lên TV: gõ chữ, gửi lên, rồi dán vào ô đang gõ trên TV.
 
 > 💡 Mẹo chữ có dấu: đưa vào clipboard của TV rồi dán. Cần ADB.
+
+> 💡 Dán cả đoạn chữ từ ô gõ của điện thoại: TV nhận một lần, không rụng chữ.

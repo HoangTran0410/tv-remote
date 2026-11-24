@@ -259,7 +259,7 @@ Trên app điện thoại, nút **Thu nhỏ hình** cạnh toàn màn hình th�
 
 > 💡 Tắt ở Cài đặt (🛠️) → Giới thiệu → “Bàn phím của TV” → **Không tự mở**.
 
-> 💡 Khi TV báo có ô chữ (không cần ADB; có ADB: app điện thoại bật Cài đặt → Giới thiệu → “Gõ thẳng vào ô chữ của TV”, app máy tính ghép remote ở tab Thiết lập), ô gõ bắt đầu bằng chữ đang có trong ô (tên ô làm gợi ý), sửa ở đây là sửa luôn trên TV, và **↵** gửi đi (tìm kiếm). App có bàn phím riêng (Downloader…) vẫn gõ từng phím như trước.
+> 💡 Khi TV báo có ô chữ (không cần ADB; có ADB: app điện thoại bật Cài đặt → Giới thiệu → “Gõ thẳng vào ô chữ của TV”, app máy tính ghép remote ở tab Thiết lập), ô gõ bắt đầu bằng chữ đang có trong ô (tên ô làm gợi ý), sửa ở đây là sửa luôn trên TV, và **↵** gửi đi (tìm kiếm). App có bàn phím riêng (Downloader…) vẫn gõ từng phím như trước. 💡 Dán cả một đoạn từ điện thoại lên TV: chữ vào cùng lúc, không mất chữ như khi gõ từng phím quá nhanh.
 
 ## Clipboard của TV (chữ có dấu, dán chữ)
 
@@ -270,6 +270,8 @@ Clipboard là chỗ TV giữ chữ vừa sao chép. Dùng để xem chữ trên 
 3. Muốn đưa chữ lên TV: gõ chữ, gửi lên, rồi dán vào ô đang gõ trên TV.
 
 > 💡 Mẹo chữ có dấu: đưa vào clipboard của TV rồi dán. Cần ADB.
+
+> 💡 Dán cả đoạn chữ từ ô gõ của điện thoại: TV nhận một lần, không rụng chữ.
 
 ## Ra lệnh bằng giọng nói
 

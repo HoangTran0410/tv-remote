@@ -145,6 +145,13 @@ class Tv(
         /** The words the page and the phone get when the TV's sound capture is refused: "refused:<sdk>" (the phone reads the sdk too). */
         fun refusedWord(sdk: Int) = "refused:$sdk"
 
+        /**
+         * True when [t] goes through the TV's clipboard instead of a text key event: one live letter stays a key event, while a
+         * pasted selection or a character no key can type goes as one paste (a stream of key events loses letters on TVs).
+         */
+        fun needsClipboard(t: String): Boolean =
+            t.codePointCount(0, t.length) > 1 || t.toByteArray(Charsets.UTF_8).size != t.length
+
 
         private const val MOUSE_ID: Short = 1
         private const val MOUSE_TICK_MS = 8                          // at most ~125 writes a second
@@ -1112,13 +1119,16 @@ class Tv(
     }
 
     fun text(t: String) {
-        val raw = t.toByteArray(Charsets.UTF_8)
-        val ascii = raw.size == t.length
-        if (ascii) {                                                  // typed as key events
+        if (!needsClipboard(t)) {                                     // one live letter: a key event is quick and leaves the TV's clipboard alone
+            val raw = t.toByteArray(Charsets.UTF_8)
             send(ByteBuffer.allocate(5 + raw.size).put(1.toByte()).putInt(raw.size).put(raw).array())
             return
         }
-        // accents, CJK...: key events cannot type them, so put the text on the TV clipboard and press Ctrl+V
+        paste(t)
+    }
+
+    /** Puts [t] on the TV's clipboard and presses Ctrl+V where the TV's cursor is: one edit, so no letter is dropped on the way. */
+    private fun paste(t: String) {
         setClipboard(t, false)
         val ctrl = 0x3000                                             // META_CTRL_ON | META_CTRL_LEFT_ON
         key(0, 113, 0, ctrl); key(0, 50, 0, ctrl); key(1, 50, 0, ctrl); key(1, 113, 0, 0)

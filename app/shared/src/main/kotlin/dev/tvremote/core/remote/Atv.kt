@@ -360,14 +360,15 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
     /**
      * [del] Backspaces, then [add] inserted, then Enter. With a field the text goes through the keyboard service (accents too)
      * and [currentField] follows what it should now read; without one (an app with its own keyboard, or a TV that never
-     * says) letters go as [keys].
+     * says) one live letter goes as a key, a pasted selection as one insert.
      */
     override fun type(del: Int, add: String, enter: Boolean) {
         val f = shown
         val l = lefts
         if (f == null) {
             repeat(del) { key(67, SHORT) }
-            if (add.isNotEmpty()) { if (typable(add)) keys(add) else text(add) }
+            // a pasted selection is several key events sent back to back; TVs drop some of them, so insert it in one edit.
+            if (add.isNotEmpty()) { if (!bulk(add) && typable(add)) keys(add) else text(add) }
             if (enter) key(66, SHORT)
             return
         }
@@ -764,6 +765,9 @@ class Atv(dir: File, private val host: String) : Remote, CodePairing {
 
         /** True when [keys] types [t] exactly: every character has a key of its own. */
         fun typable(t: String): Boolean = t.all { code(it) != 0 }
+
+        /** Several letters: a paste, not the one letter at a time live typing sends as it is typed. */
+        fun bulk(t: String): Boolean = t.codePointCount(0, t.length) > 1
 
         /**
          * What proves the code was read off the TV: SHA-256 of both keys (ours first) and the code's last four characters. Its
