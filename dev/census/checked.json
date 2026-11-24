@@ -4529,6 +4529,11 @@
   "n": 3,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "dede28121993abafba7dec52|0.55.0": {
+  "at": "2026-11-25T01:07:02+07:00",
+  "n": 1,
+  "note": "TD SYSTEMS (Expressluck m5621) sdk 30: add-on stopped (force-stopped by the firmware/cleaner), Android drops the a11y entry; same kind as ff386e26, nothing to fix"
+ },
  "defef3515cb89aabff4263f5|0.26.2": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 2,
