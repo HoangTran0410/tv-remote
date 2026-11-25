@@ -4100,9 +4100,14 @@
   "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing)"
  },
  "c637d18dfed3a49bbcb1db54|0.53.1": {
-  "at": "2026-11-21T04:53:57+07:00",
+  "at": "2026-11-25T23:16:59+07:00",
   "n": 3,
-  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
+  "note": "AI PONT (mt5867, sdk 30) on 0.55.0: add-on stopped + another a11y service; same firmware/operator kind as before, nothing to fix"
+ },
+ "c637d18dfed3a49bbcb1db54|0.55.0": {
+  "at": "2026-11-25T23:16:59+07:00",
+  "n": 1,
+  "note": "AI PONT (mt5867, sdk 30) on 0.55.0: add-on stopped + another a11y service; same firmware/operator kind as before, nothing to fix"
  },
  "c6a86068f3601afb5dbbefd8|0.31.0": {
   "at": "2026-11-02T22:17:48+07:00",
