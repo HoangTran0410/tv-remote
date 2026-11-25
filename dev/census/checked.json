@@ -4714,6 +4714,11 @@
   "n": 1,
   "note": "ADB off / not allowed / unpaired on the user's TV: TV Setup's own notice, no code fault"
  },
+ "e966b83874d60582b3123b92|0.55.0": {
+  "at": "2026-11-25T08:37:18+07:00",
+  "n": 1,
+  "note": "XL Axiata B860H (SDMC operator box) sdk 28: others 1, operator kind, nothing to fix"
+ },
  "e9dd380c42178c0fa1a7b214|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
