@@ -1809,6 +1809,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "57bf114e6db642676f25d4b4|0.55.0": {
+  "at": "2026-11-25T21:02:19+07:00",
+  "n": 1,
+  "note": "TCL G08 (C805) a14: TV Setup paired over Wireless debugging; its saved TLS port 36603 timed out (not refused, so kept) and the 5555 fallback came after; the rule fired inside that dial window. 1 time; fallback exists (Adb.connectTo), nothing to fix unless it repeats"
+ },
  "5829f9352b7b17a070bc391f|0.44.0": {
   "at": "2026-11-07T05:15:46+07:00",
   "n": 1,
