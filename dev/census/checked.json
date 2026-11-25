@@ -1290,64 +1290,99 @@
   "note": "AdbReport: ADB not linked on the user's TV (debugging off / refused / not paired), not a code fault"
  },
  "3f685f9c7cdca8d898486836|0.26.2": {
-  "at": "2026-11-05T21:24:09+07:00",
+  "at": "2026-11-26T05:01:57+07:00",
   "n": 1,
-  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
  },
  "3f685f9c7cdca8d898486836|0.26.3": {
-  "at": "2026-11-05T21:24:09+07:00",
+  "at": "2026-11-26T05:01:57+07:00",
   "n": 1,
-  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
  },
  "3f685f9c7cdca8d898486836|0.28.0": {
-  "at": "2026-11-05T21:24:09+07:00",
+  "at": "2026-11-26T05:01:57+07:00",
   "n": 1,
-  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
  },
  "3f685f9c7cdca8d898486836|0.29.0": {
-  "at": "2026-11-05T21:24:09+07:00",
+  "at": "2026-11-26T05:01:57+07:00",
   "n": 1,
-  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
  },
  "3f685f9c7cdca8d898486836|0.30.0": {
-  "at": "2026-11-05T21:24:09+07:00",
+  "at": "2026-11-26T05:01:57+07:00",
   "n": 4,
-  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
  },
  "3f685f9c7cdca8d898486836|0.31.0": {
-  "at": "2026-11-05T21:24:09+07:00",
+  "at": "2026-11-26T05:01:57+07:00",
   "n": 1,
-  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
  },
  "3f685f9c7cdca8d898486836|0.34.1": {
-  "at": "2026-11-05T21:24:09+07:00",
+  "at": "2026-11-26T05:01:57+07:00",
   "n": 3,
-  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
  },
  "3f685f9c7cdca8d898486836|0.35.0": {
-  "at": "2026-11-05T21:24:09+07:00",
+  "at": "2026-11-26T05:01:57+07:00",
   "n": 3,
-  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
  },
  "3f685f9c7cdca8d898486836|0.38.2": {
-  "at": "2026-11-05T21:24:09+07:00",
+  "at": "2026-11-26T05:01:57+07:00",
   "n": 1,
-  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
  },
  "3f685f9c7cdca8d898486836|0.38.4": {
-  "at": "2026-11-05T21:24:09+07:00",
+  "at": "2026-11-26T05:01:57+07:00",
   "n": 2,
-  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
  },
  "3f685f9c7cdca8d898486836|0.44.0": {
-  "at": "2026-11-05T21:24:09+07:00",
+  "at": "2026-11-26T05:01:57+07:00",
   "n": 1,
-  "note": "ADB report, not a crash: the TV's own ADB state (not paired / refused / allow unanswered / timeout); TV Setup shows it and keeps trying"
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
  },
  "3f685f9c7cdca8d898486836|0.45.0": {
-  "at": "2026-11-06T17:03:02+07:00",
+  "at": "2026-11-26T05:01:57+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
+ },
+ "3f685f9c7cdca8d898486836|0.46.0": {
+  "at": "2026-11-26T05:01:57+07:00",
+  "n": 1,
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
+ },
+ "3f685f9c7cdca8d898486836|0.50.0": {
+  "at": "2026-11-26T05:01:57+07:00",
+  "n": 2,
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
+ },
+ "3f685f9c7cdca8d898486836|0.51.0": {
+  "at": "2026-11-26T05:01:57+07:00",
+  "n": 3,
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
+ },
+ "3f685f9c7cdca8d898486836|0.52.0": {
+  "at": "2026-11-26T05:01:57+07:00",
+  "n": 3,
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
+ },
+ "3f685f9c7cdca8d898486836|0.53.1": {
+  "at": "2026-11-26T05:01:57+07:00",
+  "n": 1,
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
+ },
+ "3f685f9c7cdca8d898486836|0.53.6": {
+  "at": "2026-11-26T05:01:57+07:00",
+  "n": 1,
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
+ },
+ "3f685f9c7cdca8d898486836|0.55.0": {
+  "at": "2026-11-26T05:01:57+07:00",
+  "n": 3,
+  "note": "Chromecast group now 24 installs over 9 versions (0.30-0.55): 8 of 9 'adb tls: this device is not paired' (Chromecast has only Wireless debugging; TV Setup must be paired, worded by errors.tv_not_paired_with), 1 old timeout; health report, nothing new to fix"
  },
  "3fd52ef15449ebe1bb5ee526|0.49.0": {
   "at": "2026-11-22T22:16:41+07:00",
