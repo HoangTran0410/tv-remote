@@ -410,39 +410,54 @@
   "note": "Skyworth 4K Google TV Stick sdk 34: others 1, rs allow: another a11y service, ours dropped by firmware (operator kind); clients say keys work only on TV Home"
  },
  "13ebb1a66fdaf61270829f5a|0.26.3": {
-  "at": "2026-11-05T10:40:10+07:00",
+  "at": "2026-11-25T22:00:56+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TCL Smart TV (C06/G06/G10/G13, a11-14), 6 installs: 5555 open, the 'Allow USB debugging?' question was not answered on the TV; health report, nothing to fix"
  },
  "13ebb1a66fdaf61270829f5a|0.30.0": {
-  "at": "2026-11-05T10:40:10+07:00",
+  "at": "2026-11-25T22:00:56+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TCL Smart TV (C06/G06/G10/G13, a11-14), 6 installs: 5555 open, the 'Allow USB debugging?' question was not answered on the TV; health report, nothing to fix"
  },
  "13ebb1a66fdaf61270829f5a|0.31.0": {
-  "at": "2026-11-05T10:40:10+07:00",
+  "at": "2026-11-25T22:00:56+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TCL Smart TV (C06/G06/G10/G13, a11-14), 6 installs: 5555 open, the 'Allow USB debugging?' question was not answered on the TV; health report, nothing to fix"
  },
  "13ebb1a66fdaf61270829f5a|0.37.0": {
-  "at": "2026-11-05T10:40:10+07:00",
+  "at": "2026-11-25T22:00:56+07:00",
   "n": 2,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TCL Smart TV (C06/G06/G10/G13, a11-14), 6 installs: 5555 open, the 'Allow USB debugging?' question was not answered on the TV; health report, nothing to fix"
  },
  "13ebb1a66fdaf61270829f5a|0.40.0": {
-  "at": "2026-11-06T17:03:02+07:00",
+  "at": "2026-11-25T22:00:56+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
+  "note": "TCL Smart TV (C06/G06/G10/G13, a11-14), 6 installs: 5555 open, the 'Allow USB debugging?' question was not answered on the TV; health report, nothing to fix"
  },
  "13ebb1a66fdaf61270829f5a|0.44.0": {
-  "at": "2026-11-05T10:40:10+07:00",
+  "at": "2026-11-25T22:00:56+07:00",
   "n": 1,
-  "note": "setup report, not a crash: ADB not reachable (refused = debugging off, allow = prompt not answered, tls = Wireless debugging pairing, EOF on Fire TV = Amazon blocks local ADB)"
+  "note": "TCL Smart TV (C06/G06/G10/G13, a11-14), 6 installs: 5555 open, the 'Allow USB debugging?' question was not answered on the TV; health report, nothing to fix"
  },
  "13ebb1a66fdaf61270829f5a|0.45.0": {
-  "at": "2026-11-06T17:03:02+07:00",
+  "at": "2026-11-25T22:00:56+07:00",
   "n": 1,
-  "note": "TV Setup ADB link report: refused / allow unanswered / tls not paired / read timeout / Fire TV EOF (known), not a code fault"
+  "note": "TCL Smart TV (C06/G06/G10/G13, a11-14), 6 installs: 5555 open, the 'Allow USB debugging?' question was not answered on the TV; health report, nothing to fix"
+ },
+ "13ebb1a66fdaf61270829f5a|0.51.0": {
+  "at": "2026-11-25T22:00:56+07:00",
+  "n": 2,
+  "note": "TCL Smart TV (C06/G06/G10/G13, a11-14), 6 installs: 5555 open, the 'Allow USB debugging?' question was not answered on the TV; health report, nothing to fix"
+ },
+ "13ebb1a66fdaf61270829f5a|0.53.1": {
+  "at": "2026-11-25T22:00:56+07:00",
+  "n": 1,
+  "note": "TCL Smart TV (C06/G06/G10/G13, a11-14), 6 installs: 5555 open, the 'Allow USB debugging?' question was not answered on the TV; health report, nothing to fix"
+ },
+ "13ebb1a66fdaf61270829f5a|0.55.0": {
+  "at": "2026-11-25T22:00:56+07:00",
+  "n": 2,
+  "note": "TCL Smart TV (C06/G06/G10/G13, a11-14), 6 installs: 5555 open, the 'Allow USB debugging?' question was not answered on the TV; health report, nothing to fix"
  },
  "1503103843d16ccc2d0cdb5b|0.47.0": {
   "at": "2026-11-11T06:02:16+07:00",
