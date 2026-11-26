@@ -1919,6 +1919,26 @@
   "n": 1,
   "note": "rules_no_adb (Xiaomi MiTV-MZTU0, 0.52.0): could not close TizenTube, the TV was still asking 'Allow USB debugging?'; the TV's state, TV Setup shows the allow step"
  },
+ "592ef0de506c0c694f2d21c2|0.32.1": {
+  "at": "2026-11-27T04:00:49+07:00",
+  "n": 1,
+  "note": "4K Google TV Box (a14), 3 installs: 5555 open, the 'Allow USB debugging?' question was not answered; health report, nothing to fix"
+ },
+ "592ef0de506c0c694f2d21c2|0.46.0": {
+  "at": "2026-11-27T04:00:49+07:00",
+  "n": 1,
+  "note": "4K Google TV Box (a14), 3 installs: 5555 open, the 'Allow USB debugging?' question was not answered; health report, nothing to fix"
+ },
+ "592ef0de506c0c694f2d21c2|0.49.0": {
+  "at": "2026-11-27T04:00:49+07:00",
+  "n": 1,
+  "note": "4K Google TV Box (a14), 3 installs: 5555 open, the 'Allow USB debugging?' question was not answered; health report, nothing to fix"
+ },
+ "592ef0de506c0c694f2d21c2|0.53.1": {
+  "at": "2026-11-27T04:00:49+07:00",
+  "n": 3,
+  "note": "4K Google TV Box (a14), 3 installs: 5555 open, the 'Allow USB debugging?' question was not answered; health report, nothing to fix"
+ },
  "5a3f0f3294d8f48d02e14828|0.43.0": {
   "at": "2026-11-05T10:40:20+07:00",
   "n": 1,
