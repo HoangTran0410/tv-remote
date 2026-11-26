@@ -2879,6 +2879,11 @@
   "n": 1,
   "note": "ADB link reports (known classes); 83256fe0 fixed: remote.json read twice, mute guarded"
  },
+ "841685a7854d564f4079d897|0.55.0": {
+  "at": "2026-11-26T14:37:40+07:00",
+  "n": 1,
+  "note": "MOKA STREAM R10G (Realtek rtd6748 operator box, sdk 34, rs allow): another a11y service enabled, ours dropped; operator kind like SEI STREAM b04354d6, nothing to fix"
+ },
  "849cab1d400f0aea1d9415e5|0.45.0": {
   "at": "2026-11-06T17:03:02+07:00",
   "n": 1,
