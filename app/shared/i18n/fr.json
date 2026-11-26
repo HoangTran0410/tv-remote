@@ -3080,6 +3080,8 @@
   "home.title": "🏠 TV Home",
   "home.g_look": "Apparence",
   "home.themes": "Thèmes",
+  "home.g_zone": "Fuseau horaire",
+  "home.zone_tv": "Fuseau horaire de la TV",
   "home.theme_custom": "Votre style",
   "home.theme_mine": "Vos thèmes",
   "home.theme_ready": "Prêts à l’emploi",

@@ -341,7 +341,7 @@ object HomeConfig {
     fun options(k: String): List<Opt> {
         val size = Opt("size", "choice", SIZES, defaultSize(k), "wsize")
         return when {
-            k == "clock" -> listOf(size, Opt("face", "choice", listOf("classic", "minimal", "roman", "modern", "digital"), "classic"), Opt("theme", "choice", listOf("dark", "light"), "dark"), Opt("look", "choice", BARE, "glass"))
+            k == "clock" -> listOf(Opt("zone", "choice", listOf("local") + CITIES, "local"), size, Opt("face", "choice", listOf("classic", "minimal", "roman", "modern", "digital"), "classic"), Opt("theme", "choice", listOf("dark", "light"), "dark"), Opt("look", "choice", BARE, "glass"))
             k == "market" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("layout", "choice", listOf("card", "ticker"), "card"), Opt("show", "choice", listOf("all", "gold", "rates"), "all"), Opt("btc", "toggle", emptyList(), "off"), Opt("fuel", "toggle", emptyList(), "off"))
             k == "calendar" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("layout", "choice", listOf("month", "date"), "month"))
             k == "news" -> listOf(size, Opt("look", "choice", LOOKS, "glass"), Opt("src", "choice", listOf("auto", "mine", "both"), "auto"))
@@ -657,6 +657,21 @@ object HomeConfig {
     /** The settings a theme holds and an apply switches . */
     val THEME_KEYS = listOf("wall", "walls", "wurl", "wcol", "wdir", "wmode", "wsnap", "wkeep", "wevery", "shade", "wfit", "wfade",
         "widgets", "wsize", "wopt", "wplace", "cols", "center", "rows", "focus", "tstyle", "accent", "motion", "anim", "clock24", "greet")
+    /** The cities of the clock widget's time zone option ("zone"): a time zone id each, the city is the id's last part. "local" = the TV's own zone. */
+    val CITIES = listOf("Pacific/Honolulu", "America/Anchorage", "America/Los_Angeles", "America/Denver", "America/Chicago", "America/Mexico_City",
+        "America/New_York", "America/Toronto", "America/Bogota", "America/Lima", "America/Caracas", "America/Halifax", "America/Sao_Paulo",
+        "America/Argentina/Buenos_Aires", "Atlantic/Reykjavik", "Atlantic/Azores", "Europe/London", "Europe/Dublin", "Europe/Lisbon",
+        "Africa/Casablanca", "Africa/Dakar", "Africa/Lagos", "Europe/Paris", "Europe/Madrid", "Europe/Berlin", "Europe/Rome", "Europe/Amsterdam",
+        "Europe/Brussels", "Europe/Zurich", "Europe/Stockholm", "Europe/Warsaw", "Europe/Prague", "Europe/Vienna", "Africa/Algiers", "Africa/Tunis",
+        "Africa/Cairo", "Africa/Johannesburg", "Africa/Nairobi", "Africa/Addis_Ababa", "Europe/Athens", "Europe/Helsinki", "Europe/Istanbul",
+        "Europe/Kyiv", "Europe/Moscow", "Asia/Jerusalem", "Asia/Beirut", "Asia/Amman", "Asia/Baghdad", "Asia/Riyadh", "Asia/Kuwait", "Asia/Qatar",
+        "Asia/Dubai", "Asia/Tehran", "Asia/Kabul", "Asia/Karachi", "Asia/Tashkent", "Asia/Kolkata", "Asia/Kathmandu", "Asia/Dhaka", "Asia/Yangon",
+        "Asia/Bangkok", "Asia/Ho_Chi_Minh", "Asia/Jakarta", "Asia/Kuala_Lumpur", "Asia/Singapore", "Asia/Manila", "Asia/Hong_Kong", "Asia/Shanghai",
+        "Asia/Taipei", "Asia/Seoul", "Asia/Tokyo", "Australia/Perth", "Australia/Adelaide", "Australia/Sydney", "Australia/Brisbane",
+        "Pacific/Auckland", "Pacific/Fiji")
+    /** A city's name from its zone id ("America/New_York" = "New York"). */
+    fun city(id: String) = id.substringAfterLast('/').replace('_', ' ')
+
     /** How an app tile looks ("tstyle"), the default first. */
     val TSTYLES = listOf("banner", "icon", "glass")
     /** The accent palette ("accent"): name to #RRGGBB, each seen on a dark and a light wall (app/DESIGN-TV.md 2.5b). Twin: HOME_ACCENTS in js/home_walls.js. */

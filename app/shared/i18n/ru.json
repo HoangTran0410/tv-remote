@@ -3137,6 +3137,8 @@
  "home.title": "🏠 TV Home",
  "home.g_look": "Вид",
  "home.themes": "Темы",
+ "home.g_zone": "Часовой пояс",
+ "home.zone_tv": "Часовой пояс ТВ",
  "home.theme_custom": "Свой вид",
  "home.theme_mine": "Ваши темы",
  "home.theme_ready": "Готовые",
