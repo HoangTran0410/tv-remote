@@ -13,7 +13,7 @@
   crashes.py --url http://127.0.0.1:8787   a local `wrangler dev`
   crashes.py --app kidguard ... KidGuard's crashes (same worker, another repo); left out of every other listing
 """
-import argparse, json, os, re, sys, urllib.parse, urllib.request
+import argparse, datetime, json, os, re, sys, urllib.parse, urllib.request
 
 URL = "https://tvr-census.99-hoangtran.workers.dev"
 
@@ -189,7 +189,12 @@ def main():
 
 def full(o, prefix):
     """The sig column shows 8 characters: find the whole one."""
-    hits = {r["sig"] for r in call(o.url, "/v1/crashes", {"app": o.app})["crashes"] if r["sig"].startswith(prefix)}
+    # The list is the 200 most frequent rows (the worker's LIMIT 200, by n): a new crash seen once falls off it once the
+    # table is fuller, though crashwatch (which asks with `last`) names it. Look among the recent ones as well.
+    recent = (datetime.date.today() - datetime.timedelta(days=14)).isoformat()
+    hits = set()
+    for params in ({"app": o.app}, {"app": o.app, "last": recent}):
+        hits |= {r["sig"] for r in call(o.url, "/v1/crashes", params)["crashes"] if r["sig"].startswith(prefix)}
     if len(hits) != 1:
         sys.exit(f"{len(hits)} crashes start with {prefix!r}")
     return hits.pop()
