@@ -33,8 +33,22 @@ object WidgetSettings {
     private const val ROW_FOCUS = 0x2EFFFFFF; private const val ROW_REST = 0x12FFFFFF; private const val ROW_EDGE = 0x1FFFFFFF
     private const val CHIP_ON = 0x408AB4F8; private const val CHIP_OFF = 0x14FFFFFF
 
+    /** "Paris · UTC +1 · DST": a zone option's city with its offset from UTC now ("UTC", "UTC -5", "UTC +5:30") and, for a zone with daylight time, whether it is on it ("DST") or not ("STD"): the offset already follows it by itself. */
+    private fun zoneWord(a: Context, v: String): String {
+        if (v == "local") return a.getString(R.string.zone_tv)
+        val tz = java.util.TimeZone.getTimeZone(v)
+        val now = System.currentTimeMillis()
+        val m = tz.getOffset(now) / 60000
+        val h = Math.abs(m) / 60; val r = Math.abs(m) % 60
+        val gmt = if (m == 0) "UTC" else "UTC " + (if (m < 0) "-" else "+") + h + (if (r != 0) ":" + "%02d".format(r) else "")
+        val dst = if (!tz.useDaylightTime()) "" else " · " + (if (tz.inDaylightTime(java.util.Date(now))) "DST" else "STD")
+        return HomeConfig.city(v) + " · " + gmt + dst
+    }
+
     private fun word(a: Context, id: String): String =
-        a.resources.getIdentifier(id.replace('.', '_'), "string", a.packageName).let { if (it != 0) a.getString(it) else id.substringAfterLast('_') }
+        if (id == "home.o_zone") a.getString(R.string.g_zone)
+        else if (id.startsWith("home.ov_") && (id.removePrefix("home.ov_") == "local" || id.removePrefix("home.ov_") in HomeConfig.CITIES)) zoneWord(a, id.removePrefix("home.ov_"))
+        else a.resources.getIdentifier(id.replace('.', '_'), "string", a.packageName).let { if (it != 0) a.getString(it) else id.substringAfterLast('_') }
 
     /** The words of every option's value for widget [k] in [conf], in the schema's order, e.g. "Big", "Minimal", "Light" (the state line of the widget's row). */
     fun summary(a: Context, conf: JSONObject, k: String): String =
@@ -96,7 +110,7 @@ object WidgetSettings {
         fun chips(o: HomeConfig.Opt, room: Int): Pair<LinearLayout, () -> Unit> {
             val box = LinearLayout(a).apply { orientation = LinearLayout.VERTICAL }
             val values = if (o.type == "toggle") listOf("off", "on") else o.values
-            val views = values.map { v ->
+            val views = (if (o.id == "zone") listOf(cur[o.id] ?: "local") else values).map { v ->
                 text(word(a, "home.ov_$v"), 14f, Color.WHITE).apply { gravity = Gravity.CENTER; setPadding(dp(12), dp(5), dp(12), dp(5)) }
             }
             // as many chips on a line as fit, the rest on the next: one line never scrolled, so a clock's 5 faces were cut after the 4th
@@ -111,14 +125,17 @@ object WidgetSettings {
                 line.addView(tv, LinearLayout.LayoutParams(-2, -2).apply { if (used > 0) leftMargin = dp(6) })
                 used += (if (used > 0) dp(6) else 0) + w
             }
-            fun mark() { views.forEachIndexed { i, tv -> val on = values[i] == cur[o.id]; tv.background = glass(14, if (on) CHIP_ON else CHIP_OFF, if (on) ACCENT else ROW_EDGE) } }
+            fun mark() {
+                if (o.id == "zone") { views[0].text = word(a, "home.ov_" + cur[o.id]); views[0].background = glass(14, CHIP_ON, ACCENT); return }   // 77 cities: one chip, Left / Right (or OK) change it
+                views.forEachIndexed { i, tv -> val on = values[i] == cur[o.id]; tv.background = glass(14, if (on) CHIP_ON else CHIP_OFF, if (on) ACCENT else ROW_EDGE) }
+            }
             mark()
             return box to ::mark
         }
         var first: View? = null
         for (o in opts) {
             val values = if (o.type == "toggle") listOf("off", "on") else o.values
-            val under = values.size >= 3                            // three or more chips go under the label so neither is cut
+            val under = values.size >= 3 && o.id != "zone"                            // three or more chips go under the label so neither is cut
             val (box, mark) = chips(o, dp(330 - 28) - if (under) 0 else dp(120))   // the row's width less its padding (and the label beside them)
             fun go(step: Int) {
                 val at = values.indexOf(cur[o.id])

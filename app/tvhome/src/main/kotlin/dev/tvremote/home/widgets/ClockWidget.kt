@@ -15,6 +15,7 @@ import android.widget.LinearLayout.LayoutParams
 import android.widget.LinearLayout.VERTICAL
 import android.widget.TextView
 import dev.tvremote.home.Font
+import dev.tvremote.home.HomeConfig
 import dev.tvremote.home.Store
 import dev.tvremote.home.ui.Frost
 import dev.tvremote.home.widgets.Widgets.Companion.DIM
@@ -30,6 +31,7 @@ import java.util.Date
 internal fun Widgets.clock(mode: Int): View {
     val face0 = opt("clock", "face"); val light0 = opt("clock", "theme") == "light"
     val locale = resources.locale0()
+    val zone = opt("clock", "zone").takeIf { it != "local" }?.let { java.util.TimeZone.getTimeZone(it) }   // the time zone option; null = the TV's own
     val dayF = SimpleDateFormat("EEEE", locale)
     val time = text("", if (mode == 2) 30f else 20f, Color.WHITE).apply { typeface = Font.medium; maxLines = 1 }   // the weekday, as big as the time was
     // big beside the face in a narrow widget (five in a row) "Chủ Nhật" came out cut: it shrinks to the column first
@@ -43,6 +45,7 @@ internal fun Widgets.clock(mode: Int): View {
     // "4 tháng 11" / "November 4", else "4/11" / "4 Nov" when it does not fit beside two other big widgets
     val fullF = SimpleDateFormat(android.text.format.DateFormat.getBestDateTimePattern(locale, "dMMMM"), locale)
     val shortF = SimpleDateFormat(if (locale.language == "vi") "d/M" else "d MMM", locale)
+    if (zone != null) { dayF.timeZone = zone; fullF.timeZone = zone; shortF.timeZone = zone }
     var shown = Date()
     fun put(now: Date) {
         shown = now
@@ -52,7 +55,7 @@ internal fun Widgets.clock(mode: Int): View {
         date.text = if (mode == 2 && (date.width == 0 || date.paint.measureText(full) <= room)) full else shortF.format(now)
     }
     if (mode == 2) date.addOnLayoutChangeListener { _, l, _, r, _, ol, _, or, _ -> if (r - l != or - ol) date.post { put(shown); fitTime() } }
-    val face = ClockFace(dp, a, face0, light0, dial = mode == 1) { now -> put(now); fitTime() }
+    val face = ClockFace(dp, a, face0, light0, dial = mode == 1, zone = zone) { now -> put(now); fitTime() }
     return LinearLayout(a).apply {
         Frost.on(this, dp(if (mode == 0) 18 else 22).toFloat(), dp(1))
         orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
@@ -80,9 +83,9 @@ internal fun viDay(d: Date) = Calendar.getInstance().apply { time = d }.get(Cale
  * [onMinute] gets the time each time the minute changes (the digits beside it).
  */
 /** One clock face, drawn once a minute; [dp] from its host, so the screensaver (no Widgets there) draws the same faces. */
-internal class ClockFace(private val dp: (Number) -> Int, c: Context, val style: String, light: Boolean, private val dial: Boolean = true, val onMinute: (Date) -> Unit) : View(c) {
+internal class ClockFace(private val dp: (Number) -> Int, c: Context, val style: String, light: Boolean, private val dial: Boolean = true, private val zone: java.util.TimeZone? = null, val onMinute: (Date) -> Unit) : View(c) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val cal = Calendar.getInstance()
+    private val cal = Calendar.getInstance(zone ?: java.util.TimeZone.getDefault())
     private var minute = -1
     private val serif = style == "roman"
     private val dark = !light
@@ -95,6 +98,7 @@ internal class ClockFace(private val dp: (Number) -> Int, c: Context, val style:
     private val digitsF = SimpleDateFormat(if (Store.get(c).optBoolean("clock24", true)) "HH:mm" else "h:mm", locale)
     private val dateF = SimpleDateFormat(android.text.format.DateFormat.getBestDateTimePattern(locale, "EEEEdMMMM"), locale)
     private val dayF = SimpleDateFormat(if (locale.language == "vi") "d" else "EEE d", locale)
+    init { if (zone != null) { digitsF.timeZone = zone; dateF.timeZone = zone; dayF.timeZone = zone } }
     private var digits = ""; private var dateLine = ""; private var dayLine = ""
     private val box = android.graphics.RectF()
     private val frame = Runnable { invalidate() }

@@ -543,6 +543,8 @@
   "v_fps_n": "%1$d i/s",
   "v_res": "Taille de la vidéo (prochain envoi)",
   "v_res_screen": "Taille de l'écran",
+  "g_zone": "Fuseau horaire",
+  "zone_tv": "Fuseau horaire du téléviseur",
   "g_themes": "Thèmes",
   "th_custom": "Votre style",
   "th_ready": "Prêts à l'emploi",

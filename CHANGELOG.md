@@ -6,6 +6,8 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- TV Home: the clock widget has a Time zone option (Widgets > Clock > settings). Pick one of about 75 cities and the widget's time, date and dial show that city; the default is still the TV's own time zone. Each city shows its UTC offset now and, for zones with daylight time, DST or STD.
+
 - An install the TV never answered (ADB dropped during it) now says "The TV stopped answering midway" instead of an empty "could not install:".
 
 - The self-check: a TV whose ADB port opens but never answers is now "ADB is on, but it does not let this app in" (restart the TV), not "the TV's remote service does not answer".
