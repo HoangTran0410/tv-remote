@@ -84,6 +84,21 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
+ "046a4750ed104c16db021c39|0.48.0": {
+  "at": "2026-11-26T14:01:57+07:00",
+  "n": 1,
+  "note": "ZTE B866V2F (Viettel/MediaBox operator box, a14), 3 installs: 5555 open, the 'Allow USB debugging?' question was not answered; health report, nothing to fix"
+ },
+ "046a4750ed104c16db021c39|0.54.0": {
+  "at": "2026-11-26T14:01:57+07:00",
+  "n": 2,
+  "note": "ZTE B866V2F (Viettel/MediaBox operator box, a14), 3 installs: 5555 open, the 'Allow USB debugging?' question was not answered; health report, nothing to fix"
+ },
+ "046a4750ed104c16db021c39|0.55.0": {
+  "at": "2026-11-26T14:01:57+07:00",
+  "n": 2,
+  "note": "ZTE B866V2F (Viettel/MediaBox operator box, a14), 3 installs: 5555 open, the 'Allow USB debugging?' question was not answered; health report, nothing to fix"
+ },
  "054e1adb82724af476bb5118|0.47.0": {
   "at": "2026-11-08T05:23:25+07:00",
   "n": 1,
