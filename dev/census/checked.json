@@ -2495,9 +2495,9 @@
   "note": "ADB allow (IRIS 2K SmartTV, 0.53.1): 'Allow USB debugging?' not answered for 3 min; the person's step, TV Setup shows it"
  },
  "6b51eefcbeb38186c0552399|0.55.0": {
-  "at": "2026-11-23T06:09:43+07:00",
-  "n": 1,
-  "note": "Allwinner sun50iw9p1 (H616) userdebug box, firmware kind: keyfix service taken out 3x by the firmware, nothing to fix; clients already say so"
+  "at": "2026-11-27T19:01:49+07:00",
+  "n": 4,
+  "note": "athena_p7 'android tv' (Allwinner sun50iw9p1 faking Google, sdk 31), 2 installs: Allwinner firmware drops the a11y entry, known kind, nothing to fix"
  },
  "6bbd148d2a89a01028ee8150|0.50.0": {
   "at": "2026-11-11T12:11:05+07:00",
