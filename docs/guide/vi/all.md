@@ -990,7 +990,7 @@ Tắt TV xong, TV có thể ngủ sâu và không trả lời nữa. Tùy chọn
 Có hai cách: đặt một ảnh **phủ lên màn hình TV** (trên mọi app), hoặc **phát** ảnh hay video từ máy.
 
 1. Bấm **✏️** cạnh hình TV, rồi **🖼️ Ảnh**.
-2. Chọn ảnh trong máy.
+2. Chọn ảnh trong máy. Ảnh GIF chạy trên TV (tới 2,5 MB, 1280 điểm ảnh).
 3. Chỉnh to nhỏ bằng **−** / **+**. Đổi ý thì bấm **Hủy**.
 4. Bấm **✓ Đưa lên TV**.
 
