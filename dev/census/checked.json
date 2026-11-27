@@ -900,19 +900,24 @@
   "note": "TV Setup ADB health report (box refused / no Allow / not paired), not a code fault"
  },
  "2f7b4a5845c32315a71d9ed8|0.48.0": {
-  "at": "2026-11-21T04:53:58+07:00",
+  "at": "2026-11-27T21:14:22+07:00",
   "n": 1,
-  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
+  "note": "'ADT-3' adt3 (Allwinner sun50iw12p1 faking an askey ADT-3, sdk 30): Allwinner firmware kind, nothing to fix"
  },
  "2f7b4a5845c32315a71d9ed8|0.52.0": {
-  "at": "2026-11-21T04:53:58+07:00",
+  "at": "2026-11-27T21:14:22+07:00",
   "n": 1,
-  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
+  "note": "'ADT-3' adt3 (Allwinner sun50iw12p1 faking an askey ADT-3, sdk 30): Allwinner firmware kind, nothing to fix"
  },
  "2f7b4a5845c32315a71d9ed8|0.53.1": {
-  "at": "2026-11-21T04:53:58+07:00",
+  "at": "2026-11-27T21:14:22+07:00",
   "n": 2,
-  "note": "keyfix_refused firmware kind (service taken out by the box); clients say keys work only on TV Home; nothing to fix"
+  "note": "'ADT-3' adt3 (Allwinner sun50iw12p1 faking an askey ADT-3, sdk 30): Allwinner firmware kind, nothing to fix"
+ },
+ "2f7b4a5845c32315a71d9ed8|0.55.0": {
+  "at": "2026-11-27T21:14:22+07:00",
+  "n": 1,
+  "note": "'ADT-3' adt3 (Allwinner sun50iw12p1 faking an askey ADT-3, sdk 30): Allwinner firmware kind, nothing to fix"
  },
  "304d571eb8351582e87856f4|0.26.3": {
   "at": "2026-10-26T21:47:43+07:00",
