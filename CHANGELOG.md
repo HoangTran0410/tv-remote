@@ -6,6 +6,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 
 ## Unreleased
 
+- Phone app, Air Mouse: the gesture help in the middle of the pad is a short two-column list (gesture, what it does) instead of one long sentence that wrapped unevenly.
 - An install the TV never answered (ADB dropped during it) now says "The TV stopped answering midway" instead of an empty "could not install:".
 
 - The self-check: a TV whose ADB port opens but never answers is now "ADB is on, but it does not let this app in" (restart the TV), not "the TV's remote service does not answer".

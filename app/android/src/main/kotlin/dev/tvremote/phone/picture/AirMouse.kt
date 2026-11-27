@@ -167,8 +167,19 @@ private fun MainActivity.airListen(sm: SensorManager, sensor: Sensor) {
 internal fun MainActivity.airPad(): FrameLayout {
     val pad = FrameLayout(this)
     pad.background = box(CARD, 18)
-    val hint = label(T("air.pad"), 14, MUTED)
-    hint.gravity = Gravity.CENTER; hint.setPadding(dp(16), 0, dp(68), 0)   // clear of the scroll strip
+    // The gestures as a small two-column table (gesture | what it does), centred: one sentence wrapped at random points read badly.
+    val hint = android.widget.FrameLayout(this)
+    val table = android.widget.TableLayout(this)
+    table.setColumnShrinkable(1, true)
+    for ((g, d) in listOf("air.pad_drag" to "air.pad_move", "air.pad_tap" to "air.pad_click", "air.pad_hold" to "air.pad_select", "air.pad_two" to "air.pad_scroll")) {
+        val row = android.widget.TableRow(this)
+        val gl = label(T(g), 14, TEXT); gl.gravity = Gravity.END; gl.setPadding(0, dp(3), dp(12), dp(3))
+        val dl = label(T(d), 14, MUTED); dl.setPadding(0, dp(3), 0, dp(3))
+        row.addView(gl); row.addView(dl)
+        table.addView(row)
+    }
+    hint.addView(table, FrameLayout.LayoutParams(-2, -2, Gravity.CENTER))
+    hint.setPadding(dp(16), 0, dp(68), 0)                             // clear of the scroll strip
     pad.addView(hint, FrameLayout.LayoutParams(-1, -1))
     val noAnim = try { android.provider.Settings.Global.getFloat(contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f } catch (e: Exception) { false }   // "Remove animations": no trail or ripple, haptics stay
     val fx = AirFx(this, noAnim, dp(1).toFloat())                     // the finger, its trail, the click ripple and the held tint, all drawn in this one view
