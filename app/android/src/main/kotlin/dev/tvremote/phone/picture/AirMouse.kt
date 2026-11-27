@@ -9,6 +9,7 @@ import dev.tvremote.phone.remote.kind
 import dev.tvremote.phone.ui.ACCENT
 import dev.tvremote.phone.ui.ACCENT_TEXT
 import dev.tvremote.phone.ui.BG
+import dev.tvremote.phone.ui.BTN
 import dev.tvremote.phone.ui.CARD
 import dev.tvremote.phone.ui.MUTED
 import dev.tvremote.phone.ui.TEXT
@@ -42,6 +43,8 @@ import kotlin.math.abs
 // Air Mouse: the remote's middle as a mouse pad (one of its three modes, beside the arrows and the touchpad of keys), and the phone
 // held like a pointer, its gyroscope moving a real mouse pointer on the TV. Android TVs get a virtual HID mouse through the scrcpy
 // control socket (Tv.mouseOpen, opened on first use for each session, no picture needed), LG its Magic Remote pointer (Remote.pointer).
+// The gyroscope steers only while the Aim button is held (or a finger is held on the pad): let go and the pointer stays put, so the
+// phone can be carried, turned or put down without the pointer going with it, the way a mouse is lifted off the desk.
 
 private object Air {
     var mode = "arrows"                                              // the remote's middle: arrows, touch (keys) or mouse (this)
@@ -50,6 +53,7 @@ private object Air {
     var mouseTv: Tv? = null                                          // the session the HID mouse was opened on
     var buttons = 0                                                  // 1 while the pointer's button is held (a drag)
     var padHeld = false                                              // a finger held still on the pad pressed the button: the phone drags too
+    var aiming = false                                               // the Aim button held: the gyroscope steers, nothing else does
     var freezeUntil = 0L                                             // a click lands where it was aimed: no motion ~80 ms around press / release
     var touching = false                                             // a finger on the pad: the gyroscope waits, so the two never fight
     var thread: android.os.HandlerThread? = null                     // the sensor's callbacks run here, not on the screen's thread
@@ -77,7 +81,7 @@ internal fun MainActivity.airCan(): Boolean {
 internal fun MainActivity.airStart(mode: String = "mouse") {
     Air.mode = mode
     if (mode != "mouse" || Air.listener != null) { if (mode != "mouse") airStop(); return }
-    Air.touching = false; Air.buttons = 0; Air.padHeld = false
+    Air.touching = false; Air.buttons = 0; Air.padHeld = false; Air.aiming = false
     Air.fxLog = try { java.io.File(getExternalFilesDir(null), "air_fxlog").exists() } catch (e: Exception) { false }
     val sm = getSystemService(Context.SENSOR_SERVICE) as SensorManager
     Air.sensors = sm
@@ -89,6 +93,7 @@ internal fun MainActivity.airStart(mode: String = "mouse") {
 internal fun MainActivity.airStop() {
     if (Air.buttons != 0) airButton(false)
     Air.padHeld = false
+    Air.aiming = false
     Air.listener?.let { Air.sensors?.unregisterListener(it) }
     Air.listener = null
     Air.thread?.quitSafely(); Air.thread = null
@@ -128,7 +133,8 @@ private fun MainActivity.airListen(sm: SensorManager, sensor: Sensor) {
     val l = object : SensorEventListener {
         override fun onAccuracyChanged(s: Sensor?, a: Int) {}
         override fun onSensorChanged(e: SensorEvent) {
-            val live = Air.padHeld || !Air.touching
+            // The pointer follows the gyroscope only while the Aim button (or a finger held on the pad) asks it to.
+            val live = Air.aiming || Air.padHeld
             if (!live || covered() || System.currentTimeMillis() < Air.freezeUntil) { last = 0; have = false; return }   // Manage or Settings over the remote: the pointer stays
             var wz: Float; var wx: Float
             if (e.sensor.type == Sensor.TYPE_GYROSCOPE) {
@@ -162,7 +168,8 @@ private fun MainActivity.airListen(sm: SensorManager, sensor: Sensor) {
 }
 
 /** The mouse pad, in the remote's middle where the arrows are: drag = move, tap = click, a finger held still = the button held
- *  (then the phone or the finger selects text or drags), two fingers or the strip on the right = the wheel. */
+ *  (then the phone or the finger selects text or drags), two fingers or the strip on the right = the wheel, and the Aim button
+ *  held = the phone itself steers (the gyroscope), the pointer staying put the moment it is let go. */
 @SuppressLint("ClickableViewAccessibility")
 internal fun MainActivity.airPad(): FrameLayout {
     val pad = FrameLayout(this)
@@ -254,6 +261,28 @@ internal fun MainActivity.airPad(): FrameLayout {
         true
     }
     pad.addView(strip, FrameLayout.LayoutParams(dp(48), -1))
+    // Aim: held down, the gyroscope steers the pointer; let go and the pointer stays where it is, so the phone can be carried,
+    // turned to talk to someone or put down without the pointer going with it. The press itself moves the phone: the first
+    // moments are dropped (freezeUntil), so the pointer does not jump when the thumb lands.
+    val aim = android.widget.ImageView(this)
+    aim.setImageResource(R.drawable.ic_move); aim.setColorFilter(TEXT); aim.alpha = 0.45f
+    aim.setPadding(dp(11), dp(11), dp(11), dp(11)); aim.contentDescription = T("air.aim")
+    aim.background = box(BTN, 22)
+    aim.setOnTouchListener { v, ev ->
+        when (ev.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                v.parent.requestDisallowInterceptTouchEvent(true)
+                Air.aiming = true; Air.freezeUntil = System.currentTimeMillis() + 90
+                v.alpha = 1f; v.airHaptic(HapticFeedbackConstants.VIRTUAL_KEY)
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                Air.aiming = false; Air.freezeUntil = System.currentTimeMillis() + 60
+                v.alpha = 0.45f; v.performClick()
+            }
+        }
+        true
+    }
+    pad.addView(aim, FrameLayout.LayoutParams(dp(44), dp(44)))
     val off = android.widget.ImageView(this)                          // a way out when the pad fills the screen and the chooser is off it
     off.setImageResource(R.drawable.ic_close); off.setColorFilter(TEXT); off.alpha = 0.35f
     off.setPadding(dp(10), dp(10), dp(10), dp(10)); off.contentDescription = T("common.close")
@@ -268,6 +297,7 @@ internal fun MainActivity.airPad(): FrameLayout {
         val side = if (left) Gravity.START else Gravity.END; val other = if (left) Gravity.END else Gravity.START
         (strip.layoutParams as FrameLayout.LayoutParams).apply { gravity = side; setMargins(if (left) dp(8) else 0, dp(8), if (left) 0 else dp(8), dp(8)) }
         (off.layoutParams as FrameLayout.LayoutParams).apply { gravity = other or Gravity.TOP; setMargins(if (left) 0 else dp(4), dp(4), if (left) dp(4) else 0, 0) }
+        (aim.layoutParams as FrameLayout.LayoutParams).apply { gravity = other or Gravity.BOTTOM; setMargins(if (left) 0 else dp(8), 0, if (left) dp(8) else 0, dp(8)) }
         hint.setPadding(if (left) dp(68) else dp(16), 0, if (left) dp(16) else dp(68), 0)
         pad.requestLayout()
     }

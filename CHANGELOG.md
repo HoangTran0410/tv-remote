@@ -16,6 +16,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 - Typing into the TV's text box (phone app and computer app): the TV now ends up with exactly what the box says, also after an edit in the middle of a long text (a URL with its first letter changed lost letters, or had its end typed twice, #31). The app sends a few keys at a time and checks what the TV says it holds before the next ones.
 - The text box keeps the cursor where you put it when the TV reports its text back.
 - Draw on the TV: a GIF put on the TV now plays there instead of standing still (up to 2.5 MB and 1280 pixels; bigger ones stay still). Needs the new TV Setup; an older one shows its first frame.
+- Air Mouse (phone app): the pointer now moves only while the Aim button is held, or a finger is held on the pad, so carrying the phone, turning to talk to someone or putting it down no longer sends the pointer across the TV.
 
 ## 0.57.0 - 2026-11-21
 

@@ -2819,6 +2819,7 @@
  "air.pad_two": "Two fingers, side strip",
  "air.pad_scroll": "Scroll",
  "air.swap": "Swap the scroll strip side (left-handed)",
+ "air.aim": "Aim: hold to steer the pointer with the phone",
  "air.needs_adb": "Air Mouse needs ADB debugging on the TV (or an LG TV).",
  "rkey.home_custom": "TV Home",
  "rkey.subtitles": "Subtitles",

@@ -2825,6 +2825,7 @@
   "air.pad_two": "Deux doigts, bande latérale",
   "air.pad_scroll": "Défiler",
   "air.swap": "Changer le côté de la bande de défilement (gaucher)",
+  "air.aim": "Viser : maintenir pour diriger le pointeur avec le téléphone",
   "air.needs_adb": "Air Mouse nécessite le débogage ADB sur la TV (ou une TV LG).",
   "rkey.home_custom": "TV Home",
   "rkey.subtitles": "Sous-titres",
