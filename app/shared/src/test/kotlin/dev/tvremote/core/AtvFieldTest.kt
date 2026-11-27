@@ -107,10 +107,16 @@ class AtvFieldTest {
         assertTrue(sent.indexOfFirst { edit(it) != null } < sent.indexOfFirst { keyOf(it) != null })
     }
 
-    @Test fun noFieldFallsBackToKeys() {
-        atv.type(2, "ab", true)
-        assertEquals(listOf(67L, 67L, 29L, 30L, 66L), keys())
+    @Test fun aSingleLetterWithNoFieldFallsBackToKeys() {
+        atv.type(2, "a", true)
+        assertEquals(listOf(67L, 67L, 29L, 66L), keys())
         assertTrue(texts().isEmpty())
+    }
+
+    @Test fun pastedTextWithNoFieldGoesAsOneInsert() {
+        atv.type(0, "abcdefghij", false)
+        assertEquals(listOf("abcdefghij"), texts())
+        assertTrue(keys().isEmpty())
     }
 
     @Test fun noFieldAccentsStillGoThroughTheKeyboardService() {

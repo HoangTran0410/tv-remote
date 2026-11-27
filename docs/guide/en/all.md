@@ -259,7 +259,7 @@ While it floats, leaving for Home or another app (Android 8+) puts it in the sys
 
 > 💡 Turn it off in Settings (🛠️) → About → “The TV’s keyboard” → **Don't open it**.
 
-> 💡 When the TV reports a text field (no ADB needed; with ADB: in the phone app turn on Settings → About → “Type straight into the TV's text box”, in the computer app pair the remote in the Setup tab), the box starts with the text in it (the field's name is the hint), edits replace it on the TV, and **↵** submits. Apps with a keyboard of their own (Downloader…) still get key presses, as before.
+> 💡 When the TV reports a text field (no ADB needed; with ADB: in the phone app turn on Settings → About → “Type straight into the TV's text box”, in the computer app pair the remote in the Setup tab), the box starts with the text in it (the field's name is the hint), edits replace it on the TV, and **↵** submits. Apps with a keyboard of their own (Downloader…) still get key presses, as before. 💡 Pasted selections from your phone go in as one edit, so no letters are lost the way they can be when many key presses are sent too fast.
 
 ## The TV's clipboard (accents, pasting)
 
@@ -270,6 +270,8 @@ The clipboard holds the text the TV last copied. Use it to read it, copy it to y
 3. To send text: type it, send it up, then paste into the box you are typing in on the TV.
 
 > 💡 Accent tip: put the text in the TV's clipboard, then paste. Needs ADB.
+
+> 💡 A selection pasted from the phone's typing box is sent as one paste, so no letters go missing on the TV.
 
 ## Voice commands
 
