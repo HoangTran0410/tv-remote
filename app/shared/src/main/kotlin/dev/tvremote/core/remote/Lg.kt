@@ -47,6 +47,8 @@ class Lg(private val dir: File, private val host: String, private val ports: Lis
     @Volatile private var closed = false
     @Volatile private var port = 0
     @Volatile private var secure = false
+    @Volatile private var heard = false                               // the TV said anything on this socket
+    @Volatile private var bare = false                                // it hangs up on a hello: the register alone from then on
     @Volatile private var external = false                            // the sound goes to a soundbar / receiver: its volume takes steps only
     @Volatile private var playing = false                             // what PLAY_PAUSE sends next (the TV has PLAY and PAUSE, no toggle)
     private val ids = AtomicInteger()
@@ -56,6 +58,7 @@ class Lg(private val dir: File, private val host: String, private val ports: Lis
     private val held = ConcurrentHashMap<Int, ScheduledFuture<*>>()
     private val icons = ConcurrentHashMap<String, String>()          // app id -> its picture on the TV, from the app list
 
+    private class HungUp : IOException("the TV closed the connection")
     private class Pending { val done = CountDownLatch(1); @Volatile var got: JSONObject? = null }
 
     override fun ready(): Boolean = live && !closed
@@ -65,6 +68,18 @@ class Lg(private val dir: File, private val host: String, private val ports: Lis
      * [PROMPT_S] seconds, [asking] meanwhile). [Remote.Refused]: they chose no; IOException: the TV is not there, or nobody answered.
      */
     override fun connect(onClosed: () -> Unit) {
+        try { connect(onClosed, bare) }
+        catch (e: IOException) {
+            // A set that hung up before saying a word (issue #36: right after the hello) gets one more go the way it was
+            // done before webOS 23: the register alone, nothing ahead of it
+            if (e !is HungUp || closed || heard || bare) throw e
+            WireLog.all.add("·", "LG $host: again with the register alone")
+            connect(onClosed, bare = true)
+            bare = true
+        }
+    }
+
+    private fun connect(onClosed: () -> Unit, bare: Boolean) {
         val known = saved.get(host)                                   // "port key": a key is good only on the port it was given on
         val knownPort = known.substringBefore(' ').toIntOrNull() ?: 0
         var last: IOException? = null
@@ -77,12 +92,20 @@ class Lg(private val dir: File, private val host: String, private val ports: Lis
         ws = s
         WireLog.all.add("·", "LG $host:$port open" + (if (secure) " (wss)" else ""))
         s.timeout(0)
+        heard = false
         Thread({ read(s, onClosed) }, "lg-in").apply { isDaemon = true }.start()
         try {
-            // webOS 23+ wants a hello first and drops a register that comes without one; older sets answer it with an error, harmless
-            send(JSONObject().put("id", "hello_0").put("type", "hello").put("payload", JSONObject()))
-            // and answers getSystemInfo only before the register (aiowebostv does the same); later it says no
-            request("ssap://system/getSystemInfo", ms = 2000)?.let { model = it.optString("modelName") }
+            if (!bare) {
+                // webOS 23+ wants a hello first and drops a register that comes without one; older sets answer it with an
+                // error, harmless. Its answer is waited for, as aiowebostv does: nothing else goes while the TV is on it
+                val h = Pending()
+                pending[HELLO] = h
+                send(JSONObject().put("id", HELLO).put("type", "hello").put("payload", JSONObject()))
+                h.done.await(2000, TimeUnit.MILLISECONDS)
+                pending.remove(HELLO)
+                // and answers getSystemInfo only before the register (aiowebostv does the same); later it says no
+                if (!s.closed) request("ssap://system/getSystemInfo", ms = 2000)?.let { model = it.optString("modelName") }
+            }
             val key = if (knownPort == port) known.substringAfter(' ', "") else ""
             val manifest = JSONObject(MANIFEST)
             if (key.isNotEmpty()) manifest.put("client-key", key)
@@ -97,17 +120,19 @@ class Lg(private val dir: File, private val host: String, private val ports: Lis
             while (got == null && System.nanoTime() / 1_000_000 < until && !closed && !s.closed) done.await(300, TimeUnit.MILLISECONDS)
             subs.remove(REG)
             asking = false
-            val m = got ?: throw IOException(if (s.closed) "the TV closed the connection" else "nobody accepted on the TV")
+            val m = got ?: throw if (s.closed) HungUp() else IOException("nobody accepted on the TV")
             if (m.optString("type") == "error") throw Remote.Refused(m.optString("error").ifEmpty { "the TV said no" })
             val k = m.optJSONObject("payload")?.optString("client-key") ?: ""
             if (k.isEmpty()) throw Remote.Refused("the TV gave no client key")
             saved.put(host, "$port $k")
             live = true
         } catch (e: Exception) {
+            val closedByTv = s.closed
             WireLog.all.add("·", "LG $host pairing: $e")
             asking = false
             subs.remove(REG)
             s.close(); ws = null
+            if (closedByTv && e is IOException && e !is Remote.Refused) throw HungUp()   // a write into the dead socket counts too
             throw e
         }
         Thread({ learn() }, "lg-learn").apply { isDaemon = true }.start()   // not on the keys' thread: its answers can take seconds
@@ -150,6 +175,7 @@ class Lg(private val dir: File, private val host: String, private val ports: Lis
         try {
             while (true) {
                 val text = s.read() ?: break
+                heard = true
                 WireLog.all.add("←", "LG $host $text")
                 val m = try { JSONObject(text) } catch (e: Exception) { continue }
                 val id = m.optString("id")
@@ -159,7 +185,7 @@ class Lg(private val dir: File, private val host: String, private val ports: Lis
         } catch (e: Exception) {
             WireLog.all.add("·", "LG $host read: $e")
         }
-        WireLog.all.add("·", "LG $host closed")
+        WireLog.all.add("·", "LG $host closed" + if (s.closeWhy.isNotEmpty()) " (${s.closeWhy})" else "")
         val was = live
         live = false
         for (p in pending.values) p.done.countDown()
@@ -358,6 +384,7 @@ class Lg(private val dir: File, private val host: String, private val ports: Lis
         private val OFF = setOf("Power Off", "Suspend", "Active Standby")    // getPowerState's off states (aiowebostv)
         const val REPEAT_MS = 180L
         private const val REG = "register_0"
+        private const val HELLO = "hello_0"
         private val REPEATS = setOf(19, 20, 21, 22, 24, 25, 166, 167, 89, 90, 67)
 
         /** Android key codes to the Magic Remote's button names; the specials (power, typing, mute, play / pause) are requests. */

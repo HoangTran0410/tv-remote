@@ -22,7 +22,8 @@ class LgTest {
     /**
      * Enough of a webOS TV: how it answers a register ([pairing]), the requests it got, the buttons on its pointer socket.
      * [webos]: "mid" (answers what it is asked), "new" (webOS 23+: drops a register that came without a hello, and tells its
-     * system info only before the register, as aiowebostv found), "old" (no hello, no power state, no screen off).
+     * system info only before the register, as aiowebostv found), "old" (no hello, no power state, no screen off), "slow" (new,
+     * but its hello takes a moment and anything sent before that answer makes it hang up), "nohello" (hangs up on a hello).
      */
     private class FakeLg(var pairing: String = "prompt", val webos: String = "mid") : AutoCloseable {
         val requests = CopyOnWriteArrayList<String>()
@@ -41,11 +42,15 @@ class LgTest {
         private fun answer(c: FakeWs.Conn, m: JSONObject) {
             val id = m.optString("id")
             fun reply(p: JSONObject) = c.send(JSONObject().put("type", "response").put("id", id).put("payload", p.put("returnValue", true)).toString())
-            when (m.optString("type")) {
-                "hello" -> if (webos == "old") c.send(JSONObject().put("type", "error").put("id", id).put("error", "404 unknown").toString())
+            val type = m.optString("type")
+            if (webos == "slow" && type != "hello" && c !in hello) { c.drop(); return }
+            when (type) {
+                "hello" -> if (webos == "nohello") c.drop()
+                    else if (webos == "slow") Thread { Thread.sleep(150); hello.add(c); c.send(JSONObject().put("type", "hello").put("id", id).put("payload", JSONObject()).toString()) }.start()
+                    else if (webos == "old") c.send(JSONObject().put("type", "error").put("id", id).put("error", "404 unknown").toString())
                     else { hello.add(c); c.send(JSONObject().put("type", "hello").put("id", id).put("payload", JSONObject().put("deviceOS", "webOS")).toString()) }
                 "register" -> {
-                    if (webos == "new" && c !in hello) { c.drop(); return }
+                    if ((webos == "new" || webos == "slow") && c !in hello) { c.drop(); return }
                     registered.add(c)
                     registers++
                     val offered = m.getJSONObject("payload").optString("client-key")
@@ -65,7 +70,7 @@ class LgTest {
                     when (uri) {
                         "ssap://audio/getVolume" -> reply(JSONObject().put("volumeStatus", JSONObject().put("volume", volume).put("muteStatus", false).put("soundOutput", "tv_speaker").put("maxVolume", 100)))
                         "ssap://audio/setVolume" -> { volume = m.getJSONObject("payload").getInt("volume"); reply(JSONObject()) }
-                        "ssap://system/getSystemInfo" -> if (webos == "new" && c in registered) c.send(JSONObject().put("type", "error").put("id", id).put("error", "401 insufficient permissions").toString())
+                        "ssap://system/getSystemInfo" -> if ((webos == "new" || webos == "slow") && c in registered) c.send(JSONObject().put("type", "error").put("id", id).put("error", "401 insufficient permissions").toString())
                             else reply(JSONObject().put("modelName", "OLED55C3"))
                         "ssap://com.webos.service.update/getCurrentSWInformation" -> reply(JSONObject().put("product_name", "webOSTV 23").put("major_ver", "33").put("minor_ver", "10"))
                         "ssap://com.webos.service.connectionmanager/getinfo" -> reply(JSONObject().put("wiredInfo", JSONObject().put("macAddress", "aa:bb:cc:00:11:22")).put("wifiInfo", JSONObject().put("macAddress", "aa:bb:cc:00:11:33")))
@@ -224,6 +229,23 @@ class LgTest {
         assertTrue(a.ready())
         until { a.isOn != null }
         assertEquals("OLED55C3", a.model)
+    }
+
+    @Test fun aSlowHelloIsWaitedFor() {                               // issue #36: the TV hung up on what came before its hello answer
+        val tv = tv(webos = "slow")
+        val a = lg(tv.ws.port)
+        a.connect { }
+        assertTrue(a.ready())
+        until { a.model.isNotEmpty() }
+        assertEquals("OLED55C3", a.model)
+    }
+
+    @Test fun aTvThatHangsUpOnTheHelloGetsTheRegisterAlone() {
+        val tv = tv(webos = "nohello")
+        val a = lg(tv.ws.port)
+        a.connect { }
+        assertTrue(a.ready())
+        assertEquals(1, tv.registers)
     }
 
     @Test fun oldWebosHasNoPowerStateAndNoScreenOff() {

@@ -23,6 +23,12 @@ class WebSocket private constructor(private val sock: Socket) : Closeable {
     private val output: OutputStream = sock.getOutputStream()
     @Volatile var closed = false
         private set
+    /** The close frame's code and reason ("1008 policy"), "" when the TV just dropped the line: the log says why it hung up. */
+    @Volatile var closeWhy = ""
+        private set
+
+    private fun closeText(b: ByteArray): String =
+        if (b.size < 2) "" else (((b[0].toInt() and 0xff) shl 8) or (b[1].toInt() and 0xff)).toString() + " " + String(b, 2, b.size - 2, Charsets.UTF_8)
 
     /** The next text message; null once the TV has closed the connection. A ping is answered on the way. */
     @Throws(IOException::class)
@@ -43,7 +49,7 @@ class WebSocket private constructor(private val sock: Socket) : Closeable {
             while (got < body.size) { val n = input.read(body, got, body.size - got); if (n < 0) throw IOException("cut short"); got += n }
             if (mask != null) for (i in body.indices) body[i] = (body[i].toInt() xor mask[i and 3].toInt()).toByte()
             when (b0 and 0x0f) {
-                0x8 -> { closed = true; try { frame(0x8, ByteArray(0)) } catch (ignored: IOException) { }; return null }
+                0x8 -> { closed = true; closeWhy = closeText(body); try { frame(0x8, ByteArray(0)) } catch (ignored: IOException) { }; return null }
                 0x9 -> frame(0xA, body)
                 0xA -> { }
                 else -> { msg.write(body); if (b0 and 0x80 != 0) return String(msg.toByteArray(), Charsets.UTF_8) }   // text or its continuation
