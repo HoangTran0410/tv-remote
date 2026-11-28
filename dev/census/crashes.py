@@ -165,7 +165,12 @@ def main():
         print(f"marked {len(rows)} (sig|version) as looked at -> {os.path.relpath(CHECKED, ROOT)}: commit it")
         return
     if o.json or o.since or o.new:
-        rows = call(o.url, "/v1/crashes", {"sig": full(o, o.sig) if o.sig else "", "v": o.v, "app": o.app, "last": o.last})["crashes"]
+        q = {"sig": full(o, o.sig) if o.sig else "", "v": o.v, "app": o.app, "last": o.last}
+        rows = call(o.url, "/v1/crashes", q)["crashes"]
+        if o.new and not o.last and not o.sig:                       # the worker's LIMIT 200 (by n) drops a crash seen once: ask for the recent ones too
+            got = {(r["sig"], r["v"]) for r in rows}
+            recent = (datetime.date.today() - datetime.timedelta(days=14)).isoformat()
+            rows += [r for r in call(o.url, "/v1/crashes", {**q, "last": recent})["crashes"] if (r["sig"], r["v"]) not in got]
         rows = [r for r in rows if r["first"] >= o.since and (not o.new or (unseen(r, marks) > 0 and (o.adb or not r["kind"].startswith(ADB_KIND))))]
         if o.json:
             out = [normal(r, marks) for r in rows]

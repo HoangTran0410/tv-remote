@@ -1424,6 +1424,11 @@
   "n": 1,
   "note": "Allwinner sun50iw9p1 MBOX, fake google walleye fp, sdk 29: firmware drops the a11y entry; clients say keys work only on TV Home"
  },
+ "3fd52ef15449ebe1bb5ee526|0.56.0": {
+  "at": "2026-11-28T10:21:57+07:00",
+  "n": 1,
+  "note": "same MBOX line, now Allwinner sun55iw3p1 fake walleye sdk 34, rs allow, bound 0: Allwinner firmware kind, nothing to fix"
+ },
  "41dd31f77cb49ce98c2242e0|0.28.0": {
   "at": "2026-10-27T09:37:26+07:00",
   "n": 1,
@@ -2183,6 +2188,11 @@
   "at": "2026-11-19T23:30:18+07:00",
   "n": 1,
   "note": "TCL Smart TV 12 sdk 31 on 0.53.1: add-on stopped (RAM cleaner), firmware kind; clients say keys work only on TV Home"
+ },
+ "657718557b80576c615cdf0a|0.56.0": {
+  "at": "2026-11-28T10:21:59+07:00",
+  "n": 1,
+  "note": "same TCL G10 sdk 31 on 0.56.0: add-on stopped (RAM cleaner), firmware kind"
  },
  "657db7980ca8eda492ca97eb|0.29.0": {
   "at": "2026-10-28T14:05:41+07:00",
@@ -3413,6 +3423,11 @@
   "at": "2026-11-25T11:05:35+07:00",
   "n": 1,
   "note": "same Amlogic t950s fake-Pixel box on 0.55.0: operator kind, nothing to fix"
+ },
+ "a0ef02bfc8edf9bdb3f78d1d|0.56.0": {
+  "at": "2026-11-28T10:21:58+07:00",
+  "n": 1,
+  "note": "same Amlogic t950s fake-Pixel box on 0.56.0: operator kind, nothing to fix"
  },
  "a11df287c4b27a276b8f644e|0.27.0": {
   "at": "2026-11-02T22:17:48+07:00",
@@ -4854,6 +4869,11 @@
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
  },
+ "ea1c80614aa55bde3b19acbe|0.55.0": {
+  "at": "2026-11-28T10:21:59+07:00",
+  "n": 1,
+  "note": "same Q96 Firefox page load as 27f219c5 (screen.js cut before 'let currentTab'); warmTv's TDZ is a symptom; no repeat since 11-22"
+ },
  "eba4e59d3a94e331129f3872|0.55.0": {
   "at": "2026-11-21T19:28:49+07:00",
   "n": 1,
@@ -5023,6 +5043,11 @@
   "at": "2026-11-02T22:17:48+07:00",
   "n": 1,
   "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+ },
+ "f13df99261a165b49ab4c23f|0.56.0": {
+  "at": "2026-11-28T10:21:56+07:00",
+  "n": 1,
+  "note": "NVIDIA SHIELD sdk 30, add-on stopped, a11y 0: add-on force-stopped (cleaner or by hand), Android drops the entry; 'stopped' kind, clients say keys work only on TV Home; nothing to fix"
  },
  "f17671e352b12eca6e37111f|0.37.0": {
   "at": "2026-11-02T22:17:48+07:00",
