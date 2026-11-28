@@ -35,11 +35,15 @@ internal class InstallApi(core: ManageCore, private val copy: TvCopy) : ManagePa
         }
     }
 
+    /** The file's first two bytes ("PK" for a zip), with what every Android since 4 has. */
+    private fun firstTwo(q: String) = "(dd if=$q bs=2 count=1 || head -c 2 $q) 2>/dev/null"
+
     @Throws(IOException::class)
     private fun pmInstall(path: String): String {
         val adb = link.get()
         val q = Adb.q(path)
-        if (!adb.shell("head -c 2 $q 2>/dev/null").startsWith("PK")) throw IOException("not an APK file")
+        // dd, not head -c: Android 7's toybox head has no -c, so every install said "not an APK file" there (issue #37)
+        if (!adb.shell(firstTwo(q)).startsWith("PK")) throw IOException("not an APK file")
         val size = adb.shell("stat -c %s $q").trim()
         var info = try { Apk.info(B64.decode(adb.shell("unzip -p $q AndroidManifest.xml 2>/dev/null | base64"))) }
                    catch (e: IllegalArgumentException) { emptyMap() }
@@ -57,7 +61,7 @@ internal class InstallApi(core: ManageCore, private val copy: TvCopy) : ManagePa
             val baseTmp = tmpBase()
             try {                                                     // only the base, to read its manifest (and to tell a locked bundle)
                 adb.shell("unzip -p $q ${Adb.q(base)} > $baseTmp 2>/dev/null", 600000)
-                if (!adb.shell("head -c 2 $baseTmp 2>/dev/null").startsWith("PK")) throw IOException(Splits.LOCKED)
+                if (!adb.shell(firstTwo(baseTmp)).startsWith("PK")) throw IOException(Splits.LOCKED)
                 info = try { Apk.info(B64.decode(adb.shell("unzip -p $baseTmp AndroidManifest.xml 2>/dev/null | base64"))) }
                        catch (e: IllegalArgumentException) { emptyMap() }
             } finally { adb.shell("rm -f $baseTmp") }

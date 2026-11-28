@@ -7,6 +7,7 @@ Three version numbers, each bumped only when its own part changes: `VERSION` (th
 ## Unreleased
 
 - LG TVs: the app waits for the TV's answer to its first hello before asking anything else, and a set that still hangs up at once is tried again with the plain pairing request alone (#36). The log now says why a TV closed the connection.
+- Installing an APK on Android 7 TVs no longer fails with "not an APK file": the check read the file's first bytes with a `head -c` that Android 7 does not have (#37).
 
 ## 0.58.0 - 2026-11-28
 
