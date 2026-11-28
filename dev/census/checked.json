@@ -1929,6 +1929,11 @@
   "n": 1,
   "note": "rules_no_adb (Xiaomi MiTV-MZTU0, 0.52.0): could not close TizenTube, the TV was still asking 'Allow USB debugging?'; the TV's state, TV Setup shows the allow step"
  },
+ "592b546d339601dd498113ae|0.55.0": {
+  "at": "2026-11-28T13:47:08+07:00",
+  "n": 1,
+  "note": "rules_no_adb Xiaomi MiTV-MZTU0 sdk 34: 5555 connect failed while ADB was still connecting, so the app limit could not close YouTube; the TV's ADB state (same box had long 5555 failures, 5d7ddd66), message already says Reconnect; nothing to fix unless it repeats"
+ },
  "592ef0de506c0c694f2d21c2|0.32.1": {
   "at": "2026-11-27T04:00:49+07:00",
   "n": 1,
