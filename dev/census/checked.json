@@ -4184,10 +4184,15 @@
   "n": 1,
   "note": "ADB diagnostic: the TV's own ADB closed/refused; minutes now on elapsedRealtime (314c0f33)"
  },
- "c31ffd8708ebffb497bc6100|0.23.0": {
-  "at": "2026-11-02T22:17:48+07:00",
+ "c31ffd8708ebffb497bc6100|0.20.2": {
+  "at": "2026-11-28T15:12:59+07:00",
   "n": 1,
-  "note": "TV Setup ADB health report (the box refused / no Allow / timeout / not paired), not a code fault"
+  "note": "TCL sdk 30 TV Home 0.20.2 (old): FinalizerDaemon stuck in a binder call to system_server (releaseSomeActivities from GcWatcher), no app frame; the TV's system was busy, nothing in our code"
+ },
+ "c31ffd8708ebffb497bc6100|0.23.0": {
+  "at": "2026-11-28T15:12:59+07:00",
+  "n": 1,
+  "note": "TCL sdk 30 TV Home 0.20.2 (old): FinalizerDaemon stuck in a binder call to system_server (releaseSomeActivities from GcWatcher), no app frame; the TV's system was busy, nothing in our code"
  },
  "c373576682d59c3aa492f81e|0.26.3": {
   "at": "2026-11-05T10:40:29+07:00",
